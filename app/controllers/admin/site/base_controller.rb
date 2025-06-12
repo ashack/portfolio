@@ -1,9 +1,9 @@
 class Admin::Site::BaseController < ApplicationController
-  layout 'admin'
+  layout "admin"
   before_action :require_site_admin!
-  
+
   private
-  
+
   def require_site_admin!
     unless current_user&.site_admin? || current_user&.super_admin?
       flash[:alert] = "You must be a site admin to access this area."

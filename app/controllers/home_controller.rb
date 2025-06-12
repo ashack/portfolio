@@ -1,14 +1,14 @@
 class HomeController < ApplicationController
   skip_before_action :authenticate_user!
-  
+
   def index
     if user_signed_in?
       redirect_to redirect_path_for_user
     end
   end
-  
+
   private
-  
+
   def redirect_path_for_user
     if current_user.super_admin?
       admin_super_root_path

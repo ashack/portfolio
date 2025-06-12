@@ -30,13 +30,13 @@ class InvitationPolicy < ApplicationPolicy
   private
 
   def team_admin_for_team?
-    @user&.team_id == @record&.team_id && @user&.team_role == 'admin'
+    @user&.team_id == @record&.team_id && @user&.team_role == "admin"
   end
 
   def invitation_recipient?
     @record&.email == @user&.email
   end
-  
+
   class Scope < ApplicationPolicy::Scope
     def resolve
       if @user.super_admin?

@@ -35,11 +35,11 @@ class ApplicationPolicy
   end
 
   def super_admin?
-    @user&.system_role == 'super_admin'
+    @user&.system_role == "super_admin"
   end
 
   def site_admin?
-    @user&.system_role == 'site_admin'
+    @user&.system_role == "site_admin"
   end
 
   def admin?
@@ -47,7 +47,7 @@ class ApplicationPolicy
   end
 
   def active_user?
-    @user&.status == 'active'
+    @user&.status == "active"
   end
 
   class Scope

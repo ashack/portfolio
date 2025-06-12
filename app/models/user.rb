@@ -1,13 +1,13 @@
 class User < ApplicationRecord
   include Pay::Billable # For individual user billing
-  
+
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable, :confirmable, :trackable
 
   belongs_to :team, optional: true
-  has_many :created_teams, class_name: 'Team', foreign_key: 'created_by_id'
-  has_many :administered_teams, class_name: 'Team', foreign_key: 'admin_id'
-  has_many :sent_invitations, class_name: 'Invitation', foreign_key: 'invited_by_id'
+  has_many :created_teams, class_name: "Team", foreign_key: "created_by_id"
+  has_many :administered_teams, class_name: "Team", foreign_key: "admin_id"
+  has_many :sent_invitations, class_name: "Invitation", foreign_key: "invited_by_id"
 
   enum :system_role, { user: 0, site_admin: 1, super_admin: 2 }
   enum :user_type, { direct: 0, invited: 1 }
@@ -16,18 +16,18 @@ class User < ApplicationRecord
 
   validates :user_type, presence: true
   validates :status, presence: true
-  
+
   # Validation: direct users cannot have team associations
   validates :team_id, absence: true, if: :direct?
   validates :team_role, absence: true, if: :direct?
-  
+
   # Validation: invited users must have team associations
   validates :team_id, presence: true, if: :invited?
   validates :team_role, presence: true, if: :invited?
 
-  scope :active, -> { where(status: 'active') }
-  scope :direct_users, -> { where(user_type: 'direct') }
-  scope :team_members, -> { where(user_type: 'invited') }
+  scope :active, -> { where(status: "active") }
+  scope :direct_users, -> { where(user_type: "direct") }
+  scope :team_members, -> { where(user_type: "invited") }
 
   def full_name
     "#{first_name} #{last_name}".strip
@@ -38,18 +38,18 @@ class User < ApplicationRecord
   end
 
   def team_admin?
-    invited? && team_role == 'admin'
+    invited? && team_role == "admin"
   end
 
   def team_member?
-    invited? && team_role == 'member'
+    invited? && team_role == "member"
   end
-  
+
   # Override Devise method to check status
   def active_for_authentication?
     super && can_sign_in?
   end
-  
+
   def inactive_message
     can_sign_in? ? super : :account_inactive
   end

@@ -6,17 +6,17 @@ class Users::StatusManagementService
   end
 
   def call
-    return failure('Unauthorized') unless can_manage_user_status?
-    return failure('Invalid status') unless valid_status?
+    return failure("Unauthorized") unless can_manage_user_status?
+    return failure("Invalid status") unless valid_status?
 
     @target_user.transaction do
       old_status = @target_user.status
       @target_user.update!(status: @new_status)
-      
+
       log_status_change(old_status)
       send_notification_if_needed(old_status)
       force_signout_if_needed
-      
+
       success
     end
   rescue ActiveRecord::RecordInvalid => e
@@ -47,15 +47,15 @@ class Users::StatusManagementService
   end
 
   def send_notification_if_needed(old_status)
-    if old_status == 'active' && @new_status != 'active'
+    if old_status == "active" && @new_status != "active"
       # UserStatusMailer.account_deactivated(@target_user, @new_status).deliver_later
-    elsif old_status != 'active' && @new_status == 'active'
+    elsif old_status != "active" && @new_status == "active"
       # UserStatusMailer.account_reactivated(@target_user).deliver_later
     end
   end
 
   def force_signout_if_needed
-    if @new_status != 'active'
+    if @new_status != "active"
       # Force user logout by clearing all sessions
       @target_user.update_column(:sign_in_count, 0)
     end

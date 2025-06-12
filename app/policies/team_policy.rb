@@ -26,9 +26,9 @@ class TeamPolicy < ApplicationPolicy
   end
 
   def team_admin?
-    @user&.team_id == @record&.id && @user&.team_role == 'admin'
+    @user&.team_id == @record&.id && @user&.team_role == "admin"
   end
-  
+
   class Scope < ApplicationPolicy::Scope
     def resolve
       if @user.super_admin? || @user.site_admin?

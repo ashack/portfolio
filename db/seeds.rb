@@ -4,7 +4,7 @@ individual_plans = [
     name: 'Individual Free',
     plan_type: 'individual',
     amount_cents: 0,
-    features: ['basic_dashboard', 'email_support']
+    features: [ 'basic_dashboard', 'email_support' ]
   },
   {
     name: 'Individual Pro',
@@ -12,7 +12,7 @@ individual_plans = [
     stripe_price_id: ENV['STRIPE_INDIVIDUAL_PRO_PRICE_ID'] || 'price_individual_pro',
     amount_cents: 1900,
     interval: 'month',
-    features: ['basic_dashboard', 'advanced_features', 'priority_support']
+    features: [ 'basic_dashboard', 'advanced_features', 'priority_support' ]
   },
   {
     name: 'Individual Premium',
@@ -20,7 +20,7 @@ individual_plans = [
     stripe_price_id: ENV['STRIPE_INDIVIDUAL_PREMIUM_PRICE_ID'] || 'price_individual_premium',
     amount_cents: 4900,
     interval: 'month',
-    features: ['basic_dashboard', 'advanced_features', 'premium_features', 'phone_support']
+    features: [ 'basic_dashboard', 'advanced_features', 'premium_features', 'phone_support' ]
   }
 ]
 
@@ -39,7 +39,7 @@ team_plans = [
     amount_cents: 4900,
     interval: 'month',
     max_team_members: 5,
-    features: ['team_dashboard', 'collaboration', 'email_support']
+    features: [ 'team_dashboard', 'collaboration', 'email_support' ]
   },
   {
     name: 'Team Pro',
@@ -48,7 +48,7 @@ team_plans = [
     amount_cents: 9900,
     interval: 'month',
     max_team_members: 15,
-    features: ['team_dashboard', 'collaboration', 'advanced_team_features', 'priority_support']
+    features: [ 'team_dashboard', 'collaboration', 'advanced_team_features', 'priority_support' ]
   },
   {
     name: 'Team Enterprise',
@@ -57,7 +57,7 @@ team_plans = [
     amount_cents: 19900,
     interval: 'month',
     max_team_members: 100,
-    features: ['team_dashboard', 'collaboration', 'advanced_team_features', 'enterprise_features', 'phone_support']
+    features: [ 'team_dashboard', 'collaboration', 'advanced_team_features', 'enterprise_features', 'phone_support' ]
   }
 ]
 

@@ -1,8 +1,8 @@
 class Team < ApplicationRecord
   include Pay::Billable # For team billing
 
-  belongs_to :admin, class_name: 'User'
-  belongs_to :created_by, class_name: 'User'
+  belongs_to :admin, class_name: "User"
+  belongs_to :created_by, class_name: "User"
   has_many :users, dependent: :restrict_with_error
   has_many :invitations, dependent: :destroy
 
@@ -16,7 +16,7 @@ class Team < ApplicationRecord
 
   before_validation :generate_slug, if: :name_changed?
 
-  scope :active, -> { where(status: 'active') }
+  scope :active, -> { where(status: "active") }
 
   def to_param
     slug
@@ -32,12 +32,12 @@ class Team < ApplicationRecord
 
   def plan_features
     case plan
-    when 'starter'
-      ['team_dashboard', 'collaboration', 'email_support']
-    when 'pro'
-      ['team_dashboard', 'collaboration', 'advanced_team_features', 'priority_support']
-    when 'enterprise'
-      ['team_dashboard', 'collaboration', 'advanced_team_features', 'enterprise_features', 'phone_support']
+    when "starter"
+      [ "team_dashboard", "collaboration", "email_support" ]
+    when "pro"
+      [ "team_dashboard", "collaboration", "advanced_team_features", "priority_support" ]
+    when "enterprise"
+      [ "team_dashboard", "collaboration", "advanced_team_features", "enterprise_features", "phone_support" ]
     end
   end
 
@@ -45,16 +45,16 @@ class Team < ApplicationRecord
 
   def generate_slug
     return unless name.present?
-    
-    base_slug = name.downcase.gsub(/[^a-z0-9\s\-]/, '').gsub(/\s+/, '-')
+
+    base_slug = name.downcase.gsub(/[^a-z0-9\s\-]/, "").gsub(/\s+/, "-")
     counter = 0
     potential_slug = base_slug
-    
+
     while Team.exists?(slug: potential_slug)
       counter += 1
       potential_slug = "#{base_slug}-#{counter}"
     end
-    
+
     self.slug = potential_slug
   end
 end

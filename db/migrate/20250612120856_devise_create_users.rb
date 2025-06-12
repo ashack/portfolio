@@ -6,7 +6,7 @@ class DeviseCreateUsers < ActiveRecord::Migration[8.0]
       ## Database authenticatable
       t.string :email,              null: false, default: ""
       t.string :encrypted_password, null: false, default: ""
-      
+
       # Name fields
       t.string :first_name
       t.string :last_name
@@ -32,18 +32,18 @@ class DeviseCreateUsers < ActiveRecord::Migration[8.0]
 
       # System Role (for platform administration)
       t.integer :system_role, default: 0, null: false
-      
+
       # User Type & Status
       t.integer :user_type, default: 0, null: false
       t.integer :status, default: 0, null: false
-      
+
       # Team Association (only for invited users)
       t.bigint :team_id
       t.integer :team_role
-      
+
       # Individual Billing (only for direct users)
       t.string :stripe_customer_id
-      
+
       # Activity Tracking
       t.datetime :last_activity_at
 

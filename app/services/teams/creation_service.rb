@@ -6,16 +6,16 @@ class Teams::CreationService
   end
 
   def call
-    return failure('Only super admins can create teams') unless @super_admin.super_admin?
-    return failure('Admin user must exist') unless @admin_user&.persisted?
-    return failure('Admin user already has a team') if @admin_user.team.present?
+    return failure("Only super admins can create teams") unless @super_admin.super_admin?
+    return failure("Admin user must exist") unless @admin_user&.persisted?
+    return failure("Admin user already has a team") if @admin_user.team.present?
 
     Team.transaction do
       team = create_team
       assign_admin(team)
       setup_billing(team)
       send_notifications(team)
-      
+
       success(team)
     end
   rescue ActiveRecord::RecordInvalid => e
@@ -29,23 +29,23 @@ class Teams::CreationService
       name: @team_params[:name],
       admin: @admin_user,
       created_by: @super_admin,
-      plan: @team_params[:plan] || 'starter',
+      plan: @team_params[:plan] || "starter",
       max_members: plan_member_limit(@team_params[:plan])
     )
   end
 
   def assign_admin(team)
     @admin_user.update!(
-      user_type: 'invited',
+      user_type: "invited",
       team: team,
-      team_role: 'admin'
+      team_role: "admin"
     )
   end
 
   def setup_billing(team)
     # Create Stripe customer for team
     customer = team.set_payment_processor(:stripe)
-    
+
     # Start trial if applicable
     if team.starter?
       team.update!(trial_ends_at: 14.days.from_now)
@@ -58,9 +58,9 @@ class Teams::CreationService
 
   def plan_member_limit(plan)
     case plan
-    when 'starter' then 5
-    when 'pro' then 15
-    when 'enterprise' then 100
+    when "starter" then 5
+    when "pro" then 15
+    when "enterprise" then 100
     else 5
     end
   end
