@@ -1,0 +1,194 @@
+<% content_for :page_title, @team.name %>
+<% content_for :header_actions do %>
+  <div class="flex space-x-3">
+    <%= link_to "Edit Team", edit_admin_super_team_path(@team), class: "inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50" %>
+    <%= link_to "Delete Team", admin_super_team_path(@team), method: :delete, 
+        confirm: "Are you sure? This will permanently delete the team and all its data.", 
+        class: "inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700" %>
+  </div>
+<% end %>
+
+<div class="space-y-6">
+  <!-- Team Overview -->
+  <div class="bg-white overflow-hidden shadow rounded-lg">
+    <div class="px-4 py-5 sm:p-6">
+      <div class="flex items-center justify-between">
+        <div>
+          <h3 class="text-lg leading-6 font-medium text-gray-900"><%= @team.name %></h3>
+          <p class="mt-1 max-w-2xl text-sm text-gray-500">Team details and configuration</p>
+        </div>
+        <div class="flex-shrink-0">
+          <span class="px-3 py-1 text-sm font-medium rounded-full 
+            <%= @team.status == 'active' ? 'bg-green-100 text-green-800' : 
+                @team.status == 'suspended' ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800' %>">
+            <%= @team.status.capitalize %>
+          </span>
+        </div>
+      </div>
+
+      <div class="mt-6 border-t border-gray-200">
+        <dl class="divide-y divide-gray-200">
+          <div class="py-4 sm:grid sm:grid-cols-3 sm:gap-4">
+            <dt class="text-sm font-medium text-gray-500">Team Slug</dt>
+            <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">/<%= @team.slug %></dd>
+          </div>
+          <div class="py-4 sm:grid sm:grid-cols-3 sm:gap-4">
+            <dt class="text-sm font-medium text-gray-500">Plan</dt>
+            <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+              <span class="px-2 py-1 text-xs font-medium rounded 
+                <%= @team.plan == 'starter' ? 'bg-gray-100 text-gray-800' : 
+                    @team.plan == 'pro' ? 'bg-blue-100 text-blue-800' : 'bg-purple-100 text-purple-800' %>">
+                <%= @team.plan.capitalize %>
+              </span>
+            </dd>
+          </div>
+          <div class="py-4 sm:grid sm:grid-cols-3 sm:gap-4">
+            <dt class="text-sm font-medium text-gray-500">Team Admin</dt>
+            <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+              <div class="flex items-center">
+                <div class="flex-shrink-0 h-8 w-8">
+                  <div class="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center">
+                    <span class="text-xs font-medium text-gray-700"><%= @team.admin.email.first.upcase %></span>
+                  </div>
+                </div>
+                <div class="ml-3">
+                  <p class="text-sm text-gray-900"><%= @team.admin.email %></p>
+                  <p class="text-xs text-gray-500"><%= @team.admin.full_name %></p>
+                </div>
+              </div>
+            </dd>
+          </div>
+          <div class="py-4 sm:grid sm:grid-cols-3 sm:gap-4">
+            <dt class="text-sm font-medium text-gray-500">Members</dt>
+            <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+              <%= @team.member_count %> / <%= @team.max_members %> members
+            </dd>
+          </div>
+          <div class="py-4 sm:grid sm:grid-cols-3 sm:gap-4">
+            <dt class="text-sm font-medium text-gray-500">Created</dt>
+            <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+              <%= @team.created_at.strftime("%B %d, %Y at %I:%M %p") %>
+            </dd>
+          </div>
+          <div class="py-4 sm:grid sm:grid-cols-3 sm:gap-4">
+            <dt class="text-sm font-medium text-gray-500">Created By</dt>
+            <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+              <%= @team.created_by.email %>
+            </dd>
+          </div>
+          <% if @team.custom_domain.present? %>
+            <div class="py-4 sm:grid sm:grid-cols-3 sm:gap-4">
+              <dt class="text-sm font-medium text-gray-500">Custom Domain</dt>
+              <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                <%= @team.custom_domain %>
+              </dd>
+            </div>
+          <% end %>
+        </dl>
+      </div>
+    </div>
+  </div>
+
+  <!-- Team Members -->
+  <div class="bg-white shadow overflow-hidden sm:rounded-lg">
+    <div class="px-4 py-5 sm:p-6">
+      <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Team Members</h3>
+      
+      <% if @team.users.any? %>
+        <div class="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
+          <table class="min-w-full divide-y divide-gray-300">
+            <thead class="bg-gray-50">
+              <tr>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Joined</th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Last Active</th>
+              </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+              <% @team.users.includes(:team).each do |user| %>
+                <tr>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="flex items-center">
+                      <div class="flex-shrink-0 h-10 w-10">
+                        <div class="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center">
+                          <span class="text-sm font-medium text-gray-700"><%= user.email.first.upcase %></span>
+                        </div>
+                      </div>
+                      <div class="ml-4">
+                        <div class="text-sm font-medium text-gray-900"><%= user.email %></div>
+                        <div class="text-sm text-gray-500"><%= user.full_name %></div>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                      <%= user.team_role == 'admin' ? 'bg-purple-100 text-purple-800' : 'bg-gray-100 text-gray-800' %>">
+                      <%= user.team_role.capitalize %>
+                    </span>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                      <%= user.status == 'active' ? 'bg-green-100 text-green-800' : 
+                          user.status == 'inactive' ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800' %>">
+                      <%= user.status.capitalize %>
+                    </span>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <%= user.created_at.strftime("%b %d, %Y") %>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <%= user.last_activity_at&.strftime("%b %d, %Y") || "Never" %>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      <% else %>
+        <div class="text-center py-6">
+          <p class="text-sm text-gray-500">No team members yet.</p>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <!-- Team Actions -->
+  <div class="bg-white shadow sm:rounded-lg">
+    <div class="px-4 py-5 sm:p-6">
+      <h3 class="text-lg leading-6 font-medium text-gray-900">Team Actions</h3>
+      <div class="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-3">
+        <% if @team.status == 'active' %>
+          <%= link_to admin_super_team_path(@team, status: 'suspended'), method: :patch, 
+              class: "inline-flex items-center justify-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50" do %>
+            <svg class="-ml-1 mr-2 h-4 w-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            Suspend Team
+          <% end %>
+        <% else %>
+          <%= link_to admin_super_team_path(@team, status: 'active'), method: :patch, 
+              class: "inline-flex items-center justify-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700" do %>
+            <svg class="-ml-1 mr-2 h-4 w-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1m-6 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            Reactivate Team
+          <% end %>
+        <% end %>
+
+        <%= form_with(url: admin_super_team_assign_admin_path(@team), method: :patch, local: true, class: "flex") do |form| %>
+          <%= form.select :admin_id, 
+              options_from_collection_for_select(@team.users.where.not(id: @team.admin_id), :id, :email, @team.admin_id),
+              { prompt: 'Change Admin' },
+              { class: "mr-2 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md" } %>
+          <%= form.submit "Update", class: "inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700" %>
+        <% end %>
+
+        <%= link_to "View Team Dashboard", team_root_path(team_slug: @team.slug), 
+            class: "inline-flex items-center justify-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50", 
+            target: "_blank" %>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,146 @@
+<% content_for :page_title, "Team Members" %>
+<% content_for :header_actions do %>
+  <%= link_to "Invite Member", new_teams_admin_invitation_path, class: "inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700" %>
+<% end %>
+
+<div class="bg-white shadow overflow-hidden sm:rounded-md">
+  <div class="px-4 py-5 sm:p-6">
+    <div class="mb-4">
+      <h3 class="text-lg leading-6 font-medium text-gray-900">Team Members</h3>
+      <p class="mt-1 text-sm text-gray-500">
+        Manage your team members. You can change roles or remove members from the team.
+      </p>
+      <div class="mt-2 flex items-center text-sm text-gray-500">
+        <span class="mr-2">Members: <%= @members.count %>/<%= @team.max_members %></span>
+        <% if @team.can_add_members? %>
+          <span class="px-2 py-1 text-xs bg-green-100 text-green-800 rounded-full">
+            <%= @team.max_members - @team.member_count %> slots available
+          </span>
+        <% else %>
+          <span class="px-2 py-1 text-xs bg-red-100 text-red-800 rounded-full">
+            Team full
+          </span>
+        <% end %>
+      </div>
+    </div>
+
+    <% if @members.any? %>
+      <div class="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
+        <table class="min-w-full divide-y divide-gray-300">
+          <thead class="bg-gray-50">
+            <tr>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Member</th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Joined</th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Last Active</th>
+              <th scope="col" class="relative px-6 py-3"><span class="sr-only">Actions</span></th>
+            </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200">
+            <% @members.each do |member| %>
+              <tr class="hover:bg-gray-50">
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="flex items-center">
+                    <div class="flex-shrink-0 h-10 w-10">
+                      <div class="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center">
+                        <span class="text-sm font-medium text-gray-700"><%= member.email.first.upcase %></span>
+                      </div>
+                    </div>
+                    <div class="ml-4">
+                      <div class="text-sm font-medium text-gray-900"><%= member.email %></div>
+                      <div class="text-sm text-gray-500">
+                        <%= [member.first_name, member.last_name].compact.join(' ').presence || 'No name' %>
+                      </div>
+                    </div>
+                  </div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <% if member == current_user %>
+                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-purple-100 text-purple-800">
+                      <%= member.team_role.capitalize %> (You)
+                    </span>
+                  <% else %>
+                    <%= form_with(url: teams_admin_member_change_role_path(member), method: :patch, local: true, class: "flex items-center space-x-2") do |form| %>
+                      <%= form.select :role, 
+                          options_for_select([
+                            ['Member', 'member'],
+                            ['Admin', 'admin']
+                          ], member.team_role),
+                          {},
+                          { class: "text-xs border-gray-300 rounded", onchange: "this.form.submit();" } %>
+                    <% end %>
+                  <% end %>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                    <%= member.status == 'active' ? 'bg-green-100 text-green-800' : 
+                        member.status == 'inactive' ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800' %>">
+                    <%= member.status.capitalize %>
+                  </span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  <%= member.created_at.strftime("%b %d, %Y") %>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  <%= member.last_activity_at&.strftime("%b %d, %Y") || "Never" %>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                  <% if member == current_user %>
+                    <span class="text-gray-400">You</span>
+                  <% else %>
+                    <div class="flex space-x-2">
+                      <%= link_to "View", teams_admin_member_path(member), class: "text-indigo-600 hover:text-indigo-900" %>
+                      <%= link_to "Remove", teams_admin_member_path(member), method: :delete, 
+                          confirm: "Are you sure? This will permanently delete #{member.email}'s account and remove them from the team.", 
+                          class: "text-red-600 hover:text-red-900" %>
+                    </div>
+                  <% end %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination -->
+      <div class="mt-6">
+        <%== pagy_bootstrap_nav(@pagy) if @pagy.pages > 1 %>
+      </div>
+    <% else %>
+      <div class="text-center py-12">
+        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+        </svg>
+        <h3 class="mt-2 text-sm font-medium text-gray-900">No team members</h3>
+        <p class="mt-1 text-sm text-gray-500">Get started by inviting your first team member.</p>
+        <div class="mt-6">
+          <%= link_to "Invite Member", new_teams_admin_invitation_path, class: "inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700" %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+<!-- Member Statistics -->
+<div class="mt-8 bg-white shadow rounded-lg">
+  <div class="px-4 py-5 sm:p-6">
+    <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Member Statistics</h3>
+    <div class="grid grid-cols-1 gap-5 sm:grid-cols-3">
+      <div class="text-center">
+        <div class="text-2xl font-bold text-gray-900"><%= @members.where(team_role: 'admin').count %></div>
+        <div class="text-sm text-gray-500">Team Admins</div>
+      </div>
+      <div class="text-center">
+        <div class="text-2xl font-bold text-gray-900"><%= @members.where(team_role: 'member').count %></div>
+        <div class="text-sm text-gray-500">Team Members</div>
+      </div>
+      <div class="text-center">
+        <div class="text-2xl font-bold text-gray-900">
+          <%= @members.where('last_activity_at > ?', 7.days.ago).count %>
+        </div>
+        <div class="text-sm text-gray-500">Active This Week</div>
+      </div>
+    </div>
+  </div>
+</div>
