@@ -1,0 +1,220 @@
+<% content_for :page_title, "Site Admin Dashboard" %>
+
+<div class="space-y-6">
+  <!-- Overview Stats -->
+  <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+    <div class="bg-white overflow-hidden shadow rounded-lg">
+      <div class="p-5">
+        <div class="flex items-center">
+          <div class="flex-shrink-0">
+            <svg class="h-6 w-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+            </svg>
+          </div>
+          <div class="ml-5 w-0 flex-1">
+            <dl>
+              <dt class="text-sm font-medium text-gray-500 truncate">Total Users</dt>
+              <dd class="text-lg font-medium text-gray-900"><%= @total_users %></dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white overflow-hidden shadow rounded-lg">
+      <div class="p-5">
+        <div class="flex items-center">
+          <div class="flex-shrink-0">
+            <svg class="h-6 w-6 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+          </div>
+          <div class="ml-5 w-0 flex-1">
+            <dl>
+              <dt class="text-sm font-medium text-gray-500 truncate">Active Users</dt>
+              <dd class="text-lg font-medium text-gray-900"><%= @active_users %></dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white overflow-hidden shadow rounded-lg">
+      <div class="p-5">
+        <div class="flex items-center">
+          <div class="flex-shrink-0">
+            <svg class="h-6 w-6 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+            </svg>
+          </div>
+          <div class="ml-5 w-0 flex-1">
+            <dl>
+              <dt class="text-sm font-medium text-gray-500 truncate">Inactive Users</dt>
+              <dd class="text-lg font-medium text-gray-900"><%= @inactive_users %></dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white overflow-hidden shadow rounded-lg">
+      <div class="p-5">
+        <div class="flex items-center">
+          <div class="flex-shrink-0">
+            <svg class="h-6 w-6 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 0h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+            </svg>
+          </div>
+          <div class="ml-5 w-0 flex-1">
+            <dl>
+              <dt class="text-sm font-medium text-gray-500 truncate">Locked Users</dt>
+              <dd class="text-lg font-medium text-gray-900"><%= @locked_users %></dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 gap-8 lg:grid-cols-2">
+    <!-- Recent Users -->
+    <div class="bg-white shadow rounded-lg">
+      <div class="px-4 py-5 sm:p-6">
+        <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Recent Users</h3>
+        <div class="space-y-3">
+          <% @recent_users.each do |user| %>
+            <div class="flex items-center justify-between py-3 border-b">
+              <div class="flex items-center">
+                <div class="flex-shrink-0 h-8 w-8">
+                  <div class="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center">
+                    <span class="text-xs font-medium text-gray-700"><%= user.email.first.upcase %></span>
+                  </div>
+                </div>
+                <div class="ml-3">
+                  <p class="text-sm font-medium text-gray-900"><%= user.email %></p>
+                  <p class="text-xs text-gray-500">
+                    <%= user.user_type.humanize %> • 
+                    <span class="<%= user.status == 'active' ? 'text-green-600' : user.status == 'inactive' ? 'text-yellow-600' : 'text-red-600' %>">
+                      <%= user.status.capitalize %>
+                    </span>
+                  </p>
+                </div>
+              </div>
+              <%= link_to "View", admin_site_user_path(user), class: "text-indigo-600 hover:text-indigo-900 text-sm" %>
+            </div>
+          <% end %>
+        </div>
+        <div class="mt-4">
+          <%= link_to "View All Users", admin_site_users_path, class: "text-indigo-600 hover:text-indigo-900 text-sm font-medium" %>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="bg-white shadow rounded-lg">
+      <div class="px-4 py-5 sm:p-6">
+        <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Recent Activity</h3>
+        <div class="space-y-3">
+          <% @recent_activities.each do |user| %>
+            <div class="flex items-center justify-between py-3 border-b">
+              <div class="flex items-center">
+                <div class="flex-shrink-0 h-8 w-8">
+                  <div class="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center">
+                    <span class="text-xs font-medium text-gray-700"><%= user.email.first.upcase %></span>
+                  </div>
+                </div>
+                <div class="ml-3">
+                  <p class="text-sm font-medium text-gray-900"><%= user.email %></p>
+                  <p class="text-xs text-gray-500">
+                    <% if user.last_activity_at %>
+                      Active <%= time_ago_in_words(user.last_activity_at) %> ago
+                    <% else %>
+                      Never active
+                    <% end %>
+                  </p>
+                </div>
+              </div>
+              <%= link_to "View", admin_site_user_path(user), class: "text-indigo-600 hover:text-indigo-900 text-sm" %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Actions -->
+  <div class="bg-white shadow rounded-lg">
+    <div class="px-4 py-5 sm:p-6">
+      <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Quick Actions</h3>
+      <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
+        <%= link_to admin_site_users_path, class: "inline-flex items-center justify-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700" do %>
+          <svg class="-ml-1 mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+          </svg>
+          Manage Users
+        <% end %>
+
+        <%= link_to admin_site_teams_path, class: "inline-flex items-center justify-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50" do %>
+          <svg class="-ml-1 mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+          </svg>
+          View Teams
+        <% end %>
+
+        <%= link_to "#", class: "inline-flex items-center justify-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50" do %>
+          <svg class="-ml-1 mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192L5.636 18.364M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+          Support Tickets
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <!-- System Status -->
+  <div class="bg-white shadow rounded-lg">
+    <div class="px-4 py-5 sm:p-6">
+      <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">System Status</h3>
+      <div class="space-y-4">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center">
+            <div class="flex-shrink-0">
+              <div class="h-2 w-2 bg-green-400 rounded-full"></div>
+            </div>
+            <div class="ml-3">
+              <p class="text-sm font-medium text-gray-900">Database</p>
+              <p class="text-xs text-gray-500">All systems operational</p>
+            </div>
+          </div>
+          <span class="text-sm text-green-600">Healthy</span>
+        </div>
+        
+        <div class="flex items-center justify-between">
+          <div class="flex items-center">
+            <div class="flex-shrink-0">
+              <div class="h-2 w-2 bg-green-400 rounded-full"></div>
+            </div>
+            <div class="ml-3">
+              <p class="text-sm font-medium text-gray-900">Email Service</p>
+              <p class="text-xs text-gray-500">Emails being delivered</p>
+            </div>
+          </div>
+          <span class="text-sm text-green-600">Healthy</span>
+        </div>
+        
+        <div class="flex items-center justify-between">
+          <div class="flex items-center">
+            <div class="flex-shrink-0">
+              <div class="h-2 w-2 bg-green-400 rounded-full"></div>
+            </div>
+            <div class="ml-3">
+              <p class="text-sm font-medium text-gray-900">Payment Processing</p>
+              <p class="text-xs text-gray-500">Stripe integration active</p>
+            </div>
+          </div>
+          <span class="text-sm text-green-600">Healthy</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

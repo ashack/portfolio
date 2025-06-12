@@ -1,0 +1,134 @@
+<% content_for :page_title, "Users Management" %>
+
+<div class="bg-white shadow overflow-hidden sm:rounded-md">
+  <div class="px-4 py-5 sm:p-6">
+    <div class="mb-4 flex justify-between items-center">
+      <div>
+        <h3 class="text-lg leading-6 font-medium text-gray-900">All Users</h3>
+        <p class="mt-1 text-sm text-gray-500">
+          Manage all users in the system. You can view, edit, and manage user status.
+        </p>
+      </div>
+      
+      <!-- Filter Form -->
+      <%= form_with(url: admin_super_users_path, method: :get, local: true, class: "flex space-x-4") do |form| %>
+        <%= form.select :user_type, 
+            options_for_select([
+              ['All Users', ''],
+              ['Direct Users', 'direct'],
+              ['Team Members', 'invited']
+            ], params[:user_type]),
+            {},
+            { class: "block w-40 pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md" } %>
+        
+        <%= form.select :status, 
+            options_for_select([
+              ['All Status', ''],
+              ['Active', 'active'],
+              ['Inactive', 'inactive'],
+              ['Locked', 'locked']
+            ], params[:status]),
+            {},
+            { class: "block w-40 pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md" } %>
+        
+        <%= form.submit "Filter", class: "inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700" %>
+      <% end %>
+    </div>
+
+    <% if @users.any? %>
+      <div class="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
+        <table class="min-w-full divide-y divide-gray-300">
+          <thead class="bg-gray-50">
+            <tr>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Team</th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Last Active</th>
+              <th scope="col" class="relative px-6 py-3"><span class="sr-only">Actions</span></th>
+            </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200">
+            <% @users.each do |user| %>
+              <tr class="hover:bg-gray-50">
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="flex items-center">
+                    <div class="flex-shrink-0 h-10 w-10">
+                      <div class="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center">
+                        <span class="text-sm font-medium text-gray-700"><%= user.email.first.upcase %></span>
+                      </div>
+                    </div>
+                    <div class="ml-4">
+                      <div class="text-sm font-medium text-gray-900"><%= user.email %></div>
+                      <div class="text-sm text-gray-500">
+                        <%= [user.first_name, user.last_name].compact.join(' ').presence || 'No name' %>
+                      </div>
+                    </div>
+                  </div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                    <%= user.user_type == 'direct' ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800' %>">
+                    <%= user.user_type.capitalize %>
+                  </span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  <% if user.team %>
+                    <%= link_to user.team.name, admin_super_team_path(user.team), class: "text-indigo-600 hover:text-indigo-900" %>
+                  <% else %>
+                    <span class="text-gray-400">-</span>
+                  <% end %>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <% if user.system_role != 'user' %>
+                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-purple-100 text-purple-800">
+                      <%= user.system_role.humanize %>
+                    </span>
+                  <% elsif user.team_role.present? %>
+                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">
+                      Team <%= user.team_role.capitalize %>
+                    </span>
+                  <% else %>
+                    <span class="text-gray-400">User</span>
+                  <% end %>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                    <%= user.status == 'active' ? 'bg-green-100 text-green-800' : 
+                        user.status == 'inactive' ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800' %>">
+                    <%= user.status.capitalize %>
+                  </span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  <%= user.last_activity_at&.strftime("%b %d, %Y") || "Never" %>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                  <div class="flex space-x-2">
+                    <%= link_to "View", admin_super_user_path(user), class: "text-indigo-600 hover:text-indigo-900" %>
+                    <% unless user == current_user %>
+                      <%= link_to "Impersonate", admin_super_user_impersonate_path(user), method: :post, class: "text-gray-600 hover:text-gray-900" %>
+                    <% end %>
+                  </div>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination -->
+      <div class="mt-6">
+        <%== pagy_bootstrap_nav(@pagy) if @pagy.pages > 1 %>
+      </div>
+    <% else %>
+      <div class="text-center py-12">
+        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+        </svg>
+        <h3 class="mt-2 text-sm font-medium text-gray-900">No users found</h3>
+        <p class="mt-1 text-sm text-gray-500">Try adjusting your filters or check back later.</p>
+      </div>
+    <% end %>
+  </div>
+</div>

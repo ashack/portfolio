@@ -1,0 +1,308 @@
+<% content_for :page_title, "Team Dashboard" %>
+
+<div class="space-y-6">
+  <!-- Welcome Section -->
+  <div class="bg-white overflow-hidden shadow rounded-lg">
+    <div class="px-4 py-5 sm:p-6">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center">
+          <div class="flex-shrink-0 h-16 w-16 bg-indigo-100 rounded-lg flex items-center justify-center">
+            <span class="text-xl font-bold text-indigo-600"><%= @team.name.first.upcase %></span>
+          </div>
+          <div class="ml-4">
+            <h1 class="text-2xl font-bold text-gray-900">
+              Welcome to <%= @team.name %>
+            </h1>
+            <p class="text-sm text-gray-500">
+              You are a team <%= current_user.team_role %> • <%= @team.plan.capitalize %> plan
+            </p>
+          </div>
+        </div>
+        <div class="flex-shrink-0">
+          <span class="px-3 py-1 text-sm font-medium rounded-full 
+            <%= @team.status == 'active' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800' %>">
+            <%= @team.status.capitalize %>
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Team Stats -->
+  <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+    <div class="bg-white overflow-hidden shadow rounded-lg">
+      <div class="p-5">
+        <div class="flex items-center">
+          <div class="flex-shrink-0">
+            <svg class="h-6 w-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+            </svg>
+          </div>
+          <div class="ml-5 w-0 flex-1">
+            <dl>
+              <dt class="text-sm font-medium text-gray-500 truncate">Team Members</dt>
+              <dd class="text-lg font-medium text-gray-900">
+                <%= @team_members.count %>/<%= @team.max_members %>
+              </dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white overflow-hidden shadow rounded-lg">
+      <div class="p-5">
+        <div class="flex items-center">
+          <div class="flex-shrink-0">
+            <svg class="h-6 w-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+          </div>
+          <div class="ml-5 w-0 flex-1">
+            <dl>
+              <dt class="text-sm font-medium text-gray-500 truncate">Your Role</dt>
+              <dd class="text-lg font-medium text-gray-900">
+                <span class="px-2 py-1 text-xs font-medium rounded 
+                  <%= current_user.team_role == 'admin' ? 'bg-purple-100 text-purple-800' : 'bg-gray-100 text-gray-800' %>">
+                  <%= current_user.team_role.capitalize %>
+                </span>
+              </dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white overflow-hidden shadow rounded-lg">
+      <div class="p-5">
+        <div class="flex items-center">
+          <div class="flex-shrink-0">
+            <svg class="h-6 w-6 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3a4 4 0 118 0v4m-4 8l-2-2m0 0l-2 2m2-2v6m0-6l2 2"></path>
+            </svg>
+          </div>
+          <div class="ml-5 w-0 flex-1">
+            <dl>
+              <dt class="text-sm font-medium text-gray-500 truncate">Plan</dt>
+              <dd class="text-lg font-medium text-gray-900">
+                <span class="px-2 py-1 text-xs font-medium rounded 
+                  <%= @team.plan == 'starter' ? 'bg-gray-100 text-gray-800' : 
+                      @team.plan == 'pro' ? 'bg-blue-100 text-blue-800' : 'bg-purple-100 text-purple-800' %>">
+                  <%= @team.plan.capitalize %>
+                </span>
+              </dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white overflow-hidden shadow rounded-lg">
+      <div class="p-5">
+        <div class="flex items-center">
+          <div class="flex-shrink-0">
+            <svg class="h-6 w-6 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+          </div>
+          <div class="ml-5 w-0 flex-1">
+            <dl>
+              <dt class="text-sm font-medium text-gray-500 truncate">Joined</dt>
+              <dd class="text-lg font-medium text-gray-900">
+                <%= current_user.created_at.strftime("%b %Y") %>
+              </dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 gap-8 lg:grid-cols-2">
+    <!-- Team Members -->
+    <div class="bg-white shadow rounded-lg">
+      <div class="px-4 py-5 sm:p-6">
+        <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Team Members</h3>
+        
+        <% if @team_members.any? %>
+          <div class="space-y-3">
+            <% @team_members.limit(8).each do |member| %>
+              <div class="flex items-center justify-between py-3 border-b">
+                <div class="flex items-center">
+                  <div class="flex-shrink-0 h-8 w-8">
+                    <div class="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center">
+                      <span class="text-xs font-medium text-gray-700"><%= member.email.first.upcase %></span>
+                    </div>
+                  </div>
+                  <div class="ml-3">
+                    <p class="text-sm font-medium text-gray-900">
+                      <%= member.email %>
+                      <% if member == current_user %>
+                        <span class="text-gray-500">(You)</span>
+                      <% end %>
+                    </p>
+                    <p class="text-xs text-gray-500">
+                      <%= member.team_role.capitalize %> • 
+                      <%= member.last_activity_at&.strftime("%b %d") || "Never active" %>
+                    </p>
+                  </div>
+                </div>
+                <span class="px-2 py-1 text-xs font-medium rounded 
+                  <%= member.team_role == 'admin' ? 'bg-purple-100 text-purple-800' : 'bg-gray-100 text-gray-800' %>">
+                  <%= member.team_role.capitalize %>
+                </span>
+              </div>
+            <% end %>
+          </div>
+          
+          <% if @team_members.count > 8 %>
+            <div class="mt-4 text-center">
+              <p class="text-sm text-gray-500">
+                And <%= @team_members.count - 8 %> more members...
+              </p>
+            </div>
+          <% end %>
+        <% else %>
+          <div class="text-center py-4">
+            <p class="text-sm text-gray-500">No other team members yet.</p>
+          </div>
+        <% end %>
+      </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="bg-white shadow rounded-lg">
+      <div class="px-4 py-5 sm:p-6">
+        <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Recent Team Activity</h3>
+        
+        <% if @recent_activities.any? %>
+          <div class="space-y-3">
+            <% @recent_activities.each do |activity| %>
+              <div class="flex items-center space-x-3">
+                <div class="flex-shrink-0">
+                  <div class="h-2 w-2 bg-green-400 rounded-full"></div>
+                </div>
+                <div class="min-w-0 flex-1">
+                  <p class="text-sm text-gray-600">
+                    <%= activity.email %> was active
+                    <time class="text-gray-500">
+                      <%= time_ago_in_words(activity.started_at) %> ago
+                    </time>
+                  </p>
+                </div>
+              </div>
+            <% end %>
+          </div>
+        <% else %>
+          <div class="text-center py-4">
+            <p class="text-sm text-gray-500">No recent team activity.</p>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <!-- Available Features -->
+  <div class="bg-white shadow rounded-lg">
+    <div class="px-4 py-5 sm:p-6">
+      <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Available Team Features</h3>
+      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <% @team.plan_features.each do |feature| %>
+          <div class="border border-gray-200 rounded-lg p-4 hover:bg-gray-50">
+            <div class="flex items-center">
+              <div class="flex-shrink-0">
+                <svg class="h-6 w-6 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                </svg>
+              </div>
+              <div class="ml-3">
+                <h4 class="text-sm font-medium text-gray-900"><%= feature.humanize %></h4>
+                <p class="text-sm text-gray-500">Available with your plan</p>
+              </div>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Actions -->
+  <div class="bg-white shadow rounded-lg">
+    <div class="px-4 py-5 sm:p-6">
+      <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Quick Actions</h3>
+      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <%= link_to teams_profile_path, class: "inline-flex items-center justify-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50" do %>
+          <svg class="-ml-1 mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+          </svg>
+          Edit Profile
+        <% end %>
+
+        <% if current_user.team_admin? %>
+          <%= link_to team_admin_root_path(team_slug: @team.slug), class: "inline-flex items-center justify-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700" do %>
+            <svg class="-ml-1 mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+            </svg>
+            Admin Dashboard
+          <% end %>
+        <% end %>
+
+        <div class="inline-flex items-center justify-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+          <svg class="-ml-1 mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+          </svg>
+          Collaboration
+        </div>
+
+        <div class="inline-flex items-center justify-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+          <svg class="-ml-1 mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+          </svg>
+          Documents
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Team Information -->
+  <div class="bg-white shadow rounded-lg">
+    <div class="px-4 py-5 sm:p-6">
+      <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Team Information</h3>
+      <dl class="grid grid-cols-1 gap-x-4 gap-y-6 sm:grid-cols-2">
+        <div>
+          <dt class="text-sm font-medium text-gray-500">Team Created</dt>
+          <dd class="mt-1 text-sm text-gray-900">
+            <%= @team.created_at.strftime("%B %d, %Y") %>
+            by <%= @team.created_by.email %>
+          </dd>
+        </div>
+        <div>
+          <dt class="text-sm font-medium text-gray-500">Team Admin</dt>
+          <dd class="mt-1 text-sm text-gray-900">
+            <%= @team.admin.email %>
+            <% if @team.admin == current_user %>
+              <span class="text-gray-500">(You)</span>
+            <% end %>
+          </dd>
+        </div>
+        <div>
+          <dt class="text-sm font-medium text-gray-500">Member Since</dt>
+          <dd class="mt-1 text-sm text-gray-900">
+            <%= current_user.created_at.strftime("%B %d, %Y") %>
+          </dd>
+        </div>
+        <div>
+          <dt class="text-sm font-medium text-gray-500">Your Permissions</dt>
+          <dd class="mt-1 text-sm text-gray-900">
+            <% if current_user.team_admin? %>
+              Full team management access
+            <% else %>
+              Team member access
+            <% end %>
+          </dd>
+        </div>
+      </dl>
+    </div>
+  </div>
+</div>

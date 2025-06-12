@@ -1,0 +1,246 @@
+<% content_for :page_title, @user.email %>
+<% content_for :header_actions do %>
+  <div class="flex space-x-3">
+    <% unless @user == current_user %>
+      <%= link_to "Impersonate", admin_super_user_impersonate_path(@user), method: :post, class: "inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50" %>
+    <% end %>
+    <%= link_to "View Activity", admin_super_user_activity_path(@user), class: "inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50" %>
+  </div>
+<% end %>
+
+<div class="space-y-6">
+  <!-- User Overview -->
+  <div class="bg-white overflow-hidden shadow rounded-lg">
+    <div class="px-4 py-5 sm:p-6">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center">
+          <div class="flex-shrink-0 h-16 w-16">
+            <div class="h-16 w-16 rounded-full bg-gray-200 flex items-center justify-center">
+              <span class="text-xl font-medium text-gray-700"><%= @user.email.first.upcase %></span>
+            </div>
+          </div>
+          <div class="ml-4">
+            <h3 class="text-lg leading-6 font-medium text-gray-900"><%= @user.email %></h3>
+            <p class="mt-1 text-sm text-gray-500">
+              <%= [@user.first_name, @user.last_name].compact.join(' ').presence || 'No name provided' %>
+            </p>
+          </div>
+        </div>
+        <div class="flex-shrink-0 flex space-x-2">
+          <span class="px-3 py-1 text-sm font-medium rounded-full 
+            <%= @user.status == 'active' ? 'bg-green-100 text-green-800' : 
+                @user.status == 'inactive' ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800' %>">
+            <%= @user.status.capitalize %>
+          </span>
+          <span class="px-3 py-1 text-sm font-medium rounded-full 
+            <%= @user.user_type == 'direct' ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800' %>">
+            <%= @user.user_type.capitalize %>
+          </span>
+        </div>
+      </div>
+
+      <div class="mt-6 border-t border-gray-200">
+        <dl class="divide-y divide-gray-200">
+          <div class="py-4 sm:grid sm:grid-cols-3 sm:gap-4">
+            <dt class="text-sm font-medium text-gray-500">Email</dt>
+            <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2"><%= @user.email %></dd>
+          </div>
+          <div class="py-4 sm:grid sm:grid-cols-3 sm:gap-4">
+            <dt class="text-sm font-medium text-gray-500">Full Name</dt>
+            <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+              <%= [@user.first_name, @user.last_name].compact.join(' ').presence || 'Not provided' %>
+            </dd>
+          </div>
+          <div class="py-4 sm:grid sm:grid-cols-3 sm:gap-4">
+            <dt class="text-sm font-medium text-gray-500">System Role</dt>
+            <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+              <div class="flex items-center space-x-2">
+                <span class="px-2 py-1 text-xs font-medium rounded 
+                  <%= @user.system_role == 'super_admin' ? 'bg-red-100 text-red-800' : 
+                      @user.system_role == 'site_admin' ? 'bg-purple-100 text-purple-800' : 'bg-gray-100 text-gray-800' %>">
+                  <%= @user.system_role.humanize %>
+                </span>
+                <% if @user.system_role == 'site_admin' %>
+                  <%= link_to "Demote to User", admin_super_user_demote_from_site_admin_path(@user), 
+                      method: :patch, class: "text-sm text-red-600 hover:text-red-900" %>
+                <% elsif @user.system_role == 'user' %>
+                  <%= link_to "Promote to Site Admin", admin_super_user_promote_to_site_admin_path(@user), 
+                      method: :patch, class: "text-sm text-indigo-600 hover:text-indigo-900" %>
+                <% end %>
+              </div>
+            </dd>
+          </div>
+          <% if @user.team %>
+            <div class="py-4 sm:grid sm:grid-cols-3 sm:gap-4">
+              <dt class="text-sm font-medium text-gray-500">Team</dt>
+              <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                <div class="flex items-center">
+                  <%= link_to @user.team.name, admin_super_team_path(@user.team), class: "text-indigo-600 hover:text-indigo-900" %>
+                  <span class="ml-2 px-2 py-1 text-xs font-medium rounded bg-gray-100 text-gray-800">
+                    <%= @user.team_role.capitalize %>
+                  </span>
+                </div>
+              </dd>
+            </div>
+          <% end %>
+          <div class="py-4 sm:grid sm:grid-cols-3 sm:gap-4">
+            <dt class="text-sm font-medium text-gray-500">Email Confirmed</dt>
+            <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+              <% if @user.confirmed_at %>
+                <span class="text-green-600">Yes</span>
+                <span class="text-gray-500">(<%= @user.confirmed_at.strftime("%b %d, %Y") %>)</span>
+              <% else %>
+                <span class="text-red-600">No</span>
+              <% end %>
+            </dd>
+          </div>
+          <div class="py-4 sm:grid sm:grid-cols-3 sm:gap-4">
+            <dt class="text-sm font-medium text-gray-500">Sign Ins</dt>
+            <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+              <%= @user.sign_in_count %> times
+              <% if @user.last_sign_in_at %>
+                <span class="text-gray-500">(last: <%= @user.last_sign_in_at.strftime("%b %d, %Y at %I:%M %p") %>)</span>
+              <% end %>
+            </dd>
+          </div>
+          <div class="py-4 sm:grid sm:grid-cols-3 sm:gap-4">
+            <dt class="text-sm font-medium text-gray-500">Last Activity</dt>
+            <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+              <%= @user.last_activity_at&.strftime("%B %d, %Y at %I:%M %p") || "Never" %>
+            </dd>
+          </div>
+          <div class="py-4 sm:grid sm:grid-cols-3 sm:gap-4">
+            <dt class="text-sm font-medium text-gray-500">Account Created</dt>
+            <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+              <%= @user.created_at.strftime("%B %d, %Y at %I:%M %p") %>
+            </dd>
+          </div>
+        </dl>
+      </div>
+    </div>
+  </div>
+
+  <!-- User Status Management -->
+  <div class="bg-white shadow sm:rounded-lg">
+    <div class="px-4 py-5 sm:p-6">
+      <h3 class="text-lg leading-6 font-medium text-gray-900">Status Management</h3>
+      <div class="mt-5">
+        <div class="flex space-x-3">
+          <% if @user.status != 'active' %>
+            <%= link_to admin_super_user_set_status_path(@user, status: 'active'), method: :patch, 
+                class: "inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700" do %>
+              <svg class="-ml-1 mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+              Activate User
+            <% end %>
+          <% end %>
+          
+          <% if @user.status != 'inactive' %>
+            <%= link_to admin_super_user_set_status_path(@user, status: 'inactive'), method: :patch, 
+                class: "inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50" do %>
+              <svg class="-ml-1 mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+              Deactivate User
+            <% end %>
+          <% end %>
+          
+          <% if @user.status != 'locked' %>
+            <%= link_to admin_super_user_set_status_path(@user, status: 'locked'), method: :patch, 
+                confirm: "Are you sure you want to lock this user? They will not be able to sign in.", 
+                class: "inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700" do %>
+              <svg class="-ml-1 mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 0h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+              </svg>
+              Lock User
+            <% end %>
+          <% end %>
+        </div>
+        <p class="mt-3 text-sm text-gray-500">
+          <strong>Active:</strong> User can sign in and use the application normally.<br>
+          <strong>Inactive:</strong> User cannot sign in but account is preserved.<br>
+          <strong>Locked:</strong> Account is locked for security reasons.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recent Activity -->
+  <div class="bg-white shadow sm:rounded-lg">
+    <div class="px-4 py-5 sm:p-6">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-lg leading-6 font-medium text-gray-900">Recent Activity</h3>
+        <%= link_to "View All Activity", admin_super_user_activity_path(@user), class: "text-sm text-indigo-600 hover:text-indigo-900" %>
+      </div>
+      
+      <div class="flow-root">
+        <ul class="-mb-8">
+          <li class="relative pb-8">
+            <div class="relative flex space-x-3">
+              <div class="flex-shrink-0">
+                <div class="h-8 w-8 rounded-full bg-green-100 flex items-center justify-center">
+                  <svg class="h-5 w-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path>
+                  </svg>
+                </div>
+              </div>
+              <div class="min-w-0 flex-1">
+                <div>
+                  <p class="text-sm text-gray-500">
+                    User created
+                    <time datetime="<%= @user.created_at.iso8601 %>"><%= @user.created_at.strftime("%b %d, %Y at %I:%M %p") %></time>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </li>
+          
+          <% if @user.confirmed_at %>
+            <li class="relative pb-8">
+              <div class="relative flex space-x-3">
+                <div class="flex-shrink-0">
+                  <div class="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center">
+                    <svg class="h-5 w-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                  </div>
+                </div>
+                <div class="min-w-0 flex-1">
+                  <div>
+                    <p class="text-sm text-gray-500">
+                      Email confirmed
+                      <time datetime="<%= @user.confirmed_at.iso8601 %>"><%= @user.confirmed_at.strftime("%b %d, %Y at %I:%M %p") %></time>
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </li>
+          <% end %>
+          
+          <% if @user.last_sign_in_at %>
+            <li class="relative">
+              <div class="relative flex space-x-3">
+                <div class="flex-shrink-0">
+                  <div class="h-8 w-8 rounded-full bg-gray-100 flex items-center justify-center">
+                    <svg class="h-5 w-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"></path>
+                    </svg>
+                  </div>
+                </div>
+                <div class="min-w-0 flex-1">
+                  <div>
+                    <p class="text-sm text-gray-500">
+                      Last sign in
+                      <time datetime="<%= @user.last_sign_in_at.iso8601 %>"><%= @user.last_sign_in_at.strftime("%b %d, %Y at %I:%M %p") %></time>
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </li>
+          <% end %>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>

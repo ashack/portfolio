@@ -1,0 +1,101 @@
+<% content_for :page_title, "Teams Management" %>
+<% content_for :header_actions do %>
+  <%= link_to "Create New Team", new_admin_super_team_path, class: "inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" %>
+<% end %>
+
+<div class="bg-white shadow overflow-hidden sm:rounded-md">
+  <div class="px-4 py-5 sm:p-6">
+    <div class="mb-4">
+      <h3 class="text-lg leading-6 font-medium text-gray-900">All Teams</h3>
+      <p class="mt-1 text-sm text-gray-500">
+        Manage all teams in the system. You can create, edit, and delete teams.
+      </p>
+    </div>
+
+    <% if @teams.any? %>
+      <div class="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
+        <table class="min-w-full divide-y divide-gray-300">
+          <thead class="bg-gray-50">
+            <tr>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Team</th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Admin</th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Plan</th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Members</th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created</th>
+              <th scope="col" class="relative px-6 py-3"><span class="sr-only">Actions</span></th>
+            </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200">
+            <% @teams.each do |team| %>
+              <tr class="hover:bg-gray-50">
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="flex items-center">
+                    <div class="flex-shrink-0 h-10 w-10">
+                      <div class="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center">
+                        <span class="text-sm font-medium text-gray-700"><%= team.name.first.upcase %></span>
+                      </div>
+                    </div>
+                    <div class="ml-4">
+                      <div class="text-sm font-medium text-gray-900"><%= team.name %></div>
+                      <div class="text-sm text-gray-500">/<%= team.slug %></div>
+                    </div>
+                  </div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="text-sm text-gray-900"><%= team.admin.email %></div>
+                  <div class="text-sm text-gray-500"><%= team.admin.full_name %></div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                    <%= team.plan == 'starter' ? 'bg-gray-100 text-gray-800' : 
+                        team.plan == 'pro' ? 'bg-blue-100 text-blue-800' : 'bg-purple-100 text-purple-800' %>">
+                    <%= team.plan.capitalize %>
+                  </span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                    <%= team.status == 'active' ? 'bg-green-100 text-green-800' : 
+                        team.status == 'suspended' ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800' %>">
+                    <%= team.status.capitalize %>
+                  </span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  <%= team.member_count %>/<%= team.max_members %>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  <%= team.created_at.strftime("%b %d, %Y") %>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                  <div class="flex space-x-2">
+                    <%= link_to "View", admin_super_team_path(team), class: "text-indigo-600 hover:text-indigo-900" %>
+                    <%= link_to "Edit", edit_admin_super_team_path(team), class: "text-gray-600 hover:text-gray-900" %>
+                    <%= link_to "Delete", admin_super_team_path(team), method: :delete, 
+                        confirm: "Are you sure? This will permanently delete the team and all its data.", 
+                        class: "text-red-600 hover:text-red-900" %>
+                  </div>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination -->
+      <div class="mt-6">
+        <%== pagy_bootstrap_nav(@pagy) if @pagy.pages > 1 %>
+      </div>
+    <% else %>
+      <div class="text-center py-12">
+        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+        </svg>
+        <h3 class="mt-2 text-sm font-medium text-gray-900">No teams</h3>
+        <p class="mt-1 text-sm text-gray-500">Get started by creating a new team.</p>
+        <div class="mt-6">
+          <%= link_to "Create New Team", new_admin_super_team_path, class: "inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700" %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>
