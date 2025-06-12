@@ -56,6 +56,23 @@ class Teams::Admin::InvitationsController < Teams::Admin::BaseController
   end
 
   def invitation_params
-    params.require(:invitation).permit(:email, :role)
+    base_params = params.require(:invitation).permit(:email)
+
+    # Safely handle role parameter with proper authorization checks
+    allowed_role = determine_allowed_role(params[:invitation][:role])
+    base_params.merge(role: allowed_role)
+  end
+
+  def determine_allowed_role(requested_role)
+    # Default to member role
+    return "member" if requested_role.blank?
+
+    # Only allow valid enum values
+    return "member" unless Invitation.roles.keys.include?(requested_role)
+
+    # Security: Only team admins can assign admin roles
+    return "member" if requested_role == "admin" && !current_user.team_admin?
+
+    requested_role
   end
 end
