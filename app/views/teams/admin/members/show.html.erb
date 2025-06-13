@@ -1,0 +1,140 @@
+<% content_for :page_title, "Team Member Details" %>
+
+<div class="bg-white shadow overflow-hidden sm:rounded-lg">
+  <div class="px-4 py-5 sm:px-6">
+    <div class="flex items-center justify-between">
+      <div>
+        <h3 class="text-lg leading-6 font-medium text-gray-900">
+          Member Information
+        </h3>
+        <p class="mt-1 max-w-2xl text-sm text-gray-500">
+          Personal details and team membership information.
+        </p>
+      </div>
+      <div class="flex space-x-3">
+        <%= link_to "Edit Role", "#", class: "inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50" %>
+        <%= link_to "Back to Members", team_admin_members_path(team_slug: @team.slug), class: "inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700" %>
+      </div>
+    </div>
+  </div>
+  
+  <div class="border-t border-gray-200">
+    <dl>
+      <!-- Personal Information -->
+      <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+        <dt class="text-sm font-medium text-gray-500">Full name</dt>
+        <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+          <%= @member.full_name.presence || "Not provided" %>
+        </dd>
+      </div>
+      
+      <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+        <dt class="text-sm font-medium text-gray-500">First name</dt>
+        <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+          <%= @member.first_name.presence || "Not provided" %>
+        </dd>
+      </div>
+      
+      <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+        <dt class="text-sm font-medium text-gray-500">Last name</dt>
+        <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+          <%= @member.last_name.presence || "Not provided" %>
+        </dd>
+      </div>
+      
+      <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+        <dt class="text-sm font-medium text-gray-500">Email address</dt>
+        <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+          <%= @member.email %>
+        </dd>
+      </div>
+      
+      <!-- Team Information -->
+      <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+        <dt class="text-sm font-medium text-gray-500">Team role</dt>
+        <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+          <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
+            <%= @member.team_role == 'admin' ? 'bg-purple-100 text-purple-800' : 'bg-blue-100 text-blue-800' %>">
+            <%= @member.team_role.capitalize %>
+          </span>
+        </dd>
+      </div>
+      
+      <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+        <dt class="text-sm font-medium text-gray-500">Account status</dt>
+        <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+          <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
+            <%= @member.status == 'active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' %>">
+            <%= @member.status.capitalize %>
+          </span>
+        </dd>
+      </div>
+      
+      <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+        <dt class="text-sm font-medium text-gray-500">Joined team</dt>
+        <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+          <%= @member.created_at.strftime("%B %d, %Y") %>
+        </dd>
+      </div>
+      
+      <!-- Account Activity -->
+      <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+        <dt class="text-sm font-medium text-gray-500">Last sign in</dt>
+        <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+          <%= @member.last_sign_in_at&.strftime("%B %d, %Y at %I:%M %p") || "Never" %>
+        </dd>
+      </div>
+      
+      <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+        <dt class="text-sm font-medium text-gray-500">Sign in count</dt>
+        <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+          <%= @member.sign_in_count %> times
+        </dd>
+      </div>
+      
+      <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+        <dt class="text-sm font-medium text-gray-500">Last activity</dt>
+        <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+          <%= @member.last_activity_at&.strftime("%B %d, %Y at %I:%M %p") || "No recent activity" %>
+        </dd>
+      </div>
+      
+      <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+        <dt class="text-sm font-medium text-gray-500">Email verified</dt>
+        <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+          <% if @member.confirmed_at %>
+            <span class="text-green-600">✓ Verified on <%= @member.confirmed_at.strftime("%B %d, %Y") %></span>
+          <% else %>
+            <span class="text-red-600">✗ Not verified</span>
+          <% end %>
+        </dd>
+      </div>
+    </dl>
+  </div>
+</div>
+
+<!-- Actions -->
+<div class="mt-6 flex justify-end space-x-3">
+  <% if @member != current_user %>
+    <!-- Change Role Form -->
+    <% if @member.team_role != 'admin' %>
+      <%= form_with(url: change_role_team_admin_member_path(team_slug: @team.slug, id: @member.id), method: :patch, local: true, class: "inline") do |form| %>
+        <%= hidden_field_tag :role, 'admin' %>
+        <%= form.submit "Promote to Admin", class: "inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-purple-600 hover:bg-purple-700" %>
+      <% end %>
+    <% else %>
+      <%= form_with(url: change_role_team_admin_member_path(team_slug: @team.slug, id: @member.id), method: :patch, local: true, class: "inline") do |form| %>
+        <%= hidden_field_tag :role, 'member' %>
+        <%= form.submit "Demote to Member", class: "inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50" %>
+      <% end %>
+    <% end %>
+    
+    <!-- Remove Member -->
+    <%= link_to "Remove from Team", team_admin_member_path(team_slug: @team.slug, id: @member.id), 
+        method: :delete,
+        data: { confirm: "Are you sure you want to remove #{@member.email} from the team? This action cannot be undone." },
+        class: "inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700" %>
+  <% else %>
+    <p class="text-sm text-gray-500 italic">You cannot modify your own membership</p>
+  <% end %>
+</div>

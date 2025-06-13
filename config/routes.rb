@@ -1,6 +1,19 @@
 Rails.application.routes.draw do
   devise_for :users
 
+  # Devise showcase (remove in production)
+  get "devise_showcase", to: "devise_showcase#index" if Rails.env.development?
+
+  # Auth debug (remove in production)
+  get "auth_debug", to: "auth_debug#index" if Rails.env.development?
+
+  # Auth test (remove in production)
+  if Rails.env.development?
+    get "auth_test/test_login", to: "auth_test#test_login"
+    post "auth_test/test_login", to: "auth_test#test_login"
+    delete "auth_test/test_logout", to: "auth_test#test_logout"
+  end
+
   # Public Routes
   root "home#index"
   get "/pricing", to: "pages#pricing"
@@ -74,32 +87,28 @@ Rails.application.routes.draw do
       resources :features # Team-specific features
     end
 
-    # Team admin routes
+    # Team admin routes (for team admins only)
     scope "/admin" do
-      root "teams/admin/dashboard#index", as: :team_admin_root
+      get "/", to: "teams/admin/dashboard#index", as: :team_admin_root
 
-      namespace :teams, path: "" do
-        namespace :admin do
-          resources :members do
-            member do
-              patch :change_role
-              delete :destroy # Complete account deletion
-            end
-          end
-
-          resources :invitations do
-            member do
-              post :resend
-              delete :revoke
-            end
-          end
-
-          resources :billing, only: [ :index, :show ]
-          resources :subscription, only: [ :show, :edit, :update, :destroy ]
-          resources :settings, only: [ :index, :update ]
-          resources :analytics, only: [ :index ]
+      resources :members, controller: "teams/admin/members", as: :team_admin_members do
+        member do
+          patch :change_role
+          delete :destroy
         end
       end
+
+      resources :invitations, controller: "teams/admin/invitations", as: :team_admin_invitations do
+        member do
+          post :resend
+          delete :revoke
+        end
+      end
+
+      resources :billing, controller: "teams/admin/billing", as: :team_admin_billing, only: [ :index, :show ]
+      resources :subscription, controller: "teams/admin/subscription", as: :team_admin_subscription, only: [ :show, :edit, :update, :destroy ]
+      resources :settings, controller: "teams/admin/settings", as: :team_admin_settings, only: [ :index, :update ]
+      resources :analytics, controller: "teams/admin/analytics", as: :team_admin_analytics, only: [ :index ]
     end
   end
 

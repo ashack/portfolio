@@ -4,7 +4,7 @@ class UserPolicy < ApplicationPolicy
   end
 
   def show?
-    admin? || @user == @record
+    admin? || @user == @record || (team_admin? && same_team?)
   end
 
   def set_status?
@@ -13,6 +13,10 @@ class UserPolicy < ApplicationPolicy
 
   def impersonate?
     admin? && @user != @record
+  end
+
+  def activity?
+    admin?
   end
 
   def destroy?

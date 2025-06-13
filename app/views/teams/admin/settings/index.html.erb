@@ -1,0 +1,207 @@
+<% content_for :page_title, "Team Settings" %>
+
+<div class="space-y-6">
+  <!-- Team Settings Form -->
+  <div class="bg-white shadow rounded-lg">
+    <div class="px-4 py-5 sm:p-6">
+      <h3 class="text-lg font-medium text-gray-900 mb-4">Team Settings</h3>
+      
+      <%= form_with(model: @team, url: team_admin_settings_path, method: :patch, local: true, class: "space-y-8") do |form| %>
+        <% if @team.errors.any? %>
+          <div class="rounded-md bg-red-50 p-4">
+            <div class="flex">
+              <svg class="h-5 w-5 text-red-400" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
+              </svg>
+              <div class="ml-3">
+                <h3 class="text-sm font-medium text-red-800">Please fix the following errors:</h3>
+                <ul class="list-disc mt-2 ml-5 text-sm text-red-700">
+                  <% @team.errors.full_messages.each do |message| %>
+                    <li><%= message %></li>
+                  <% end %>
+                </ul>
+              </div>
+            </div>
+          </div>
+        <% end %>
+
+        <!-- Basic Team Information -->
+        <div>
+          <h3 class="text-lg font-medium text-gray-900 mb-4">Basic Information</h3>
+          <div class="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
+            <div class="sm:col-span-4">
+              <%= form.label :name, class: "block text-sm font-medium text-gray-700" %>
+              <div class="mt-1">
+                <%= form.text_field :name, 
+                    class: "shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md",
+                    placeholder: "Enter team name" %>
+              </div>
+              <p class="mt-1 text-xs text-gray-500">This is your team's display name visible to all members.</p>
+            </div>
+
+            <div class="sm:col-span-4">
+              <%= form.label :custom_domain, class: "block text-sm font-medium text-gray-700" %>
+              <div class="mt-1">
+                <%= form.url_field :custom_domain, 
+                    class: "shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md",
+                    placeholder: "https://team.example.com" %>
+              </div>
+              <p class="mt-1 text-xs text-gray-500">Optional custom domain for your team (Pro plan and above).</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Team Status -->
+        <div class="border-t border-gray-200 pt-8">
+          <h3 class="text-lg font-medium text-gray-900 mb-4">Team Status</h3>
+          <div class="space-y-4">
+            <div class="flex items-center justify-between py-4 border border-gray-200 rounded-lg px-4">
+              <div>
+                <h4 class="text-sm font-medium text-gray-900">Current Plan</h4>
+                <p class="text-sm text-gray-500">
+                  <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium 
+                    <%= @team.plan == 'starter' ? 'bg-gray-100 text-gray-800' : 
+                        @team.plan == 'pro' ? 'bg-blue-100 text-blue-800' : 'bg-purple-100 text-purple-800' %>">
+                    <%= @team.plan.capitalize %>
+                  </span>
+                  • <%= @team.member_count %>/<%= @team.max_members %> members
+                </p>
+              </div>
+              <div>
+                <%= link_to team_admin_billing_index_path, class: "inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50" do %>
+                  Manage Billing
+                <% end %>
+              </div>
+            </div>
+
+            <div class="flex items-center justify-between py-4 border border-gray-200 rounded-lg px-4">
+              <div>
+                <h4 class="text-sm font-medium text-gray-900">Team Status</h4>
+                <p class="text-sm text-gray-500">
+                  <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium 
+                    <%= @team.status == 'active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' %>">
+                    <%= @team.status.capitalize %>
+                  </span>
+                </p>
+              </div>
+            </div>
+
+            <div class="flex items-center justify-between py-4 border border-gray-200 rounded-lg px-4">
+              <div>
+                <h4 class="text-sm font-medium text-gray-900">Team Slug</h4>
+                <p class="text-sm text-gray-500">
+                  <code class="bg-gray-100 px-2 py-1 rounded text-xs"><%= @team.slug %></code>
+                  • Used in team URLs
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Team Information -->
+        <div class="border-t border-gray-200 pt-8">
+          <h3 class="text-lg font-medium text-gray-900 mb-4">Team Information</h3>
+          <dl class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Created By</dt>
+              <dd class="mt-1 text-sm text-gray-900">
+                <%= @team.created_by&.email || "Unknown" %>
+              </dd>
+            </div>
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Created On</dt>
+              <dd class="mt-1 text-sm text-gray-900">
+                <%= @team.created_at.strftime("%B %d, %Y") %>
+              </dd>
+            </div>
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Total Members</dt>
+              <dd class="mt-1 text-sm text-gray-900">
+                <%= @team.member_count %> active members
+              </dd>
+            </div>
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Last Updated</dt>
+              <dd class="mt-1 text-sm text-gray-900">
+                <%= @team.updated_at.strftime("%B %d, %Y at %I:%M %p") %>
+              </dd>
+            </div>
+          </dl>
+        </div>
+
+        <!-- Form Actions -->
+        <div class="border-t border-gray-200 pt-6">
+          <div class="flex justify-end space-x-3">
+            <%= link_to team_admin_root_path, class: "bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" do %>
+              Cancel
+            <% end %>
+            <%= form.submit "Save Settings", class: "inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <!-- Team Statistics -->
+  <div class="bg-white shadow rounded-lg">
+    <div class="px-4 py-5 sm:p-6">
+      <h3 class="text-lg font-medium text-gray-900 mb-4">Team Activity</h3>
+      <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        <div class="text-center">
+          <div class="text-2xl font-bold text-gray-900"><%= @team.users.where(team_role: 'admin').count %></div>
+          <div class="text-sm text-gray-500">Team Admins</div>
+        </div>
+        <div class="text-center">
+          <div class="text-2xl font-bold text-gray-900"><%= @team.users.where(team_role: 'member').count %></div>
+          <div class="text-sm text-gray-500">Team Members</div>
+        </div>
+        <div class="text-center">
+          <div class="text-2xl font-bold text-gray-900">
+            <%= @team.invitations.pending.count %>
+          </div>
+          <div class="text-sm text-gray-500">Pending Invitations</div>
+        </div>
+        <div class="text-center">
+          <div class="text-2xl font-bold text-gray-900">
+            <%= @team.users.where('last_activity_at > ?', 7.days.ago).count %>
+          </div>
+          <div class="text-sm text-gray-500">Active This Week</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Danger Zone (for super admins or team owners) -->
+  <% if current_user.super_admin? %>
+    <div class="bg-white shadow rounded-lg">
+      <div class="px-4 py-5 sm:p-6">
+        <h3 class="text-lg font-medium text-red-600 mb-4">Danger Zone</h3>
+        <div class="border border-red-200 rounded-lg p-4 bg-red-50">
+          <div class="flex items-start">
+            <svg class="h-5 w-5 text-red-400 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+            </svg>
+            <div class="ml-3">
+              <h4 class="text-sm font-medium text-red-800">Suspend Team</h4>
+              <p class="text-sm text-red-700 mt-1">
+                Suspending a team will prevent all members from accessing team features. This action can be reversed.
+              </p>
+              <div class="mt-4">
+                <% if @team.status == 'active' %>
+                  <%= link_to "#", data: { confirm: "Are you sure you want to suspend this team? All members will lose access to team features." }, 
+                      class: "inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-red-600 hover:bg-red-700" do %>
+                    Suspend Team
+                  <% end %>
+                <% else %>
+                  <span class="inline-flex items-center px-3 py-2 text-sm leading-4 font-medium text-red-600">
+                    Team is currently suspended
+                  </span>
+                <% end %>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  <% end %>
+</div>

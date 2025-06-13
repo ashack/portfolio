@@ -1,0 +1,242 @@
+<% content_for :title, "Team Details" %>
+
+<div class="space-y-6">
+  <!-- Header -->
+  <div class="md:flex md:items-center md:justify-between">
+    <div class="min-w-0 flex-1">
+      <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
+        <%= @team.name %>
+      </h2>
+      <p class="mt-1 text-sm text-gray-500">
+        Team details and member overview
+      </p>
+    </div>
+    <div class="mt-4 flex md:ml-4 md:mt-0">
+      <%= link_to "Back to Teams", admin_site_teams_path, 
+          class: "inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50" %>
+    </div>
+  </div>
+
+  <!-- Team Info Cards -->
+  <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+    <!-- Basic Info -->
+    <div class="bg-white overflow-hidden shadow rounded-lg">
+      <div class="px-4 py-5 sm:p-6">
+        <h3 class="text-lg leading-6 font-medium text-gray-900">Team Information</h3>
+        <dl class="mt-5 space-y-3">
+          <div>
+            <dt class="text-sm font-medium text-gray-500">Team Name</dt>
+            <dd class="text-sm text-gray-900"><%= @team.name %></dd>
+          </div>
+          <div>
+            <dt class="text-sm font-medium text-gray-500">Team Slug</dt>
+            <dd class="text-sm text-gray-900"><%= @team.slug %></dd>
+          </div>
+          <div>
+            <dt class="text-sm font-medium text-gray-500">Plan</dt>
+            <dd>
+              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
+                <%= @team.plan == 'starter' ? 'bg-gray-100 text-gray-800' : 
+                    @team.plan == 'pro' ? 'bg-blue-100 text-blue-800' : 
+                    'bg-purple-100 text-purple-800' %>">
+                <%= @team.plan.humanize %>
+              </span>
+            </dd>
+          </div>
+          <div>
+            <dt class="text-sm font-medium text-gray-500">Status</dt>
+            <dd>
+              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
+                <%= @team.status == 'active' ? 'bg-green-100 text-green-800' : 
+                    @team.status == 'suspended' ? 'bg-yellow-100 text-yellow-800' : 
+                    'bg-red-100 text-red-800' %>">
+                <%= @team.status.humanize %>
+              </span>
+            </dd>
+          </div>
+        </dl>
+      </div>
+    </div>
+
+    <!-- Team Admin -->
+    <div class="bg-white overflow-hidden shadow rounded-lg">
+      <div class="px-4 py-5 sm:p-6">
+        <h3 class="text-lg leading-6 font-medium text-gray-900">Team Administration</h3>
+        <dl class="mt-5 space-y-3">
+          <div>
+            <dt class="text-sm font-medium text-gray-500">Team Admin</dt>
+            <dd class="text-sm text-gray-900">
+              <%= @team.admin.full_name.present? ? @team.admin.full_name : @team.admin.email %>
+            </dd>
+          </div>
+          <div>
+            <dt class="text-sm font-medium text-gray-500">Admin Email</dt>
+            <dd class="text-sm text-gray-900"><%= @team.admin.email %></dd>
+          </div>
+          <div>
+            <dt class="text-sm font-medium text-gray-500">Created By</dt>
+            <dd class="text-sm text-gray-900">
+              <%= @team.created_by.full_name.present? ? @team.created_by.full_name : @team.created_by.email %>
+            </dd>
+          </div>
+          <div>
+            <dt class="text-sm font-medium text-gray-500">Created Date</dt>
+            <dd class="text-sm text-gray-900">
+              <%= @team.created_at.strftime("%B %d, %Y") %>
+            </dd>
+          </div>
+        </dl>
+      </div>
+    </div>
+
+    <!-- Team Stats -->
+    <div class="bg-white overflow-hidden shadow rounded-lg">
+      <div class="px-4 py-5 sm:p-6">
+        <h3 class="text-lg leading-6 font-medium text-gray-900">Team Statistics</h3>
+        <dl class="mt-5 space-y-3">
+          <div>
+            <dt class="text-sm font-medium text-gray-500">Total Members</dt>
+            <dd class="text-sm text-gray-900"><%= @team.member_count %></dd>
+          </div>
+          <div>
+            <dt class="text-sm font-medium text-gray-500">Max Members</dt>
+            <dd class="text-sm text-gray-900"><%= @team.max_members %></dd>
+          </div>
+          <div>
+            <dt class="text-sm font-medium text-gray-500">Active Invitations</dt>
+            <dd class="text-sm text-gray-900">
+              <%= @team.invitations.pending.active.count %>
+            </dd>
+          </div>
+          <div>
+            <dt class="text-sm font-medium text-gray-500">Can Add Members</dt>
+            <dd class="text-sm text-gray-900">
+              <%= @team.can_add_members? ? "Yes" : "No" %>
+            </dd>
+          </div>
+        </dl>
+      </div>
+    </div>
+  </div>
+
+  <!-- Team Members -->
+  <div class="bg-white shadow overflow-hidden sm:rounded-md">
+    <div class="px-4 py-5 sm:px-6">
+      <h3 class="text-lg leading-6 font-medium text-gray-900">Team Members</h3>
+      <p class="mt-1 max-w-2xl text-sm text-gray-500">
+        All users who are part of this team
+      </p>
+    </div>
+    
+    <% if @team.users.any? %>
+      <ul role="list" class="divide-y divide-gray-200">
+        <% @team.users.order(:team_role, :created_at).each do |user| %>
+          <li>
+            <div class="px-4 py-4 flex items-center justify-between">
+              <div class="flex items-center">
+                <div class="flex-shrink-0 h-10 w-10">
+                  <div class="h-10 w-10 rounded-full bg-gray-300 flex items-center justify-center">
+                    <span class="text-sm font-medium text-gray-700">
+                      <%= user.first_name&.first || user.email.first.upcase %>
+                    </span>
+                  </div>
+                </div>
+                <div class="ml-4">
+                  <div class="flex items-center">
+                    <p class="text-sm font-medium text-gray-900">
+                      <%= user.full_name.present? ? user.full_name : user.email %>
+                    </p>
+                    <span class="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
+                      <%= user.team_role == 'admin' ? 'bg-purple-100 text-purple-800' : 'bg-gray-100 text-gray-800' %>">
+                      <%= user.team_role.humanize %>
+                    </span>
+                    <span class="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
+                      <%= user.status == 'active' ? 'bg-green-100 text-green-800' : 
+                          user.status == 'inactive' ? 'bg-yellow-100 text-yellow-800' : 
+                          'bg-red-100 text-red-800' %>">
+                      <%= user.status.humanize %>
+                    </span>
+                  </div>
+                  <p class="text-sm text-gray-500">
+                    <%= user.email %>
+                  </p>
+                  <p class="text-xs text-gray-400">
+                    Joined: <%= user.created_at.strftime("%b %d, %Y") %> •
+                    Last activity: 
+                    <%= user.last_activity_at ? time_ago_in_words(user.last_activity_at) + " ago" : "Never" %>
+                  </p>
+                </div>
+              </div>
+              <div class="flex items-center space-x-2">
+                <%= link_to "View User", admin_site_user_path(user), 
+                    class: "inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50" %>
+              </div>
+            </div>
+          </li>
+        <% end %>
+      </ul>
+    <% else %>
+      <div class="text-center py-12">
+        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z" />
+        </svg>
+        <h3 class="mt-2 text-sm font-medium text-gray-900">No team members</h3>
+        <p class="mt-1 text-sm text-gray-500">
+          This team doesn't have any members yet.
+        </p>
+      </div>
+    <% end %>
+  </div>
+
+  <!-- Pending Invitations -->
+  <% if @team.invitations.pending.active.any? %>
+    <div class="bg-white shadow overflow-hidden sm:rounded-md">
+      <div class="px-4 py-5 sm:px-6">
+        <h3 class="text-lg leading-6 font-medium text-gray-900">Pending Invitations</h3>
+        <p class="mt-1 max-w-2xl text-sm text-gray-500">
+          Invitations that have been sent but not yet accepted
+        </p>
+      </div>
+      
+      <ul role="list" class="divide-y divide-gray-200">
+        <% @team.invitations.pending.active.order(created_at: :desc).each do |invitation| %>
+          <li>
+            <div class="px-4 py-4 flex items-center justify-between">
+              <div class="flex items-center">
+                <div class="flex-shrink-0 h-10 w-10">
+                  <div class="h-10 w-10 rounded-full bg-yellow-200 flex items-center justify-center">
+                    <svg class="h-5 w-5 text-yellow-600" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
+                      <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
+                    </svg>
+                  </div>
+                </div>
+                <div class="ml-4">
+                  <div class="flex items-center">
+                    <p class="text-sm font-medium text-gray-900">
+                      <%= invitation.email %>
+                    </p>
+                    <span class="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                      Pending
+                    </span>
+                    <span class="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
+                      <%= invitation.role == 'admin' ? 'bg-purple-100 text-purple-800' : 'bg-gray-100 text-gray-800' %>">
+                      <%= invitation.role.humanize %>
+                    </span>
+                  </div>
+                  <p class="text-sm text-gray-500">
+                    Invited by: <%= invitation.invited_by.email %>
+                  </p>
+                  <p class="text-xs text-gray-400">
+                    Sent: <%= time_ago_in_words(invitation.created_at) %> ago •
+                    Expires: <%= time_ago_in_words(invitation.expires_at) %>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+</div>

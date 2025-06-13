@@ -4,6 +4,7 @@ class Teams::Admin::InvitationsController < Teams::Admin::BaseController
   def index
     @invitations = @team.invitations.includes(:invited_by).order(created_at: :desc)
     @pagy, @invitations = pagy(@invitations)
+    skip_policy_scope
   end
 
   def show
@@ -22,7 +23,7 @@ class Teams::Admin::InvitationsController < Teams::Admin::BaseController
 
     if @invitation.save
       InvitationMailer.team_invitation(@invitation).deliver_later
-      redirect_to teams_admin_invitations_path, notice: "Invitation was successfully sent."
+      redirect_to team_admin_invitations_path(team_slug: @team.slug), notice: "Invitation was successfully sent."
     else
       render :new
     end
@@ -31,11 +32,11 @@ class Teams::Admin::InvitationsController < Teams::Admin::BaseController
   def resend
     authorize @invitation
 
-    if @invitation.pending? && !@invitation.expired?
+    if !@invitation.accepted? && !@invitation.expired?
       InvitationMailer.team_invitation(@invitation).deliver_later
-      redirect_to teams_admin_invitations_path, notice: "Invitation was resent."
+      redirect_to team_admin_invitations_path(team_slug: @team.slug), notice: "Invitation was resent."
     else
-      redirect_to teams_admin_invitations_path, alert: "Cannot resend this invitation."
+      redirect_to team_admin_invitations_path(team_slug: @team.slug), alert: "Cannot resend this invitation."
     end
   end
 
@@ -43,9 +44,9 @@ class Teams::Admin::InvitationsController < Teams::Admin::BaseController
     authorize @invitation
 
     if @invitation.destroy
-      redirect_to teams_admin_invitations_path, notice: "Invitation was revoked."
+      redirect_to team_admin_invitations_path(team_slug: @team.slug), notice: "Invitation was revoked."
     else
-      redirect_to teams_admin_invitations_path, alert: "Failed to revoke invitation."
+      redirect_to team_admin_invitations_path(team_slug: @team.slug), alert: "Failed to revoke invitation."
     end
   end
 

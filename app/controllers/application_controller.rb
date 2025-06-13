@@ -6,7 +6,7 @@ class ApplicationController < ActionController::Base
   allow_browser versions: :modern
 
   before_action :authenticate_user!
-  before_action :check_user_status
+  before_action :check_user_status, unless: :devise_controller?
   before_action :track_user_activity
   after_action :verify_authorized, except: [ :index ], unless: :skip_pundit?
   after_action :verify_policy_scoped, only: [ :index ], unless: :skip_pundit?
@@ -35,6 +35,6 @@ class ApplicationController < ActionController::Base
   end
 
   def skip_pundit?
-    devise_controller? || params[:controller] =~ /(^(rails_)?admin)|(^pages$)/
+    devise_controller? || params[:controller] =~ /(^pages$)|(^home$)|(^redirect$)/
   end
 end

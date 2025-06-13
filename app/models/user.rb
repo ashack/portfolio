@@ -2,12 +2,13 @@ class User < ApplicationRecord
   include Pay::Billable # For individual user billing
 
   devise :database_authenticatable, :registerable,
-         :recoverable, :rememberable, :validatable, :confirmable, :trackable
+         :recoverable, :rememberable, :validatable, :confirmable, :trackable, :lockable
 
   belongs_to :team, optional: true
   has_many :created_teams, class_name: "Team", foreign_key: "created_by_id"
   has_many :administered_teams, class_name: "Team", foreign_key: "admin_id"
   has_many :sent_invitations, class_name: "Invitation", foreign_key: "invited_by_id"
+  has_many :ahoy_visits, class_name: "Ahoy::Visit"
 
   enum :system_role, { user: 0, site_admin: 1, super_admin: 2 }
   enum :user_type, { direct: 0, invited: 1 }
@@ -47,10 +48,24 @@ class User < ApplicationRecord
 
   # Override Devise method to check status
   def active_for_authentication?
-    super && can_sign_in?
+    # First check Devise's built-in checks (including lockable)
+    return false unless super
+    # Then check our custom status
+    can_sign_in?
   end
 
   def inactive_message
-    can_sign_in? ? super : :account_inactive
+    # Check Devise's lockable mechanism first
+    if access_locked?
+      :locked
+    # Check our custom locked status
+    elsif locked?
+      :locked
+    # Check our custom inactive status
+    elsif inactive?
+      :account_inactive
+    else
+      super
+    end
   end
 end
