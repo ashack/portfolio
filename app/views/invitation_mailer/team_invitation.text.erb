@@ -1,0 +1,23 @@
+You're Invited to Join <%= @team.name %>!
+
+Hi there!
+
+<%= @invited_by.full_name.presence || @invited_by.email %> has invited you to join their team on SaaS App.
+
+Team Details:
+- Team: <%= @team.name %>
+- Your Role: <%= @invitation.role.capitalize %>
+- Plan: <%= @team.plan.capitalize %>
+
+To accept this invitation and create your account, visit:
+<%= @accept_url %>
+
+Important: This invitation will expire on <%= @invitation.expires_at.strftime("%B %d, %Y at %I:%M %p") %>.
+
+If you have any questions, feel free to reply to this email or contact our support team.
+
+Welcome to SaaS App!
+
+---
+This invitation was sent by <%= @invited_by.email %> from <%= @team.name %>.
+If you weren't expecting this invitation, you can safely ignore this email.

@@ -1,0 +1,56 @@
+<div class="min-h-screen bg-gray-100 py-6 px-4">
+  <div class="max-w-4xl mx-auto">
+    <h1 class="text-2xl font-bold text-gray-900 mb-6">Authentication Debug Info</h1>
+    
+    <div class="bg-white shadow rounded-lg p-6 mb-6">
+      <h2 class="text-lg font-semibold mb-4">Session Information</h2>
+      <dl class="grid grid-cols-1 gap-2">
+        <% @debug_info[:session_info].each do |key, value| %>
+          <div class="flex">
+            <dt class="font-medium text-gray-700 w-48"><%= key.to_s.humanize %>:</dt>
+            <dd class="text-gray-900"><%= value.inspect %></dd>
+          </div>
+        <% end %>
+      </dl>
+    </div>
+
+    <div class="bg-white shadow rounded-lg p-6 mb-6">
+      <h2 class="text-lg font-semibold mb-4">Devise Configuration</h2>
+      <dl class="grid grid-cols-1 gap-2">
+        <% @debug_info[:devise_info].each do |key, value| %>
+          <div class="flex">
+            <dt class="font-medium text-gray-700 w-48"><%= key.to_s.humanize %>:</dt>
+            <dd class="text-gray-900"><%= value.inspect %></dd>
+          </div>
+        <% end %>
+      </dl>
+    </div>
+
+    <div class="bg-white shadow rounded-lg p-6 mb-6">
+      <h2 class="text-lg font-semibold mb-4">User Info</h2>
+      <p class="mb-2">Total users: <%= @debug_info[:user_count] %></p>
+      <% if @debug_info[:first_user] %>
+        <p class="font-medium mb-2">First user:</p>
+        <dl class="grid grid-cols-1 gap-2 ml-4">
+          <% @debug_info[:first_user].each do |key, value| %>
+            <div class="flex">
+              <dt class="font-medium text-gray-700 w-32"><%= key %>:</dt>
+              <dd class="text-gray-900"><%= value %></dd>
+            </div>
+          <% end %>
+        </dl>
+      <% end %>
+    </div>
+
+    <div class="bg-white shadow rounded-lg p-6">
+      <h2 class="text-lg font-semibold mb-4">Test Authentication</h2>
+      <div class="space-x-4">
+        <%= link_to "Sign In", new_user_session_path, class: "inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700" %>
+        <%= link_to "Sign Up", new_user_registration_path, class: "inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50" %>
+        <% if user_signed_in? %>
+          <%= button_to "Sign Out", destroy_user_session_path, method: :delete, class: "inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-red-600 hover:bg-red-700" %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>

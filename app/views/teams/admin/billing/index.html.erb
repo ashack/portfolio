@@ -1,0 +1,263 @@
+<% content_for :page_title, "Team Billing & Subscription" %>
+
+<div class="space-y-6">
+  <!-- Team Subscription Status -->
+  <div class="bg-white shadow rounded-lg">
+    <div class="px-4 py-5 sm:p-6">
+      <h3 class="text-lg font-medium text-gray-900 mb-4">Current Subscription</h3>
+      <% if @subscription %>
+        <div class="border border-green-200 rounded-md p-4 bg-green-50">
+          <div class="flex">
+            <svg class="h-5 w-5 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+            </svg>
+            <div class="ml-3">
+              <h4 class="text-sm font-medium text-green-800">Active Subscription</h4>
+              <p class="text-sm text-green-700">Team is subscribed to <%= @team.plan.capitalize %> plan.</p>
+            </div>
+          </div>
+        </div>
+      <% else %>
+        <div class="border border-yellow-200 rounded-md p-4 bg-yellow-50">
+          <div class="flex">
+            <svg class="h-5 w-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+            </svg>
+            <div class="ml-3">
+              <h4 class="text-sm font-medium text-yellow-800"><%= @team.plan.capitalize %> Plan</h4>
+              <p class="text-sm text-yellow-700">
+                <% if @team.plan == 'starter' %>
+                  Your team is on the starter plan. Upgrade to access more features and increase member limits.
+                <% else %>
+                  Manage your team's subscription and billing settings.
+                <% end %>
+              </p>
+            </div>
+          </div>
+          <% if @team.plan == 'starter' %>
+            <div class="mt-4">
+              <%= link_to pricing_path, class: "inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700" do %>
+                <svg class="-ml-1 mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                </svg>
+                View Pricing Plans
+              <% end %>
+            </div>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
+    <!-- Payment Methods -->
+    <div class="bg-white shadow rounded-lg">
+      <div class="px-4 py-5 sm:p-6">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-lg font-medium text-gray-900">Payment Methods</h3>
+          <% if @payment_methods.any? %>
+            <button type="button" class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-indigo-700 bg-indigo-100 hover:bg-indigo-200">
+              <svg class="-ml-0.5 mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+              </svg>
+              Add Payment Method
+            </button>
+          <% end %>
+        </div>
+        
+        <% if @payment_methods.any? %>
+          <div class="space-y-3">
+            <% @payment_methods.each do |payment_method| %>
+              <div class="border border-gray-200 rounded-lg p-4">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center">
+                    <svg class="h-6 w-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
+                    </svg>
+                    <div class="ml-3">
+                      <p class="text-sm font-medium text-gray-900">•••• •••• •••• <%= payment_method.last_four || "0000" %></p>
+                      <p class="text-xs text-gray-500">Expires <%= payment_method.exp_month || "00" %>/<%= payment_method.exp_year || "00" %></p>
+                    </div>
+                  </div>
+                  <div class="flex items-center space-x-2">
+                    <% if payment_method.default? %>
+                      <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">Default</span>
+                    <% end %>
+                    <span class="text-indigo-600 text-sm">Manage</span>
+                  </div>
+                </div>
+              </div>
+            <% end %>
+          </div>
+        <% else %>
+          <div class="text-center py-6">
+            <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
+            </svg>
+            <h4 class="mt-2 text-sm font-medium text-gray-900">No payment methods</h4>
+            <p class="mt-1 text-sm text-gray-500">Add a payment method to enable team subscriptions.</p>
+            <div class="mt-6">
+              <button type="button" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700">
+                <svg class="-ml-1 mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                </svg>
+                Add Payment Method
+              </button>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+
+    <!-- Billing History -->
+    <div class="bg-white shadow rounded-lg">
+      <div class="px-4 py-5 sm:p-6">
+        <h3 class="text-lg font-medium text-gray-900 mb-4">Billing History</h3>
+        
+        <% if @charges.any? %>
+          <div class="space-y-3">
+            <% @charges.limit(5).each do |charge| %>
+              <div class="flex items-center justify-between py-3 border-b border-gray-200 last:border-b-0">
+                <div>
+                  <p class="text-sm font-medium text-gray-900">$<%= sprintf("%.2f", (charge.amount || 0) / 100.0) %></p>
+                  <p class="text-xs text-gray-500"><%= charge.created_at.strftime("%B %d, %Y") if charge.created_at %></p>
+                </div>
+                <div class="text-right">
+                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
+                    <%= (charge.status || 'failed') == 'succeeded' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' %>">
+                    <%= (charge.status || 'failed').capitalize %>
+                  </span>
+                  <div class="mt-1">
+                    <%= link_to "View", team_admin_billing_path(charge), class: "text-indigo-600 hover:text-indigo-900 text-xs" %>
+                  </div>
+                </div>
+              </div>
+            <% end %>
+          </div>
+          
+          <% if @charges.count > 5 %>
+            <div class="mt-4 text-center">
+              <button type="button" class="text-indigo-600 hover:text-indigo-900 text-sm font-medium">
+                View all transactions
+              </button>
+            </div>
+          <% end %>
+        <% else %>
+          <div class="text-center py-6">
+            <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+            </svg>
+            <h4 class="mt-2 text-sm font-medium text-gray-900">No billing history</h4>
+            <p class="mt-1 text-sm text-gray-500">Team billing history will appear here once payments are made.</p>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <!-- Team Plan Details -->
+  <div class="bg-white shadow rounded-lg">
+    <div class="px-4 py-5 sm:p-6">
+      <h3 class="text-lg font-medium text-gray-900 mb-4">Team Plan Details</h3>
+      <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
+        <div class="text-center p-6 border <%= @team.plan == 'starter' ? 'border-indigo-200 bg-indigo-50' : 'border-gray-200' %> rounded-lg">
+          <div class="text-3xl font-bold <%= @team.plan == 'starter' ? 'text-indigo-600' : 'text-gray-900' %>">Free</div>
+          <div class="text-sm text-gray-500 mt-1">
+            <%= @team.plan == 'starter' ? 'Current Plan' : 'Starter Plan' %>
+          </div>
+          <div class="mt-4">
+            <ul class="text-sm text-gray-600 space-y-2">
+              <li>• Up to 5 team members</li>
+              <li>• Basic features</li>
+              <li>• Email support</li>
+            </ul>
+          </div>
+          <% if @team.plan == 'starter' %>
+            <div class="mt-6">
+              <span class="w-full inline-flex justify-center py-2 px-4 text-sm font-medium text-indigo-600">
+                Current Plan
+              </span>
+            </div>
+          <% end %>
+        </div>
+        
+        <div class="text-center p-6 border <%= @team.plan == 'pro' ? 'border-indigo-200 bg-indigo-50' : 'border-gray-200' %> rounded-lg">
+          <div class="text-3xl font-bold <%= @team.plan == 'pro' ? 'text-indigo-600' : 'text-gray-900' %>">$49</div>
+          <div class="text-sm text-gray-500 mt-1">Per month</div>
+          <div class="mt-4">
+            <ul class="text-sm text-gray-600 space-y-2">
+              <li>• Up to 25 team members</li>
+              <li>• Advanced features</li>
+              <li>• Priority support</li>
+              <li>• Analytics dashboard</li>
+            </ul>
+          </div>
+          <div class="mt-6">
+            <% if @team.plan == 'pro' %>
+              <span class="w-full inline-flex justify-center py-2 px-4 text-sm font-medium text-indigo-600">
+                Current Plan
+              </span>
+            <% else %>
+              <button type="button" class="w-full inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700">
+                Upgrade to Pro
+              </button>
+            <% end %>
+          </div>
+        </div>
+        
+        <div class="text-center p-6 border <%= @team.plan == 'enterprise' ? 'border-indigo-200 bg-indigo-50' : 'border-gray-200' %> rounded-lg">
+          <div class="text-3xl font-bold <%= @team.plan == 'enterprise' ? 'text-indigo-600' : 'text-gray-900' %>">$99</div>
+          <div class="text-sm text-gray-500 mt-1">Per month</div>
+          <div class="mt-4">
+            <ul class="text-sm text-gray-600 space-y-2">
+              <li>• Unlimited members</li>
+              <li>• Premium features</li>
+              <li>• Phone support</li>
+              <li>• Custom integrations</li>
+            </ul>
+          </div>
+          <div class="mt-6">
+            <% if @team.plan == 'enterprise' %>
+              <span class="w-full inline-flex justify-center py-2 px-4 text-sm font-medium text-indigo-600">
+                Current Plan
+              </span>
+            <% else %>
+              <button type="button" class="w-full inline-flex justify-center py-2 px-4 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                Upgrade to Enterprise
+              </button>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Team Usage Stats -->
+  <div class="bg-white shadow rounded-lg">
+    <div class="px-4 py-5 sm:p-6">
+      <h3 class="text-lg font-medium text-gray-900 mb-4">Usage & Limits</h3>
+      <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        <div class="text-center">
+          <div class="text-2xl font-bold text-gray-900"><%= @team.member_count %></div>
+          <div class="text-sm text-gray-500">Team Members</div>
+          <div class="text-xs text-gray-400 mt-1">of <%= @team.max_members %> allowed</div>
+        </div>
+        <div class="text-center">
+          <div class="text-2xl font-bold text-gray-900"><%= @team.plan.capitalize %></div>
+          <div class="text-sm text-gray-500">Current Plan</div>
+          <div class="text-xs text-gray-400 mt-1">Active subscription</div>
+        </div>
+        <div class="text-center">
+          <div class="text-2xl font-bold text-gray-900"><%= @team.status.capitalize %></div>
+          <div class="text-sm text-gray-500">Team Status</div>
+          <div class="text-xs text-gray-400 mt-1">Account standing</div>
+        </div>
+        <div class="text-center">
+          <div class="text-2xl font-bold text-gray-900"><%= @team.created_at.strftime("%b %Y") %></div>
+          <div class="text-sm text-gray-500">Member Since</div>
+          <div class="text-xs text-gray-400 mt-1">Team created</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,299 @@
+<% content_for :title, "Support Case" %>
+
+<div class="space-y-6">
+  <!-- Header -->
+  <div class="md:flex md:items-center md:justify-between">
+    <div class="min-w-0 flex-1">
+      <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
+        Support Case: <%= @support_type.humanize %>
+      </h2>
+      <p class="mt-1 text-sm text-gray-500">
+        <% if @support_type == 'user' %>
+          Support case for user: <%= @support_subject.full_name.present? ? @support_subject.full_name : @support_subject.email %>
+        <% else %>
+          Support case for team: <%= @support_subject.name %>
+        <% end %>
+      </p>
+    </div>
+    <div class="mt-4 flex md:ml-4 md:mt-0">
+      <%= link_to "Back to Support", admin_site_support_index_path, 
+          class: "inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50" %>
+    </div>
+  </div>
+
+  <% if @support_type == 'user' %>
+    <!-- User Support Case -->
+    <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
+      <!-- User Details -->
+      <div class="bg-white overflow-hidden shadow rounded-lg">
+        <div class="px-4 py-5 sm:p-6">
+          <h3 class="text-lg leading-6 font-medium text-gray-900">User Details</h3>
+          <dl class="mt-5 space-y-3">
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Email</dt>
+              <dd class="text-sm text-gray-900"><%= @support_subject.email %></dd>
+            </div>
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Name</dt>
+              <dd class="text-sm text-gray-900">
+                <%= @support_subject.full_name.present? ? @support_subject.full_name : "Not provided" %>
+              </dd>
+            </div>
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Status</dt>
+              <dd>
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
+                  <%= @support_subject.status == 'active' ? 'bg-green-100 text-green-800' : 
+                      @support_subject.status == 'inactive' ? 'bg-yellow-100 text-yellow-800' : 
+                      'bg-red-100 text-red-800' %>">
+                  <%= @support_subject.status.humanize %>
+                </span>
+              </dd>
+            </div>
+            <div>
+              <dt class="text-sm font-medium text-gray-500">User Type</dt>
+              <dd>
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
+                  <%= @support_subject.user_type == 'direct' ? 'bg-blue-100 text-blue-800' : 'bg-purple-100 text-purple-800' %>">
+                  <%= @support_subject.user_type.humanize %>
+                </span>
+              </dd>
+            </div>
+            <% if @support_subject.team.present? %>
+              <div>
+                <dt class="text-sm font-medium text-gray-500">Team</dt>
+                <dd class="text-sm text-gray-900"><%= @support_subject.team.name %></dd>
+              </div>
+            <% end %>
+          </dl>
+        </div>
+      </div>
+
+      <!-- Account Issues -->
+      <div class="bg-white overflow-hidden shadow rounded-lg">
+        <div class="px-4 py-5 sm:p-6">
+          <h3 class="text-lg leading-6 font-medium text-gray-900">Account Issues</h3>
+          <div class="mt-5 space-y-4">
+            <% if @support_subject.status != 'active' %>
+              <div class="rounded-md bg-yellow-50 p-4">
+                <div class="flex">
+                  <svg class="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495zM10 5a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 5zm0 9a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" />
+                  </svg>
+                  <div class="ml-3">
+                    <h3 class="text-sm font-medium text-yellow-800">Account Status Issue</h3>
+                    <div class="mt-2 text-sm text-yellow-700">
+                      <p>This user's account is currently <%= @support_subject.status %>.</p>
+                    </div>
+                    <div class="mt-4">
+                      <%= form_with url: admin_site_support_path("user-#{@support_subject.id}"), method: :patch, local: true, class: "inline" do |f| %>
+                        <%= f.hidden_field :action_type, value: 'activate_user' %>
+                        <%= f.hidden_field :user_id, value: @support_subject.id %>
+                        <%= f.submit "Activate Account", 
+                            class: "text-sm bg-yellow-100 text-yellow-800 hover:bg-yellow-200 px-3 py-1 rounded-md border border-yellow-300" %>
+                      <% end %>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            <% end %>
+
+            <% if @support_subject.locked_at.present? %>
+              <div class="rounded-md bg-red-50 p-4">
+                <div class="flex">
+                  <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 1a4.5 4.5 0 00-4.5 4.5V9H5a2 2 0 00-2 2v6a2 2 0 002 2h10a2 2 0 002-2v-6a2 2 0 00-2-2h-.5V5.5A4.5 4.5 0 0010 1zm3 8V5.5a3 3 0 10-6 0V9h6z" clip-rule="evenodd" />
+                  </svg>
+                  <div class="ml-3">
+                    <h3 class="text-sm font-medium text-red-800">Account Locked</h3>
+                    <div class="mt-2 text-sm text-red-700">
+                      <p>This account was locked <%= time_ago_in_words(@support_subject.locked_at) %> ago due to failed login attempts.</p>
+                    </div>
+                    <div class="mt-4">
+                      <%= form_with url: admin_site_support_path("user-#{@support_subject.id}"), method: :patch, local: true, class: "inline" do |f| %>
+                        <%= f.hidden_field :action_type, value: 'unlock_user' %>
+                        <%= f.hidden_field :user_id, value: @support_subject.id %>
+                        <%= f.submit "Unlock Account", 
+                            class: "text-sm bg-red-100 text-red-800 hover:bg-red-200 px-3 py-1 rounded-md border border-red-300" %>
+                      <% end %>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            <% end %>
+
+            <% if @support_subject.failed_attempts > 0 %>
+              <div class="rounded-md bg-orange-50 p-4">
+                <div class="flex">
+                  <svg class="h-5 w-5 text-orange-400" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" />
+                  </svg>
+                  <div class="ml-3">
+                    <h3 class="text-sm font-medium text-orange-800">Failed Login Attempts</h3>
+                    <div class="mt-2 text-sm text-orange-700">
+                      <p>This user has <%= @support_subject.failed_attempts %> failed login attempts.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            <% end %>
+
+            <% if @support_subject.status == 'active' && @support_subject.locked_at.blank? && @support_subject.failed_attempts == 0 %>
+              <div class="rounded-md bg-green-50 p-4">
+                <div class="flex">
+                  <svg class="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.236 4.53L8.93 10.7a.75.75 0 00-1.06 1.061l1.5 1.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
+                  </svg>
+                  <div class="ml-3">
+                    <h3 class="text-sm font-medium text-green-800">Account Status Good</h3>
+                    <div class="mt-2 text-sm text-green-700">
+                      <p>This user's account is active and functioning normally.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="bg-white shadow overflow-hidden sm:rounded-md">
+      <div class="px-4 py-5 sm:px-6">
+        <h3 class="text-lg leading-6 font-medium text-gray-900">Quick Actions</h3>
+        <p class="mt-1 max-w-2xl text-sm text-gray-500">
+          Common support actions for this user
+        </p>
+      </div>
+      <div class="px-4 py-4 sm:px-6">
+        <div class="flex space-x-3">
+          <%= link_to "View Full Profile", admin_site_user_path(@support_subject), 
+              class: "inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50" %>
+          <%= link_to "View Activity Log", activity_admin_site_user_path(@support_subject), 
+              class: "inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50" %>
+          <% if @support_subject.status == 'active' %>
+            <%= link_to "Impersonate User", impersonate_admin_site_user_path(@support_subject), method: :post,
+                data: { confirm: "Are you sure you want to impersonate this user?" },
+                class: "inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700" %>
+          <% end %>
+        </div>
+      </div>
+    </div>
+
+  <% else %>
+    <!-- Team Support Case -->
+    <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
+      <!-- Team Details -->
+      <div class="bg-white overflow-hidden shadow rounded-lg">
+        <div class="px-4 py-5 sm:p-6">
+          <h3 class="text-lg leading-6 font-medium text-gray-900">Team Details</h3>
+          <dl class="mt-5 space-y-3">
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Team Name</dt>
+              <dd class="text-sm text-gray-900"><%= @support_subject.name %></dd>
+            </div>
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Team Slug</dt>
+              <dd class="text-sm text-gray-900"><%= @support_subject.slug %></dd>
+            </div>
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Status</dt>
+              <dd>
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
+                  <%= @support_subject.status == 'active' ? 'bg-green-100 text-green-800' : 
+                      @support_subject.status == 'suspended' ? 'bg-yellow-100 text-yellow-800' : 
+                      'bg-red-100 text-red-800' %>">
+                  <%= @support_subject.status.humanize %>
+                </span>
+              </dd>
+            </div>
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Plan</dt>
+              <dd>
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
+                  <%= @support_subject.plan == 'starter' ? 'bg-gray-100 text-gray-800' : 
+                      @support_subject.plan == 'pro' ? 'bg-blue-100 text-blue-800' : 
+                      'bg-purple-100 text-purple-800' %>">
+                  <%= @support_subject.plan.humanize %>
+                </span>
+              </dd>
+            </div>
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Team Admin</dt>
+              <dd class="text-sm text-gray-900"><%= @support_subject.admin.email %></dd>
+            </div>
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Member Count</dt>
+              <dd class="text-sm text-gray-900"><%= @support_subject.member_count %></dd>
+            </div>
+          </dl>
+        </div>
+      </div>
+
+      <!-- Team Issues -->
+      <div class="bg-white overflow-hidden shadow rounded-lg">
+        <div class="px-4 py-5 sm:p-6">
+          <h3 class="text-lg leading-6 font-medium text-gray-900">Team Issues</h3>
+          <div class="mt-5 space-y-4">
+            <% if @support_subject.status != 'active' %>
+              <div class="rounded-md bg-yellow-50 p-4">
+                <div class="flex">
+                  <svg class="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495zM10 5a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 5zm0 9a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" />
+                  </svg>
+                  <div class="ml-3">
+                    <h3 class="text-sm font-medium text-yellow-800">Team Status Issue</h3>
+                    <div class="mt-2 text-sm text-yellow-700">
+                      <p>This team is currently <%= @support_subject.status %>.</p>
+                    </div>
+                    <div class="mt-4">
+                      <%= form_with url: admin_site_support_path("team-#{@support_subject.id}"), method: :patch, local: true, class: "inline" do |f| %>
+                        <%= f.hidden_field :action_type, value: 'reactivate_team' %>
+                        <%= f.hidden_field :team_id, value: @support_subject.id %>
+                        <%= f.submit "Reactivate Team", 
+                            class: "text-sm bg-yellow-100 text-yellow-800 hover:bg-yellow-200 px-3 py-1 rounded-md border border-yellow-300" %>
+                      <% end %>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            <% else %>
+              <div class="rounded-md bg-green-50 p-4">
+                <div class="flex">
+                  <svg class="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.236 4.53L8.93 10.7a.75.75 0 00-1.06 1.061l1.5 1.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
+                  </svg>
+                  <div class="ml-3">
+                    <h3 class="text-sm font-medium text-green-800">Team Status Good</h3>
+                    <div class="mt-2 text-sm text-green-700">
+                      <p>This team is active and functioning normally.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="bg-white shadow overflow-hidden sm:rounded-md">
+      <div class="px-4 py-5 sm:px-6">
+        <h3 class="text-lg leading-6 font-medium text-gray-900">Quick Actions</h3>
+        <p class="mt-1 max-w-2xl text-sm text-gray-500">
+          Common support actions for this team
+        </p>
+      </div>
+      <div class="px-4 py-4 sm:px-6">
+        <div class="flex space-x-3">
+          <%= link_to "View Full Team", admin_site_team_path(@support_subject), 
+              class: "inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50" %>
+          <%= link_to "View Team Admin", admin_site_user_path(@support_subject.admin), 
+              class: "inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50" %>
+        </div>
+      </div>
+    </div>
+  <% end %>
+</div>

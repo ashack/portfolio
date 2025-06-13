@@ -29,6 +29,10 @@ class Invitation < ApplicationRecord
     accepted_at.present?
   end
 
+  def pending?
+    !accepted?
+  end
+
   def accept!(user_attributes = {})
     return false if expired? || accepted?
 

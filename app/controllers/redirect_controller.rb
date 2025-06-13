@@ -1,4 +1,6 @@
 class RedirectController < ApplicationController
+  skip_after_action :verify_authorized
+  skip_after_action :verify_policy_scoped
   def after_sign_in
     if current_user.super_admin?
       redirect_to admin_super_root_path

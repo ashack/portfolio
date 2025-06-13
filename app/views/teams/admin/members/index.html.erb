@@ -1,6 +1,6 @@
 <% content_for :page_title, "Team Members" %>
 <% content_for :header_actions do %>
-  <%= link_to "Invite Member", new_teams_admin_invitation_path, class: "inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700" %>
+  <%= link_to "Invite Member", new_team_admin_invitation_path(team_slug: @team.slug), class: "inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700" %>
 <% end %>
 
 <div class="bg-white shadow overflow-hidden sm:rounded-md">
@@ -61,7 +61,7 @@
                       <%= member.team_role.capitalize %> (You)
                     </span>
                   <% else %>
-                    <%= form_with(url: teams_admin_member_change_role_path(member), method: :patch, local: true, class: "flex items-center space-x-2") do |form| %>
+                    <%= form_with(url: change_role_team_admin_member_path(team_slug: @team.slug, id: member.id), method: :patch, local: true, class: "flex items-center space-x-2") do |form| %>
                       <%= form.select :role, 
                           options_for_select([
                             ['Member', 'member'],
@@ -90,8 +90,8 @@
                     <span class="text-gray-400">You</span>
                   <% else %>
                     <div class="flex space-x-2">
-                      <%= link_to "View", teams_admin_member_path(member), class: "text-indigo-600 hover:text-indigo-900" %>
-                      <%= link_to "Remove", teams_admin_member_path(member), method: :delete, 
+                      <%= link_to "View", team_admin_member_path(team_slug: @team.slug, id: member.id), class: "text-indigo-600 hover:text-indigo-900" %>
+                      <%= link_to "Remove", team_admin_member_path(team_slug: @team.slug, id: member.id), method: :delete, 
                           confirm: "Are you sure? This will permanently delete #{member.email}'s account and remove them from the team.", 
                           class: "text-red-600 hover:text-red-900" %>
                     </div>
@@ -115,7 +115,7 @@
         <h3 class="mt-2 text-sm font-medium text-gray-900">No team members</h3>
         <p class="mt-1 text-sm text-gray-500">Get started by inviting your first team member.</p>
         <div class="mt-6">
-          <%= link_to "Invite Member", new_teams_admin_invitation_path, class: "inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700" %>
+          <%= link_to "Invite Member", new_team_admin_invitation_path, class: "inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700" %>
         </div>
       </div>
     <% end %>

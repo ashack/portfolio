@@ -12,20 +12,38 @@ A complete Ruby on Rails 8 SaaS application with dual-track user system supporti
 - **Team Member**: Invitation-only team participants
 
 ### Core Features
-- Stripe integration for billing (teams and individuals)
-- Invitation system for team members
-- Role-based authorization with Pundit
-- User status management (active/inactive/locked)
-- Separate dashboards for each user type
-- Analytics and monitoring
+- **Dual-Track SaaS Architecture**: Complete separation of team and individual user systems
+- **Stripe Integration**: Pay gem for both team and individual billing
+- **Complete Authentication**: Devise with all 8 security modules (lockable, confirmable, trackable, etc.)
+- **Role-Based Authorization**: Comprehensive Pundit policies for all user types
+- **User Status Management**: Active/inactive/locked states with admin controls
+- **Team Management**: Full invitation system with email validation and resend/revoke functionality
+- **Email System**: Professional email templates with Letter Opener for development preview
+- **Professional UI**: Tailwind CSS with responsive design and styled Devise views
+- **Analytics & Monitoring**: Ahoy Matey for user activity tracking
+- **Admin Dashboards**: Separate interfaces for super admin and site admin
+- **Security Hardened**: Mass assignment protection, CSRF, session security
+- **Rails 8.0.2 Ready**: Full compatibility with latest Rails and Turbo features
 
 ## Setup Instructions
 
 ### Prerequisites
 - Ruby 3.2.5
 - Rails 8.0.2
-- SQLite3
+- SQLite3 (development) / PostgreSQL (production)
+- Node.js and npm (for Tailwind CSS)
 - Stripe account
+
+### Technology Stack
+- **Backend**: Rails 8.0.2, Ruby 3.2.5
+- **Database**: SQLite3 (dev), PostgreSQL (production)  
+- **Frontend**: Tailwind CSS, Stimulus, Turbo
+- **Authentication**: Devise with 8 security modules
+- **Authorization**: Pundit policies
+- **Payments**: Stripe via Pay gem
+- **Analytics**: Ahoy Matey
+- **UI Icons**: Rails Icons
+- **Session Store**: Secure cookie store with httponly/secure flags
 
 ### Installation
 
@@ -104,6 +122,45 @@ kamal deploy
 ```bash
 rspec
 ```
+
+## Documentation
+
+### 📚 Complete Documentation Available
+- [Security Guide](docs/security.md) - Authentication, authorization, and security best practices
+- [Bug Fixes & Troubleshooting](docs/bug_fixes.md) - Solutions to common Rails 8.0.2 issues
+- [Development Task List](docs/task_list.md) - Current status and future roadmap  
+- [Common Pitfalls](docs/pitfalls.md) - Anti-patterns and how to avoid them
+
+### 🔧 Development Tools
+- `/auth_debug` - Authentication debugging interface (development only)
+- `/devise_showcase` - View all styled Devise forms (development only)
+- `rails auth:test` - Test authentication flow via rake task
+
+### 🎯 Production Ready Features
+- ✅ **Rails 8.0.2 Compatible** with all callback validation fixes
+- ✅ **Security Hardened** with comprehensive protection measures
+- ✅ **Performance Optimized** with proper indexing and caching
+- ✅ **Professional UI** with responsive Tailwind CSS design
+- ✅ **Zero Security Warnings** (Brakeman verified)
+- ✅ **RuboCop Compliant** (Rails Omakase standards)
+
+## Architecture Highlights
+
+### Dual-Track User System
+- **Individual Users**: Register directly, personal billing, isolated features
+- **Team Users**: Invitation-only, shared billing, collaborative features
+- **Complete Separation**: No crossover between user types
+
+### Security Features
+- **8 Devise Modules**: Database auth, registration, recovery, confirmation, lockable, trackable
+- **Pundit Authorization**: Comprehensive policies for all user types
+- **Mass Assignment Protection**: Secure parameter handling
+- **Session Security**: HttpOnly, secure, SameSite cookie protection
+
+### Admin Capabilities
+- **Super Admin**: Team creation, system management, billing oversight
+- **Site Admin**: User support, status management (no billing access)
+- **Team Admin**: Member management, team billing, invitations
 
 ## License
 

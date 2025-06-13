@@ -1,6 +1,6 @@
 <% content_for :page_title, "Team Invitations" %>
 <% content_for :header_actions do %>
-  <%= link_to "Send Invitation", new_teams_admin_invitation_path, class: "inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700" %>
+  <%= link_to "Send Invitation", new_team_admin_invitation_path(team_slug: @team.slug), class: "inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700" %>
 <% end %>
 
 <div class="bg-white shadow overflow-hidden sm:rounded-md">
@@ -81,12 +81,16 @@
                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                   <div class="flex space-x-2">
                     <% unless invitation.accepted? || invitation.expired? %>
-                      <%= link_to "Resend", teams_admin_invitation_resend_path(invitation), method: :post, 
-                          class: "text-indigo-600 hover:text-indigo-900" %>
+                      <%= button_to "Resend", resend_team_admin_invitation_path(team_slug: @team.slug, id: invitation.id), 
+                          method: :post, 
+                          class: "text-indigo-600 hover:text-indigo-900 bg-transparent border-none underline cursor-pointer p-0 font-normal",
+                          form_class: "inline" %>
                     <% end %>
-                    <%= link_to "Revoke", teams_admin_invitation_path(invitation), method: :delete, 
-                        confirm: "Are you sure? This will permanently revoke this invitation.", 
-                        class: "text-red-600 hover:text-red-900" %>
+                    <%= button_to "Revoke", revoke_team_admin_invitation_path(team_slug: @team.slug, id: invitation.id), 
+                        method: :delete, 
+                        data: { turbo_confirm: "Are you sure? This will permanently revoke this invitation." },
+                        class: "text-red-600 hover:text-red-900 bg-transparent border-none underline cursor-pointer p-0 font-normal",
+                        form_class: "inline" %>
                   </div>
                 </td>
               </tr>
@@ -107,7 +111,7 @@
         <h3 class="mt-2 text-sm font-medium text-gray-900">No invitations sent</h3>
         <p class="mt-1 text-sm text-gray-500">Get started by sending your first team invitation.</p>
         <div class="mt-6">
-          <%= link_to "Send Invitation", new_teams_admin_invitation_path, class: "inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700" %>
+          <%= link_to "Send Invitation", new_team_admin_invitation_path(team_slug: @team.slug), class: "inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700" %>
         </div>
       </div>
     <% end %>

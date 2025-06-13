@@ -1,6 +1,6 @@
 <% content_for :page_title, "Team Admin Dashboard" %>
 <% content_for :header_actions do %>
-  <%= link_to "Invite Member", new_teams_admin_invitation_path, class: "inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700" %>
+  <%= link_to "Invite Member", new_team_admin_invitation_path(team_slug: @team.slug), class: "inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700" %>
 <% end %>
 
 <div class="space-y-6">
@@ -99,7 +99,7 @@
       <div class="px-4 py-5 sm:p-6">
         <div class="flex items-center justify-between mb-4">
           <h3 class="text-lg leading-6 font-medium text-gray-900">Team Members</h3>
-          <%= link_to "Manage All", teams_admin_members_path, class: "text-sm text-indigo-600 hover:text-indigo-900" %>
+          <%= link_to "Manage All", team_admin_members_path(team_slug: @team.slug), class: "text-sm text-indigo-600 hover:text-indigo-900" %>
         </div>
         
         <% if @team_members.any? %>
@@ -141,7 +141,7 @@
       <div class="px-4 py-5 sm:p-6">
         <div class="flex items-center justify-between mb-4">
           <h3 class="text-lg leading-6 font-medium text-gray-900">Pending Invitations</h3>
-          <%= link_to "Manage All", teams_admin_invitations_path, class: "text-sm text-indigo-600 hover:text-indigo-900" %>
+          <%= link_to "Manage All", team_admin_invitations_path(team_slug: @team.slug), class: "text-sm text-indigo-600 hover:text-indigo-900" %>
         </div>
         
         <% if @pending_invitations.any? %>
@@ -156,8 +156,15 @@
                   </p>
                 </div>
                 <div class="flex space-x-2">
-                  <%= link_to "Resend", teams_admin_invitation_resend_path(invitation), method: :post, class: "text-xs text-indigo-600 hover:text-indigo-900" %>
-                  <%= link_to "Revoke", teams_admin_invitation_path(invitation), method: :delete, confirm: "Are you sure?", class: "text-xs text-red-600 hover:text-red-900" %>
+                  <%= button_to "Resend", resend_team_admin_invitation_path(team_slug: @team.slug, id: invitation.id), 
+                      method: :post, 
+                      class: "text-xs text-indigo-600 hover:text-indigo-900 bg-transparent border-none underline cursor-pointer p-0 font-normal",
+                      form_class: "inline" %>
+                  <%= button_to "Revoke", revoke_team_admin_invitation_path(team_slug: @team.slug, id: invitation.id), 
+                      method: :delete, 
+                      data: { turbo_confirm: "Are you sure?" },
+                      class: "text-xs text-red-600 hover:text-red-900 bg-transparent border-none underline cursor-pointer p-0 font-normal",
+                      form_class: "inline" %>
                 </div>
               </div>
             <% end %>
@@ -165,7 +172,7 @@
         <% else %>
           <div class="text-center py-4">
             <p class="text-sm text-gray-500">No pending invitations.</p>
-            <%= link_to "Send Invitation", new_teams_admin_invitation_path, class: "mt-2 text-sm text-indigo-600 hover:text-indigo-900" %>
+            <%= link_to "Send Invitation", new_team_admin_invitation_path(team_slug: @team.slug), class: "mt-2 text-sm text-indigo-600 hover:text-indigo-900" %>
           </div>
         <% end %>
       </div>
@@ -177,28 +184,28 @@
     <div class="px-4 py-5 sm:p-6">
       <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Quick Actions</h3>
       <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <%= link_to new_teams_admin_invitation_path, class: "inline-flex items-center justify-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700" do %>
+        <%= link_to new_team_admin_invitation_path, class: "inline-flex items-center justify-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700" do %>
           <svg class="-ml-1 mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
           </svg>
           Invite Member
         <% end %>
 
-        <%= link_to teams_admin_members_path, class: "inline-flex items-center justify-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50" do %>
+        <%= link_to team_admin_members_path, class: "inline-flex items-center justify-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50" do %>
           <svg class="-ml-1 mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
           </svg>
           Manage Members
         <% end %>
 
-        <%= link_to teams_admin_billing_index_path, class: "inline-flex items-center justify-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50" do %>
+        <%= link_to team_admin_billing_index_path(team_slug: @team.slug), class: "inline-flex items-center justify-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50" do %>
           <svg class="-ml-1 mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
           </svg>
           Billing & Plans
         <% end %>
 
-        <%= link_to teams_admin_settings_path, class: "inline-flex items-center justify-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50" do %>
+        <%= link_to team_admin_settings_path(team_slug: @team.slug), class: "inline-flex items-center justify-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50" do %>
           <svg class="-ml-1 mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>

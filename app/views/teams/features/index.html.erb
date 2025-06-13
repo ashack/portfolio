@@ -1,0 +1,175 @@
+<% content_for :page_title, "Team Features" %>
+
+<div class="bg-white shadow rounded-lg">
+  <div class="px-4 py-5 sm:p-6">
+    <div class="mb-6">
+      <h3 class="text-lg leading-6 font-medium text-gray-900">Team Features</h3>
+      <p class="mt-1 text-sm text-gray-500">
+        Features available to your team based on your current plan.
+      </p>
+    </div>
+
+    <!-- Current Plan -->
+    <div class="bg-gray-50 rounded-lg p-4 mb-6">
+      <div class="flex items-center justify-between">
+        <div>
+          <h4 class="text-sm font-medium text-gray-900">Current Plan</h4>
+          <p class="text-sm text-gray-500"><%= @team.name %> is on the <strong><%= @team.plan.capitalize %></strong> plan</p>
+        </div>
+        <div>
+          <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium 
+            <%= @team.plan == 'starter' ? 'bg-gray-100 text-gray-800' : 
+                @team.plan == 'pro' ? 'bg-blue-100 text-blue-800' : 'bg-purple-100 text-purple-800' %>">
+            <%= @team.plan.capitalize %> Plan
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Available Features -->
+    <div class="space-y-4">
+      <h4 class="text-md font-medium text-gray-900">Available Features</h4>
+      
+      <% if @features.any? %>
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <% @features.each do |feature| %>
+            <div class="relative bg-white border border-gray-200 rounded-lg p-4 hover:border-gray-300">
+              <div class="flex items-start">
+                <div class="flex-shrink-0">
+                  <svg class="h-6 w-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                  </svg>
+                </div>
+                <div class="ml-3">
+                  <h5 class="text-sm font-medium text-gray-900">
+                    <%= feature.humanize %>
+                  </h5>
+                  <p class="text-sm text-gray-500">
+                    <%= case feature
+                        when 'team_dashboard'
+                          'Access to the team dashboard and basic analytics'
+                        when 'collaboration'
+                          'Team collaboration tools and shared workspaces'
+                        when 'email_support'
+                          'Email support during business hours'
+                        when 'priority_support'
+                          'Priority email support with faster response times'
+                        when 'phone_support'
+                          'Direct phone support during business hours'
+                        when 'advanced_team_features'
+                          'Advanced team management and workflow tools'
+                        when 'enterprise_features'
+                          'Enterprise-grade security and compliance features'
+                        else
+                          'Feature description not available'
+                        end %>
+                  </p>
+                </div>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      <% else %>
+        <div class="text-center py-6">
+          <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+          </svg>
+          <h3 class="mt-2 text-sm font-medium text-gray-900">No features available</h3>
+          <p class="mt-1 text-sm text-gray-500">Contact your team admin to upgrade your plan.</p>
+        </div>
+      <% end %>
+    </div>
+
+    <!-- Plan Comparison -->
+    <div class="border-t border-gray-200 pt-6 mt-8">
+      <h4 class="text-md font-medium text-gray-900 mb-4">Plan Comparison</h4>
+      <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
+        <!-- Starter Plan -->
+        <div class="border rounded-lg p-4 <%= @team.plan == 'starter' ? 'border-blue-500 bg-blue-50' : 'border-gray-200' %>">
+          <h5 class="text-lg font-semibold text-gray-900">Starter</h5>
+          <p class="text-sm text-gray-500 mb-3">Up to 5 team members</p>
+          <ul class="space-y-2 text-sm">
+            <li class="flex items-center">
+              <svg class="h-4 w-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+              </svg>
+              Team Dashboard
+            </li>
+            <li class="flex items-center">
+              <svg class="h-4 w-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+              </svg>
+              Basic Collaboration
+            </li>
+            <li class="flex items-center">
+              <svg class="h-4 w-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+              </svg>
+              Email Support
+            </li>
+          </ul>
+        </div>
+
+        <!-- Pro Plan -->
+        <div class="border rounded-lg p-4 <%= @team.plan == 'pro' ? 'border-blue-500 bg-blue-50' : 'border-gray-200' %>">
+          <h5 class="text-lg font-semibold text-gray-900">Pro</h5>
+          <p class="text-sm text-gray-500 mb-3">Up to 15 team members</p>
+          <ul class="space-y-2 text-sm">
+            <li class="flex items-center">
+              <svg class="h-4 w-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+              </svg>
+              Everything in Starter
+            </li>
+            <li class="flex items-center">
+              <svg class="h-4 w-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+              </svg>
+              Advanced Team Features
+            </li>
+            <li class="flex items-center">
+              <svg class="h-4 w-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+              </svg>
+              Priority Support
+            </li>
+          </ul>
+        </div>
+
+        <!-- Enterprise Plan -->
+        <div class="border rounded-lg p-4 <%= @team.plan == 'enterprise' ? 'border-blue-500 bg-blue-50' : 'border-gray-200' %>">
+          <h5 class="text-lg font-semibold text-gray-900">Enterprise</h5>
+          <p class="text-sm text-gray-500 mb-3">Up to 100 team members</p>
+          <ul class="space-y-2 text-sm">
+            <li class="flex items-center">
+              <svg class="h-4 w-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+              </svg>
+              Everything in Pro
+            </li>
+            <li class="flex items-center">
+              <svg class="h-4 w-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+              </svg>
+              Enterprise Features
+            </li>
+            <li class="flex items-center">
+              <svg class="h-4 w-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+              </svg>
+              Phone Support
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <% if current_user.team_admin? %>
+        <div class="mt-6 text-center">
+          <p class="text-sm text-gray-500 mb-3">Need to upgrade your plan?</p>
+          <%= link_to "Manage Billing", team_admin_billing_index_path(team_slug: @team.slug), 
+              class: "inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

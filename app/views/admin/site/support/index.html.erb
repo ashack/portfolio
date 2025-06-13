@@ -1,0 +1,275 @@
+<% content_for :title, "Support Dashboard" %>
+
+<div class="space-y-6">
+  <!-- Header -->
+  <div class="md:flex md:items-center md:justify-between">
+    <div class="min-w-0 flex-1">
+      <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
+        Support Dashboard
+      </h2>
+      <p class="mt-1 text-sm text-gray-500">
+        Monitor and manage user and team support issues
+      </p>
+    </div>
+  </div>
+
+  <!-- Stats Cards -->
+  <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+    <div class="bg-white overflow-hidden shadow rounded-lg">
+      <div class="p-5">
+        <div class="flex items-center">
+          <div class="flex-shrink-0">
+            <svg class="h-6 w-6 text-red-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+            </svg>
+          </div>
+          <div class="ml-5 w-0 flex-1">
+            <dl>
+              <dt class="text-sm font-medium text-gray-500 truncate">User Issues</dt>
+              <dd class="text-lg font-medium text-gray-900"><%= @recent_user_issues.count %></dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white overflow-hidden shadow rounded-lg">
+      <div class="p-5">
+        <div class="flex items-center">
+          <div class="flex-shrink-0">
+            <svg class="h-6 w-6 text-yellow-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z" />
+            </svg>
+          </div>
+          <div class="ml-5 w-0 flex-1">
+            <dl>
+              <dt class="text-sm font-medium text-gray-500 truncate">Team Issues</dt>
+              <dd class="text-lg font-medium text-gray-900"><%= @teams_needing_attention.count %></dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white overflow-hidden shadow rounded-lg">
+      <div class="p-5">
+        <div class="flex items-center">
+          <div class="flex-shrink-0">
+            <svg class="h-6 w-6 text-orange-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+            </svg>
+          </div>
+          <div class="ml-5 w-0 flex-1">
+            <dl>
+              <dt class="text-sm font-medium text-gray-500 truncate">Failed Logins</dt>
+              <dd class="text-lg font-medium text-gray-900"><%= @recent_failed_logins.count %></dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white overflow-hidden shadow rounded-lg">
+      <div class="p-5">
+        <div class="flex items-center">
+          <div class="flex-shrink-0">
+            <svg class="h-6 w-6 text-blue-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9 5.25h.008v.008H12v-.008z" />
+            </svg>
+          </div>
+          <div class="ml-5 w-0 flex-1">
+            <dl>
+              <dt class="text-sm font-medium text-gray-500 truncate">Total Issues</dt>
+              <dd class="text-lg font-medium text-gray-900">
+                <%= @recent_user_issues.count + @teams_needing_attention.count + @recent_failed_logins.count %>
+              </dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- User Issues -->
+  <% if @recent_user_issues.any? %>
+    <div class="bg-white shadow overflow-hidden sm:rounded-md">
+      <div class="px-4 py-5 sm:px-6">
+        <h3 class="text-lg leading-6 font-medium text-gray-900">User Issues</h3>
+        <p class="mt-1 max-w-2xl text-sm text-gray-500">
+          Users with account issues requiring attention
+        </p>
+      </div>
+      
+      <ul role="list" class="divide-y divide-gray-200">
+        <% @recent_user_issues.each do |user| %>
+          <li>
+            <div class="px-4 py-4 flex items-center justify-between">
+              <div class="flex items-center">
+                <div class="flex-shrink-0 h-10 w-10">
+                  <div class="h-10 w-10 rounded-full bg-red-200 flex items-center justify-center">
+                    <svg class="h-5 w-5 text-red-600" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
+                    </svg>
+                  </div>
+                </div>
+                <div class="ml-4">
+                  <div class="flex items-center">
+                    <p class="text-sm font-medium text-gray-900">
+                      <%= user.full_name.present? ? user.full_name : user.email %>
+                    </p>
+                    <span class="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
+                      <%= user.status == 'inactive' ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800' %>">
+                      <%= user.status.humanize %>
+                    </span>
+                  </div>
+                  <p class="text-sm text-gray-500">
+                    <%= user.email %>
+                    <% if user.failed_attempts > 0 %>
+                      • Failed attempts: <%= user.failed_attempts %>
+                    <% end %>
+                  </p>
+                  <p class="text-xs text-gray-400">
+                    Last updated: <%= time_ago_in_words(user.updated_at) %> ago
+                  </p>
+                </div>
+              </div>
+              <div class="flex items-center space-x-2">
+                <%= link_to "View Support Case", admin_site_support_path("user-#{user.id}"), 
+                    class: "inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50" %>
+                <%= link_to "View User", admin_site_user_path(user), 
+                    class: "inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-blue-700 bg-blue-100 hover:bg-blue-200" %>
+              </div>
+            </div>
+          </li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <!-- Team Issues -->
+  <% if @teams_needing_attention.any? %>
+    <div class="bg-white shadow overflow-hidden sm:rounded-md">
+      <div class="px-4 py-5 sm:px-6">
+        <h3 class="text-lg leading-6 font-medium text-gray-900">Team Issues</h3>
+        <p class="mt-1 max-w-2xl text-sm text-gray-500">
+          Teams with status issues requiring attention
+        </p>
+      </div>
+      
+      <ul role="list" class="divide-y divide-gray-200">
+        <% @teams_needing_attention.each do |team| %>
+          <li>
+            <div class="px-4 py-4 flex items-center justify-between">
+              <div class="flex items-center">
+                <div class="flex-shrink-0 h-10 w-10">
+                  <div class="h-10 w-10 rounded-full bg-yellow-200 flex items-center justify-center">
+                    <svg class="h-5 w-5 text-yellow-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                    </svg>
+                  </div>
+                </div>
+                <div class="ml-4">
+                  <div class="flex items-center">
+                    <p class="text-sm font-medium text-gray-900">
+                      <%= team.name %>
+                    </p>
+                    <span class="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
+                      <%= team.status == 'suspended' ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800' %>">
+                      <%= team.status.humanize %>
+                    </span>
+                  </div>
+                  <p class="text-sm text-gray-500">
+                    Admin: <%= team.admin.email %> • Members: <%= team.member_count %>
+                  </p>
+                  <p class="text-xs text-gray-400">
+                    Last updated: <%= time_ago_in_words(team.updated_at) %> ago
+                  </p>
+                </div>
+              </div>
+              <div class="flex items-center space-x-2">
+                <%= link_to "View Support Case", admin_site_support_path("team-#{team.id}"), 
+                    class: "inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50" %>
+                <%= link_to "View Team", admin_site_team_path(team), 
+                    class: "inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-blue-700 bg-blue-100 hover:bg-blue-200" %>
+              </div>
+            </div>
+          </li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <!-- Failed Login Attempts -->
+  <% if @recent_failed_logins.any? %>
+    <div class="bg-white shadow overflow-hidden sm:rounded-md">
+      <div class="px-4 py-5 sm:px-6">
+        <h3 class="text-lg leading-6 font-medium text-gray-900">Failed Login Attempts</h3>
+        <p class="mt-1 max-w-2xl text-sm text-gray-500">
+          Users with recent failed login attempts
+        </p>
+      </div>
+      
+      <ul role="list" class="divide-y divide-gray-200">
+        <% @recent_failed_logins.each do |user| %>
+          <li>
+            <div class="px-4 py-4 flex items-center justify-between">
+              <div class="flex items-center">
+                <div class="flex-shrink-0 h-10 w-10">
+                  <div class="h-10 w-10 rounded-full bg-orange-200 flex items-center justify-center">
+                    <svg class="h-5 w-5 text-orange-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                    </svg>
+                  </div>
+                </div>
+                <div class="ml-4">
+                  <div class="flex items-center">
+                    <p class="text-sm font-medium text-gray-900">
+                      <%= user.full_name.present? ? user.full_name : user.email %>
+                    </p>
+                    <span class="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
+                      <%= user.failed_attempts %> failed attempts
+                    </span>
+                    <% if user.locked_at.present? %>
+                      <span class="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                        Locked
+                      </span>
+                    <% end %>
+                  </div>
+                  <p class="text-sm text-gray-500">
+                    <%= user.email %>
+                  </p>
+                  <p class="text-xs text-gray-400">
+                    <% if user.locked_at.present? %>
+                      Locked: <%= time_ago_in_words(user.locked_at) %> ago
+                    <% else %>
+                      Last sign in attempt: <%= user.last_sign_in_at ? time_ago_in_words(user.last_sign_in_at) + " ago" : "Never" %>
+                    <% end %>
+                  </p>
+                </div>
+              </div>
+              <div class="flex items-center space-x-2">
+                <%= link_to "View Support Case", admin_site_support_path("user-#{user.id}"), 
+                    class: "inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50" %>
+                <%= link_to "View User", admin_site_user_path(user), 
+                    class: "inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-blue-700 bg-blue-100 hover:bg-blue-200" %>
+              </div>
+            </div>
+          </li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <!-- No Issues -->
+  <% if @recent_user_issues.empty? && @teams_needing_attention.empty? && @recent_failed_logins.empty? %>
+    <div class="text-center py-12">
+      <svg class="mx-auto h-12 w-12 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+      <h3 class="mt-2 text-sm font-medium text-gray-900">No support issues</h3>
+      <p class="mt-1 text-sm text-gray-500">
+        Great! There are no current support issues requiring attention.
+      </p>
+    </div>
+  <% end %>
+</div>

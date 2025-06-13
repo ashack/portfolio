@@ -2,9 +2,9 @@
 <% content_for :header_actions do %>
   <div class="flex space-x-3">
     <% unless @user == current_user %>
-      <%= link_to "Impersonate", admin_super_user_impersonate_path(@user), method: :post, class: "inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50" %>
+      <%= link_to "Impersonate", impersonate_admin_super_user_path(@user), method: :post, class: "inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50" %>
     <% end %>
-    <%= link_to "View Activity", admin_super_user_activity_path(@user), class: "inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50" %>
+    <%= link_to "View Activity", activity_admin_super_user_path(@user), class: "inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50" %>
   </div>
 <% end %>
 
@@ -61,10 +61,10 @@
                   <%= @user.system_role.humanize %>
                 </span>
                 <% if @user.system_role == 'site_admin' %>
-                  <%= link_to "Demote to User", admin_super_user_demote_from_site_admin_path(@user), 
+                  <%= link_to "Demote to User", demote_from_site_admin_admin_super_user_path(@user), 
                       method: :patch, class: "text-sm text-red-600 hover:text-red-900" %>
                 <% elsif @user.system_role == 'user' %>
-                  <%= link_to "Promote to Site Admin", admin_super_user_promote_to_site_admin_path(@user), 
+                  <%= link_to "Promote to Site Admin", promote_to_site_admin_admin_super_user_path(@user), 
                       method: :patch, class: "text-sm text-indigo-600 hover:text-indigo-900" %>
                 <% end %>
               </div>
@@ -127,7 +127,7 @@
       <div class="mt-5">
         <div class="flex space-x-3">
           <% if @user.status != 'active' %>
-            <%= link_to admin_super_user_set_status_path(@user, status: 'active'), method: :patch, 
+            <%= link_to set_status_admin_super_user_path(@user, status: 'active'), method: :patch, 
                 class: "inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700" do %>
               <svg class="-ml-1 mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
@@ -137,7 +137,7 @@
           <% end %>
           
           <% if @user.status != 'inactive' %>
-            <%= link_to admin_super_user_set_status_path(@user, status: 'inactive'), method: :patch, 
+            <%= link_to set_status_admin_super_user_path(@user, status: 'inactive'), method: :patch, 
                 class: "inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50" do %>
               <svg class="-ml-1 mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
@@ -147,7 +147,7 @@
           <% end %>
           
           <% if @user.status != 'locked' %>
-            <%= link_to admin_super_user_set_status_path(@user, status: 'locked'), method: :patch, 
+            <%= link_to set_status_admin_super_user_path(@user, status: 'locked'), method: :patch, 
                 confirm: "Are you sure you want to lock this user? They will not be able to sign in.", 
                 class: "inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700" do %>
               <svg class="-ml-1 mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -171,7 +171,7 @@
     <div class="px-4 py-5 sm:p-6">
       <div class="flex items-center justify-between mb-4">
         <h3 class="text-lg leading-6 font-medium text-gray-900">Recent Activity</h3>
-        <%= link_to "View All Activity", admin_super_user_activity_path(@user), class: "text-sm text-indigo-600 hover:text-indigo-900" %>
+        <%= link_to "View All Activity", activity_admin_super_user_path(@user), class: "text-sm text-indigo-600 hover:text-indigo-900" %>
       </div>
       
       <div class="flow-root">

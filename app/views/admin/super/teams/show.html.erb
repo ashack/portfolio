@@ -160,7 +160,7 @@
       <h3 class="text-lg leading-6 font-medium text-gray-900">Team Actions</h3>
       <div class="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-3">
         <% if @team.status == 'active' %>
-          <%= link_to admin_super_team_path(@team, status: 'suspended'), method: :patch, 
+          <%= link_to change_status_admin_super_team_path(@team, status: 'suspended'), method: :patch, 
               class: "inline-flex items-center justify-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50" do %>
             <svg class="-ml-1 mr-2 h-4 w-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
@@ -168,7 +168,7 @@
             Suspend Team
           <% end %>
         <% else %>
-          <%= link_to admin_super_team_path(@team, status: 'active'), method: :patch, 
+          <%= link_to change_status_admin_super_team_path(@team, status: 'active'), method: :patch, 
               class: "inline-flex items-center justify-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700" do %>
             <svg class="-ml-1 mr-2 h-4 w-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1m-6 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
@@ -177,7 +177,7 @@
           <% end %>
         <% end %>
 
-        <%= form_with(url: admin_super_team_assign_admin_path(@team), method: :patch, local: true, class: "flex") do |form| %>
+        <%= form_with(url: assign_admin_admin_super_team_path(@team), method: :patch, local: true, class: "flex") do |form| %>
           <%= form.select :admin_id, 
               options_from_collection_for_select(@team.users.where.not(id: @team.admin_id), :id, :email, @team.admin_id),
               { prompt: 'Change Admin' },

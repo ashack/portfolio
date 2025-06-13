@@ -87,4 +87,7 @@ Rails.application.configure do
   #
   # Skip DNS rebinding protection for the default health check endpoint.
   # config.host_authorization = { exclude: ->(request) { request.path == "/up" } }
+
+  # Disable strict callback action validation for Pundit + Devise compatibility
+  config.action_controller.raise_on_missing_callback_actions = false
 end

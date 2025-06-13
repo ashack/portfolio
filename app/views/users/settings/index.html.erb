@@ -1,0 +1,213 @@
+<% content_for :title, "Account Settings" %>
+
+<div class="min-h-screen bg-gray-50 py-6">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6">
+    <!-- Header -->
+    <div class="bg-white shadow rounded-lg mb-6">
+      <div class="px-4 py-5 sm:p-6">
+        <div class="flex items-center justify-between">
+          <div>
+            <h1 class="text-2xl font-bold text-gray-900">Account Settings</h1>
+            <p class="mt-1 text-sm text-gray-500">Manage your account preferences and security settings.</p>
+          </div>
+          <div>
+            <%= link_to root_path, class: "inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50" do %>
+              <svg class="-ml-1 mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+              </svg>
+              Back to Dashboard
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Settings Tabs -->
+    <div class="bg-white shadow rounded-lg">
+      <div class="border-b border-gray-200">
+        <nav class="-mb-px flex" aria-label="Tabs">
+          <button type="button" class="border-transparent text-indigo-600 border-b-2 border-indigo-500 py-4 px-6 text-center border-b-2 font-medium text-sm">
+            General
+          </button>
+          <button type="button" class="border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 py-4 px-6 text-center border-b-2 font-medium text-sm">
+            Security
+          </button>
+          <button type="button" class="border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 py-4 px-6 text-center border-b-2 font-medium text-sm">
+            Preferences
+          </button>
+        </nav>
+      </div>
+
+      <div class="px-4 py-5 sm:p-6">
+        <!-- General Settings -->
+        <div id="general-settings">
+          <%= form_with(model: @user, url: users_settings_path, method: :patch, local: true, class: "space-y-8") do |form| %>
+            <% if @user.errors.any? %>
+              <div class="rounded-md bg-red-50 p-4">
+                <div class="flex">
+                  <svg class="h-5 w-5 text-red-400" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
+                  </svg>
+                  <div class="ml-3">
+                    <h3 class="text-sm font-medium text-red-800">Please fix the following errors:</h3>
+                    <ul class="list-disc mt-2 ml-5 text-sm text-red-700">
+                      <% @user.errors.full_messages.each do |message| %>
+                        <li><%= message %></li>
+                      <% end %>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            <% end %>
+
+            <!-- Personal Information -->
+            <div>
+              <h3 class="text-lg font-medium text-gray-900 mb-4">Personal Information</h3>
+              <div class="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
+                <div class="sm:col-span-3">
+                  <%= form.label :first_name, class: "block text-sm font-medium text-gray-700" %>
+                  <div class="mt-1">
+                    <%= form.text_field :first_name, 
+                        class: "shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md",
+                        placeholder: "Enter your first name" %>
+                  </div>
+                </div>
+
+                <div class="sm:col-span-3">
+                  <%= form.label :last_name, class: "block text-sm font-medium text-gray-700" %>
+                  <div class="mt-1">
+                    <%= form.text_field :last_name, 
+                        class: "shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md",
+                        placeholder: "Enter your last name" %>
+                  </div>
+                </div>
+
+                <div class="sm:col-span-6">
+                  <%= form.label :email, class: "block text-sm font-medium text-gray-700" %>
+                  <div class="mt-1">
+                    <%= form.email_field :email, 
+                        class: "shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md",
+                        placeholder: "Enter your email address" %>
+                  </div>
+                  <p class="mt-1 text-xs text-gray-500">This is your login email address. Changing it will require email verification.</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Account Security -->
+            <div class="border-t border-gray-200 pt-8">
+              <h3 class="text-lg font-medium text-gray-900 mb-4">Account Security</h3>
+              <div class="space-y-4">
+                <div class="flex items-center justify-between py-4 border border-gray-200 rounded-lg px-4">
+                  <div>
+                    <h4 class="text-sm font-medium text-gray-900">Password</h4>
+                    <p class="text-sm text-gray-500">Last updated: <%= @user.updated_at.strftime("%B %d, %Y") %></p>
+                  </div>
+                  <div>
+                    <%= link_to edit_user_registration_path, class: "inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50" do %>
+                      Change Password
+                    <% end %>
+                  </div>
+                </div>
+
+                <div class="flex items-center justify-between py-4 border border-gray-200 rounded-lg px-4">
+                  <div>
+                    <h4 class="text-sm font-medium text-gray-900">Email Verification</h4>
+                    <p class="text-sm text-gray-500">
+                      <% if @user.confirmed_at %>
+                        <span class="text-green-600">✓ Verified on <%= @user.confirmed_at.strftime("%B %d, %Y") %></span>
+                      <% else %>
+                        <span class="text-red-600">✗ Email not verified</span>
+                      <% end %>
+                    </p>
+                  </div>
+                  <div>
+                    <% unless @user.confirmed_at %>
+                      <%= link_to new_user_confirmation_path, class: "inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700" do %>
+                        Verify Email
+                      <% end %>
+                    <% end %>
+                  </div>
+                </div>
+
+                <div class="flex items-center justify-between py-4 border border-gray-200 rounded-lg px-4">
+                  <div>
+                    <h4 class="text-sm font-medium text-gray-900">Account Status</h4>
+                    <p class="text-sm text-gray-500">
+                      Current status: 
+                      <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium 
+                        <%= @user.status == 'active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' %>">
+                        <%= @user.status.capitalize %>
+                      </span>
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Activity Information -->
+            <div class="border-t border-gray-200 pt-8">
+              <h3 class="text-lg font-medium text-gray-900 mb-4">Activity Information</h3>
+              <dl class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <div>
+                  <dt class="text-sm font-medium text-gray-500">Last Sign In</dt>
+                  <dd class="mt-1 text-sm text-gray-900">
+                    <%= @user.last_sign_in_at&.strftime("%B %d, %Y at %I:%M %p") || "Never" %>
+                  </dd>
+                </div>
+                <div>
+                  <dt class="text-sm font-medium text-gray-500">Sign In Count</dt>
+                  <dd class="mt-1 text-sm text-gray-900"><%= @user.sign_in_count %> times</dd>
+                </div>
+                <div>
+                  <dt class="text-sm font-medium text-gray-500">Member Since</dt>
+                  <dd class="mt-1 text-sm text-gray-900"><%= @user.created_at.strftime("%B %d, %Y") %></dd>
+                </div>
+                <div>
+                  <dt class="text-sm font-medium text-gray-500">Last Activity</dt>
+                  <dd class="mt-1 text-sm text-gray-900">
+                    <%= @user.last_activity_at&.strftime("%B %d, %Y at %I:%M %p") || "No recent activity" %>
+                  </dd>
+                </div>
+              </dl>
+            </div>
+
+            <!-- Danger Zone -->
+            <div class="border-t border-gray-200 pt-8">
+              <h3 class="text-lg font-medium text-red-600 mb-4">Danger Zone</h3>
+              <div class="border border-red-200 rounded-lg p-4 bg-red-50">
+                <div class="flex items-start">
+                  <svg class="h-5 w-5 text-red-400 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                  </svg>
+                  <div class="ml-3">
+                    <h4 class="text-sm font-medium text-red-800">Delete Account</h4>
+                    <p class="text-sm text-red-700 mt-1">
+                      Once you delete your account, all of your data will be permanently removed. This action cannot be undone.
+                    </p>
+                    <div class="mt-4">
+                      <%= link_to "#", data: { confirm: "Are you sure you want to delete your account? This action cannot be undone." }, 
+                          class: "inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-red-600 hover:bg-red-700" do %>
+                        Delete Account
+                      <% end %>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Form Actions -->
+            <div class="border-t border-gray-200 pt-6">
+              <div class="flex justify-end space-x-3">
+                <%= link_to root_path, class: "bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" do %>
+                  Cancel
+                <% end %>
+                <%= form.submit "Save Settings", class: "inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" %>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
