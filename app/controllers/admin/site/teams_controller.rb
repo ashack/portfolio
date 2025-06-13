@@ -1,5 +1,5 @@
 class Admin::Site::TeamsController < Admin::Site::BaseController
-  before_action :set_team, only: [:show]
+  before_action :set_team, only: [ :show ]
 
   def index
     @teams = policy_scope(Team).order(created_at: :desc)

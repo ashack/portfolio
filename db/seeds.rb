@@ -69,7 +69,7 @@ end
 
 # Create development users (only in development)
 if Rails.env.development?
-  
+
   # Create super admin
   unless User.exists?(email: 'super@admin.com')
     User.create!(
@@ -111,7 +111,7 @@ if Rails.env.development?
       status: 'active'
     },
     {
-      email: 'jane@example.com', 
+      email: 'jane@example.com',
       first_name: 'Jane',
       last_name: 'Doe',
       status: 'active'
@@ -125,7 +125,7 @@ if Rails.env.development?
     {
       email: 'locked@example.com',
       first_name: 'Locked',
-      last_name: 'User', 
+      last_name: 'User',
       status: 'locked',
       failed_attempts: 5,
       locked_at: 1.hour.ago
@@ -204,7 +204,7 @@ if Rails.env.development?
 
   # Create teams with members
   puts "\n=== Creating Teams with Members ==="
-  
+
   # Team 1: Acme Corp
   alice = User.find_by(email: 'teamadmin1@example.com')
   if alice && !Team.exists?(name: 'Acme Corp')
@@ -215,17 +215,17 @@ if Rails.env.development?
       created_by: alice,
       status: 'active'
     )
-    
+
     # Update Alice to be a team admin
     alice.update!(user_type: 'invited', team: team1, team_role: 'admin')
-    
+
     # Create team members for Acme Corp
     acme_members = [
       { email: 'acme1@example.com', first_name: 'David', last_name: 'Miller' },
       { email: 'acme2@example.com', first_name: 'Emma', last_name: 'Davis' },
       { email: 'acme3@example.com', first_name: 'Frank', last_name: 'Garcia' }
     ]
-    
+
     acme_members.each do |member_attrs|
       User.create!(
         email: member_attrs[:email],
@@ -241,10 +241,10 @@ if Rails.env.development?
         confirmed_at: Time.current
       )
     end
-    
+
     puts "Created team: Acme Corp with admin teamadmin1@example.com and 3 members"
   end
-  
+
   # Team 2: Tech Solutions
   bob = User.find_by(email: 'teamadmin2@example.com')
   if bob && !Team.exists?(name: 'Tech Solutions')
@@ -255,10 +255,10 @@ if Rails.env.development?
       created_by: bob,
       status: 'active'
     )
-    
+
     # Update Bob to be a team admin
     bob.update!(user_type: 'invited', team: team2, team_role: 'admin')
-    
+
     # Create team members for Tech Solutions
     tech_members = [
       { email: 'tech1@example.com', first_name: 'Grace', last_name: 'Rodriguez' },
@@ -266,7 +266,7 @@ if Rails.env.development?
       { email: 'tech3@example.com', first_name: 'Isabel', last_name: 'Anderson' },
       { email: 'tech4@example.com', first_name: 'Jack', last_name: 'Taylor' }
     ]
-    
+
     tech_members.each do |member_attrs|
       User.create!(
         email: member_attrs[:email],
@@ -282,10 +282,10 @@ if Rails.env.development?
         confirmed_at: Time.current
       )
     end
-    
+
     puts "Created team: Tech Solutions with admin teamadmin2@example.com and 4 members"
   end
-  
+
   # Team 3: Digital Agency (suspended team)
   carol = User.find_by(email: 'teamadmin3@example.com')
   if carol && !Team.exists?(name: 'Digital Agency')
@@ -296,16 +296,16 @@ if Rails.env.development?
       created_by: carol,
       status: 'suspended'
     )
-    
+
     # Update Carol to be a team admin
     carol.update!(user_type: 'invited', team: team3, team_role: 'admin')
-    
+
     # Create team members for Digital Agency
     digital_members = [
       { email: 'digital1@example.com', first_name: 'Kevin', last_name: 'White', status: 'inactive' },
       { email: 'digital2@example.com', first_name: 'Laura', last_name: 'Harris', status: 'active' }
     ]
-    
+
     digital_members.each do |member_attrs|
       User.create!(
         email: member_attrs[:email],
@@ -321,10 +321,10 @@ if Rails.env.development?
         confirmed_at: Time.current
       )
     end
-    
+
     puts "Created team: Digital Agency (suspended) with admin teamadmin3@example.com and 2 members"
   end
-  
+
   puts "\n=== Teams Created ==="
   puts "Active Teams:"
   puts "  - Acme Corp (Admin: teamadmin1@example.com, Members: 3)"

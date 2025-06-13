@@ -27,7 +27,7 @@ class Teams::Admin::BillingController < Teams::Admin::BaseController
   private
 
   def payment_processor_available?
-    @team.respond_to?(:payment_processor) && 
+    @team.respond_to?(:payment_processor) &&
     @team.respond_to?(:set_payment_processor)
   end
 

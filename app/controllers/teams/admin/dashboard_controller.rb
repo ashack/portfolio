@@ -6,14 +6,14 @@ class Teams::Admin::DashboardController < Teams::Admin::BaseController
   def index
     @team_members = @team.users.order(created_at: :desc)
     @pending_invitations = @team.invitations.pending.active
-    
+
     # Defensive programming for payment processor
     if @team.respond_to?(:payment_processor) && @team.payment_processor.present?
       @subscription = @team.payment_processor.subscription
     else
       @subscription = nil
     end
-    
+
     @member_count = @team.member_count
     @member_limit = @team.max_members
   end

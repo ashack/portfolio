@@ -1,7 +1,7 @@
 class Admin::Site::DashboardController < Admin::Site::BaseController
   # Dashboard shows statistics, not scoped resources
   skip_after_action :verify_policy_scoped, only: :index
-  
+
   def index
     @total_users = User.where.not(system_role: "super_admin").count
     @active_users = User.active.where.not(system_role: "super_admin").count

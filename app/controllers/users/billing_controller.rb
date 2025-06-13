@@ -39,7 +39,7 @@ class Users::BillingController < Users::BaseController
   private
 
   def payment_processor_available?
-    current_user.respond_to?(:payment_processor) && 
+    current_user.respond_to?(:payment_processor) &&
     current_user.respond_to?(:set_payment_processor)
   end
 

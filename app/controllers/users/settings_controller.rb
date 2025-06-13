@@ -9,7 +9,7 @@ class Users::SettingsController < Users::BaseController
 
   def update
     @user = current_user
-    
+
     if @user.update(settings_params)
       redirect_to users_settings_path, notice: "Settings updated successfully."
     else

@@ -7,7 +7,7 @@ class Users::DashboardController < Users::BaseController
     @user = current_user
     @subscription = nil
     @recent_activities = @user.ahoy_visits.order(started_at: :desc).limit(5)
-    
+
     # Only try to access payment processor if the user has one set up
     if @user.respond_to?(:payment_processor) && @user.payment_processor.present?
       @subscription = @user.payment_processor.subscription

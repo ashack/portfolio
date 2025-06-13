@@ -61,7 +61,7 @@ class User < ApplicationRecord
     # Check our custom locked status
     elsif locked?
       :locked
-    # Check our custom inactive status  
+    # Check our custom inactive status
     elsif inactive?
       :account_inactive
     else

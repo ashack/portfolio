@@ -3,7 +3,7 @@ namespace :auth do
   task test: :environment do
     puts "Testing Authentication Flow..."
     puts "=" * 50
-    
+
     # Check if user exists
     user = User.find_by(email: "super@admin.com")
     if user
@@ -27,14 +27,14 @@ namespace :auth do
       )
       puts "✓ Test user created: #{user.email}"
     end
-    
+
     puts "\nSession Configuration:"
     puts "  - Store: #{Rails.application.config.session_store}"
     puts "  - Key: #{Rails.application.config.session_options[:key] rescue 'default'}"
-    
+
     puts "\nAuthentication Modules:"
     puts "  - Devise modules: #{User.devise_modules.join(', ')}"
-    
+
     puts "\nTest complete!"
   end
 end

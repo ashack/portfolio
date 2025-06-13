@@ -7,11 +7,11 @@ class AuthDebugController < ApplicationController
     session_key = begin
       Rails.application.config.session_options[:key]
     rescue
-      'default'
+      "default"
     end
-    
+
     warden_user = defined?(warden) ? warden.user : nil
-    
+
     @debug_info = {
       session_info: {
         session_id: session.id,
@@ -27,7 +27,7 @@ class AuthDebugController < ApplicationController
         devise_controller: devise_controller?
       },
       user_count: User.count,
-      first_user: User.first&.attributes&.slice('id', 'email', 'status', 'confirmed_at')
+      first_user: User.first&.attributes&.slice("id", "email", "status", "confirmed_at")
     }
   end
 end

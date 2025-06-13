@@ -8,20 +8,20 @@ class Admin::Super::AnalyticsController < Admin::Super::BaseController
     @total_users = User.count
     @users_by_status = User.group(:status).count
     @users_by_type = User.group(:user_type).count
-    
+
     # Team analytics
     @total_teams = Team.count
     @teams_by_status = Team.group(:status).count
-    
+
     # Activity analytics
-    @active_users_last_30_days = User.where('last_activity_at > ?', 30.days.ago).count
-    @new_users_last_30_days = User.where('created_at > ?', 30.days.ago).count
-    @new_teams_last_30_days = Team.where('created_at > ?', 30.days.ago).count
-    
+    @active_users_last_30_days = User.where("last_activity_at > ?", 30.days.ago).count
+    @new_users_last_30_days = User.where("created_at > ?", 30.days.ago).count
+    @new_teams_last_30_days = Team.where("created_at > ?", 30.days.ago).count
+
     # Sign in analytics
-    @sign_ins_last_30_days = User.where('last_sign_in_at > ?', 30.days.ago).count
+    @sign_ins_last_30_days = User.where("last_sign_in_at > ?", 30.days.ago).count
     @average_sign_in_count = User.average(:sign_in_count).to_f.round(1)
-    
+
     # Monthly data (last 12 months) - manual grouping
     @users_by_month = {}
     @teams_by_month = {}
