@@ -171,6 +171,90 @@ config.action_mailer.perform_deliveries = true
 
 **Final Result**: Complete invitation system with resend/revoke functionality, email previews, and Rails 8.0.2 compatibility
 
+### Issue 7: Site Admin Profile Controller Naming (SOLVED)
+
+**Problem**: `NameError: uninitialized constant Admin::Site::ProfileController`
+
+**Root Cause**: Controller was named `ProfilesController` (plural) but routes expected `ProfileController` (singular)
+
+**Solution**: Fixed controller naming consistency
+```ruby
+# config/routes.rb
+namespace :site do
+  resource :profile, only: [:show, :edit, :update], controller: 'profiles'
+end
+```
+
+**Alternative Solution**: Could rename controller to match convention
+```ruby
+# Rename app/controllers/admin/site/profiles_controller.rb
+# to app/controllers/admin/site/profile_controller.rb
+```
+
+### Issue 8: Missing Navigation in Email Change Requests (SOLVED)
+
+**Problem**: Email change request pages had no navigation back to admin dashboard
+
+**Root Cause**: Views were created without proper layout integration
+
+**Solution**: Added navigation header to all email change request views
+```erb
+<div class="mb-6">
+  <%= link_to "← Back to Dashboard", admin_super_root_path, 
+      class: "text-blue-600 hover:text-blue-800" %>
+</div>
+```
+
+### Issue 9: Table UI/UX Issues (SOLVED)
+
+**Problems**:
+1. Table content overflowing container
+2. Blue focus rings appearing on table rows
+3. Horizontal scrolling not working properly
+
+**Solutions**:
+
+**A. Fixed Table Overflow**:
+```erb
+<!-- Before -->
+<div class="bg-white shadow rounded-lg p-6">
+  <table>...</table>
+</div>
+
+<!-- After -->
+<div class="bg-white shadow rounded-lg p-6">
+  <div class="overflow-x-auto">
+    <table>...</table>
+  </div>
+</div>
+```
+
+**B. Removed Focus Ring Conflicts**:
+```erb
+<!-- Before -->
+<tr class="hover:bg-gray-50 cursor-pointer" 
+    onclick="window.location.href='<%= path %>'">
+
+<!-- After -->
+<tr class="hover:bg-gray-50 cursor-pointer focus:outline-none" 
+    onclick="window.location.href='<%= path %>'" 
+    tabindex="0">
+```
+
+**C. Improved Responsive Design**:
+```erb
+<div class="min-w-full overflow-x-auto">
+  <table class="min-w-full table-auto">
+    <!-- Proper table structure -->
+  </table>
+</div>
+```
+
+**Files Fixed**:
+- All admin dashboard views with tables
+- Email change request index views
+- User management tables
+
 ## Authentication Issues
 
 ### Problem: Application Callbacks Interfering with Devise
@@ -287,6 +371,25 @@ curl -w "%{http_code}" http://localhost:3000/dashboard
 # Test sign out (should fail with GET)
 curl -I http://localhost:3000/users/sign_out
 ```
+
+## Recent Bug Patterns (Dec 2025)
+
+### Controller Naming Conventions
+- Always match controller class names with file names
+- Be consistent with singular vs plural naming
+- Use `controller:` option in routes when names don't match conventions
+
+### UI/UX Consistency
+- Always include navigation in admin views
+- Test table layouts with various screen sizes
+- Use proper overflow handling for scrollable content
+- Remove conflicting CSS classes (e.g., focus rings on non-focusable elements)
+
+### Email System Integration
+- Always validate email uniqueness before updates
+- Use proper mail templates with consistent styling
+- Test email delivery in development with Letter Opener
+- Include proper error handling for mail delivery failures
 
 ## Prevention Strategies
 

@@ -212,6 +212,90 @@ if controller && controller.respond_to?(:current_user) && controller.current_use
 end
 ```
 
+## Admin Activity Tracking
+
+### Implementation
+```ruby
+# app/controllers/application_controller.rb
+before_action :track_user_activity
+
+def track_user_activity
+  if current_user
+    current_user.update_column(:last_activity_at, Time.current)
+  end
+end
+```
+
+### Benefits
+- Real-time monitoring of admin actions
+- Security audit trail for suspicious activity
+- User engagement metrics
+- Compliance with security best practices
+
+## Email Change Request Workflow
+
+### Security Measures
+1. **Two-Step Approval Process**
+   - User requests email change (doesn't immediately update)
+   - Admin reviews and approves/rejects request
+   - Original email retained until approval
+
+2. **Validation**
+   ```ruby
+   # Prevent duplicate emails
+   if User.where.not(id: user.id).exists?(email: new_email)
+     errors.add(:email, 'is already taken')
+   end
+   ```
+
+3. **Notification System**
+   - User notified of request status
+   - Admins alerted to pending requests
+   - Audit trail maintained
+
+### Email Change Request Model
+```ruby
+class EmailChangeRequest < ApplicationRecord
+  belongs_to :user
+  
+  validates :new_email, presence: true, format: { with: URI::MailTo::EMAIL_REGEXP }
+  validate :email_uniqueness
+  
+  enum status: { pending: 0, approved: 1, rejected: 2 }
+  
+  private
+  
+  def email_uniqueness
+    if User.where.not(id: user_id).exists?(email: new_email)
+      errors.add(:new_email, 'is already taken')
+    end
+  end
+end
+```
+
+## Profile Update Restrictions
+
+### Admin Profile Security
+1. **System Role Protection**
+   ```ruby
+   # Admins cannot change their own system role
+   if updating_own_profile? && params[:user][:system_role].present?
+     params[:user].delete(:system_role)
+   end
+   ```
+
+2. **Site Admin Limitations**
+   - Can edit their own profile (name, password)
+   - Cannot change system role
+   - Cannot access billing information
+   - Profile updates logged for audit
+
+3. **Super Admin Capabilities**
+   - Full profile editing for all users
+   - System role management
+   - Email change approvals
+   - Complete audit trail access
+
 ## Security Incident Response
 
 ### Account Compromise
@@ -262,6 +346,8 @@ end
 3. **Set up security monitoring** with tools like Brakeman
 4. **Regular security audits** of dependencies
 5. **Penetration testing** before production launch
+6. **Enhanced audit logging** for all critical operations
+7. **Security event alerting** for suspicious activities
 
 ---
 

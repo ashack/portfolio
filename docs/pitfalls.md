@@ -458,6 +458,77 @@ config.log_level = :warn
 - User behavior analytics
 - Security event logging
 
+## Email Change Request Pitfalls
+
+### 16. Direct Email Updates Without Approval
+
+**❌ What Goes Wrong**:
+```ruby
+# Allowing direct email updates
+@user.update!(email: params[:user][:email])  # Security risk!
+```
+
+**⚠️ The Trap**: Bypassing email verification and approval processes
+
+**✅ Solution**: Use email change request workflow
+```ruby
+# Create request for approval
+@email_request = EmailChangeRequest.create!(
+  user: @user,
+  new_email: params[:user][:email],
+  status: 'pending'
+)
+```
+
+**🔍 Why This Happens**: Email changes need verification to prevent account takeovers
+
+### 17. Missing Navigation in Admin Views
+
+**❌ What Goes Wrong**:
+```erb
+<!-- Admin view with no way back -->
+<h1>Email Change Requests</h1>
+<table>...</table>
+<!-- User is stuck! -->
+```
+
+**⚠️ The Trap**: Creating isolated views without navigation
+
+**✅ Solution**: Always include navigation
+```erb
+<div class="mb-6">
+  <%= link_to "← Back to Dashboard", admin_super_root_path, 
+      class: "text-blue-600 hover:text-blue-800" %>
+</div>
+```
+
+**🔍 Why This Happens**: Easy to focus on functionality and forget navigation
+
+### 18. Profile Update Permission Gaps
+
+**❌ What Goes Wrong**:
+```ruby
+# Site admin editing their own system role
+def update
+  @user.update!(user_params)  # Allows role escalation!
+end
+```
+
+**⚠️ The Trap**: Not restricting sensitive fields based on context
+
+**✅ Solution**: Context-aware parameter filtering
+```ruby
+def user_params
+  if updating_own_profile? && !current_user.super_admin?
+    params.require(:user).permit(:first_name, :last_name, :password)
+  else
+    params.require(:user).permit(:first_name, :last_name, :email, :system_role)
+  end
+end
+```
+
+**🔍 Why This Happens**: Same controller serves different permission contexts
+
 ## Quick Reference: Common Mistakes
 
 | Mistake | Impact | Quick Fix |
@@ -473,6 +544,9 @@ config.log_level = :warn
 | No error handling in controllers | Poor UX | Handle exceptions gracefully |
 | Forgetting to eager load | N+1 queries | Use `.includes()` |
 | Not checking logs when debugging | Wrong assumptions | Always check logs first |
+| Direct email updates | Security vulnerability | Use email change requests |
+| Missing navigation | Poor UX | Include back links |
+| Profile permission gaps | Privilege escalation | Context-aware permissions |
 
 ---
 
