@@ -1,0 +1,17 @@
+Account Unlocked
+===============
+
+Hello <%= @user.full_name.presence || @user.email %>,
+
+Your account has been unlocked by a system administrator. All failed login attempts have been cleared and you can now sign in normally.
+
+✓ Account Status: Unlocked and Ready to Use
+✓ Failed Attempts: Cleared (Reset to 0)
+
+Sign in to your account: <%= new_user_session_url %>
+
+If you continue to experience login issues, please contact your system administrator for assistance.
+
+Security Tip: To avoid future account locks, make sure you're using the correct password. Consider using a password manager to securely store your credentials.
+
+This unlock was processed by a system administrator.

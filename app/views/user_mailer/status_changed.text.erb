@@ -1,0 +1,38 @@
+Account Status Changed
+=====================
+
+Hello <%= @user.full_name.presence || @user.email %>,
+
+Your account status has been updated by a system administrator.
+
+Status Change:
+Previous Status: <%= @old_status %>
+Current Status: <%= @new_status %>
+
+<% if @new_status == 'Active' %>
+✓ Your account is now active
+
+• You can now sign in normally
+• All features are available to you
+• Your access has been fully restored
+
+Sign in to your account: <%= new_user_session_url %>
+<% else %>
+⚠️ Account access restricted
+
+<% if @new_status == 'Inactive' %>
+• Your account has been temporarily deactivated
+• You will not be able to sign in
+• Contact your administrator to restore access
+<% elsif @new_status == 'Locked' %>
+• Your account has been locked for security reasons
+• All access has been suspended
+• Contact your administrator immediately
+<% end %>
+<% end %>
+
+If you have any questions about this status change or need assistance, please contact your system administrator.
+
+Note: If you believe this change was made in error, please contact your system administrator immediately.
+
+This change was made by a system administrator.

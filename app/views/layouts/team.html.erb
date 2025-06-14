@@ -62,6 +62,7 @@
                 <%= link_to "Admin Dashboard", team_admin_root_path, class: "#{request.path == team_admin_root_path ? 'bg-gray-700' : ''} text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-sm font-medium" %>
                 <%= link_to "Members", team_admin_members_path, class: "#{request.path.include?('/members') ? 'bg-gray-700' : ''} text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-sm font-medium" %>
                 <%= link_to "Invitations", team_admin_invitations_path, class: "#{request.path.include?('/invitations') ? 'bg-gray-700' : ''} text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-sm font-medium" %>
+                <%= link_to "Email Requests", team_admin_email_change_requests_path, class: "#{request.path.include?('/email_change_requests') ? 'bg-gray-700' : ''} text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-sm font-medium" %>
                 <%= link_to "Billing", team_admin_billing_index_path, class: "#{request.path.include?('/billing') ? 'bg-gray-700' : ''} text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-sm font-medium" %>
                 <%= link_to "Settings", team_admin_settings_path, class: "#{request.path.include?('/settings') ? 'bg-gray-700' : ''} text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-sm font-medium" %>
               </div>

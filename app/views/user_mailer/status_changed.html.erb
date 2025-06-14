@@ -1,0 +1,102 @@
+<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+  <% if @new_status == 'Active' %>
+    <div style="background-color: #f0fdf4; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+      <h1 style="color: #15803d; margin: 0 0 10px 0; font-size: 24px;">Account Activated</h1>
+      <p style="color: #16a34a; margin: 0; font-size: 14px;">Your account access has been restored</p>
+    </div>
+  <% else %>
+    <div style="background-color: #fef2f2; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+      <h1 style="color: #dc2626; margin: 0 0 10px 0; font-size: 24px;">Account Status Changed</h1>
+      <p style="color: #dc2626; margin: 0; font-size: 14px;">Your account access has been modified</p>
+    </div>
+  <% end %>
+
+  <div style="background-color: white; padding: 20px; border: 1px solid #e5e7eb; border-radius: 8px;">
+    <p style="color: #374151; font-size: 16px; line-height: 1.5; margin: 0 0 20px 0;">
+      Hello <%= @user.full_name.presence || @user.email %>,
+    </p>
+
+    <p style="color: #374151; font-size: 16px; line-height: 1.5; margin: 0 0 20px 0;">
+      Your account status has been updated by a system administrator.
+    </p>
+
+    <% if @new_status == 'Active' %>
+      <div style="background-color: #f0fdf4; padding: 15px; border-radius: 6px; border-left: 4px solid #15803d; margin: 20px 0;">
+        <p style="color: #15803d; font-size: 14px; margin: 0 0 5px 0; font-weight: 600;">
+          Status Change:
+        </p>
+        <p style="color: #15803d; font-size: 14px; margin: 0;">
+          <strong>Previous Status:</strong> <%= @old_status %>
+        </p>
+        <p style="color: #15803d; font-size: 14px; margin: 0;">
+          <strong>Current Status:</strong> <%= @new_status %>
+        </p>
+      </div>
+
+      <div style="background-color: #f0fdf4; padding: 15px; border-radius: 6px; margin: 20px 0;">
+        <p style="color: #15803d; font-size: 14px; margin: 0 0 10px 0; font-weight: 600;">
+          ✓ Your account is now active
+        </p>
+        <p style="color: #374151; font-size: 14px; margin: 0;">
+          • You can now sign in normally<br>
+          • All features are available to you<br>
+          • Your access has been fully restored
+        </p>
+      </div>
+
+      <div style="text-align: center; margin: 30px 0;">
+        <a href="<%= new_user_session_url %>" 
+           style="background-color: #15803d; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: 600; display: inline-block;">
+          Sign In to Your Account
+        </a>
+      </div>
+    <% else %>
+      <div style="background-color: #fef2f2; padding: 15px; border-radius: 6px; border-left: 4px solid #dc2626; margin: 20px 0;">
+        <p style="color: #dc2626; font-size: 14px; margin: 0 0 5px 0; font-weight: 600;">
+          Status Change:
+        </p>
+        <p style="color: #dc2626; font-size: 14px; margin: 0;">
+          <strong>Previous Status:</strong> <%= @old_status %>
+        </p>
+        <p style="color: #dc2626; font-size: 14px; margin: 0;">
+          <strong>Current Status:</strong> <%= @new_status %>
+        </p>
+      </div>
+
+      <div style="background-color: #fef2f2; padding: 15px; border-radius: 6px; margin: 20px 0;">
+        <p style="color: #dc2626; font-size: 14px; margin: 0 0 10px 0; font-weight: 600;">
+          ⚠️ Account access restricted
+        </p>
+        <% if @new_status == 'Inactive' %>
+          <p style="color: #374151; font-size: 14px; margin: 0;">
+            • Your account has been temporarily deactivated<br>
+            • You will not be able to sign in<br>
+            • Contact your administrator to restore access
+          </p>
+        <% elsif @new_status == 'Locked' %>
+          <p style="color: #374151; font-size: 14px; margin: 0;">
+            • Your account has been locked for security reasons<br>
+            • All access has been suspended<br>
+            • Contact your administrator immediately
+          </p>
+        <% end %>
+      </div>
+    <% end %>
+
+    <p style="color: #374151; font-size: 16px; line-height: 1.5; margin: 20px 0 0 0;">
+      If you have any questions about this status change or need assistance, please contact your system administrator.
+    </p>
+
+    <div style="border-top: 1px solid #e5e7eb; margin-top: 20px; padding-top: 20px;">
+      <p style="color: #6b7280; font-size: 14px; margin: 0;">
+        <strong>Note:</strong> If you believe this change was made in error, please contact your system administrator immediately.
+      </p>
+    </div>
+  </div>
+
+  <div style="text-align: center; margin-top: 20px;">
+    <p style="color: #9ca3af; font-size: 12px; margin: 0;">
+      This change was made by a system administrator.
+    </p>
+  </div>
+</div>

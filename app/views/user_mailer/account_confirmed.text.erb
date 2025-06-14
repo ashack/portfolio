@@ -1,0 +1,12 @@
+Account Confirmed
+================
+
+Hello <%= @user.full_name.presence || @user.email %>,
+
+Your email address has been successfully confirmed by a system administrator. Your account is now fully activated and you have access to all features.
+
+✓ Email Confirmed: <%= @user.email %>
+
+You can now sign in to your account and access all available features. If you have any questions, please contact your system administrator.
+
+This confirmation was processed automatically by a system administrator.

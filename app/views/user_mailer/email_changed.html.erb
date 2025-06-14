@@ -1,0 +1,53 @@
+<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+  <div style="background-color: #fef3c7; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+    <h1 style="color: #d97706; margin: 0 0 10px 0; font-size: 24px;">Email Address Updated</h1>
+    <p style="color: #92400e; margin: 0; font-size: 14px;">Your email address has been changed by an administrator</p>
+  </div>
+
+  <div style="background-color: white; padding: 20px; border: 1px solid #e5e7eb; border-radius: 8px;">
+    <p style="color: #374151; font-size: 16px; line-height: 1.5; margin: 0 0 20px 0;">
+      Hello <%= @user.full_name.presence || @user.email %>,
+    </p>
+
+    <p style="color: #374151; font-size: 16px; line-height: 1.5; margin: 0 0 20px 0;">
+      This is to notify you that your email address has been updated by a system administrator.
+    </p>
+
+    <div style="background-color: #fef3c7; padding: 15px; border-radius: 6px; border-left: 4px solid #d97706; margin: 20px 0;">
+      <p style="color: #92400e; font-size: 14px; margin: 0 0 5px 0; font-weight: 600;">
+        Email Address Change:
+      </p>
+      <p style="color: #92400e; font-size: 14px; margin: 0;">
+        <strong>Previous:</strong> <%= @old_email %>
+      </p>
+      <p style="color: #92400e; font-size: 14px; margin: 0;">
+        <strong>Current:</strong> <%= @new_email %>
+      </p>
+    </div>
+
+    <div style="background-color: #fee2e2; padding: 15px; border-radius: 6px; border-left: 4px solid #dc2626; margin: 20px 0;">
+      <p style="color: #dc2626; font-size: 14px; margin: 0; font-weight: 600;">
+        🚨 Security Notice
+      </p>
+      <p style="color: #dc2626; font-size: 14px; margin: 5px 0 0 0;">
+        If you did not request this change, please contact your system administrator immediately.
+      </p>
+    </div>
+
+    <p style="color: #374151; font-size: 16px; line-height: 1.5; margin: 20px 0 0 0;">
+      You will need to use your new email address for all future sign-ins. If you have any questions or concerns, please contact your system administrator.
+    </p>
+
+    <div style="border-top: 1px solid #e5e7eb; margin-top: 20px; padding-top: 20px;">
+      <p style="color: #6b7280; font-size: 14px; margin: 0;">
+        <strong>Important:</strong> This notification has been sent to both your old and new email addresses for security purposes.
+      </p>
+    </div>
+  </div>
+
+  <div style="text-align: center; margin-top: 20px;">
+    <p style="color: #9ca3af; font-size: 12px; margin: 0;">
+      This change was made by a system administrator.
+    </p>
+  </div>
+</div>

@@ -11,6 +11,7 @@ class Invitation < ApplicationRecord
   validate :email_not_in_users_table
   validate :not_expired, on: :accept
 
+  before_validation :normalize_email
   before_validation :generate_token, if: :new_record?
   before_validation :set_expiration, if: :new_record?
 
@@ -53,8 +54,12 @@ class Invitation < ApplicationRecord
 
   private
 
+  def normalize_email
+    self.email = email&.downcase&.strip
+  end
+
   def email_not_in_users_table
-    if User.exists?(email: email)
+    if User.exists?(email: email.downcase)
       errors.add(:email, "already has an account")
     end
   end

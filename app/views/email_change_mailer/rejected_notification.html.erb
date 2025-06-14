@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta content='text/html; charset=UTF-8' http-equiv='Content-Type' />
+  </head>
+  <body>
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+      <h1 style="color: #DC2626; border-bottom: 2px solid #DC2626; padding-bottom: 10px;">Email Change Request Rejected</h1>
+      
+      <p>Hello <%= @user.first_name.presence || 'there' %>,</p>
+      
+      <div style="background-color: #fef2f2; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #DC2626;">
+        <p style="margin: 0; color: #991b1b; font-weight: bold;">Your email change request has been rejected by an administrator.</p>
+      </div>
+      
+      <p>We regret to inform you that your request to change your email address could not be approved at this time.</p>
+      
+      <div style="background-color: #f3f4f6; padding: 20px; border-radius: 8px; margin: 20px 0;">
+        <p style="margin: 0 0 10px 0;"><strong>Current Email:</strong> <%= @user.email %> (unchanged)</p>
+        <p style="margin: 0 0 10px 0;"><strong>Requested Email:</strong> <%= @email_change_request.new_email %></p>
+        <p style="margin: 0 0 10px 0;"><strong>Rejected By:</strong> <%= @rejected_by.full_name.presence || @rejected_by.email %></p>
+        <p style="margin: 0 0 10px 0;"><strong>Rejection Date:</strong> <%= @email_change_request.approved_at.strftime("%B %d, %Y at %I:%M %p") %></p>
+        <% if @email_change_request.notes.present? %>
+          <p style="margin: 0;"><strong>Reason for Rejection:</strong> <%= @email_change_request.notes %></p>
+        <% end %>
+      </div>
+      
+      <h2 style="color: #333; font-size: 18px;">What you can do:</h2>
+      
+      <ul style="line-height: 1.6;">
+        <li>Review the rejection reason above</li>
+        <li>Address any concerns mentioned by the administrator</li>
+        <li>Submit a new request with additional information if needed</li>
+        <li>Contact support if you have questions about this decision</li>
+      </ul>
+      
+      <div style="background-color: #f0f9ff; padding: 15px; border-radius: 8px; margin: 20px 0;">
+        <p style="margin: 0; color: #0369a1;"><strong>Note:</strong> Your current email address remains active and unchanged.</p>
+      </div>
+      
+      <p>If you believe this rejection was made in error or if you need to discuss this decision, please contact our support team.</p>
+      
+      <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #e5e7eb;">
+        <p style="color: #6b7280; font-size: 14px;">
+          This is an automated email. Please do not reply to this message.<br>
+          For any questions, please contact our support team.
+        </p>
+      </div>
+    </div>
+  </body>
+</html>

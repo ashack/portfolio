@@ -1,0 +1,69 @@
+<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+  <div style="background-color: #ede9fe; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+    <h1 style="color: #7c3aed; margin: 0 0 10px 0; font-size: 24px;">Account Role Updated</h1>
+    <p style="color: #6d28d9; margin: 0; font-size: 14px;">Your system access level has been changed</p>
+  </div>
+
+  <div style="background-color: white; padding: 20px; border: 1px solid #e5e7eb; border-radius: 8px;">
+    <p style="color: #374151; font-size: 16px; line-height: 1.5; margin: 0 0 20px 0;">
+      Hello <%= @user.full_name.presence || @user.email %>,
+    </p>
+
+    <p style="color: #374151; font-size: 16px; line-height: 1.5; margin: 0 0 20px 0;">
+      Your account role has been updated by a system administrator. This change affects your access permissions and available features.
+    </p>
+
+    <div style="background-color: #ede9fe; padding: 15px; border-radius: 6px; border-left: 4px solid #7c3aed; margin: 20px 0;">
+      <p style="color: #6d28d9; font-size: 14px; margin: 0 0 5px 0; font-weight: 600;">
+        Role Change:
+      </p>
+      <p style="color: #6d28d9; font-size: 14px; margin: 0;">
+        <strong>Previous Role:</strong> <%= @old_role %>
+      </p>
+      <p style="color: #6d28d9; font-size: 14px; margin: 0;">
+        <strong>Current Role:</strong> <%= @new_role %>
+      </p>
+    </div>
+
+    <div style="background-color: #f3f4f6; padding: 15px; border-radius: 6px; margin: 20px 0;">
+      <p style="color: #374151; font-size: 14px; margin: 0 0 10px 0; font-weight: 600;">
+        What this means:
+      </p>
+      <% if @new_role == 'Super admin' %>
+        <p style="color: #374151; font-size: 14px; margin: 0;">
+          • You now have complete system access<br>
+          • You can manage all users and teams<br>
+          • You can access all administrative features
+        </p>
+      <% elsif @new_role == 'Site admin' %>
+        <p style="color: #374151; font-size: 14px; margin: 0;">
+          • You can now manage users and provide support<br>
+          • You have access to user management tools<br>
+          • You cannot create teams or access billing information
+        </p>
+      <% else %>
+        <p style="color: #374151; font-size: 14px; margin: 0;">
+          • You are now a regular user<br>
+          • You have access to standard user features<br>
+          • Administrative access has been removed
+        </p>
+      <% end %>
+    </div>
+
+    <p style="color: #374151; font-size: 16px; line-height: 1.5; margin: 20px 0 0 0;">
+      The changes will take effect immediately. You may need to sign out and sign back in to see the updated interface. If you have any questions about your new permissions, please contact your system administrator.
+    </p>
+
+    <div style="border-top: 1px solid #e5e7eb; margin-top: 20px; padding-top: 20px;">
+      <p style="color: #6b7280; font-size: 14px; margin: 0;">
+        <strong>Note:</strong> If you believe this change was made in error, please contact your system administrator immediately.
+      </p>
+    </div>
+  </div>
+
+  <div style="text-align: center; margin-top: 20px;">
+    <p style="color: #9ca3af; font-size: 12px; margin: 0;">
+      This change was made by a system administrator.
+    </p>
+  </div>
+</div>

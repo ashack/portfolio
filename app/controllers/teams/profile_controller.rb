@@ -30,6 +30,6 @@ class Teams::ProfileController < Teams::BaseController
   end
 
   def profile_params
-    params.require(:user).permit(:first_name, :last_name, :email)
+    params.require(:user).permit(:first_name, :last_name)
   end
 end

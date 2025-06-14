@@ -1,0 +1,27 @@
+Email Change Request Approved ✓
+========================================
+
+Hello <%= @user.first_name.presence || 'there' %>,
+
+Good news! Your email change request has been approved.
+
+Your email address has been successfully changed. Here are the details:
+
+Previous Email: <%= @user.email %>
+New Email: <%= @email_change_request.new_email %>
+Approved By: <%= @approved_by.full_name.presence || @approved_by.email %>
+Approved Date: <%= @email_change_request.approved_at.strftime("%B %d, %Y at %I:%M %p") %>
+<% if @email_change_request.notes.present? %>
+Admin Notes: <%= @email_change_request.notes %>
+<% end %>
+
+Important Next Steps:
+- Your new email is now active - Use <%= @email_change_request.new_email %> to sign in
+- Your old email address is no longer valid for this account
+- Update any saved login credentials or password managers
+- This email serves as confirmation of the change
+
+SECURITY NOTE: If you did not request this change, please contact support immediately.
+
+This is an automated email. Please do not reply to this message.
+For any questions, please contact our support team.

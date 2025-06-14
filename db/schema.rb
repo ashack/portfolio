@@ -10,7 +10,31 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_06_12_161150) do
+ActiveRecord::Schema[8.0].define(version: 2025_06_14_124349) do
+  create_table "admin_activity_logs", force: :cascade do |t|
+    t.integer "admin_user_id", null: false
+    t.string "controller", null: false
+    t.string "action", null: false
+    t.string "method", null: false
+    t.string "path", null: false
+    t.text "params"
+    t.string "ip_address"
+    t.text "user_agent"
+    t.string "referer"
+    t.string "session_id"
+    t.string "request_id"
+    t.datetime "timestamp", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["action"], name: "index_admin_activity_logs_on_action"
+    t.index ["admin_user_id", "timestamp"], name: "index_admin_activity_logs_on_admin_user_id_and_timestamp"
+    t.index ["admin_user_id"], name: "index_admin_activity_logs_on_admin_user_id"
+    t.index ["controller"], name: "index_admin_activity_logs_on_controller"
+    t.index ["ip_address"], name: "index_admin_activity_logs_on_ip_address"
+    t.index ["session_id"], name: "index_admin_activity_logs_on_session_id"
+    t.index ["timestamp"], name: "index_admin_activity_logs_on_timestamp"
+  end
+
   create_table "ahoy_events", force: :cascade do |t|
     t.integer "visit_id"
     t.integer "user_id"
@@ -53,6 +77,44 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_12_161150) do
     t.index ["visitor_token", "started_at"], name: "index_ahoy_visits_on_visitor_token_and_started_at"
   end
 
+  create_table "audit_logs", force: :cascade do |t|
+    t.integer "user_id", null: false
+    t.integer "target_user_id", null: false
+    t.string "action", null: false
+    t.json "details"
+    t.string "ip_address"
+    t.string "user_agent", limit: 500
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["action"], name: "index_audit_logs_on_action"
+    t.index ["created_at"], name: "index_audit_logs_on_created_at"
+    t.index ["target_user_id", "created_at"], name: "index_audit_logs_on_target_user_id_and_created_at"
+    t.index ["target_user_id"], name: "index_audit_logs_on_target_user_id"
+    t.index ["user_id", "created_at"], name: "index_audit_logs_on_user_id_and_created_at"
+    t.index ["user_id"], name: "index_audit_logs_on_user_id"
+  end
+
+  create_table "email_change_requests", force: :cascade do |t|
+    t.integer "user_id", null: false
+    t.string "new_email", null: false
+    t.integer "status", default: 0, null: false
+    t.text "reason"
+    t.datetime "requested_at", null: false
+    t.integer "approved_by_id"
+    t.datetime "approved_at"
+    t.text "notes"
+    t.string "token", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["approved_by_id"], name: "index_email_change_requests_on_approved_by_id"
+    t.index ["new_email"], name: "index_email_change_requests_on_new_email"
+    t.index ["requested_at"], name: "index_email_change_requests_on_requested_at"
+    t.index ["status"], name: "index_email_change_requests_on_status"
+    t.index ["token"], name: "index_email_change_requests_on_token", unique: true
+    t.index ["user_id", "status"], name: "index_email_change_requests_on_user_id_and_status"
+    t.index ["user_id"], name: "index_email_change_requests_on_user_id"
+  end
+
   create_table "invitations", force: :cascade do |t|
     t.bigint "team_id", null: false
     t.string "email", null: false
@@ -63,7 +125,10 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_12_161150) do
     t.datetime "expires_at", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index "LOWER(email)", name: "index_invitations_on_lower_email"
+    t.index ["accepted_at"], name: "index_invitations_on_accepted_at"
     t.index ["email"], name: "index_invitations_on_email"
+    t.index ["expires_at"], name: "index_invitations_on_expires_at"
     t.index ["team_id"], name: "index_invitations_on_team_id"
     t.index ["token"], name: "index_invitations_on_token", unique: true
   end
@@ -224,15 +289,23 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_12_161150) do
     t.datetime "locked_at"
     t.integer "failed_attempts", default: 0, null: false
     t.string "unlock_token"
+    t.index "LOWER(email)", name: "index_users_on_lower_email"
     t.index ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["last_activity_at"], name: "index_users_on_last_activity_at"
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
     t.index ["status"], name: "index_users_on_status"
+    t.index ["team_id", "team_role"], name: "index_users_on_team_associations"
     t.index ["team_id"], name: "index_users_on_team_id"
     t.index ["unlock_token"], name: "index_users_on_unlock_token", unique: true
+    t.index ["user_type", "team_id"], name: "index_users_on_user_type_and_team"
   end
 
+  add_foreign_key "admin_activity_logs", "users", column: "admin_user_id"
+  add_foreign_key "audit_logs", "users"
+  add_foreign_key "audit_logs", "users", column: "target_user_id"
+  add_foreign_key "email_change_requests", "users"
+  add_foreign_key "email_change_requests", "users", column: "approved_by_id"
   add_foreign_key "invitations", "teams"
   add_foreign_key "invitations", "users", column: "invited_by_id"
   add_foreign_key "pay_charges", "pay_customers", column: "customer_id"

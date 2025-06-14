@@ -1,0 +1,99 @@
+<% content_for :page_title, "Request Email Change" %>
+
+<div class="bg-white shadow rounded-lg">
+  <div class="px-4 py-5 sm:p-6">
+    <div class="mb-6">
+      <h1 class="text-2xl font-bold text-gray-900">Request Email Change</h1>
+      <p class="mt-1 text-sm text-gray-500">
+        Submit a request to change your email address. This request will be reviewed by a super admin.
+      </p>
+    </div>
+
+    <%= form_with(model: [@team, @email_change_request], url: team_admin_email_change_requests_path(@team), local: true, class: "space-y-6") do |form| %>
+      <% if @email_change_request.errors.any? %>
+        <div class="bg-red-50 border border-red-200 rounded-md p-4">
+          <div class="flex">
+            <div class="flex-shrink-0">
+              <svg class="h-5 w-5 text-red-400" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
+              </svg>
+            </div>
+            <div class="ml-3">
+              <h3 class="text-sm font-medium text-red-800">
+                There were errors with your request:
+              </h3>
+              <div class="mt-2 text-sm text-red-700">
+                <ul class="list-disc list-inside space-y-1">
+                  <% @email_change_request.errors.full_messages.each do |message| %>
+                    <li><%= message %></li>
+                  <% end %>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      <% end %>
+
+      <div>
+        <label for="current_email" class="block text-sm font-medium text-gray-700">Current Email</label>
+        <div class="mt-1">
+          <input type="text" id="current_email" value="<%= current_user.email %>" disabled
+                 class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md bg-gray-50 text-gray-500" />
+        </div>
+        <p class="mt-2 text-sm text-gray-500">This is your current email address that you want to change.</p>
+      </div>
+
+      <div>
+        <%= form.label :new_email, "New Email Address", class: "block text-sm font-medium text-gray-700" %>
+        <div class="mt-1">
+          <%= form.email_field :new_email, required: true, 
+              class: "shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md",
+              placeholder: "Enter your new email address" %>
+        </div>
+        <p class="mt-2 text-sm text-gray-500">Enter the new email address you want to use for your account.</p>
+      </div>
+
+      <div>
+        <%= form.label :reason, "Reason for Change", class: "block text-sm font-medium text-gray-700" %>
+        <div class="mt-1">
+          <%= form.text_area :reason, rows: 4, required: true,
+              class: "shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md",
+              placeholder: "Please explain why you need to change your email address..." %>
+        </div>
+        <p class="mt-2 text-sm text-gray-500">Provide a clear reason for the email change request to help with approval.</p>
+      </div>
+
+      <div class="bg-yellow-50 border border-yellow-200 rounded-md p-4">
+        <div class="flex">
+          <div class="flex-shrink-0">
+            <svg class="h-5 w-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+            </svg>
+          </div>
+          <div class="ml-3">
+            <h3 class="text-sm font-medium text-yellow-800">Important Notes</h3>
+            <div class="mt-2 text-sm text-yellow-700">
+              <ul class="list-disc list-inside space-y-1">
+                <li>Your request will be reviewed by a super admin</li>
+                <li>You will continue using your current email until the request is approved</li>
+                <li>You will receive notifications about the status of your request</li>
+                <li>Only one pending request is allowed at a time</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-between pt-6 border-t border-gray-200">
+        <div class="flex space-x-3">
+          <%= link_to "Cancel", team_admin_email_change_requests_path(@team), 
+              class: "inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50" %>
+        </div>
+        <div>
+          <%= form.submit "Submit Request", 
+              class: "inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>
