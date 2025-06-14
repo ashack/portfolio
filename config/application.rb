@@ -38,5 +38,15 @@ module SaasRorStarter
 
     # Don't generate system test files.
     config.generators.system_tests = nil
+
+    # Enhanced CSRF Protection Configuration
+    config.force_ssl = Rails.env.production? # Force SSL in production for secure CSRF tokens
+
+    # Configure session cookie security
+    config.session_store :cookie_store,
+      key: "_saas_ror_starter_session",
+      secure: Rails.env.production?, # Secure cookies in production
+      httponly: true, # Prevent XSS access to session cookies
+      same_site: :lax # CSRF protection via SameSite attribute
   end
 end

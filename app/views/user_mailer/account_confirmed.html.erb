@@ -1,0 +1,32 @@
+<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+  <div style="background-color: #f0f9ff; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+    <h1 style="color: #0369a1; margin: 0 0 10px 0; font-size: 24px;">Account Confirmed</h1>
+    <p style="color: #0891b2; margin: 0; font-size: 14px;">Your email address has been verified</p>
+  </div>
+
+  <div style="background-color: white; padding: 20px; border: 1px solid #e5e7eb; border-radius: 8px;">
+    <p style="color: #374151; font-size: 16px; line-height: 1.5; margin: 0 0 20px 0;">
+      Hello <%= @user.full_name.presence || @user.email %>,
+    </p>
+
+    <p style="color: #374151; font-size: 16px; line-height: 1.5; margin: 0 0 20px 0;">
+      Your email address has been successfully confirmed by a system administrator. Your account is now fully activated and you have access to all features.
+    </p>
+
+    <div style="background-color: #f0f9ff; padding: 15px; border-radius: 6px; border-left: 4px solid #0369a1; margin: 20px 0;">
+      <p style="color: #0369a1; font-size: 14px; margin: 0; font-weight: 600;">
+        ✓ Email Confirmed: <%= @user.email %>
+      </p>
+    </div>
+
+    <p style="color: #374151; font-size: 16px; line-height: 1.5; margin: 20px 0 0 0;">
+      You can now sign in to your account and access all available features. If you have any questions, please contact your system administrator.
+    </p>
+  </div>
+
+  <div style="text-align: center; margin-top: 20px;">
+    <p style="color: #9ca3af; font-size: 12px; margin: 0;">
+      This confirmation was processed automatically by a system administrator.
+    </p>
+  </div>
+</div>

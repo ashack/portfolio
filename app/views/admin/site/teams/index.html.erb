@@ -93,7 +93,7 @@
   </div>
 
   <!-- Teams Table -->
-  <div class="bg-white shadow overflow-hidden sm:rounded-md">
+  <div class="bg-white shadow overflow-x-auto sm:rounded-md">
     <div class="px-4 py-5 sm:px-6">
       <h3 class="text-lg leading-6 font-medium text-gray-900">All Teams</h3>
       <p class="mt-1 max-w-2xl text-sm text-gray-500">Monitor team activity and provide support</p>
@@ -141,8 +141,10 @@
                 </div>
               </div>
               <div class="flex items-center space-x-2">
-                <%= link_to "View", admin_site_team_path(team), 
-                    class: "inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" %>
+                <% if policy(team).show? %>
+                  <%= link_to "View", admin_site_team_path(team), 
+                      class: "inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" %>
+                <% end %>
               </div>
             </div>
           </li>

@@ -1,5 +1,6 @@
 # Complete Team-Based SaaS Application Generator Prompt
 
+Strong focus on readability and code must follow Rails best practices of Ruby and Ruby On Rails
 **📋 DOCUMENTATION HAS BEEN ORGANIZED** 
 
 This large specification file has been reorganized into focused documentation in the `docs/` folder:

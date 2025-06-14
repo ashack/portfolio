@@ -1,10 +1,15 @@
 <% content_for :page_title, @user.email %>
 <% content_for :header_actions do %>
   <div class="flex space-x-3">
-    <% unless @user == current_user %>
+    <% if policy(@user).edit? %>
+      <%= link_to "Edit User", edit_admin_super_user_path(@user), class: "inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700" %>
+    <% end %>
+    <% if policy(@user).impersonate? && @user != current_user %>
       <%= link_to "Impersonate", impersonate_admin_super_user_path(@user), data: { "turbo-method": :post }, class: "inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50" %>
     <% end %>
-    <%= link_to "View Activity", activity_admin_super_user_path(@user), class: "inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50" %>
+    <% if policy(@user).activity? %>
+      <%= link_to "View Activity", activity_admin_super_user_path(@user), class: "inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50" %>
+    <% end %>
   </div>
 <% end %>
 
@@ -127,7 +132,7 @@
       <div class="mt-5">
         <div class="flex space-x-3">
           <% if @user.status != 'active' %>
-            <%= link_to set_status_admin_super_user_path(@user, status: 'active'), method: :patch, 
+            <%= link_to set_status_admin_super_user_path(@user, status: 'active'), data: { "turbo-method": :patch }, 
                 class: "inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700" do %>
               <svg class="-ml-1 mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
@@ -137,7 +142,7 @@
           <% end %>
           
           <% if @user.status != 'inactive' %>
-            <%= link_to set_status_admin_super_user_path(@user, status: 'inactive'), method: :patch, 
+            <%= link_to set_status_admin_super_user_path(@user, status: 'inactive'), data: { "turbo-method": :patch }, 
                 class: "inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50" do %>
               <svg class="-ml-1 mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
@@ -147,8 +152,7 @@
           <% end %>
           
           <% if @user.status != 'locked' %>
-            <%= link_to set_status_admin_super_user_path(@user, status: 'locked'), method: :patch, 
-                confirm: "Are you sure you want to lock this user? They will not be able to sign in.", 
+            <%= link_to set_status_admin_super_user_path(@user, status: 'locked'), data: { "turbo-method": :patch, "turbo-confirm": "Are you sure you want to lock this user? They will not be able to sign in." }, 
                 class: "inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700" do %>
               <svg class="-ml-1 mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 0h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>

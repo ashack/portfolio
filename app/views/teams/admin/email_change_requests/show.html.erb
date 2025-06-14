@@ -1,0 +1,222 @@
+<% content_for :page_title, "Review Team Member Email Change Request" %>
+
+<div class="max-w-4xl mx-auto">
+  <div class="bg-white shadow overflow-hidden sm:rounded-lg">
+    <!-- Header -->
+    <div class="px-4 py-5 sm:px-6 border-b border-gray-200">
+      <div class="flex justify-between items-center">
+        <div>
+          <h3 class="text-lg leading-6 font-medium text-gray-900">
+            Team Member Email Change Request
+          </h3>
+          <p class="mt-1 max-w-2xl text-sm text-gray-500">
+            Request #<%= @email_change_request.id %> from team member <%= @email_change_request.user.full_name.presence || @email_change_request.user.email %>
+          </p>
+        </div>
+        <div>
+          <span class="px-3 py-1 inline-flex text-sm leading-5 font-semibold rounded-full <%= @email_change_request.status_badge_class %>">
+            <%= @email_change_request.status.capitalize %>
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Request Details -->
+    <div class="px-4 py-5 sm:p-0">
+      <dl class="sm:divide-y sm:divide-gray-200">
+        <!-- Team Member Information -->
+        <div class="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+          <dt class="text-sm font-medium text-gray-500">
+            Team Member
+          </dt>
+          <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+            <div class="flex items-center">
+              <div class="flex-shrink-0 h-10 w-10">
+                <div class="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center">
+                  <span class="text-sm font-medium text-gray-700"><%= @email_change_request.user.email.first.upcase %></span>
+                </div>
+              </div>
+              <div class="ml-4">
+                <div class="text-sm font-medium text-gray-900">
+                  <%= @email_change_request.user.full_name.presence || 'No name provided' %>
+                </div>
+                <div class="text-sm text-gray-500">
+                  Team <%= @email_change_request.user.team_role&.capitalize %> - <%= @email_change_request.user.team.name %>
+                </div>
+              </div>
+            </div>
+          </dd>
+        </div>
+
+        <!-- Current Email -->
+        <div class="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+          <dt class="text-sm font-medium text-gray-500">
+            Current Email
+          </dt>
+          <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+            <%= @email_change_request.user.email %>
+          </dd>
+        </div>
+
+        <!-- Requested Email -->
+        <div class="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+          <dt class="text-sm font-medium text-gray-500">
+            Requested New Email
+          </dt>
+          <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+            <span class="font-medium text-lg"><%= @email_change_request.new_email %></span>
+          </dd>
+        </div>
+
+        <!-- Request Date -->
+        <div class="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+          <dt class="text-sm font-medium text-gray-500">
+            Requested On
+          </dt>
+          <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+            <%= @email_change_request.requested_at.strftime("%B %d, %Y at %I:%M %p") %>
+            <span class="text-gray-500">(<%= @email_change_request.time_ago_in_words %> ago)</span>
+          </dd>
+        </div>
+
+        <!-- Reason -->
+        <div class="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+          <dt class="text-sm font-medium text-gray-500">
+            Reason for Change
+          </dt>
+          <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+            <div class="prose max-w-none">
+              <%= simple_format(@email_change_request.reason) %>
+            </div>
+          </dd>
+        </div>
+
+        <!-- Status-specific information -->
+        <% if @email_change_request.approved? || @email_change_request.rejected? %>
+          <!-- Processed By -->
+          <div class="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+            <dt class="text-sm font-medium text-gray-500">
+              <%= @email_change_request.approved? ? "Approved By" : "Rejected By" %>
+            </dt>
+            <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+              <%= @email_change_request.approved_by.full_name.presence || @email_change_request.approved_by.email %>
+            </dd>
+          </div>
+
+          <!-- Processed Date -->
+          <div class="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+            <dt class="text-sm font-medium text-gray-500">
+              <%= @email_change_request.approved? ? "Approved On" : "Rejected On" %>
+            </dt>
+            <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+              <%= @email_change_request.approved_at.strftime("%B %d, %Y at %I:%M %p") %>
+            </dd>
+          </div>
+
+          <!-- Admin Notes -->
+          <% if @email_change_request.notes.present? %>
+            <div class="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+              <dt class="text-sm font-medium text-gray-500">
+                Admin Notes
+              </dt>
+              <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                <div class="prose max-w-none">
+                  <%= simple_format(@email_change_request.notes) %>
+                </div>
+              </dd>
+            </div>
+          <% end %>
+        <% end %>
+
+        <!-- Expiration for Pending Requests -->
+        <% if @email_change_request.pending? %>
+          <div class="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+            <dt class="text-sm font-medium text-gray-500">
+              Expires
+            </dt>
+            <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+              <% if @email_change_request.expired? %>
+                <span class="text-red-600 font-medium">This request has expired</span>
+              <% else %>
+                <% expiry_date = @email_change_request.requested_at + EmailChangeRequest::EXPIRY_DAYS.days %>
+                <%= expiry_date.strftime("%B %d, %Y") %>
+                <span class="text-gray-500">(<%= distance_of_time_in_words_to_now(expiry_date) %> from now)</span>
+              <% end %>
+            </dd>
+          </div>
+        <% end %>
+      </dl>
+    </div>
+
+    <!-- Team Admin Actions -->
+    <% if @email_change_request.pending? && !@email_change_request.expired? && policy(@email_change_request).approve? %>
+      <div class="bg-gray-50 px-4 py-5 sm:px-6">
+        <h4 class="text-lg font-medium text-gray-900 mb-4">Team Admin Actions</h4>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- Approve Section -->
+          <div class="bg-white p-4 rounded-lg border border-green-200">
+            <h5 class="text-green-800 font-medium mb-2">Approve Request</h5>
+            <p class="text-sm text-gray-600 mb-4">
+              Approving this request will immediately change your team member's email to <strong><%= @email_change_request.new_email %></strong>.
+            </p>
+            
+            <%= form_with url: approve_team_admin_email_change_request_path(@team, @email_change_request), method: :patch, local: true, class: "space-y-3" do |form| %>
+              <div>
+                <%= form.label :notes, "Approval Notes (Optional)", class: "block text-sm font-medium text-gray-700" %>
+                <%= form.text_area :notes, rows: 2, 
+                    class: "mt-1 block w-full shadow-sm focus:ring-green-500 focus:border-green-500 border-gray-300 rounded-md",
+                    placeholder: "Optional notes about this approval..." %>
+              </div>
+              
+              <%= form.submit "Approve Email Change", 
+                  class: "w-full inline-flex justify-center items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700",
+                  data: { confirm: "Are you sure you want to approve this email change for your team member? This action cannot be undone." } %>
+            <% end %>
+          </div>
+
+          <!-- Reject Section -->
+          <div class="bg-white p-4 rounded-lg border border-red-200">
+            <h5 class="text-red-800 font-medium mb-2">Reject Request</h5>
+            <p class="text-sm text-gray-600 mb-4">
+              Rejecting this request will notify your team member and keep their current email unchanged.
+            </p>
+            
+            <%= form_with url: reject_team_admin_email_change_request_path(@team, @email_change_request), method: :patch, local: true, class: "space-y-3" do |form| %>
+              <div>
+                <%= form.label :notes, "Rejection Reason (Required)", class: "block text-sm font-medium text-gray-700" %>
+                <%= form.text_area :notes, rows: 3, required: true,
+                    class: "mt-1 block w-full shadow-sm focus:ring-red-500 focus:border-red-500 border-gray-300 rounded-md",
+                    placeholder: "Please explain why this request is being rejected..." %>
+              </div>
+              
+              <%= form.submit "Reject Request", 
+                  class: "w-full inline-flex justify-center items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700",
+                  data: { confirm: "Are you sure you want to reject this email change request?" } %>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    <% end %>
+
+    <!-- Navigation Actions -->
+    <div class="bg-gray-50 px-4 py-4 sm:px-6 border-t border-gray-200">
+      <div class="flex justify-between">
+        <div>
+          <%= link_to "← Back to Team Requests", team_admin_email_change_requests_path(@team), 
+              class: "inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50" %>
+        </div>
+        
+        <% if @email_change_request.pending? && @email_change_request.expired? %>
+          <div class="text-sm text-red-600 font-medium">
+            This request has expired and cannot be processed
+          </div>
+        <% elsif !@email_change_request.pending? %>
+          <div class="text-sm text-gray-500">
+            Request already <%= @email_change_request.status %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>

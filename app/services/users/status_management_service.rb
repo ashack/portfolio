@@ -1,8 +1,9 @@
 class Users::StatusManagementService
-  def initialize(admin_user, target_user, new_status)
+  def initialize(admin_user, target_user, new_status, request = nil)
     @admin_user = admin_user
     @target_user = target_user
     @new_status = new_status
+    @request = request
   end
 
   def call
@@ -34,23 +35,19 @@ class Users::StatusManagementService
   end
 
   def log_status_change(old_status)
-    # AuditLog.create!(
-    #   user: @admin_user,
-    #   action: 'status_change',
-    #   target_user: @target_user,
-    #   details: {
-    #     old_status: old_status,
-    #     new_status: @new_status,
-    #     timestamp: Time.current
-    #   }
-    # )
+    AuditLogService.log_status_change(
+      admin_user: @admin_user,
+      target_user: @target_user,
+      old_status: old_status,
+      new_status: @new_status,
+      request: @request
+    )
   end
 
   def send_notification_if_needed(old_status)
-    if old_status == "active" && @new_status != "active"
-      # UserStatusMailer.account_deactivated(@target_user, @new_status).deliver_later
-    elsif old_status != "active" && @new_status == "active"
-      # UserStatusMailer.account_reactivated(@target_user).deliver_later
+    # Always send notification when status changes
+    if old_status != @new_status
+      UserNotificationService.notify_status_change(@target_user, old_status, @new_status, @admin_user)
     end
   end
 

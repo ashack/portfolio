@@ -15,6 +15,14 @@
           </svg>
           Edit Profile
         <% end %>
+        <% if @user.team_admin? %>
+          <%= link_to team_admin_email_change_requests_path(team_slug: @team.slug), class: "inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50" do %>
+            <svg class="-ml-1 mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+            </svg>
+            Email Requests
+          <% end %>
+        <% end %>
         <%= link_to team_root_path(team_slug: @team.slug), class: "inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50" do %>
           <svg class="-ml-1 mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
@@ -44,7 +52,13 @@
         </div>
         <div class="sm:col-span-2">
           <dt class="text-sm font-medium text-gray-500">Email Address</dt>
-          <dd class="mt-1 text-sm text-gray-900"><%= @user.email %></dd>
+          <dd class="mt-1 text-sm text-gray-900 flex items-center justify-between">
+            <span><%= @user.email %></span>
+            <% if @user.team_admin? %>
+              <%= link_to "Request Email Change", new_team_admin_email_change_request_path(team_slug: @team.slug), 
+                  class: "ml-4 text-indigo-600 hover:text-indigo-900 text-sm font-medium" %>
+            <% end %>
+          </dd>
         </div>
       </dl>
     </div>

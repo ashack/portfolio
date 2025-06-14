@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+  # Email Change Requests
+  resources :email_change_requests, only: [ :index, :new, :create, :show ], param: :token
   devise_for :users
 
   # Devise showcase (remove in production)
@@ -42,11 +44,22 @@ Rails.application.routes.draw do
           patch :set_status
           get :activity
           post :impersonate
+          post :reset_password
+          post :confirm_email
+          post :resend_confirmation
+          post :unlock_account
         end
       end
 
       resources :settings, only: [ :index, :update ]
       resources :analytics, only: [ :index ]
+
+      resources :email_change_requests, only: [ :index, :show ], param: :token do
+        member do
+          patch :approve
+          patch :reject
+        end
+      end
     end
 
     namespace :site do
@@ -62,6 +75,7 @@ Rails.application.routes.draw do
 
       resources :teams, only: [ :index, :show ]
       resources :support, only: [ :index, :show, :update ]
+      resource :profile, only: [ :show, :edit, :update ], controller: "profile"
     end
   end
 
@@ -109,6 +123,13 @@ Rails.application.routes.draw do
       resources :subscription, controller: "teams/admin/subscription", as: :team_admin_subscription, only: [ :show, :edit, :update, :destroy ]
       resources :settings, controller: "teams/admin/settings", as: :team_admin_settings, only: [ :index, :update ]
       resources :analytics, controller: "teams/admin/analytics", as: :team_admin_analytics, only: [ :index ]
+
+      resources :email_change_requests, controller: "teams/admin/email_change_requests", as: :team_admin_email_change_requests, only: [ :index, :show, :new, :create ], param: :token do
+        member do
+          patch :approve
+          patch :reject
+        end
+      end
     end
   end
 

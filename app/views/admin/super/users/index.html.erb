@@ -36,7 +36,7 @@
     </div>
 
     <% if @users.any? %>
-      <div class="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
+      <div class="overflow-x-auto shadow md:rounded-lg">
         <table class="min-w-full divide-y divide-gray-300">
           <thead class="bg-gray-50">
             <tr>
@@ -105,9 +105,14 @@
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                   <div class="flex space-x-2">
-                    <%= link_to "View", admin_super_user_path(user), class: "text-indigo-600 hover:text-indigo-900" %>
-                    <% unless user == current_user %>
-                      <%= link_to "Impersonate", impersonate_admin_super_user_path(user), method: :post, class: "text-gray-600 hover:text-gray-900" %>
+                    <% if policy(user).show? %>
+                      <%= link_to "View", admin_super_user_path(user), class: "text-indigo-600 hover:text-indigo-900" %>
+                    <% end %>
+                    <% if policy(user).edit? %>
+                      <%= link_to "Edit", edit_admin_super_user_path(user), class: "text-green-600 hover:text-green-900" %>
+                    <% end %>
+                    <% if policy(user).impersonate? && user != current_user %>
+                      <%= link_to "Impersonate", impersonate_admin_super_user_path(user), data: { "turbo-method": :post, "turbo-confirm": "Sign in as #{user.email}?" }, class: "text-gray-600 hover:text-gray-900" %>
                     <% end %>
                   </div>
                 </td>

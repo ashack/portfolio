@@ -1,0 +1,30 @@
+Email Change Request Rejected
+========================================
+
+Hello <%= @user.first_name.presence || 'there' %>,
+
+Your email change request has been rejected by an administrator.
+
+We regret to inform you that your request to change your email address could not be approved at this time.
+
+Request Details:
+Current Email: <%= @user.email %> (unchanged)
+Requested Email: <%= @email_change_request.new_email %>
+Rejected By: <%= @rejected_by.full_name.presence || @rejected_by.email %>
+Rejection Date: <%= @email_change_request.approved_at.strftime("%B %d, %Y at %I:%M %p") %>
+<% if @email_change_request.notes.present? %>
+Reason for Rejection: <%= @email_change_request.notes %>
+<% end %>
+
+What you can do:
+- Review the rejection reason above
+- Address any concerns mentioned by the administrator
+- Submit a new request with additional information if needed
+- Contact support if you have questions about this decision
+
+NOTE: Your current email address remains active and unchanged.
+
+If you believe this rejection was made in error or if you need to discuss this decision, please contact our support team.
+
+This is an automated email. Please do not reply to this message.
+For any questions, please contact our support team.

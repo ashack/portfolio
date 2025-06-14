@@ -1,0 +1,48 @@
+<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+  <div style="background-color: #f0fdf4; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+    <h1 style="color: #15803d; margin: 0 0 10px 0; font-size: 24px;">Account Unlocked</h1>
+    <p style="color: #16a34a; margin: 0; font-size: 14px;">Your account access has been restored</p>
+  </div>
+
+  <div style="background-color: white; padding: 20px; border: 1px solid #e5e7eb; border-radius: 8px;">
+    <p style="color: #374151; font-size: 16px; line-height: 1.5; margin: 0 0 20px 0;">
+      Hello <%= @user.full_name.presence || @user.email %>,
+    </p>
+
+    <p style="color: #374151; font-size: 16px; line-height: 1.5; margin: 0 0 20px 0;">
+      Your account has been unlocked by a system administrator. All failed login attempts have been cleared and you can now sign in normally.
+    </p>
+
+    <div style="background-color: #f0fdf4; padding: 15px; border-radius: 6px; border-left: 4px solid #15803d; margin: 20px 0;">
+      <p style="color: #15803d; font-size: 14px; margin: 0; font-weight: 600;">
+        ✓ Account Status: Unlocked and Ready to Use
+      </p>
+      <p style="color: #15803d; font-size: 14px; margin: 5px 0 0 0;">
+        ✓ Failed Attempts: Cleared (Reset to 0)
+      </p>
+    </div>
+
+    <div style="text-align: center; margin: 30px 0;">
+      <a href="<%= new_user_session_url %>" 
+         style="background-color: #15803d; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: 600; display: inline-block;">
+        Sign In to Your Account
+      </a>
+    </div>
+
+    <p style="color: #374151; font-size: 16px; line-height: 1.5; margin: 20px 0 0 0;">
+      If you continue to experience login issues, please contact your system administrator for assistance.
+    </p>
+
+    <div style="border-top: 1px solid #e5e7eb; margin-top: 20px; padding-top: 20px;">
+      <p style="color: #6b7280; font-size: 14px; margin: 0;">
+        <strong>Security Tip:</strong> To avoid future account locks, make sure you're using the correct password. Consider using a password manager to securely store your credentials.
+      </p>
+    </div>
+  </div>
+
+  <div style="text-align: center; margin-top: 20px;">
+    <p style="color: #9ca3af; font-size: 12px; margin: 0;">
+      This unlock was processed by a system administrator.
+    </p>
+  </div>
+</div>

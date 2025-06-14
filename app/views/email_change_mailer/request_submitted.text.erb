@@ -1,0 +1,24 @@
+Email Change Request Submitted
+========================================
+
+Hello <%= @user.first_name.presence || 'there' %>,
+
+We have received your request to change your email address. Here are the details:
+
+Current Email: <%= @user.email %>
+Requested New Email: <%= @email_change_request.new_email %>
+Request Date: <%= @email_change_request.requested_at.strftime("%B %d, %Y at %I:%M %p") %>
+Reason: <%= @email_change_request.reason %>
+
+What happens next?
+- Your request will be reviewed by an administrator
+- You will receive an email notification once a decision is made
+- If approved, your new email will become active immediately
+- You will need to use your new email to sign in
+
+IMPORTANT: This request will expire in 30 days if not processed.
+
+You can view the status of your request at any time by visiting your account settings.
+
+This is an automated email. Please do not reply to this message.
+If you did not request this change, please contact support immediately.

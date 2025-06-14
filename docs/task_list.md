@@ -60,6 +60,54 @@
 ### Production Readiness
 
 #### High Priority
+- [ ] **Super Admin User Editing Feature**
+  - [x] **Backend Implementation**
+    - [x] Add edit and update routes to Admin::Super::UsersController
+    - [x] Create Users::UpdateService for complex user updates with validation
+    - [x] Implement audit logging for all user changes (create AuditLog model)
+    - [x] Add admin-initiated password reset functionality
+    - [x] Add manual email confirmation capability
+    - [x] Add account unlock functionality (clear failed attempts)
+    - [x] Update UserPolicy to explicitly allow super_admin editing
+    - [x] Add validation to prevent admins from editing their own system_role
+    - [x] Implement email notifications for critical changes (email, role, status)
+  
+  - [x] **Frontend Implementation**
+    - [x] Create edit view at app/views/admin/super/users/edit.html.erb
+    - [x] Build comprehensive edit form with field grouping:
+      - Basic Information (first_name, last_name, email)
+      - System Access (system_role, status)
+      - Account Security (confirm email, unlock account, reset password)
+      - Read-only Information (user_type, team details, billing info)
+    - [x] Add edit button to user show page
+    - [x] Add edit icon/link to users index table
+    - [x] Implement form validations with helpful error messages
+    - [x] Add confirmation dialogs for critical actions (role changes, email changes)
+    - [x] Style form with consistent Tailwind CSS design
+  
+  - [ ] **Security & Validation**
+    - [x] Ensure email uniqueness validation on updates
+    - [x] Prevent changing user_type (direct/invited) - core business rule
+    - [x] Validate team constraints remain intact
+    - [x] Add CSRF protection to all forms
+    - [x] Implement activity tracking for admin actions
+    - [ ] Create security tests for authorization bypasses
+  
+  - [ ] **Testing**
+    - [ ] Write RSpec tests for Users::UpdateService
+    - [ ] Test all UserPolicy permissions for editing
+    - [ ] Create controller tests for edit/update actions
+    - [ ] Add feature tests for the complete edit flow
+    - [ ] Test email notifications are sent correctly
+    - [ ] Verify audit logs are created properly
+    - [ ] Test validation edge cases (duplicate emails, invalid roles)
+  
+  - [ ] **Documentation**
+    - [ ] Update CLAUDE.md with new admin capabilities
+    - [ ] Document the UpdateService in code comments
+    - [ ] Add user editing to admin guide documentation
+    - [ ] Create troubleshooting section for common issues
+
 - [ ] **Environment Configuration**
   - [ ] Production Stripe webhook setup
   - [ ] Email delivery configuration (SendGrid/Mailgun)

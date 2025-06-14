@@ -1,0 +1,31 @@
+Account Role Updated
+==================
+
+Hello <%= @user.full_name.presence || @user.email %>,
+
+Your account role has been updated by a system administrator. This change affects your access permissions and available features.
+
+Role Change:
+Previous Role: <%= @old_role %>
+Current Role: <%= @new_role %>
+
+What this means:
+<% if @new_role == 'Super admin' %>
+• You now have complete system access
+• You can manage all users and teams
+• You can access all administrative features
+<% elsif @new_role == 'Site admin' %>
+• You can now manage users and provide support
+• You have access to user management tools
+• You cannot create teams or access billing information
+<% else %>
+• You are now a regular user
+• You have access to standard user features
+• Administrative access has been removed
+<% end %>
+
+The changes will take effect immediately. You may need to sign out and sign back in to see the updated interface. If you have any questions about your new permissions, please contact your system administrator.
+
+Note: If you believe this change was made in error, please contact your system administrator immediately.
+
+This change was made by a system administrator.

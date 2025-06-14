@@ -2,6 +2,9 @@ class ApplicationController < ActionController::Base
   include Pundit::Authorization
   include Pagy::Backend
 
+  # CSRF Protection - Protect all forms from Cross-Site Request Forgery
+  protect_from_forgery with: :exception
+
   # Only allow modern browsers supporting webp images, web push, badges, import maps, CSS nesting, and CSS :has.
   allow_browser versions: :modern
 
@@ -14,6 +17,20 @@ class ApplicationController < ActionController::Base
   rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
 
   private
+
+  # Additional CSRF protection helper for AJAX requests
+  def verify_csrf_token_for_ajax
+    return true unless request.xhr?
+
+    unless verified_request?
+      respond_to do |format|
+        format.json { render json: { error: "CSRF token verification failed" }, status: :forbidden }
+        format.html { redirect_to root_path, alert: "Security token verification failed" }
+      end
+      return false
+    end
+    true
+  end
 
   def check_user_status
     if current_user && current_user.status != "active"

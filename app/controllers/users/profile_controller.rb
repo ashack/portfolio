@@ -30,6 +30,14 @@ class Users::ProfileController < Users::BaseController
   end
 
   def profile_params
-    params.require(:user).permit(:first_name, :last_name, :email)
+    # Remove email from permitted params to prevent direct email changes
+    permitted_params = params.require(:user).permit(:first_name, :last_name)
+
+    # Show warning if user tries to change email
+    if params[:user][:email].present? && params[:user][:email] != current_user.email
+      flash.now[:alert] = "Email changes must be requested through the email change request system for security reasons."
+    end
+
+    permitted_params
   end
 end
