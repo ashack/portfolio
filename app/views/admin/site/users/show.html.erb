@@ -16,8 +16,8 @@
           class: "inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50" %>
       
       <% if @user.status == "active" %>
-        <%= link_to "Impersonate", impersonate_admin_site_user_path(@user), method: :post,
-            data: { confirm: "Are you sure you want to impersonate this user?" },
+        <%= link_to "Impersonate", impersonate_admin_site_user_path(@user),
+            data: { "turbo-method": :post, "turbo-confirm": "Are you sure you want to impersonate this user?" },
             class: "inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700" %>
       <% end %>
     </div>
@@ -142,22 +142,20 @@
       </p>
       <div class="mt-6 flex space-x-3">
         <% if @user.status != "active" %>
-          <%= link_to "Activate Account", set_status_admin_site_user_path(@user), method: :patch, 
-              params: { status: "active" },
+          <%= link_to "Activate Account", set_status_admin_site_user_path(@user, status: "active"),
+              data: { "turbo-method": :patch },
               class: "inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700" %>
         <% end %>
         
         <% if @user.status != "inactive" %>
-          <%= link_to "Deactivate Account", set_status_admin_site_user_path(@user), method: :patch, 
-              params: { status: "inactive" },
-              data: { confirm: "Are you sure you want to deactivate this user's account?" },
+          <%= link_to "Deactivate Account", set_status_admin_site_user_path(@user, status: "inactive"),
+              data: { "turbo-method": :patch, "turbo-confirm": "Are you sure you want to deactivate this user's account?" },
               class: "inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-yellow-600 hover:bg-yellow-700" %>
         <% end %>
         
         <% if @user.status != "locked" %>
-          <%= link_to "Lock Account", set_status_admin_site_user_path(@user), method: :patch, 
-              params: { status: "locked" },
-              data: { confirm: "Are you sure you want to lock this user's account?" },
+          <%= link_to "Lock Account", set_status_admin_site_user_path(@user, status: "locked"),
+              data: { "turbo-method": :patch, "turbo-confirm": "Are you sure you want to lock this user's account?" },
               class: "inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700" %>
         <% end %>
       </div>

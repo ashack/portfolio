@@ -2,7 +2,7 @@
 <% content_for :header_actions do %>
   <div class="flex space-x-3">
     <% unless @user == current_user %>
-      <%= link_to "Impersonate", impersonate_admin_super_user_path(@user), method: :post, class: "inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50" %>
+      <%= link_to "Impersonate", impersonate_admin_super_user_path(@user), data: { "turbo-method": :post }, class: "inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50" %>
     <% end %>
     <%= link_to "View Activity", activity_admin_super_user_path(@user), class: "inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50" %>
   </div>
