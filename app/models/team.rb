@@ -1,5 +1,5 @@
 class Team < ApplicationRecord
-  include Pay::Billable # For team billing
+  pay_customer # For team billing
 
   belongs_to :admin, class_name: "User"
   belongs_to :created_by, class_name: "User"

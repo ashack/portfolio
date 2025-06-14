@@ -1,5 +1,5 @@
 class User < ApplicationRecord
-  include Pay::Billable # For individual user billing
+  pay_customer # For individual user billing
 
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable, :confirmable, :trackable, :lockable

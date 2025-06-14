@@ -1,3 +1,5 @@
+require "ostruct"
+
 class Teams::CreationService
   def initialize(super_admin, team_params, admin_user)
     @super_admin = super_admin
