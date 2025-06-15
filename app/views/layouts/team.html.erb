@@ -49,9 +49,7 @@
         <!-- Navigation -->
         <nav class="mt-10">
           <%= link_to team_root_path(team_slug: @team.slug), class: "#{request.path == team_root_path(team_slug: @team.slug) ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white'} group flex items-center px-2 py-2 text-base font-medium rounded-md mb-1" do %>
-            <svg class="mr-4 h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z"></path>
-            </svg>
+            <%= icon "house", class: "mr-4 h-6 w-6" %>
             Dashboard
           <% end %>
 
