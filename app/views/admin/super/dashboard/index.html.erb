@@ -8,9 +8,7 @@
       <div class="p-5">
         <div class="flex items-center">
           <div class="flex-shrink-0">
-            <svg class="h-6 w-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
-            </svg>
+            <%= icon "users", class: "h-6 w-6 text-blue-400" %>
           </div>
           <div class="ml-5 w-0 flex-1">
             <dl>
@@ -27,9 +25,7 @@
       <div class="p-5">
         <div class="flex items-center">
           <div class="flex-shrink-0">
-            <svg class="h-6 w-6 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-            </svg>
+            <%= icon "check-circle", class: "h-6 w-6 text-green-400" %>
           </div>
           <div class="ml-5 w-0 flex-1">
             <dl>
@@ -46,9 +42,7 @@
       <div class="p-5">
         <div class="flex items-center">
           <div class="flex-shrink-0">
-            <svg class="h-6 w-6 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
-            </svg>
+            <%= icon "users-three", class: "h-6 w-6 text-purple-400" %>
           </div>
           <div class="ml-5 w-0 flex-1">
             <dl>
@@ -65,9 +59,7 @@
       <div class="p-5">
         <div class="flex items-center">
           <div class="flex-shrink-0">
-            <svg class="h-6 w-6 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-            </svg>
+            <%= icon "check-circle", class: "h-6 w-6 text-indigo-400" %>
           </div>
           <div class="ml-5 w-0 flex-1">
             <dl>
@@ -87,9 +79,7 @@
       <div class="p-5">
         <div class="flex items-center">
           <div class="flex-shrink-0">
-            <svg class="h-6 w-6 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
-            </svg>
+            <%= icon "warning", class: "h-6 w-6 text-yellow-400" %>
           </div>
           <div class="ml-5 w-0 flex-1">
             <dl>
@@ -106,9 +96,7 @@
       <div class="p-5">
         <div class="flex items-center">
           <div class="flex-shrink-0">
-            <svg class="h-6 w-6 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 0h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
-            </svg>
+            <%= icon "lock", class: "h-6 w-6 text-red-400" %>
           </div>
           <div class="ml-5 w-0 flex-1">
             <dl>
@@ -125,9 +113,7 @@
       <div class="p-5">
         <div class="flex items-center">
           <div class="flex-shrink-0">
-            <svg class="h-6 w-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-            </svg>
+            <%= icon "user", class: "h-6 w-6 text-gray-400" %>
           </div>
           <div class="ml-5 w-0 flex-1">
             <dl>
@@ -242,30 +228,22 @@
       <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Quick Actions</h3>
       <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <%= link_to admin_super_users_path, class: "inline-flex items-center justify-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700" do %>
-          <svg class="-ml-1 mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
-          </svg>
+          <%= icon "users", class: "-ml-1 mr-2 h-4 w-4" %>
           Manage Users
         <% end %>
 
         <%= link_to admin_super_teams_path, class: "inline-flex items-center justify-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50" do %>
-          <svg class="-ml-1 mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
-          </svg>
+          <%= icon "users-three", class: "-ml-1 mr-2 h-4 w-4" %>
           Manage Teams
         <% end %>
 
         <%= link_to admin_site_support_index_path, class: "inline-flex items-center justify-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50" do %>
-          <svg class="-ml-1 mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192L5.636 18.364M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-          </svg>
+          <%= icon "lifebuoy", class: "-ml-1 mr-2 h-4 w-4" %>
           Support Tickets
         <% end %>
 
         <%= link_to admin_super_analytics_path, class: "inline-flex items-center justify-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50" do %>
-          <svg class="-ml-1 mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
-          </svg>
+          <%= icon "chart-bar", class: "-ml-1 mr-2 h-4 w-4" %>
           Analytics
         <% end %>
       </div>
