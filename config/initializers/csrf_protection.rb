@@ -29,7 +29,7 @@ class ActionController::Base
 end
 
 # Additional security headers for CSRF protection
-Rails.application.config.middleware.use Rack::Attack if defined?(Rack::Attack)
+# Note: Rack::Attack is loaded in config/application.rb
 
 # Security note: CSRF tokens are automatically included in:
 # - form_with helper (default)
