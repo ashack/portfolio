@@ -22,7 +22,7 @@ A complete Ruby on Rails 8 SaaS application with dual-track user system supporti
 - **Professional UI**: Tailwind CSS with responsive design and styled Devise views
 - **Analytics & Monitoring**: Ahoy Matey for user activity tracking
 - **Admin Dashboards**: Separate interfaces for super admin and site admin
-- **Security Hardened**: Mass assignment protection, CSRF, session security
+- **Security Hardened**: Rack::Attack rate limiting, CSRF protection, session security
 - **Rails 8.0.2 Ready**: Full compatibility with latest Rails and Turbo features
 
 ## Setup Instructions
@@ -117,6 +117,39 @@ kamal setup
 kamal deploy
 ```
 
+## Security Configuration
+
+### Rack::Attack Protection
+The application includes comprehensive rate limiting and security filtering:
+
+#### Rate Limits
+- **General requests**: 60/minute per IP
+- **Login attempts**: 5/20 seconds per IP
+- **Password resets**: 5/hour per IP  
+- **Sign ups**: 3/hour per IP
+- **Team invitations**: 20/day per user
+
+#### Security Filters
+- **Blocked paths**: Common vulnerability scans (wp-admin, .env, .git, etc.)
+- **Blocked user agents**: Known scanners and bots
+- **Fail2Ban**: Auto-blocks IPs after 3 failed logins
+
+#### Testing Security
+```bash
+# Test rate limiting (development)
+ruby test/rack_attack_browser_test.rb
+
+# Verify security configuration
+cat test/rack_attack_verification.md
+```
+
+### Environment Variables for Security
+```bash
+# Add to .env for production
+ALLOWED_IPS=192.168.1.100,10.0.0.50  # Whitelist IPs
+REDIS_URL=redis://localhost:6379/0    # For distributed rate limiting
+```
+
 ## Testing
 
 ```bash
@@ -126,7 +159,9 @@ rspec
 ## Documentation
 
 ### 📚 Complete Documentation Available
-- [Security Guide](docs/security.md) - Authentication, authorization, and security best practices
+- [Security Guide](docs/security.md) - Authentication, authorization, and security implementation
+- [Security Best Practices](docs/security_best_practices.md) - Development and deployment security guidelines
+- [Rack::Attack Configuration](docs/rack_attack_configuration.md) - Rate limiting and protection rules
 - [Bug Fixes & Troubleshooting](docs/bug_fixes.md) - Solutions to common Rails 8.0.2 issues
 - [Development Task List](docs/task_list.md) - Current status and future roadmap  
 - [Common Pitfalls](docs/pitfalls.md) - Anti-patterns and how to avoid them
@@ -154,8 +189,10 @@ rspec
 ### Security Features
 - **8 Devise Modules**: Database auth, registration, recovery, confirmation, lockable, trackable
 - **Pundit Authorization**: Comprehensive policies for all user types
+- **Rack::Attack Protection**: Rate limiting, IP blocking, and security filtering
 - **Mass Assignment Protection**: Secure parameter handling
 - **Session Security**: HttpOnly, secure, SameSite cookie protection
+- **CSRF Protection**: Enhanced with per-form tokens and origin checking
 
 ### Admin Capabilities
 - **Super Admin**: Team creation, system management, billing oversight

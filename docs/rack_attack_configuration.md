@@ -4,6 +4,14 @@
 
 Rack::Attack is configured to provide comprehensive rate limiting and security protection for the SaaS application. This document outlines the security measures implemented.
 
+## Current Status
+
+✅ **Fully Configured and Tested**
+- Rate limiting rules are active
+- Security blocklists are functioning
+- Localhost is safelisted for development
+- All security events are logged
+
 ## Rate Limiting Rules
 
 ### 1. General Request Throttling
@@ -113,14 +121,28 @@ Blocks requests to common vulnerability paths:
 Rack::Attack.cache.store = ActiveSupport::Cache::RedisCacheStore.new(url: ENV["REDIS_URL"])
 ```
 
+## Configuration File Location
+
+The main configuration is in `config/initializers/rack_attack.rb`
+
 ## Testing Rate Limits
 
-Use the provided test script:
+### Development Testing
+
+**Note**: Localhost is safelisted in development, so rate limits won't apply to 127.0.0.1 or ::1.
+
+Use the provided test scripts:
 ```bash
-ruby test/rack_attack_test.rb
+# Test blocklists and basic functionality
+ruby test/rack_attack_browser_test.rb
+
+# View verification results
+cat test/rack_attack_verification.md
 ```
 
-Or manually test with curl:
+### Production Testing
+
+To test in production (from a non-safelisted IP):
 ```bash
 # Test login throttling
 for i in {1..6}; do
