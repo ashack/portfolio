@@ -48,5 +48,8 @@ module SaasRorStarter
       secure: Rails.env.production?, # Secure cookies in production
       httponly: true, # Prevent XSS access to session cookies
       same_site: :lax # CSRF protection via SameSite attribute
+
+    # Load Rack::Attack middleware for rate limiting and security
+    config.middleware.use Rack::Attack
   end
 end

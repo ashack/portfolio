@@ -339,15 +339,87 @@ describe "Authorization" do
 end
 ```
 
+## Rate Limiting & Protection (Rack::Attack)
+
+### Configuration Overview
+Rack::Attack is fully configured to protect against common attacks and abuse:
+
+#### Rate Limits
+- **General Requests**: 60 requests/minute per IP (300/5min in production)
+- **Login Attempts**: 5 attempts per 20 seconds per IP
+- **Password Resets**: 5 attempts per hour per IP
+- **Sign Ups**: 3 attempts per hour per IP
+- **Team Invitations**: 20 per day per authenticated user
+- **API Requests**: 100 requests/minute per authenticated user
+
+#### Security Blocklists
+1. **Fail2Ban Protection**
+   - Blocks IPs for 10 minutes after 3 failed login attempts
+   - Monitors failed authentication attempts
+
+2. **Suspicious User Agents**
+   - Blocks known vulnerability scanners (masscan, nikto, sqlmap)
+   - Blocks automated tools (python-requests, go-http-client)
+
+3. **Suspicious Paths**
+   - Blocks common vulnerability paths (.php, .asp, .env, .git)
+   - Blocks CMS paths (wp-admin, phpmyadmin)
+
+#### Safelists
+- Localhost (127.0.0.1, ::1) in development
+- Configurable office/VPN IPs via environment variables
+
+### Monitoring & Logging
+```ruby
+# All security events are logged
+ActiveSupport::Notifications.subscribe('throttle.rack_attack') do |_name, _start, _finish, _request_id, payload|
+  req = payload[:request]
+  Rails.logger.warn "[Rack::Attack] Throttled: #{req.env['rack.attack.matched']} from IP: #{req.ip}"
+end
+```
+
+### Production Configuration
+```ruby
+# Use Redis for distributed rate limiting
+Rack::Attack.cache.store = ActiveSupport::Cache::RedisCacheStore.new(url: ENV["REDIS_URL"])
+
+# Configure allowed IPs
+safelist('allow-office-ips') do |req|
+  ENV['ALLOWED_IPS']&.split(',')&.include?(req.ip)
+end
+```
+
+## CSRF Protection
+
+### Enhanced Configuration
+```ruby
+# Per-form CSRF tokens for maximum security
+config.action_controller.per_form_csrf_tokens = true
+
+# Verify request origin in addition to tokens
+config.action_controller.forgery_protection_origin_check = true
+
+# Log CSRF failures for monitoring
+config.action_controller.log_warning_on_csrf_failure = true
+```
+
+### Custom CSRF Failure Handling
+```ruby
+def handle_unverified_request
+  Rails.logger.warn "[SECURITY] CSRF verification failed for #{request.remote_ip}"
+  super # Resets session
+end
+```
+
 ## Next Steps
 
-1. **Implement rate limiting** with rack-attack
-2. **Add two-factor authentication** for admin accounts
-3. **Set up security monitoring** with tools like Brakeman
-4. **Regular security audits** of dependencies
-5. **Penetration testing** before production launch
-6. **Enhanced audit logging** for all critical operations
-7. **Security event alerting** for suspicious activities
+1. **Add two-factor authentication** for admin accounts
+2. **Set up security monitoring** with tools like Brakeman
+3. **Regular security audits** of dependencies
+4. **Penetration testing** before production launch
+5. **Enhanced audit logging** for all critical operations
+6. **Security event alerting** for suspicious activities
+7. **Configure WAF rules** for additional protection
 
 ---
 
