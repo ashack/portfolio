@@ -1,11 +1,11 @@
 #!/usr/bin/env ruby
 # Simple script to test Rack::Attack configuration
 
-require 'net/http'
-require 'uri'
-require 'json'
+require "net/http"
+require "uri"
+require "json"
 
-base_url = 'http://localhost:3000'
+base_url = "http://localhost:3000"
 
 puts "Testing Rack::Attack rate limiting..."
 puts "Make sure your Rails server is running on port 3000"
@@ -16,10 +16,10 @@ puts "\n1. Testing login throttling (5 attempts in 20 seconds)..."
 login_url = URI("#{base_url}/users/sign_in")
 
 6.times do |i|
-  response = Net::HTTP.post_form(login_url, 'user[email]' => 'test@example.com', 'user[password]' => 'wrong')
+  response = Net::HTTP.post_form(login_url, "user[email]" => "test@example.com", "user[password]" => "wrong")
   puts "Attempt #{i + 1}: #{response.code} - #{response.message}"
   
-  if response.code == '429'
+  if response.code == "429"
     puts "✓ Rate limiting working! Request was throttled."
     break
   end
@@ -38,7 +38,7 @@ responses = []
     response = Net::HTTP.get_response(root_url)
     responses << response.code
     
-    if response.code == '429'
+    if response.code == "429"
       puts "✓ Rate limiting triggered after #{i} requests!"
       puts "Response: #{response.body}" if response.body
       break

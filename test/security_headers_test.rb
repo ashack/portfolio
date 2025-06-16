@@ -1,11 +1,11 @@
 #!/usr/bin/env ruby
 # Test script to verify security headers implementation
 
-require 'net/http'
-require 'uri'
-require 'json'
+require "net/http"
+require "uri"
+require "json"
 
-base_url = 'http://localhost:3000'
+base_url = "http://localhost:3000"
 
 puts "Testing Security Headers Implementation..."
 puts "=" * 50
@@ -28,8 +28,8 @@ puts "\nSecurity Headers:"
 puts "-" * 30
 
 # Check CSP header
-csp = response['Content-Security-Policy']
-csp_report_only = response['Content-Security-Policy-Report-Only']
+csp = response["Content-Security-Policy"]
+csp_report_only = response["Content-Security-Policy-Report-Only"]
 if csp || csp_report_only
   puts "✅ Content-Security-Policy: #{csp_report_only ? 'Report-Only Mode' : 'Enforcing Mode'}"
   puts "   Policy: #{(csp || csp_report_only)[0..100]}..." if csp || csp_report_only
@@ -38,14 +38,14 @@ else
 end
 
 # Check other security headers
-display_header("X-Frame-Options", response['X-Frame-Options'], "DENY")
-display_header("X-Content-Type-Options", response['X-Content-Type-Options'], "nosniff")
-display_header("X-XSS-Protection", response['X-XSS-Protection'], "1; mode=block")
-display_header("Referrer-Policy", response['Referrer-Policy'], "strict-origin-when-cross-origin")
-display_header("Permissions-Policy", response['Permissions-Policy'], "accelerometer=(), camera=()")
+display_header("X-Frame-Options", response["X-Frame-Options"], "DENY")
+display_header("X-Content-Type-Options", response["X-Content-Type-Options"], "nosniff")
+display_header("X-XSS-Protection", response["X-XSS-Protection"], "1; mode=block")
+display_header("Referrer-Policy", response["Referrer-Policy"], "strict-origin-when-cross-origin")
+display_header("Permissions-Policy", response["Permissions-Policy"], "accelerometer=(), camera=()")
 
 # Check for HSTS in production
-if response['Strict-Transport-Security']
+if response["Strict-Transport-Security"]
   puts "✅ Strict-Transport-Security: #{response['Strict-Transport-Security']}"
 else
   puts "ℹ️  Strict-Transport-Security: Not set (normal in development)"
@@ -54,7 +54,7 @@ end
 # Check for headers that should be removed
 puts "\nHeaders that should be removed:"
 puts "-" * 30
-removed_headers = ['X-Powered-By', 'Server']
+removed_headers = ["X-Powered-By", "Server"]
 removed_headers.each do |header|
   if response[header]
     puts "❌ #{header}: Still present (#{response[header]})"
@@ -81,7 +81,7 @@ violation_report = {
 uri = URI("#{base_url}/csp_violation_reports")
 http = Net::HTTP.new(uri.host, uri.port)
 request = Net::HTTP::Post.new(uri)
-request['Content-Type'] = 'application/csp-report'
+request["Content-Type"] = "application/csp-report"
 request.body = violation_report.to_json
 
 begin
@@ -106,14 +106,14 @@ if response.code == "200"
   body = response.body
   
   # Check for CSRF token
-  if body.include?('csrf-token')
+  if body.include?("csrf-token")
     puts "✅ CSRF token meta tag present"
   else
     puts "❌ CSRF token meta tag missing"
   end
   
   # Check for form authenticity token
-  if body.include?('authenticity_token')
+  if body.include?("authenticity_token")
     puts "✅ Form authenticity token present"
   else
     puts "❌ Form authenticity token missing"
