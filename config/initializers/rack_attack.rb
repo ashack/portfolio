@@ -175,13 +175,9 @@ class Rack::Attack
   end
 end
 
-# Configuration for production vs development
-if Rails.env.production?
-  # Stricter limits in production
-  Rack::Attack.throttle('req/ip', limit: 300, period: 5.minutes) do |req|
-    req.ip unless req.path.start_with?('/assets', '/packs')
-  end
-else
-  # More lenient limits in development/test
-  Rails.logger.info '[Rack::Attack] Running with development configuration (more permissive limits)'
+# Environment-specific adjustments (without overriding existing throttles)
+unless Rails.env.production?
+  # Log that we're in development mode
+  Rails.logger.info '[Rack::Attack] Running with development configuration'
+  Rails.logger.info "[Rack::Attack] General throttle: 60 requests per minute"
 end
