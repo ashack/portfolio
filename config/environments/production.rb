@@ -31,24 +31,24 @@ Rails.application.configure do
   config.force_ssl = true
 
   # Enhanced SSL options with HSTS configuration
-  config.ssl_options = { 
-    redirect: { 
-      exclude: ->(request) { request.path == "/up" } 
+  config.ssl_options = {
+    redirect: {
+      exclude: ->(request) { request.path == "/up" }
     },
-    hsts: { 
-      subdomains: true, 
+    hsts: {
+      subdomains: true,
       preload: true,
-      expires: 1.year 
+      expires: 1.year
     }
   }
-  
+
   # Security headers configuration
   config.security_headers = {
-    strict_transport_security: 'max-age=31536000; includeSubDomains; preload',
-    x_frame_options: 'DENY',
-    x_content_type_options: 'nosniff',
-    x_xss_protection: '1; mode=block',
-    referrer_policy: 'strict-origin-when-cross-origin'
+    strict_transport_security: "max-age=31536000; includeSubDomains; preload",
+    x_frame_options: "DENY",
+    x_content_type_options: "nosniff",
+    x_xss_protection: "1; mode=block",
+    referrer_policy: "strict-origin-when-cross-origin"
   }
 
   # Log to STDOUT with the current request id as a default log tag.
