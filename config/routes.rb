@@ -1,4 +1,7 @@
 Rails.application.routes.draw do
+  # CSP violation reports endpoint
+  post '/csp_violation_reports', to: 'csp_reports#create'
+  
   # Email Change Requests
   resources :email_change_requests, only: [ :index, :new, :create, :show ], param: :token
   devise_for :users

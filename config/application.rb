@@ -51,5 +51,9 @@ module SaasRorStarter
 
     # Load Rack::Attack middleware for rate limiting and security
     config.middleware.use Rack::Attack
+    
+    # Add security headers middleware
+    require_relative '../app/middleware/security_headers'
+    config.middleware.use SecurityHeaders
   end
 end
