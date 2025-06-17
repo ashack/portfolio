@@ -48,6 +48,8 @@
 - [x] **Multiple View Fixes**: Updated both dashboard and invitations views consistently
 - [x] **Password Security**: Implemented strong password validation with complexity requirements
 - [x] **Seed File Update**: Updated all development passwords to meet new security requirements
+- [x] **Testing Framework Migration**: Replaced RSpec with Minitest and SimpleCov
+- [x] **Test File Cleanup**: Removed redundant RSpec files and unnecessary test controllers
 
 ## 🚧 In Progress Tasks
 
@@ -56,6 +58,7 @@
 - [x] Bug fixes and troubleshooting guide  
 - [x] Task list and development roadmap
 - [x] Pitfalls and anti-patterns guide
+- [x] Testing guide with Minitest and SimpleCov
 - [ ] Deployment guide
 - [ ] API documentation (if needed)
 
@@ -155,11 +158,13 @@
   - [ ] Redis configuration for caching and jobs
   - [ ] Database migration to PostgreSQL for production
 
-- [ ] **Testing Suite**
-  - [ ] Model unit tests (RSpec)
-  - [ ] Controller integration tests
-  - [ ] Feature tests for user flows
+- [x] **Testing Suite**
+  - [x] Model unit tests (Minitest)
+  - [x] Controller integration tests
+  - [x] System tests for user flows
+  - [x] SimpleCov code coverage setup
   - [ ] Security penetration testing
+  - [ ] Expand test coverage to 90%+
 
 - [ ] **Performance Optimization**
   - [ ] Database query optimization
@@ -196,7 +201,9 @@
 ## 🔧 Technical Debt
 
 ### Code Quality
-- [ ] **Test Coverage**: Achieve 90%+ test coverage
+- [ ] **Test Coverage**: Achieve 90%+ test coverage (currently ~4%)
+- [x] **Testing Framework**: Minitest with SimpleCov configured
+- [x] **Linting**: RuboCop with Rails Omakase standards (0 offenses)
 - [ ] **Documentation**: Inline code documentation
 - [ ] **Refactoring**: Extract common patterns into modules
 - [ ] **Performance**: Optimize N+1 queries
@@ -240,7 +247,8 @@
 ### Code Quality Metrics
 - **RuboCop**: 0 offenses
 - **Brakeman**: 0 security warnings
-- **Test Coverage**: TBD (tests to be written)
+- **Test Coverage**: ~4% (Minitest + SimpleCov configured)
+- **Test Framework**: Minitest with parallel testing support
 - **Performance**: <100ms average response time
 
 ## 🚀 Deployment Roadmap

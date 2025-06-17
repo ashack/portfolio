@@ -77,10 +77,11 @@ group :development, :test do
   gem "rubocop-rails-omakase", require: false
 
   # Testing
-  gem "rspec-rails"
-  gem "factory_bot_rails"
+  gem "minitest", "~> 5.22"
+  gem "minitest-rails", "~> 8.0"
+  gem "minitest-reporters"
+  gem "simplecov", require: false
   gem "faker"
-  gem "shoulda-matchers"
   gem "capybara"
   gem "selenium-webdriver"
 end

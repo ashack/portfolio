@@ -1,3 +1,0 @@
-EmailChangeMailer#rejected_notification
-
-Hi, find me in app/views/email_change_mailer/rejected_notification
