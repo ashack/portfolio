@@ -20,14 +20,14 @@ responses = []
   begin
     response = Net::HTTP.get_response(root_url)
     responses << response.code
-    
+
     if response.code == "429"
       puts "\n✓ Rate limiting triggered after #{i + 1} requests!"
       body = JSON.parse(response.body) rescue response.body
       puts "Response: #{body}"
       break
     end
-    
+
     print "." if i % 10 == 0
   rescue => e
     puts "\nError: #{e.message}"

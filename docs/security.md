@@ -15,8 +15,39 @@ devise :database_authenticatable, :registerable,
 #### Security Configuration
 - **Account Locking**: 5 failed attempts, 1-hour lockout
 - **Email Confirmation**: Required before access
-- **Password Requirements**: 8-128 characters, email format validation
+- **Password Requirements**: Strong password enforcement with complexity requirements
 - **Session Security**: HTTPS-only cookies in production, httponly, same_site protection
+
+#### Strong Password Requirements
+All user passwords must meet the following criteria:
+- **Minimum 8 characters** in length
+- **At least one uppercase letter** (A-Z)
+- **At least one lowercase letter** (a-z)
+- **At least one number** (0-9)
+- **At least one special character** (any non-alphanumeric character)
+
+```ruby
+# app/models/user.rb - Password complexity validation
+validate :password_complexity, if: :password_required?
+
+private
+
+def password_complexity
+  return if password.blank?
+  
+  errors.add :password, "must be at least 8 characters long" if password.length < 8
+  errors.add :password, "must include at least one uppercase letter" unless password.match?(/[A-Z]/)
+  errors.add :password, "must include at least one lowercase letter" unless password.match?(/[a-z]/)
+  errors.add :password, "must include at least one number" unless password.match?(/[0-9]/)
+  errors.add :password, "must include at least one special character" unless password.match?(/[^A-Za-z0-9]/)
+end
+```
+
+#### Devise Configuration
+```ruby
+# config/initializers/devise.rb
+config.password_length = 8..128  # Minimum 8 characters
+```
 
 ### Pundit Authorization
 

@@ -18,12 +18,12 @@ login_url = URI("#{base_url}/users/sign_in")
 6.times do |i|
   response = Net::HTTP.post_form(login_url, "user[email]" => "test@example.com", "user[password]" => "wrong")
   puts "Attempt #{i + 1}: #{response.code} - #{response.message}"
-  
+
   if response.code == "429"
     puts "✓ Rate limiting working! Request was throttled."
     break
   end
-  
+
   sleep 0.5
 end
 
@@ -37,7 +37,7 @@ responses = []
   begin
     response = Net::HTTP.get_response(root_url)
     responses << response.code
-    
+
     if response.code == "429"
       puts "✓ Rate limiting triggered after #{i} requests!"
       puts "Response: #{response.body}" if response.body
