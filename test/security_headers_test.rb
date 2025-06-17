@@ -54,7 +54,7 @@ end
 # Check for headers that should be removed
 puts "\nHeaders that should be removed:"
 puts "-" * 30
-removed_headers = ["X-Powered-By", "Server"]
+removed_headers = [ "X-Powered-By", "Server" ]
 removed_headers.each do |header|
   if response[header]
     puts "❌ #{header}: Still present (#{response[header]})"
@@ -104,14 +104,14 @@ response = Net::HTTP.get_response(uri)
 
 if response.code == "200"
   body = response.body
-  
+
   # Check for CSRF token
   if body.include?("csrf-token")
     puts "✅ CSRF token meta tag present"
   else
     puts "❌ CSRF token meta tag missing"
   end
-  
+
   # Check for form authenticity token
   if body.include?("authenticity_token")
     puts "✅ Form authenticity token present"

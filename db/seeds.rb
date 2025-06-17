@@ -74,8 +74,8 @@ if Rails.env.development?
   unless User.exists?(email: 'super@admin.com')
     User.create!(
       email: 'super@admin.com',
-      password: 'password123',
-      password_confirmation: 'password123',
+      password: 'Password123!',
+      password_confirmation: 'Password123!',
       first_name: 'Super',
       last_name: 'Admin',
       system_role: 'super_admin',
@@ -83,15 +83,15 @@ if Rails.env.development?
       status: 'active',
       confirmed_at: Time.current
     )
-    puts "Created super admin: super@admin.com / password123"
+    puts "Created super admin: super@admin.com / Password123!"
   end
 
   # Create site admin
   unless User.exists?(email: 'site@admin.com')
     User.create!(
       email: 'site@admin.com',
-      password: 'password123',
-      password_confirmation: 'password123',
+      password: 'Password123!',
+      password_confirmation: 'Password123!',
       first_name: 'Site',
       last_name: 'Admin',
       system_role: 'site_admin',
@@ -99,7 +99,7 @@ if Rails.env.development?
       status: 'active',
       confirmed_at: Time.current
     )
-    puts "Created site admin: site@admin.com / password123"
+    puts "Created site admin: site@admin.com / Password123!"
   end
 
   # Create direct users with different statuses
@@ -136,8 +136,8 @@ if Rails.env.development?
     unless User.exists?(email: user_attrs[:email])
       User.create!(
         email: user_attrs[:email],
-        password: 'password123',
-        password_confirmation: 'password123',
+        password: 'Password123!',
+        password_confirmation: 'Password123!',
         first_name: user_attrs[:first_name],
         last_name: user_attrs[:last_name],
         system_role: 'user',
@@ -147,7 +147,7 @@ if Rails.env.development?
         locked_at: user_attrs[:locked_at],
         confirmed_at: Time.current
       )
-      puts "Created direct user: #{user_attrs[:email]} / password123 (#{user_attrs[:status]})"
+      puts "Created direct user: #{user_attrs[:email]} / Password123! (#{user_attrs[:status]})"
     end
   end
 
@@ -174,8 +174,8 @@ if Rails.env.development?
     unless User.exists?(email: user_attrs[:email])
       User.create!(
         email: user_attrs[:email],
-        password: 'password123',
-        password_confirmation: 'password123',
+        password: 'Password123!',
+        password_confirmation: 'Password123!',
         first_name: user_attrs[:first_name],
         last_name: user_attrs[:last_name],
         system_role: 'user',
@@ -183,22 +183,22 @@ if Rails.env.development?
         status: 'active',
         confirmed_at: Time.current
       )
-      puts "Created team admin candidate: #{user_attrs[:email]} / password123"
+      puts "Created team admin candidate: #{user_attrs[:email]} / Password123!"
     end
   end
 
   puts "\n=== Development Users Created ==="
-  puts "Super Admin: super@admin.com / password123"
-  puts "Site Admin:  site@admin.com / password123"
+  puts "Super Admin: super@admin.com / Password123!"
+  puts "Site Admin:  site@admin.com / Password123!"
   puts "Direct Users:"
-  puts "  - john@example.com / password123 (active)"
-  puts "  - jane@example.com / password123 (active)"
-  puts "  - inactive@example.com / password123 (inactive)"
-  puts "  - locked@example.com / password123 (locked)"
+  puts "  - john@example.com / Password123! (active)"
+  puts "  - jane@example.com / Password123! (active)"
+  puts "  - inactive@example.com / Password123! (inactive)"
+  puts "  - locked@example.com / Password123! (locked)"
   puts "Team Admin Candidates:"
-  puts "  - teamadmin1@example.com / password123 (ready for team assignment)"
-  puts "  - teamadmin2@example.com / password123 (ready for team assignment)"
-  puts "  - teamadmin3@example.com / password123 (ready for team assignment)"
+  puts "  - teamadmin1@example.com / Password123! (ready for team assignment)"
+  puts "  - teamadmin2@example.com / Password123! (ready for team assignment)"
+  puts "  - teamadmin3@example.com / Password123! (ready for team assignment)"
   puts "\nNote: Team admin candidates can be assigned to teams by the super admin."
   puts "==================================\n"
 
@@ -229,8 +229,8 @@ if Rails.env.development?
     acme_members.each do |member_attrs|
       User.create!(
         email: member_attrs[:email],
-        password: 'password123',
-        password_confirmation: 'password123',
+        password: 'Password123!',
+        password_confirmation: 'Password123!',
         first_name: member_attrs[:first_name],
         last_name: member_attrs[:last_name],
         system_role: 'user',
@@ -270,8 +270,8 @@ if Rails.env.development?
     tech_members.each do |member_attrs|
       User.create!(
         email: member_attrs[:email],
-        password: 'password123',
-        password_confirmation: 'password123',
+        password: 'Password123!',
+        password_confirmation: 'Password123!',
         first_name: member_attrs[:first_name],
         last_name: member_attrs[:last_name],
         system_role: 'user',
@@ -309,8 +309,8 @@ if Rails.env.development?
     digital_members.each do |member_attrs|
       User.create!(
         email: member_attrs[:email],
-        password: 'password123',
-        password_confirmation: 'password123',
+        password: 'Password123!',
+        password_confirmation: 'Password123!',
         first_name: member_attrs[:first_name],
         last_name: member_attrs[:last_name],
         system_role: 'user',
@@ -331,7 +331,7 @@ if Rails.env.development?
   puts "  - Tech Solutions (Admin: teamadmin2@example.com, Members: 4)"
   puts "Suspended Teams:"
   puts "  - Digital Agency (Admin: teamadmin3@example.com, Members: 2)"
-  puts "\nAll team users can login with password: password123"
+  puts "\nAll team users can login with password: Password123!"
   puts "==================================\n"
 
 end

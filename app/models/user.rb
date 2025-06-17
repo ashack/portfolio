@@ -35,6 +35,9 @@ class User < ApplicationRecord
                    uniqueness: { case_sensitive: false, message: "is already taken" },
                    format: { with: URI::MailTo::EMAIL_REGEXP, message: "must be a valid email address" }
 
+  # Strong password requirements
+  validate :password_complexity, if: :password_required?
+
   # Custom validation to check email conflicts with pending invitations
   validate :email_not_in_pending_invitations, if: :email_changed?
 
@@ -124,6 +127,31 @@ class User < ApplicationRecord
   # Normalize email to lowercase for consistency
   def normalize_email
     self.email = email&.downcase&.strip
+  end
+
+  # Strong password validation
+  def password_complexity
+    return if password.blank?
+
+    if password.length < 8
+      errors.add :password, "must be at least 8 characters long"
+    end
+
+    unless password.match?(/[A-Z]/)
+      errors.add :password, "must include at least one uppercase letter"
+    end
+
+    unless password.match?(/[a-z]/)
+      errors.add :password, "must include at least one lowercase letter"
+    end
+
+    unless password.match?(/[0-9]/)
+      errors.add :password, "must include at least one number"
+    end
+
+    unless password.match?(/[^A-Za-z0-9]/)
+      errors.add :password, "must include at least one special character"
+    end
   end
 
   # Validation method to check for email conflicts with pending invitations
