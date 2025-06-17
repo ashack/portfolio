@@ -10,8 +10,9 @@ This large specification file has been reorganized into focused documentation in
 - **[Development Task List](docs/task_list.md)** - Implementation status and roadmap
 - **[UI Components & Design System](docs/ui_components.md)** - Phosphor icons, Tailwind CSS, responsive design
 - **[Common Pitfalls](docs/pitfalls.md)** - Anti-patterns and prevention strategies
+- **[Testing Guide](docs/testing.md)** - Minitest setup, SimpleCov coverage, best practices
 
-**STATUS**: ✅ Production-ready Rails 8.0.2 SaaS application with comprehensive security, dual-track user system, professional UI, and Phosphor icon system.
+**STATUS**: ✅ Production-ready Rails 8.0.2 SaaS application with comprehensive security, dual-track user system, professional UI, Phosphor icon system, and Minitest/SimpleCov testing setup.
 
 ---
 
@@ -112,7 +113,26 @@ gem "rack-cors"
 gem "kamal", require: false
 gem "thruster", require: false
 
-# Development & Testing gems...
+# Development & Testing
+group :development, :test do
+  gem "debug", platforms: %i[ mri windows ], require: "debug/prelude"
+  gem "brakeman", require: false
+  gem "rubocop-rails-omakase", require: false
+  
+  # Testing
+  gem "minitest", "~> 5.22"
+  gem "minitest-rails", "~> 8.0"
+  gem "minitest-reporters"
+  gem "simplecov", require: false
+  gem "faker"
+  gem "capybara"
+  gem "selenium-webdriver"
+end
+
+group :development do
+  gem "web-console"
+  gem "letter_opener"
+end
 ```
 
 ## Database Schema
@@ -1213,3 +1233,72 @@ end
 - **[Common Pitfalls](docs/pitfalls.md)** - Anti-patterns and prevention strategies
 
 **This file now contains only the essential specification needed for development.**
+
+## Testing Instructions
+
+### Running Tests
+
+```bash
+# Run all tests
+bundle exec rails test
+
+# Run specific test file
+bundle exec rails test test/models/user_test.rb
+
+# Run tests with coverage report
+bundle exec rails test
+open coverage/index.html
+```
+
+### Writing Tests
+
+The project uses Minitest with helpful authentication helpers:
+
+```ruby
+# In your test file
+require "test_helper"
+
+class YourTest < ActiveSupport::TestCase
+  def setup
+    @user = sign_in_with(
+      email: "test@example.com",
+      system_role: "super_admin",
+      user_type: "direct"
+    )
+  end
+  
+  test "your test case" do
+    assert @user.super_admin?
+  end
+end
+```
+
+### Test Coverage
+
+SimpleCov is configured to track both line and branch coverage. Current coverage is ~4% with a target of 90%+.
+
+See [Testing Guide](docs/testing.md) for comprehensive testing documentation.
+
+# Important Instructions
+
+## Linting
+Run linting with:
+```bash
+bundle exec rubocop              # Check for issues
+bundle exec rubocop --autocorrect # Auto-fix issues
+```
+
+## Testing  
+Run tests with:
+```bash
+bundle exec rails test           # Run all tests
+bundle exec rails test -v        # Verbose output
+```
+
+## Development Guidelines
+- Do what has been asked; nothing more, nothing less
+- NEVER create files unless they're absolutely necessary for achieving your goal
+- ALWAYS prefer editing an existing file to creating a new one
+- NEVER proactively create documentation files (*.md) or README files. Only create documentation files if explicitly requested by the User
+- Always run linting after making changes
+- Write tests for new functionality
