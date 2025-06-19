@@ -59,6 +59,8 @@ class Invitation < ApplicationRecord
   end
 
   def email_not_in_users_table
+    return unless email.present?
+
     if User.exists?(email: email.downcase)
       errors.add(:email, "already has an account")
     end
