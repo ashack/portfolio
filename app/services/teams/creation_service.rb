@@ -10,7 +10,8 @@ class Teams::CreationService
   def call
     return failure("Only super admins can create teams") unless @super_admin.super_admin?
     return failure("Admin user must exist") unless @admin_user&.persisted?
-    return failure("Admin user already has a team") if @admin_user.team.present?
+    return failure("User already has a team") if @admin_user.team.present?
+    return failure("Only invited users can be assigned as team admins") unless @admin_user.invited?
 
     Team.transaction do
       team = create_team
@@ -37,8 +38,8 @@ class Teams::CreationService
   end
 
   def assign_admin(team)
+    # User is already invited type, just update their team assignment
     @admin_user.update!(
-      user_type: "invited",
       team: team,
       team_role: "admin"
     )

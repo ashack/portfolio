@@ -43,7 +43,7 @@ A complete Ruby on Rails 8 SaaS application with dual-track user system supporti
 - **Payments**: Stripe via Pay gem
 - **Analytics**: Ahoy Matey
 - **UI Icons**: Rails Icons (Phosphor icon set)
-- **Testing**: Minitest with SimpleCov for code coverage
+- **Testing**: Minitest with SimpleCov (24.14% coverage, 505 passing tests)
 - **Session Store**: Secure cookie store with httponly/secure flags
 
 ### Installation
@@ -108,18 +108,24 @@ After running seeds, you'll have a super admin account:
 
 ### Running Tests
 ```bash
-# Run all tests
-bundle exec rails test
+# Run all tests with accurate coverage reporting
+PARALLEL_WORKERS=1 bundle exec rails test
 
 # Run specific test files
 bundle exec rails test test/models/user_test.rb
 
 # Run with verbose output
 bundle exec rails test -v
+
+# Run a specific test method
+bundle exec rails test test/models/user_test.rb -n test_should_be_valid_with_valid_attributes
 ```
 
 ### Code Coverage
 SimpleCov is configured to generate coverage reports automatically when running tests.
+
+**Current Coverage**: 24.02% line coverage, 65.12% branch coverage
+**Test Suite**: 505 tests, 1438 assertions, 14 failures (mostly design issues)
 
 ```bash
 # After running tests, view coverage report

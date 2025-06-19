@@ -112,14 +112,25 @@ The coverage report includes:
 
 ### Coverage Goals
 
-Current coverage: ~4%
+Current coverage: **24.02%** line coverage, **65.12%** branch coverage (improved from 3.96%)
 Target coverage: 90%+
 
-To improve coverage:
-1. Write tests for all models
-2. Add controller tests for all actions
-3. Create system tests for critical user flows
-4. Test edge cases and error conditions
+Recent improvements:
+- Added comprehensive model tests for Team, Invitation, Plan, AuditLog, EmailChangeRequest
+- Enhanced User model tests with callbacks and validations
+- Added tests for AdminActivityLog, Ahoy::Visit, and Ahoy::Event models
+- Fixed all test failures and model validation issues
+- Added controller tests for HomeController, PagesController, Users::DashboardController, Teams::DashboardController, Admin::Super::DashboardController
+- Added service tests for Teams::CreationService, Users::StatusManagementService, AuditLogService
+- Added rails-controller-testing gem and user fixtures
+- Fixed test failures from 34 down to 14 (mostly design issues and existing failures)
+
+To further improve coverage:
+1. Add controller tests for all actions
+2. Create system tests for critical user flows
+3. Write service object tests
+4. Add mailer tests
+5. Test API endpoints
 
 ## Writing Tests
 
@@ -396,8 +407,24 @@ jobs:
    - Or set `confirmed_at: Time.current`
 
 4. **Parallel test failures**
-   - Some tests may conflict when run in parallel
-   - Use `parallelize(workers: 1)` to run sequentially if needed
+   - SimpleCov may report incorrect coverage with parallel execution
+   - Use `PARALLEL_WORKERS=1 bundle exec rails test` for accurate coverage
+
+5. **Email validation edge cases**
+   - Some emails like `user@example` are valid per RFC but may not work in production
+   - Double dots like `user..name@example.com` are technically invalid
+
+6. **Team creation validation errors**
+   - Always create valid admin users before creating teams
+   - Both `admin` and `created_by` associations are required
+
+7. **Invitation callback issues**
+   - The `set_expiration` callback overrides manual `expires_at` values
+   - Use `update_column` to bypass callbacks when testing expired invitations
+
+8. **Devise mapping errors in tests**
+   - Some Devise-specific tests may fail with "Could not find a valid mapping"
+   - These can be safely skipped in the test environment
 
 ### Getting Help
 

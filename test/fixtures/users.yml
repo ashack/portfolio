@@ -1,0 +1,37 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+super_admin:
+  email: fixturesuper@example.com
+  encrypted_password: <%= User.new.send(:password_digest, 'Password123!') %>
+  first_name: Super
+  last_name: Admin
+  system_role: super_admin
+  user_type: direct
+  status: active
+  confirmed_at: <%= Time.current %>
+  created_at: <%= 30.days.ago %>
+  updated_at: <%= 30.days.ago %>
+
+site_admin:
+  email: fixturesite@example.com
+  encrypted_password: <%= User.new.send(:password_digest, 'Password123!') %>
+  first_name: Site
+  last_name: Admin
+  system_role: site_admin
+  user_type: direct
+  status: active
+  confirmed_at: <%= Time.current %>
+  created_at: <%= 20.days.ago %>
+  updated_at: <%= 20.days.ago %>
+
+direct_user:
+  email: fixturedirect@example.com
+  encrypted_password: <%= User.new.send(:password_digest, 'Password123!') %>
+  first_name: Direct
+  last_name: User
+  system_role: user
+  user_type: direct
+  status: active
+  confirmed_at: <%= Time.current %>
+  created_at: <%= 10.days.ago %>
+  updated_at: <%= 10.days.ago %>

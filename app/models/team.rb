@@ -46,7 +46,7 @@ class Team < ApplicationRecord
   def generate_slug
     return unless name.present?
 
-    base_slug = name.downcase.gsub(/[^a-z0-9\s\-]/, "").gsub(/\s+/, "-")
+    base_slug = name.downcase.gsub(/[^a-z0-9\s\-]/, "").gsub(/\s+/, "-").gsub(/^-+|-+$/, "")
     counter = 0
     potential_slug = base_slug
 
