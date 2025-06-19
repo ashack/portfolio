@@ -23,10 +23,14 @@ Generate a complete Ruby on Rails 8 SaaS application with the following exact sp
 ## Application Architecture
 
 ### Core Concept
-- **Dual-track SaaS application** with two completely separate user ecosystems
+- **Triple-track SaaS application** with three distinct user ecosystems:
+  - **Direct Users**: Individual users with personal billing who can also create teams
+  - **Invited Users**: Team members who join via invitation only
+  - **Enterprise Users**: Large organizations with custom plans (contact sales)
 - **Teams operate independently** with their own URLs, billing, and members
 - **Individual users operate independently** with personal billing and features
-- **No crossover** between team and individual user systems
+- **Direct users CAN create and own teams** while maintaining individual features
+- **No crossover** between invited team members and individual user features
 
 ### User Types & Access Patterns
 
@@ -46,16 +50,20 @@ Generate a complete Ruby on Rails 8 SaaS application with the following exact sp
 #### Individual Users (Direct Registration)
 3. **Direct User**
    - Registers independently via public signup
+   - Can choose individual or team plans
    - Has personal Stripe subscription and billing
-   - Cannot join teams or be invited to teams
-   - Operates in complete isolation from team system
-   - Access: `/dashboard`
+   - CAN create and own teams while maintaining individual features
+   - Cannot join teams via invitation (but can create their own)
+   - Access: `/dashboard` (individual) or `/teams/team-slug/` (if owns team)
 
 #### Team-Based Users (Invitation Only)
 4. **Team Admin**
-   - Assigned by Super Admin during team creation
+   - Can be either:
+     - Direct user who created a team (owns_team: true)
+     - Invited user with admin role assigned
    - Manages team billing, settings, and members
    - Can invite new users (new emails only) and delete team members
+   - Can revoke pending invitations (but not accepted ones)
    - Access: `/teams/team-slug/admin`
 
 5. **Team Member**
@@ -63,6 +71,13 @@ Generate a complete Ruby on Rails 8 SaaS application with the following exact sp
    - No billing access, limited team permissions
    - Cannot become individual user or join other teams
    - Access: `/teams/team-slug/`
+
+#### Enterprise Users (Contact Sales)
+6. **Enterprise User**
+   - Large organizations with custom requirements
+   - Managed by Super Admin through enterprise groups
+   - Custom billing and feature sets
+   - Access: `/enterprise/group-slug/`
 
 ## Technical Stack
 
@@ -282,11 +297,17 @@ CREATE TABLE plans (
 ### 1. Direct User Registration Flow
 ```
 1. User visits public signup page
-2. User registers with email/password
-3. System creates user with user_type: 'direct', status: 'active'
-4. User gets redirected to /dashboard
-5. User can set up individual Stripe subscription
-6. User operates independently - CANNOT be invited to teams
+2. User selects a plan (individual or team)
+3. If team plan selected, team name field appears
+4. System creates user with user_type: 'direct', status: 'active'
+5. If team plan:
+   - Creates team with user as admin
+   - Sets owns_team: true
+   - Redirects to /teams/team-slug/
+6. If individual plan:
+   - Redirects to /dashboard
+7. User can set up Stripe subscription
+8. Direct users CAN create teams later
 ```
 
 ### 2. Team Creation Flow (Super Admin Only)
@@ -302,13 +323,33 @@ CREATE TABLE plans (
 
 ### 3. Team Invitation Flow
 ```
-1. Team Admin visits /teams/team-slug/admin/members
+1. Team Admin visits /teams/team-slug/admin/invitations
 2. Team Admin enters NEW email address (validated against users table)
-3. System creates invitation record with unique token
-4. Email sent to invitee with registration link
-5. Invitee clicks link and completes registration
-6. System creates user with user_type: 'invited', team association
-7. User can only access /teams/team-slug/ (no individual features)
+3. System creates invitation record with unique token (expires in 7 days)
+4. Email sent to invitee with invitation link
+5. Invitee clicks link and sees invitation details
+6. Invitee accepts invitation and is redirected to registration
+7. Registration form is pre-filled with email (read-only)
+8. No plan selection shown - only name and password fields
+9. System creates user with:
+   - user_type: 'invited'
+   - team association from invitation
+   - role from invitation (member/admin)
+   - email confirmation skipped
+10. Invitation marked as accepted
+11. User redirected to team dashboard
+```
+
+### 3a. Direct User Team Creation Flow
+```
+1. Direct user registers and selects a team plan
+2. Team name field appears dynamically
+3. On successful registration:
+   - User created with user_type: 'direct'
+   - Team created with user as admin
+   - User marked as owns_team: true
+4. User redirected to team dashboard
+5. Can invite members and manage team
 ```
 
 ### 4. User Status Management
@@ -1233,6 +1274,43 @@ end
 - **[Common Pitfalls](docs/pitfalls.md)** - Anti-patterns and prevention strategies
 
 **This file now contains only the essential specification needed for development.**
+
+## Recent Architectural Updates (June 2025)
+
+### 1. User Type System Refactoring
+- Removed redundancy between `plan_type` and `plan_segment`
+- Implemented three distinct user types:
+  - **Direct**: Can register, choose plans, and create teams
+  - **Invited**: Join via team invitations only
+  - **Enterprise**: Managed through enterprise groups (future feature)
+
+### 2. Team Creation by Direct Users
+- Direct users can now select team plans during registration
+- Dynamic team name field appears when team plan is selected
+- Creates team with user as admin and sets `owns_team: true`
+- Maintains separation between direct and invited user features
+
+### 3. Enhanced Invitation System
+- Invitations expire after 7 days
+- Email validation ensures no duplicate users
+- Invited users skip email confirmation
+- Invitation status properly tracked (pending/accepted/expired)
+- Cannot revoke accepted invitations (user already exists)
+- Improved UI with status badges and contextual actions
+
+### 4. Registration Flow Improvements
+- Conditional UI based on user type (direct vs invited)
+- Plan selection only for direct users
+- Pre-filled, read-only email for invited users
+- Team information display for invited users
+- Virtual attributes (`team_name`, `accepting_invitation`) for cleaner code
+
+### 5. Redirect Logic
+- Super/Site Admins → Admin dashboards
+- Direct users with teams → Team dashboard
+- Direct users without teams → Individual dashboard
+- Invited users → Team dashboard
+- Enterprise users → Enterprise dashboard (future)
 
 ## Testing Instructions
 

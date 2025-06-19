@@ -6,7 +6,7 @@ class Teams::BaseController < ApplicationController
   private
 
   def require_team_member!
-    unless current_user&.invited?
+    unless current_user&.invited? || (current_user&.direct? && current_user&.owns_team?)
       flash[:alert] = "You must be a team member to access this area."
       redirect_to root_path
     end

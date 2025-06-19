@@ -43,7 +43,9 @@ class Teams::Admin::InvitationsController < Teams::Admin::BaseController
   def revoke
     authorize @invitation
 
-    if @invitation.destroy
+    if @invitation.accepted?
+      redirect_to team_admin_invitations_path(team_slug: @team.slug), alert: "Cannot revoke an accepted invitation. The user has already joined the team."
+    elsif @invitation.destroy
       redirect_to team_admin_invitations_path(team_slug: @team.slug), notice: "Invitation was revoked."
     else
       redirect_to team_admin_invitations_path(team_slug: @team.slug), alert: "Failed to revoke invitation."

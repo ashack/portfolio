@@ -77,6 +77,6 @@ class Admin::Super::TeamsController < Admin::Super::BaseController
   end
 
   def team_params
-    params.require(:team).permit(:name, :plan, :max_members, :custom_domain)
+    params.require(:team).permit(:name, :slug, :plan, :status, :max_members, :custom_domain, :admin_id, :trial_ends_at)
   end
 end

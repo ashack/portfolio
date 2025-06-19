@@ -62,36 +62,53 @@ graph TB
 
 ## Core Architecture Principles
 
-### 1. Dual-Track User System
-The application maintains two completely isolated user ecosystems:
+### 1. Triple-Track User System
+The application maintains three distinct user ecosystems:
 
-- **Individual Users**: Register directly, have personal billing, operate independently
-- **Team Users**: Invitation-only, share team billing, collaborate within teams
+- **Direct Users**: Register directly, have personal billing, can create and own teams
+- **Invited Users**: Invitation-only team members, no individual features
+- **Enterprise Users**: Large organizations with custom plans (contact sales)
 
-There is **no crossover** between these systems - a user cannot be both an individual user and a team member.
+Key principles:
+- Direct users CAN create and own teams while maintaining individual features
+- Invited users are restricted to team features only
+- No crossover between invited team members and individual features
 
 ```mermaid
 graph LR
-    subgraph "Individual User Track"
+    subgraph "Direct User Track"
         DirectReg["Direct Registration"]
         DirectUser["Direct User<br/>(user_type: direct)"]
         PersonalBilling["Personal Billing<br/>(Stripe Customer)"]
         DirectFeatures["Individual Features"]
+        TeamCreation["Can Create Teams<br/>(owns_team: true)"]
         
         DirectReg --> DirectUser
         DirectUser --> PersonalBilling
         DirectUser --> DirectFeatures
+        DirectUser --> TeamCreation
     end
     
-    subgraph "Team User Track"
+    subgraph "Invited User Track"
         TeamInvite["Team Invitation"]
         InvitedUser["Invited User<br/>(user_type: invited)"]
         TeamBilling["Team Billing<br/>(Shared)"]
-        TeamFeatures["Team Features"]
+        TeamFeatures["Team Features Only"]
         
         TeamInvite --> InvitedUser
         InvitedUser --> TeamBilling
         InvitedUser --> TeamFeatures
+    end
+    
+    subgraph "Enterprise Track"
+        ContactSales["Contact Sales"]
+        EnterpriseUser["Enterprise User<br/>(user_type: enterprise)"]
+        EnterpriseBilling["Enterprise Billing<br/>(Custom)"]
+        EnterpriseFeatures["Enterprise Features"]
+        
+        ContactSales --> EnterpriseUser
+        EnterpriseUser --> EnterpriseBilling
+        EnterpriseUser --> EnterpriseFeatures
     end
     
     subgraph "Shared Components"
@@ -168,6 +185,12 @@ graph TD
 ```
 saas_ror_starter/
 ├── app/
+│   ├── assets/
+│   │   ├── builds/            # Compiled assets (tailwind.css)
+│   │   ├── images/            # Image assets
+│   │   ├── stylesheets/       # CSS files
+│   │   ├── svg/icons/phosphor/ # Phosphor icon system
+│   │   └── tailwind/          # Tailwind configuration
 │   ├── controllers/
 │   │   ├── admin/
 │   │   │   ├── super/         # Super admin controllers
@@ -176,30 +199,71 @@ saas_ror_starter/
 │   │   │   ├── admin/         # Team admin controllers
 │   │   │   └── [features]     # Team member controllers
 │   │   ├── users/             # Individual user controllers
+│   │   ├── concerns/          # Shared controller concerns
 │   │   └── [public]           # Public-facing controllers
+│   ├── javascript/
+│   │   └── controllers/       # Stimulus controllers
 │   ├── models/
+│   │   ├── ahoy/              # Analytics models
+│   │   ├── concerns/          # Model concerns
 │   │   ├── user.rb            # Central user model
 │   │   ├── team.rb            # Team management
 │   │   ├── invitation.rb      # Invitation system
-│   │   └── plan.rb            # Subscription plans
+│   │   ├── plan.rb            # Subscription plans
+│   │   ├── enterprise_group.rb # Enterprise organizations
+│   │   ├── audit_log.rb       # Audit trail
+│   │   └── email_change_request.rb # Email changes
 │   ├── services/              # Business logic encapsulation
 │   │   ├── teams/
-│   │   └── users/
+│   │   ├── users/
+│   │   └── audit_log_service.rb
 │   ├── policies/              # Pundit authorization policies
 │   ├── views/                 # ERB templates with Tailwind CSS
+│   │   ├── admin/
+│   │   ├── devise/
+│   │   ├── layouts/
+│   │   ├── teams/
+│   │   └── users/
 │   ├── mailers/              # Email functionality
-│   └── javascript/           # Stimulus controllers & Turbo
-├── config/                   # Rails configuration
+│   ├── middleware/           # Rack middleware
+│   └── validators/           # Custom validators
+├── config/
+│   ├── environments/         # Environment-specific config
+│   ├── initializers/         # Application initializers
+│   ├── locales/              # Internationalization
+│   ├── database.yml          # Database configuration
+│   ├── routes.rb             # URL routing
+│   └── importmap.rb          # JavaScript imports
 ├── db/
-│   ├── migrate/              # Database migrations
-│   └── schema.rb             # Current database schema
+│   ├── migrate/              # Database migrations (19 files)
+│   ├── schema.rb             # Main database schema
+│   ├── cable_schema.rb       # Solid Cable schema
+│   ├── cache_schema.rb       # Solid Cache schema
+│   ├── queue_schema.rb       # Solid Queue schema
+│   └── seeds.rb              # Seed data
 ├── docs/                     # Comprehensive documentation
-│   ├── security.md           # Security implementation
+│   ├── architecture/
+│   │   └── ARCHITECTURE.md   # This document
+│   ├── security/             # Security documentation
+│   ├── architecture_diagram.md # Visual diagrams
 │   ├── bug_fixes.md          # Rails 8 compatibility fixes
+│   ├── security.md           # Security implementation
 │   ├── task_list.md          # Development roadmap
+│   ├── testing.md            # Testing guide
+│   ├── ui_components.md      # UI/Design system
 │   └── pitfalls.md           # Common issues & solutions
-├── spec/                     # RSpec test suite
-└── public/                   # Static assets
+├── test/                     # Minitest test suite
+│   ├── controllers/          # Controller tests
+│   ├── fixtures/             # Test data
+│   ├── integration/          # Integration tests
+│   ├── models/               # Model tests
+│   ├── services/             # Service tests
+│   └── system/               # System/browser tests
+├── lib/
+│   └── tasks/                # Custom rake tasks
+├── public/                   # Static public files
+├── vendor/                   # Third-party code
+└── CLAUDE.md                 # Project specifications
 ```
 
 ## Key Components
@@ -392,10 +456,13 @@ erDiagram
         string first_name
         string last_name
         int system_role "0:user, 1:site_admin, 2:super_admin"
-        int user_type "0:direct, 1:invited"
+        int user_type "0:direct, 1:invited, 2:enterprise"
         int status "0:active, 1:inactive, 2:locked"
         int team_role "0:member, 1:admin"
         int team_id FK
+        int plan_id FK
+        int enterprise_group_id FK
+        boolean owns_team
         string stripe_customer_id
         datetime confirmed_at
         datetime locked_at
@@ -623,6 +690,47 @@ flowchart TD
 - **XSS protection**: Automatic HTML escaping
 - **Session security**: Secure session storage and rotation
 
+## Registration & Invitation Flow
+
+```mermaid
+sequenceDiagram
+    participant U as User
+    participant S as System
+    participant E as Email Service
+    participant T as Team
+
+    alt Direct User Registration
+        U->>S: Visit /users/sign_up
+        S->>U: Show registration form with plans
+        U->>S: Select plan (individual/team)
+        alt Team Plan Selected
+            S->>U: Show team name field
+            U->>S: Submit with team name
+            S->>S: Create user (type: direct)
+            S->>T: Create team with user as admin
+            S->>S: Set owns_team: true
+            S->>U: Redirect to team dashboard
+        else Individual Plan
+            U->>S: Submit registration
+            S->>S: Create user (type: direct)
+            S->>U: Redirect to individual dashboard
+        end
+    else Invited User Registration
+        U->>S: Click invitation link
+        S->>S: Validate invitation token
+        S->>U: Show invitation details
+        U->>S: Accept invitation
+        S->>U: Registration form (email readonly)
+        Note over U,S: No plan selection shown
+        U->>S: Submit (name, password only)
+        S->>S: Create user (type: invited)
+        S->>S: Associate with team
+        S->>S: Mark invitation accepted
+        S->>S: Skip email confirmation
+        S->>U: Redirect to team dashboard
+    end
+```
+
 ## Team Management Flow
 
 ```mermaid
@@ -782,6 +890,55 @@ flowchart TD
 - Implement comprehensive API versioning
 - Add end-to-end encryption for sensitive data
 - Enhance real-time features with ActionCable
+
+## Recent Architectural Updates
+
+### Invitation Status Management
+The invitation system now properly tracks acceptance status:
+- **Accepted invitations** show "User joined" with the join date
+- **Expired invitations** allow deletion but not resending
+- **Pending invitations** can be resent or revoked
+- **Controller validation** prevents revoking accepted invitations
+
+### Post-Registration Redirect Logic
+Smart routing based on user type and ownership:
+```ruby
+def after_sign_up_path_for(resource)
+  if resource.direct? && resource.owns_team? && resource.team
+    # Direct users who own a team go to their team dashboard
+    team_root_path(team_slug: resource.team.slug)
+  elsif resource.direct?
+    # Direct users without teams go to individual dashboard
+    user_dashboard_path
+  elsif resource.invited? && resource.team
+    # Invited users go to their team dashboard
+    team_root_path(team_slug: resource.team.slug)
+  else
+    root_path
+  end
+end
+```
+
+### Plan Selection During Registration
+Dynamic plan selection for direct users:
+- **Individual plans**: No additional fields required
+- **Team plans**: Shows team name field via Stimulus controller
+- **Enterprise plans**: Contact sales message (not selectable)
+- **Invited users**: No plan selection (inherit team billing)
+
+### Virtual Attributes Pattern
+Clean separation of concerns using virtual attributes:
+```ruby
+# User model
+attr_accessor :team_name          # For team creation during registration
+attr_accessor :accepting_invitation # Skip validation when accepting invitations
+```
+
+### Validation Skipping for Invitations
+Invited users bypass certain validations:
+- Email confirmation skipped (already verified via invitation)
+- Invitation conflict check skipped during acceptance
+- Immediate activation without confirmation emails
 
 ## Conclusion
 

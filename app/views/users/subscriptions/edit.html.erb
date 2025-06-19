@@ -1,0 +1,127 @@
+<% content_for :title, "Change Plan" %>
+
+<div class="min-h-screen bg-gray-50 py-6">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6">
+    <!-- Header -->
+    <div class="bg-white shadow rounded-lg mb-6">
+      <div class="px-4 py-5 sm:p-6">
+        <div class="flex items-center justify-between">
+          <div>
+            <h1 class="text-2xl font-bold text-gray-900">Change Your Plan</h1>
+            <p class="mt-1 text-sm text-gray-500">Select a plan that best fits your needs.</p>
+          </div>
+          <div>
+            <%= link_to users_subscription_path, class: "inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50" do %>
+              <%= icon "arrow-left", class: "-ml-1 mr-2 h-4 w-4" %>
+              Back to Subscription
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Current Plan Reminder -->
+    <% if @current_plan %>
+      <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+        <div class="flex">
+          <%= icon "info", class: "h-5 w-5 text-blue-400" %>
+          <div class="ml-3">
+            <p class="text-sm text-blue-700">
+              You are currently on the <strong><%= @current_plan.name %></strong> plan 
+              (<%= @current_plan.formatted_price %>).
+            </p>
+          </div>
+        </div>
+      </div>
+    <% end %>
+
+    <!-- Available Plans -->
+    <div class="bg-white shadow rounded-lg">
+      <div class="px-4 py-5 sm:p-6">
+        <h3 class="text-lg font-medium text-gray-900 mb-6">Available Plans</h3>
+        
+        <%= form_with url: users_subscription_path, method: :patch, local: true do |form| %>
+          <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <% @available_plans.each do |plan| %>
+              <div class="relative">
+                <input type="radio" 
+                       name="plan_id" 
+                       id="plan_<%= plan.id %>" 
+                       value="<%= plan.id %>" 
+                       class="sr-only peer">
+                
+                <label for="plan_<%= plan.id %>" 
+                       class="block p-6 bg-white border-2 border-gray-200 rounded-lg cursor-pointer hover:border-indigo-500 peer-checked:border-indigo-600 peer-checked:bg-indigo-50 transition-all">
+                  
+                  <div class="flex flex-col h-full">
+                    <div>
+                      <h4 class="text-lg font-semibold text-gray-900"><%= plan.name %></h4>
+                      
+                      <div class="mt-2">
+                        <% if plan.amount_cents == 0 %>
+                          <p class="text-3xl font-bold text-gray-900">Free</p>
+                          <p class="text-sm text-gray-500">Forever</p>
+                        <% else %>
+                          <p class="text-3xl font-bold text-gray-900">
+                            $<%= plan.amount_cents / 100.0 %>
+                          </p>
+                          <p class="text-sm text-gray-500">per <%= plan.interval || 'month' %></p>
+                        <% end %>
+                      </div>
+                    </div>
+                    
+                    <% if plan.features.present? %>
+                      <ul class="mt-6 space-y-3 flex-grow">
+                        <% plan.features.each do |feature| %>
+                          <li class="flex items-start">
+                            <%= icon "check", class: "w-5 h-5 text-green-500 mt-0.5 mr-2 flex-shrink-0" %>
+                            <span class="text-sm text-gray-600"><%= feature.humanize %></span>
+                          </li>
+                        <% end %>
+                      </ul>
+                    <% end %>
+                    
+                    <div class="mt-6">
+                      <% if @current_plan && plan.amount_cents < @current_plan.amount_cents %>
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                          Downgrade
+                        </span>
+                      <% elsif @current_plan && plan.amount_cents > @current_plan.amount_cents %>
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                          Upgrade
+                        </span>
+                      <% end %>
+                    </div>
+                  </div>
+                </label>
+              </div>
+            <% end %>
+          </div>
+          
+          <div class="mt-8 flex justify-end space-x-3">
+            <%= link_to "Cancel", users_subscription_path, class: "inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50" %>
+            <%= form.submit "Change Plan", class: "inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700" %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+
+    <!-- Plan Change Notice -->
+    <div class="mt-6 bg-gray-50 rounded-lg p-4">
+      <div class="flex">
+        <%= icon "info", class: "h-5 w-5 text-gray-400" %>
+        <div class="ml-3">
+          <h3 class="text-sm font-medium text-gray-800">Important Information</h3>
+          <div class="mt-2 text-sm text-gray-600">
+            <ul class="list-disc list-inside space-y-1">
+              <li>Plan changes take effect immediately</li>
+              <li>Downgrading may result in loss of access to certain features</li>
+              <li>You can change your plan at any time</li>
+              <li>No refunds are provided for plan downgrades</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
