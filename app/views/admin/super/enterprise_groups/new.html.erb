@@ -1,0 +1,21 @@
+<% content_for :page_title, "Create Enterprise Group" %>
+
+<div class="bg-white shadow sm:rounded-lg">
+  <div class="px-4 py-5 sm:p-6">
+    <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Create Enterprise Group</h3>
+    
+    <div class="mb-6 p-4 bg-purple-50 rounded-lg">
+      <p class="text-sm text-purple-800">
+        <strong>Enterprise Groups</strong> are for large organizations that require:
+      </p>
+      <ul class="mt-2 text-sm text-purple-700 list-disc list-inside">
+        <li>Custom enterprise plans with special pricing</li>
+        <li>Multiple users under one billing account</li>
+        <li>Dedicated support and account management</li>
+        <li>Custom domains and branding options</li>
+      </ul>
+    </div>
+    
+    <%= render 'form', enterprise_group: @enterprise_group %>
+  </div>
+</div>

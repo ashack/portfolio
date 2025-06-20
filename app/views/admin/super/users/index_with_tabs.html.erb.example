@@ -1,0 +1,53 @@
+<% content_for :page_title, "User Management" %>
+
+<div class="bg-white shadow overflow-hidden sm:rounded-lg">
+  <div class="px-4 py-5 sm:p-6">
+    <!-- Enhanced tabs with panels -->
+    <%= render 'shared/enhanced_tab_navigation', 
+        tabs: user_management_tabs,
+        panels: true,
+        remember: true,
+        id: 'user-management' do |tab_id| %>
+      
+      <% case tab_id %>
+      <% when 'all-users' %>
+        <!-- All Users Panel -->
+        <div>
+          <h3 class="text-lg font-medium text-gray-900 mb-4">All Users</h3>
+          <%= render 'users_table', users: @all_users %>
+        </div>
+        
+      <% when 'direct-users' %>
+        <!-- Direct Users Panel -->
+        <div>
+          <h3 class="text-lg font-medium text-gray-900 mb-4">Direct Users</h3>
+          <p class="text-sm text-gray-500 mb-4">
+            Users who registered directly and own their subscriptions.
+          </p>
+          <%= render 'users_table', users: @direct_users %>
+        </div>
+        
+      <% when 'team-members' %>
+        <!-- Team Members Panel -->
+        <div>
+          <h3 class="text-lg font-medium text-gray-900 mb-4">Team Members</h3>
+          <p class="text-sm text-gray-500 mb-4">
+            Users who were invited to join teams.
+          </p>
+          <%= render 'users_table', users: @team_members %>
+        </div>
+        
+      <% when 'enterprise-users' %>
+        <!-- Enterprise Users Panel -->
+        <div>
+          <h3 class="text-lg font-medium text-gray-900 mb-4">Enterprise Users</h3>
+          <p class="text-sm text-gray-500 mb-4">
+            Users who belong to enterprise groups.
+          </p>
+          <%= render 'users_table', users: @enterprise_users %>
+        </div>
+      <% end %>
+      
+    <% end %>
+  </div>
+</div>

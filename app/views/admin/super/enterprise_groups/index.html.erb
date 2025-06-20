@@ -1,0 +1,126 @@
+<% content_for :page_title, "Organizations Management" %>
+
+<div class="bg-white shadow overflow-hidden sm:rounded-lg">
+  <div class="px-4 py-5 sm:p-6">
+    <!-- Tabs -->
+    <%= render 'shared/tab_navigation', tabs: organization_tabs %>
+
+    <!-- Enterprise Groups Content -->
+    <div class="mt-6">
+      <div class="mb-4 flex justify-between items-center">
+        <div>
+          <h3 class="text-lg leading-6 font-medium text-gray-900">Enterprise Groups</h3>
+          <p class="mt-1 text-sm text-gray-500">
+            Manage enterprise organizations with custom plans and multiple users.
+            Enterprise groups are for large organizations that need dedicated support and custom billing.
+          </p>
+        </div>
+        <% if policy(EnterpriseGroup).create? %>
+          <div>
+            <%= link_to "Create Enterprise Group", new_admin_super_enterprise_group_path, class: "inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" %>
+          </div>
+        <% end %>
+      </div>
+
+      <% if @enterprise_groups.any? %>
+        <div class="overflow-x-auto shadow md:rounded-lg">
+          <table class="min-w-full divide-y divide-gray-300">
+            <thead class="bg-gray-50">
+              <tr>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Organization</th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Admin</th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Plan</th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Members</th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created</th>
+                <th scope="col" class="relative px-6 py-3"><span class="sr-only">Actions</span></th>
+              </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+              <% @enterprise_groups.each do |group| %>
+                <tr class="hover:bg-gray-50">
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="flex items-center">
+                      <div class="flex-shrink-0 h-10 w-10">
+                        <div class="h-10 w-10 rounded-full bg-purple-200 flex items-center justify-center">
+                          <span class="text-sm font-medium text-purple-700"><%= group.name.first.upcase %></span>
+                        </div>
+                      </div>
+                      <div class="ml-4">
+                        <div class="text-sm font-medium text-gray-900"><%= group.name %></div>
+                        <div class="text-sm text-gray-500">/<%= group.slug %></div>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <% if group.admin %>
+                      <div class="text-sm text-gray-900"><%= group.admin.email %></div>
+                      <div class="text-sm text-gray-500"><%= group.admin.full_name %></div>
+                    <% else %>
+                      <span class="text-sm text-gray-500">No admin assigned</span>
+                    <% end %>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <% if group.plan %>
+                      <span class="text-sm text-gray-900"><%= group.plan.name %></span>
+                    <% else %>
+                      <span class="text-sm text-gray-500">No plan</span>
+                    <% end %>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                      <%= group.status == 'active' ? 'bg-green-100 text-green-800' : 
+                          group.status == 'suspended' ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800' %>">
+                      <%= group.status.capitalize %>
+                    </span>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    <%= group.users.count %>/<%= group.max_members %>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <%= group.created_at.strftime("%b %d, %Y") %>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                    <div class="flex space-x-2">
+                      <% if policy(group).show? %>
+                        <%= link_to "View", admin_super_enterprise_group_path(group), class: "text-indigo-600 hover:text-indigo-900" %>
+                      <% end %>
+                      <% if policy(group).edit? %>
+                        <%= link_to "Edit", edit_admin_super_enterprise_group_path(group), class: "text-green-600 hover:text-green-900" %>
+                      <% end %>
+                      <% if policy(group).destroy? %>
+                        <%= button_to "Delete", admin_super_enterprise_group_path(group), 
+                            method: :delete, 
+                            data: { turbo_confirm: "Are you sure? This will permanently delete the enterprise group." }, 
+                            class: "text-red-600 hover:text-red-900 bg-transparent border-none underline cursor-pointer p-0 font-normal",
+                            form_class: "inline" %>
+                      <% end %>
+                    </div>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Pagination -->
+        <div class="mt-6">
+          <%== pagy_bootstrap_nav(@pagy) if @pagy.pages > 1 %>
+        </div>
+      <% else %>
+        <div class="text-center py-12">
+          <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+          </svg>
+          <h3 class="mt-2 text-sm font-medium text-gray-900">No enterprise groups</h3>
+          <p class="mt-1 text-sm text-gray-500">Get started by creating a new enterprise group.</p>
+          <% if policy(EnterpriseGroup).create? %>
+            <div class="mt-6">
+              <%= link_to "Create Enterprise Group", new_admin_super_enterprise_group_path, class: "inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700" %>
+            </div>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

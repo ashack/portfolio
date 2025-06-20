@@ -1,0 +1,31 @@
+<%# Usage:
+# render 'shared/tab_navigation', tabs: [
+#   { name: 'Teams', path: admin_super_teams_path, count: Team.count },
+#   { name: 'Enterprise Groups', path: admin_super_enterprise_groups_path, count: EnterpriseGroup.count }
+# ]
+%>
+
+<div class="border-b border-gray-200">
+  <nav class="-mb-px flex space-x-8" aria-label="Tabs">
+    <% tabs.each do |tab| %>
+      <% is_active = current_page?(tab[:path]) || (tab[:active_paths] && tab[:active_paths].any? { |path| request.path.include?(path) }) %>
+      
+      <a href="<%= tab[:path] %>" 
+         class="<%= is_active ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' %> whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">
+        <%= tab[:name] %>
+        
+        <% if tab[:count] %>
+          <span class="<%= is_active ? 'bg-indigo-100 text-indigo-600' : 'bg-gray-100 text-gray-900' %> ml-2 py-0.5 px-2.5 rounded-full text-xs font-medium">
+            <%= tab[:count] %>
+          </span>
+        <% end %>
+        
+        <% if tab[:badge] %>
+          <span class="<%= tab[:badge_class] || 'bg-gray-100 text-gray-900' %> ml-2 py-0.5 px-2.5 rounded-full text-xs font-medium">
+            <%= tab[:badge] %>
+          </span>
+        <% end %>
+      </a>
+    <% end %>
+  </nav>
+</div>

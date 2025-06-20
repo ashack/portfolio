@@ -4,6 +4,14 @@
   <div class="px-4 py-5 sm:p-6">
     <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Create New Team</h3>
     
+    <div class="mb-6 p-4 bg-blue-50 rounded-lg">
+      <p class="text-sm text-blue-800">
+        <strong>Note:</strong> This form is for creating teams managed by Super Admins. 
+        Regular users create their own teams during registration when selecting a team plan.
+        For enterprise organizations, use the <a href="<%= admin_super_enterprise_groups_path %>" class="text-blue-600 underline">Enterprise Groups</a> section.
+      </p>
+    </div>
+    
     <%= form_with(model: [:admin, :super, @team], local: true, class: "space-y-6") do |form| %>
       <% if @team.errors.any? %>
         <div class="rounded-md bg-red-50 p-4">
@@ -50,10 +58,15 @@
 
         <div class="sm:col-span-4">
           <%= label_tag :admin_id, "Team Admin", class: "block text-sm font-medium text-gray-700" %>
+          <% available_users = User.active.where(team_id: nil).where("(user_type = ? AND owns_team = ?) OR user_type = ?", User.user_types[:direct], false, User.user_types[:invited]) %>
           <%= select_tag :admin_id, 
-              options_from_collection_for_select(User.direct_users.where(team_id: nil), :id, :email),
+              options_for_select(available_users.map { |u| ["#{u.email} (#{u.user_type})", u.id] }),
               { prompt: 'Select a user to be team admin', class: "mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md" } %>
-          <p class="mt-2 text-sm text-gray-500">Only direct users without teams can be assigned as team admins.</p>
+          <p class="mt-2 text-sm text-gray-500">
+            You can assign:
+            <br>• Direct users who don't own a team (they will become team owners)
+            <br>• Invited users without a team assignment
+          </p>
         </div>
 
         <div class="sm:col-span-3">

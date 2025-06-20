@@ -1,0 +1,87 @@
+<%= form_with(model: [:admin, :super, enterprise_group], local: true, class: "space-y-6") do |form| %>
+  <% if enterprise_group.errors.any? %>
+    <div class="rounded-md bg-red-50 p-4">
+      <div class="flex">
+        <div class="flex-shrink-0">
+          <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+          </svg>
+        </div>
+        <div class="ml-3">
+          <h3 class="text-sm font-medium text-red-800">
+            There were <%= pluralize(enterprise_group.errors.count, "error") %> with your submission:
+          </h3>
+          <div class="mt-2 text-sm text-red-700">
+            <ul class="list-disc pl-5 space-y-1">
+              <% enterprise_group.errors.full_messages.each do |message| %>
+                <li><%= message %></li>
+              <% end %>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  <% end %>
+
+  <div class="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
+    <div class="sm:col-span-4">
+      <%= form.label :name, "Organization Name", class: "block text-sm font-medium text-gray-700" %>
+      <%= form.text_field :name, class: "mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md", placeholder: "Enter organization name" %>
+      <% if enterprise_group.persisted? %>
+        <p class="mt-2 text-sm text-gray-500">Changing the name will not affect the URL slug: /<%= enterprise_group.slug %></p>
+      <% else %>
+        <p class="mt-2 text-sm text-gray-500">This will be used to generate the organization's URL slug.</p>
+      <% end %>
+    </div>
+
+    <div class="sm:col-span-3">
+      <%= form.label :plan_id, "Enterprise Plan", class: "block text-sm font-medium text-gray-700" %>
+      <%= form.select :plan_id, 
+          options_from_collection_for_select(@enterprise_plans || Plan.for_enterprise.active, :id, :name, enterprise_group.plan_id),
+          { prompt: 'Select an enterprise plan' },
+          { class: "mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md" } %>
+      <p class="mt-2 text-sm text-gray-500">Choose from available enterprise plans.</p>
+    </div>
+
+    <div class="sm:col-span-3">
+      <%= form.label :max_members, "Maximum Members", class: "block text-sm font-medium text-gray-700" %>
+      <%= form.number_field :max_members, class: "mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md", min: 10, max: 10000 %>
+      <p class="mt-2 text-sm text-gray-500">Maximum number of users in this organization.</p>
+    </div>
+
+    <% if enterprise_group.new_record? %>
+      <div class="sm:col-span-4">
+        <%= label_tag :admin_email, "Admin Email", class: "block text-sm font-medium text-gray-700" %>
+        <%= text_field_tag :admin_email, nil, class: "mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md", placeholder: "admin@company.com" %>
+        <p class="mt-2 text-sm text-gray-500">Enter email for the enterprise admin. They will receive an invitation to set up their account.</p>
+      </div>
+    <% end %>
+
+    <div class="sm:col-span-3">
+      <%= form.label :trial_ends_at, "Trial Period", class: "block text-sm font-medium text-gray-700" %>
+      <%= form.date_field :trial_ends_at, class: "mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md", min: Date.today %>
+      <p class="mt-2 text-sm text-gray-500">Optional trial period end date.</p>
+    </div>
+
+    <div class="sm:col-span-3">
+      <%= form.label :status, class: "block text-sm font-medium text-gray-700" %>
+      <%= form.select :status, 
+          options_for_select([
+            ['Active', 'active'],
+            ['Suspended', 'suspended'],
+            ['Cancelled', 'cancelled']
+          ], enterprise_group.status),
+          {},
+          { class: "mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md" } %>
+    </div>
+  </div>
+
+  <div class="pt-5">
+    <div class="flex justify-end space-x-3">
+      <%= link_to "Cancel", enterprise_group.persisted? ? admin_super_enterprise_group_path(enterprise_group) : admin_super_enterprise_groups_path, 
+          class: "bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" %>
+      <%= form.submit enterprise_group.persisted? ? "Update Enterprise Group" : "Create Enterprise Group", 
+          class: "ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" %>
+    </div>
+  </div>
+<% end %>

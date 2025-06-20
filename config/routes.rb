@@ -150,6 +150,16 @@ Rails.application.routes.draw do
       patch :decline
     end
   end
+  
+  # Enterprise Group Routes (future implementation)
+  scope "/enterprise/:enterprise_group_slug" do
+    root "enterprise/dashboard#index", as: :enterprise_group_root
+    
+    namespace :enterprise do
+      resources :members, only: [ :index, :show ]
+      resources :profile, only: [ :show, :edit, :update ]
+    end
+  end
 
   # Redirect after sign in based on user type
   get "/redirect_after_sign_in", to: "redirect#after_sign_in"
