@@ -6,7 +6,7 @@ class Users::RegistrationsControllerTest < ActionDispatch::IntegrationTest
     # Create test plans
     @free_plan = Plan.create!(
       name: "Individual Free",
-      plan_type: "individual",
+      plan_segment: "individual",
       amount_cents: 0,
       features: [ "basic_dashboard", "email_support" ],
       active: true
@@ -14,7 +14,7 @@ class Users::RegistrationsControllerTest < ActionDispatch::IntegrationTest
 
     @pro_plan = Plan.create!(
       name: "Individual Pro",
-      plan_type: "individual",
+      plan_segment: "individual",
       stripe_price_id: "price_individual_pro",
       amount_cents: 1900,
       interval: "month",
@@ -24,7 +24,7 @@ class Users::RegistrationsControllerTest < ActionDispatch::IntegrationTest
 
     @team_plan = Plan.create!(
       name: "Team Plan",
-      plan_type: "team",
+      plan_segment: "team",
       amount_cents: 4900,
       interval: "month",
       max_team_members: 5,
@@ -33,7 +33,7 @@ class Users::RegistrationsControllerTest < ActionDispatch::IntegrationTest
 
     @inactive_plan = Plan.create!(
       name: "Inactive Plan",
-      plan_type: "individual",
+      plan_segment: "individual",
       amount_cents: 999,
       active: false
     )

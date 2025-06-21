@@ -4,7 +4,6 @@ class UserPlanChangeTest < ActiveSupport::TestCase
   def setup
     @free_plan = Plan.create!(
       name: "Free",
-      plan_type: "individual",
       plan_segment: "individual",
       amount_cents: 0,
       active: true
@@ -12,7 +11,6 @@ class UserPlanChangeTest < ActiveSupport::TestCase
 
     @pro_plan = Plan.create!(
       name: "Pro",
-      plan_type: "individual",
       plan_segment: "individual",
       amount_cents: 1900,
       active: true
@@ -51,7 +49,6 @@ class UserPlanChangeTest < ActiveSupport::TestCase
   test "user can change between paid plans" do
     premium_plan = Plan.create!(
       name: "Premium",
-      plan_type: "individual",
       plan_segment: "individual",
       amount_cents: 4900,
       active: true

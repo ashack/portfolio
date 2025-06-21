@@ -9,7 +9,7 @@ class Admin::Super::PlansControllerTest < ActionDispatch::IntegrationTest
 
     @plan = Plan.create!(
       name: "Test Plan",
-      plan_type: "individual",
+      plan_segment: "individual",
       amount_cents: 999,
       interval: "month",
       features: [ "feature1", "feature2" ],
@@ -57,7 +57,7 @@ class Admin::Super::PlansControllerTest < ActionDispatch::IntegrationTest
       post admin_super_plans_path, params: {
         plan: {
           name: "New Plan",
-          plan_type: "team",
+          plan_segment: "team",
           stripe_price_id: "price_new",
           amount_cents: 4999,
           interval: "month",
@@ -73,7 +73,7 @@ class Admin::Super::PlansControllerTest < ActionDispatch::IntegrationTest
 
     plan = Plan.last
     assert_equal "New Plan", plan.name
-    assert_equal "team", plan.plan_type
+    assert_equal "team", plan.plan_segment
     assert_equal 4999, plan.amount_cents
     assert_equal 10, plan.max_team_members
     assert_equal [ "feature1", "feature2", "feature3" ], plan.features
@@ -122,7 +122,7 @@ class Admin::Super::PlansControllerTest < ActionDispatch::IntegrationTest
     post admin_super_plans_path, params: {
       plan: {
         name: "", # Invalid - blank name
-        plan_type: "individual"
+        plan_segment: "individual"
       }
     }
 
@@ -152,7 +152,7 @@ class Admin::Super::PlansControllerTest < ActionDispatch::IntegrationTest
     # Create additional plans
     Plan.create!(
       name: "Team Plan",
-      plan_type: "team",
+      plan_segment: "team",
       amount_cents: 9999,
       max_team_members: 20,
       active: true
@@ -160,7 +160,7 @@ class Admin::Super::PlansControllerTest < ActionDispatch::IntegrationTest
 
     Plan.create!(
       name: "Inactive Plan",
-      plan_type: "individual",
+      plan_segment: "individual",
       amount_cents: 0,
       active: false
     )

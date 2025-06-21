@@ -19,7 +19,8 @@ class InvitationCallbacksValidationsTest < ActiveSupport::TestCase
       team: @team,
       email: "INVITED@EXAMPLE.COM",
       role: "member",
-      invited_by: @admin
+      invited_by: @admin,
+      invitation_type: "team"
     )
   end
 
@@ -70,7 +71,8 @@ class InvitationCallbacksValidationsTest < ActiveSupport::TestCase
       invitation = Invitation.create!(
         team: @team,
         email: "test#{tokens.size}@example.com",
-        invited_by: @admin
+        invited_by: @admin,
+        invitation_type: "team"
       )
       tokens << invitation.token
     end
@@ -198,7 +200,8 @@ class InvitationCallbacksValidationsTest < ActiveSupport::TestCase
     duplicate = Invitation.new(
       team: @team,
       email: "another@example.com",
-      invited_by: @admin
+      invited_by: @admin,
+      invitation_type: "team"
     )
 
     # Override token generation to force duplicate
@@ -242,7 +245,7 @@ class InvitationCallbacksValidationsTest < ActiveSupport::TestCase
   test "team presence validation" do
     @invitation.team = nil
     assert_not @invitation.valid?
-    assert_includes @invitation.errors[:team], "must exist"
+    assert_includes @invitation.errors[:team_id], "can't be blank"
   end
 
   # Invited by validation
@@ -284,7 +287,8 @@ class InvitationCallbacksValidationsTest < ActiveSupport::TestCase
     other_invitation = Invitation.new(
       team: other_team,
       email: @invitation.email,
-      invited_by: @admin
+      invited_by: @admin,
+      invitation_type: "team"
     )
 
     assert other_invitation.valid?
@@ -296,7 +300,8 @@ class InvitationCallbacksValidationsTest < ActiveSupport::TestCase
     duplicate = Invitation.new(
       team: @team,
       email: @invitation.email,
-      invited_by: @admin
+      invited_by: @admin,
+      invitation_type: "team"
     )
 
     # This should be caught by uniqueness constraints in practice
@@ -354,7 +359,7 @@ class InvitationCallbacksValidationsTest < ActiveSupport::TestCase
     assert_not @invitation.valid?
 
     assert @invitation.errors[:email].any?
-    assert @invitation.errors[:team].any?
+    assert @invitation.errors[:team_id].any?
     assert @invitation.errors[:invited_by].any?
   end
 

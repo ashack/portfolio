@@ -70,7 +70,9 @@ module ActiveSupport
         status: attributes[:status] || "active",
         confirmed_at: Time.current,
         team: attributes[:team],
-        team_role: attributes[:team_role]
+        team_role: attributes[:team_role],
+        enterprise_group: attributes[:enterprise_group],
+        enterprise_group_role: attributes[:enterprise_group_role]
       )
       sign_in user
       user

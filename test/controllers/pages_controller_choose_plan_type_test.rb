@@ -5,7 +5,6 @@ class PagesControllerChoosePlanTypeTest < ActionDispatch::IntegrationTest
     # Create some plans for each segment
     @individual_plan = Plan.create!(
       name: "Individual Pro",
-      plan_type: "individual",
       plan_segment: "individual",
       amount_cents: 1900,
       active: true
@@ -13,7 +12,6 @@ class PagesControllerChoosePlanTypeTest < ActionDispatch::IntegrationTest
 
     @team_plan = Plan.create!(
       name: "Team Starter",
-      plan_type: "team",
       plan_segment: "team",
       amount_cents: 4900,
       max_team_members: 5,
@@ -22,7 +20,6 @@ class PagesControllerChoosePlanTypeTest < ActionDispatch::IntegrationTest
 
     @enterprise_plan = Plan.create!(
       name: "Enterprise",
-      plan_type: "team",
       plan_segment: "enterprise",
       amount_cents: 99900,
       max_team_members: 500,

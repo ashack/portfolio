@@ -1,0 +1,26 @@
+<h2>You're invited!</h2>
+
+<% if @invitation.enterprise_invitation? %>
+  <p>Hi there,</p>
+  
+  <p><%= @invited_by.email %> has invited you to join <%= @organization.name %> as <%= @invitation.role == 'admin' ? 'an administrator' : 'a member' %>.</p>
+  
+  <p>Click the link below to accept the invitation and create your account:</p>
+  
+  <p><%= link_to "Accept Invitation", @accept_url, style: "background-color: #7c3aed; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; display: inline-block;" %></p>
+<% else %>
+  <p>Hi there,</p>
+  
+  <p><%= @invited_by.email %> has invited you to join <%= @team.name %> as <%= @invitation.role == 'admin' ? 'an administrator' : 'a member' %>.</p>
+  
+  <p>Click the link below to accept the invitation and create your account:</p>
+  
+  <p><%= link_to "Accept Invitation", @accept_url, style: "background-color: #3b82f6; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; display: inline-block;" %></p>
+<% end %>
+
+<p>This invitation will expire in 7 days.</p>
+
+<p>If you weren't expecting this invitation, you can safely ignore this email.</p>
+
+<p>Best regards,<br>
+The SaaS App Team</p>

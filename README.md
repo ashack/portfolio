@@ -1,27 +1,30 @@
 # SaaS Rails Starter
 
-A complete Ruby on Rails 8 SaaS application with dual-track user system supporting both team-based and individual users.
+A complete Ruby on Rails 8 SaaS application with triple-track user system supporting individual users, team-based collaboration, and enterprise organizations.
 
 ## Features
 
 ### User Types
 - **Super Admin**: Platform owner with complete system access
 - **Site Admin**: Customer support and user management
-- **Direct User**: Individual users with personal billing
-- **Team Admin**: Manages team billing and members
+- **Direct User**: Individual users with personal billing who can also create teams
+- **Team Admin**: Manages team billing and members (can be direct user or invited)
 - **Team Member**: Invitation-only team participants
+- **Enterprise Admin**: Manages enterprise organization and members
+- **Enterprise User**: Members of enterprise organizations
 
 ### Core Features
-- **Dual-Track SaaS Architecture**: Complete separation of team and individual user systems
+- **Triple-Track SaaS Architecture**: Complete separation of individual, team, and enterprise user systems
 - **Stripe Integration**: Pay gem for both team and individual billing
 - **Complete Authentication**: Devise with all 8 security modules (lockable, confirmable, trackable, etc.)
 - **Role-Based Authorization**: Comprehensive Pundit policies for all user types
 - **User Status Management**: Active/inactive/locked states with admin controls
 - **Team Management**: Full invitation system with email validation and resend/revoke functionality
+- **Enterprise Organizations**: Large-scale user management with custom plans and dedicated workspace
 - **Email System**: Professional email templates with Letter Opener for development preview
 - **Professional UI**: Tailwind CSS with responsive design and styled Devise views
 - **Analytics & Monitoring**: Ahoy Matey for user activity tracking
-- **Admin Dashboards**: Separate interfaces for super admin and site admin
+- **Admin Dashboards**: Separate interfaces for super admin, site admin, and enterprise admin
 - **Security Hardened**: Rack::Attack rate limiting, CSRF protection, session security
 - **Rails 8.0.2 Ready**: Full compatibility with latest Rails and Turbo features
 
@@ -43,6 +46,7 @@ A complete Ruby on Rails 8 SaaS application with dual-track user system supporti
 - **Payments**: Stripe via Pay gem
 - **Analytics**: Ahoy Matey
 - **UI Icons**: Rails Icons (Phosphor icon set)
+- **Tab Navigation**: Reusable tab component for complex navigation
 - **Testing**: Minitest with SimpleCov (24.14% coverage, 505 passing tests)
 - **Session Store**: Secure cookie store with httponly/secure flags
 
@@ -87,22 +91,40 @@ After running seeds, you'll have a super admin account:
 
 ## Usage
 
-### Creating Teams (Super Admin Only)
+### Creating Teams
+#### Method 1: Super Admin Creation
 1. Login as super admin
 2. Navigate to /admin/super/dashboard
 3. Click "Create New Team"
 4. Assign an existing user as team admin
 
+#### Method 2: Direct User Creation
+1. Register as direct user
+2. Select a team plan during registration
+3. Enter team name when prompted
+4. Automatically become team admin
+
 ### User Registration Flows
 - **Direct Users**: Register via public signup at /users/sign_up
 - **Team Members**: Must be invited by team admin (invitation-only)
+- **Enterprise Users**: Must be invited by enterprise admin (invitation-only)
+
+### Creating Enterprise Organizations (Super Admin Only)
+1. Login as super admin
+2. Navigate to /admin/super/dashboard
+3. Click "Enterprise Groups" tab
+4. Create new enterprise group
+5. Send invitation to designated admin
+6. Admin accepts invitation and gains full access
 
 ### Important Business Rules
-1. Direct users CANNOT join teams
+1. Direct users CANNOT join teams via invitation (but can create their own teams)
 2. Team members CANNOT become direct users
-3. Only super admins can create teams
+3. Only super admins can create teams (except direct users creating during registration)
 4. Team admins can delete team members completely
 5. Invitations can only be sent to new email addresses
+6. Enterprise users are completely separate from team/individual systems
+7. Enterprise admins are assigned via invitation during group creation
 
 ## Testing
 
@@ -190,6 +212,8 @@ The application includes comprehensive rate limiting and security filtering:
 - **Password resets**: 5/hour per IP  
 - **Sign ups**: 3/hour per IP
 - **Team invitations**: 20/day per user
+- **Enterprise invitations**: 30/day per user
+- **Enterprise admin actions**: 100/hour per user
 
 #### Security Filters
 - **Blocked paths**: Common vulnerability scans (wp-admin, .env, .git, etc.)
@@ -238,6 +262,8 @@ bundle exec brakeman -A
 - [Development Task List](docs/task_list.md) - Current status and future roadmap  
 - [Common Pitfalls](docs/pitfalls.md) - Anti-patterns and how to avoid them
 - [Testing Guide](docs/testing.md) - Testing setup, best practices, and coverage guidelines
+- [UI Components & Design System](docs/ui_components.md) - Phosphor icons, Tailwind CSS, responsive design
+- [Enterprise Features](docs/enterprise_features.md) - Enterprise organization management and workflows
 
 ### 🔧 Development Tools
 - `/auth_debug` - Authentication debugging interface (development only)
@@ -256,10 +282,11 @@ bundle exec brakeman -A
 
 ## Architecture Highlights
 
-### Dual-Track User System
-- **Individual Users**: Register directly, personal billing, isolated features
+### Triple-Track User System
+- **Individual Users**: Register directly, personal billing, can create teams
 - **Team Users**: Invitation-only, shared billing, collaborative features
-- **Complete Separation**: No crossover between user types
+- **Enterprise Users**: Large organizations with custom plans and centralized management
+- **Complete Separation**: No crossover between user types (except direct users creating teams)
 
 ### Security Features
 - **8 Devise Modules**: Database auth, registration, recovery, confirmation, lockable, trackable
@@ -271,9 +298,10 @@ bundle exec brakeman -A
 - **CSRF Protection**: Enhanced with per-form tokens and origin checking
 
 ### Admin Capabilities
-- **Super Admin**: Team creation, system management, billing oversight
-- **Site Admin**: User support, status management (no billing access)
+- **Super Admin**: Team/enterprise creation, system management, billing oversight
+- **Site Admin**: User support, status management, view organizations (no billing access)
 - **Team Admin**: Member management, team billing, invitations
+- **Enterprise Admin**: Organization management, member invitations, enterprise billing
 
 ### Testing Infrastructure
 - **Minitest**: Rails default testing framework

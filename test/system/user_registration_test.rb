@@ -5,7 +5,7 @@ class UserRegistrationTest < ApplicationSystemTestCase
     # Create test plans
     @free_plan = Plan.create!(
       name: "Individual Free",
-      plan_type: "individual",
+      plan_segment: "individual",
       amount_cents: 0,
       features: [ "basic_dashboard", "email_support" ],
       active: true
@@ -13,7 +13,7 @@ class UserRegistrationTest < ApplicationSystemTestCase
 
     @pro_plan = Plan.create!(
       name: "Individual Pro",
-      plan_type: "individual",
+      plan_segment: "individual",
       stripe_price_id: "price_individual_pro",
       amount_cents: 1900,
       interval: "month",

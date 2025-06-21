@@ -8,48 +8,56 @@ Your Rails SaaS starter application demonstrates solid architecture with modern 
 
 ### ✅ Strengths
 - **Modern Rails 8.0** with latest best practices
-- **Multi-tenancy** support (teams and individual users)
+- **Triple-track system** supporting individual, team, and enterprise users
+- **Multi-tenancy** support with polymorphic invitations
 - **Payment processing** with Stripe/Pay gem integration
 - **Authentication** with Devise (comprehensive setup)
-- **Authorization** with Pundit
+- **Authorization** with Pundit policies
+- **ViewComponents** for reusable UI (TabNavigationComponent)
 - **Analytics** with Ahoy for user tracking
-- **Security scanning** with Brakeman (currently clean)
+- **Security** with Rack::Attack rate limiting
 - **Code style** compliance with RuboCop
 - **Deployment ready** with Kamal and Docker
 
 ### ⚠️ Areas for Improvement
-- Broken testing infrastructure
-- Missing database indexes
+- Test coverage needs improvement
+- Some database indexes missing
 - Limited caching strategy
-- No background job processing
-- Basic error handling
-- Minimal logging structure
+- Background job processing could be enhanced
+- Error handling could be more comprehensive
+- Logging structure could be expanded
 
 ---
 
 ## 🚨 Critical Issues (Fix Immediately)
 
-### 1. Testing Infrastructure Broken
-**Issue**: Missing `rails_helper.rb` causing all tests to fail
+### 1. Testing Infrastructure
+**Status**: Now using Minitest with SimpleCov for coverage tracking
+**Current Coverage**: ~25% (needs improvement)
 
-**Solution**:
+**Run tests with**:
 ```bash
-bundle exec rails generate rspec:install
+bundle exec rails test
 ```
 
-**Create additional test configuration**:
+**Improve test coverage by adding**:
 ```ruby
-# spec/support/factory_bot.rb
-RSpec.configure do |config|
-  config.include FactoryBot::Syntax::Methods
+# test/factories/enterprise_groups.rb
+FactoryBot.define do
+  factory :enterprise_group do
+    name { Faker::Company.name }
+    slug { name.parameterize }
+    association :created_by, factory: :user
+    association :plan, factory: :enterprise_plan
+    status { "active" }
+  end
 end
 
-# spec/support/shoulda_matchers.rb
-Shoulda::Matchers.configure do |config|
-  config.integrate do |with|
-    with.test_framework :rspec
-    with.library :rails
-  end
+# test/models/enterprise_group_test.rb
+require "test_helper"
+
+class EnterpriseGroupTest < ActiveSupport::TestCase
+  # Add comprehensive tests
 end
 ```
 
@@ -71,10 +79,16 @@ class AddPerformanceIndexes < ActiveRecord::Migration[8.0]
     add_index :users, [:status, :last_activity_at]
     add_index :users, [:team_id, :team_role]
     add_index :users, [:user_type, :status]
+    add_index :users, [:enterprise_group_id, :enterprise_group_role]
     
-    # Invitation performance indexes
+    # Enterprise performance indexes
+    add_index :enterprise_groups, [:status, :created_at]
+    add_index :enterprise_groups, [:admin_id, :status]
+    
+    # Invitation performance indexes (polymorphic)
     add_index :invitations, [:expires_at, :accepted_at]
-    add_index :invitations, [:team_id, :email]
+    add_index :invitations, [:invitable_type, :invitable_id]
+    add_index :invitations, [:invitation_type, :email]
     
     # Analytics performance
     add_index :ahoy_events, [:user_id, :time]
@@ -85,19 +99,18 @@ end
 
 ### 3. Security Enhancements
 
-**Rate Limiting Configuration**:
-```ruby
-# config/initializers/rack_attack.rb
-class Rack::Attack
-  # Throttle login attempts by email
-  throttle('login attempts by email', limit: 5, period: 20.minutes) do |req|
-    if req.path == '/users/sign_in' && req.post?
-      req.params.dig('user', 'email').to_s.downcase.gsub(/\s+/, '') if req.params['user']
-    end
-  end
+**Rate Limiting Status**: ✅ Already configured with Rack::Attack
 
-  # Throttle password reset attempts
-  throttle('password reset attempts', limit: 3, period: 20.minutes) do |req|
+**Current protections include**:
+- Login throttling (5 attempts per 20 seconds)
+- Password reset throttling (5 per hour)
+- Sign up throttling (3 per hour)
+- Team invitation throttling (20 per day)
+- Enterprise invitation throttling (30 per day)
+- Fail2ban protection
+- Suspicious path blocking
+
+**Additional Security Recommendations**:
     if req.path == '/users/password' && req.post?
       req.params.dig('user', 'email').to_s.downcase.gsub(/\s+/, '') if req.params['user']
     end

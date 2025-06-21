@@ -1,0 +1,74 @@
+<% content_for :page_title, "Invite New Member" %>
+
+<div class="max-w-2xl mx-auto">
+  <div class="bg-white rounded-lg shadow">
+    <div class="px-6 py-4 border-b border-gray-200">
+      <h2 class="text-lg font-semibold text-gray-900">Invite Member to <%= @enterprise_group.name %></h2>
+    </div>
+    
+    <%= form_with model: @invitation, 
+                  url: members_path(enterprise_group_slug: @enterprise_group.slug),
+                  local: true,
+                  class: "p-6 space-y-6" do |form| %>
+      
+      <% if @invitation.errors.any? %>
+        <div class="rounded-md bg-red-50 p-4">
+          <div class="flex">
+            <div class="flex-shrink-0">
+              <%= icon "warning", class: "h-5 w-5 text-red-400" %>
+            </div>
+            <div class="ml-3">
+              <h3 class="text-sm font-medium text-red-800">There were <%= @invitation.errors.count %> errors with your submission</h3>
+              <div class="mt-2 text-sm text-red-700">
+                <ul class="list-disc pl-5 space-y-1">
+                  <% @invitation.errors.full_messages.each do |message| %>
+                    <li><%= message %></li>
+                  <% end %>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      <% end %>
+
+      <div>
+        <%= form.label :email, class: "block text-sm font-medium text-gray-700" %>
+        <%= form.email_field :email, 
+            class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 sm:text-sm",
+            placeholder: "member@example.com",
+            required: true %>
+        <p class="mt-2 text-sm text-gray-500">
+          Enter the email address of the person you want to invite. They must not already have an account.
+        </p>
+      </div>
+
+      <div>
+        <%= form.label :role, class: "block text-sm font-medium text-gray-700" %>
+        <%= form.select :role, 
+            options_for_select([["Member", "member"], ["Admin", "admin"]], "member"),
+            {},
+            class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 sm:text-sm" %>
+        <p class="mt-2 text-sm text-gray-500">
+          Admins can manage members, billing, and organization settings. Members have standard access.
+        </p>
+      </div>
+
+      <div class="bg-gray-50 p-4 rounded-md">
+        <h4 class="text-sm font-medium text-gray-900 mb-2">Organization Limits</h4>
+        <div class="text-sm text-gray-600 space-y-1">
+          <p>Current members: <span class="font-medium"><%= @enterprise_group.users.count %></span></p>
+          <p>Maximum allowed: <span class="font-medium"><%= @enterprise_group.max_members %></span></p>
+          <p>Remaining slots: <span class="font-medium"><%= @enterprise_group.max_members - @enterprise_group.users.count %></span></p>
+        </div>
+      </div>
+
+      <div class="flex justify-end space-x-3">
+        <%= link_to "Cancel", 
+            members_path(enterprise_group_slug: @enterprise_group.slug),
+            class: "px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500" %>
+        <%= form.submit "Send Invitation", 
+            class: "px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500" %>
+      </div>
+    <% end %>
+  </div>
+</div>

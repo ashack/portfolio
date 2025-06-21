@@ -4,7 +4,7 @@ class PlanTest < ActiveSupport::TestCase
   def setup
     @plan = Plan.new(
       name: "Test Plan",
-      plan_type: "individual",
+      plan_segment: "individual",
       stripe_price_id: "price_test123",
       amount_cents: 1999,
       interval: "month",
@@ -30,22 +30,22 @@ class PlanTest < ActiveSupport::TestCase
     assert duplicate_plan.valid?
   end
 
-  test "should require plan_type" do
-    @plan.plan_type = nil
+  test "should require plan_segment" do
+    @plan.plan_segment = nil
     assert_not @plan.valid?
-    assert_includes @plan.errors[:plan_type], "can't be blank"
+    assert_includes @plan.errors[:plan_segment], "can't be blank"
   end
 
-  test "should only allow valid plan_types" do
-    @plan.plan_type = "individual"
+  test "should only allow valid plan_segments" do
+    @plan.plan_segment = "individual"
     assert @plan.valid?, "individual should be valid"
 
-    @plan.plan_type = "team"
+    @plan.plan_segment = "team"
     @plan.max_team_members = 5
     assert @plan.valid?, "team should be valid"
 
     assert_raises(ArgumentError) do
-      @plan.plan_type = "invalid"
+      @plan.plan_segment = "invalid"
     end
   end
 
@@ -84,7 +84,7 @@ class PlanTest < ActiveSupport::TestCase
   end
 
   test "should require max_team_members for team plans" do
-    @plan.plan_type = "team"
+    @plan.plan_segment = "team"
     @plan.max_team_members = nil
     assert_not @plan.valid?
     assert_includes @plan.errors[:max_team_members], "is not a number"
@@ -110,7 +110,7 @@ class PlanTest < ActiveSupport::TestCase
 
     inactive_plan = Plan.create!(
       name: "Inactive Plan",
-      plan_type: "individual",
+      plan_segment: "individual",
       active: false
     )
 
@@ -124,7 +124,7 @@ class PlanTest < ActiveSupport::TestCase
 
     team_plan = Plan.create!(
       name: "Team Plan",
-      plan_type: "team",
+      plan_segment: "team",
       max_team_members: 5
     )
 
@@ -136,13 +136,13 @@ class PlanTest < ActiveSupport::TestCase
   test "for_teams scope returns only team plans" do
     team_plan = Plan.create!(
       name: "Team Plan",
-      plan_type: "team",
+      plan_segment: "team",
       max_team_members: 5
     )
 
     individual_plan = Plan.create!(
       name: "Individual Plan",
-      plan_type: "individual"
+      plan_segment: "individual"
     )
 
     team_plans = Plan.for_teams

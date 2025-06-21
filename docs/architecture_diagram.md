@@ -22,8 +22,12 @@ graph TB
         L --> M[Invited User Registration<br/>Email Pre-filled]
         M --> N[Invited User Created<br/>Skip Confirmation]
         
-        ES[Contact Sales] --> EP[Enterprise Process]
-        EP --> EU[Enterprise User Created]
+        O[Super Admin] --> EG[Create Enterprise Group]
+        EG --> EI[Send Admin Invitation]
+        EI --> EA[Enterprise Admin Accepts]
+        EA --> EU[Enterprise Admin Created]
+        EU --> EM[Invite Members]
+        EM --> EU2[Enterprise Users Created]
     end
 
     subgraph "User Types"
@@ -78,7 +82,8 @@ erDiagram
     Team ||--o{ Invitation : "has"
     Team }o--|| User : "administered by"
     
-    Invitation }o--|| Team : "for"
+    Invitation }o--|| Team : "for (polymorphic)"
+    Invitation }o--|| EnterpriseGroup : "for (polymorphic)"
     Invitation }o--|| User : "sent by"
     
     Plan ||--o{ User : "used by"
@@ -108,6 +113,9 @@ erDiagram
     }
     
     Invitation {
+        string invitable_type
+        bigint invitable_id
+        string invitation_type
         string email
         string token
         enum role "member, admin"
@@ -183,10 +191,20 @@ sequenceDiagram
     R->>R: Pre-fill Email (readonly)
     R->>R: Hide Plan Selection
     I->>R: Complete Registration
-    R->>S: Create User (type: invited)
+    alt Team Invitation
+        R->>S: Create User (type: invited)
+        R->>S: Associate with Team
+        S->>I: Redirect to Team Dashboard
+    else Enterprise Invitation
+        R->>S: Create User (type: enterprise)
+        R->>S: Associate with Enterprise Group
+        alt Admin Invitation
+            R->>S: Set as Enterprise Admin
+        end
+        S->>I: Redirect to Enterprise Dashboard
+    end
     R->>S: Mark Invitation Accepted
     R->>S: Skip Email Confirmation
-    S->>I: Redirect to Team Dashboard
 ```
 
 ## State Transitions
@@ -197,7 +215,8 @@ stateDiagram-v2
     
     Visitor --> DirectUser : Register (Individual Plan)
     Visitor --> TeamOwner : Register (Team Plan)
-    Visitor --> InvitedUser : Accept Invitation
+    Visitor --> InvitedUser : Accept Team Invitation
+    Visitor --> EnterpriseUser : Accept Enterprise Invitation
     
     DirectUser --> TeamOwner : Create Team
     TeamOwner --> TeamOwner : Manage Team
@@ -211,6 +230,9 @@ stateDiagram-v2
     DirectUser --> Inactive : Status Change
     TeamOwner --> Inactive : Status Change
     InvitedUser --> Inactive : Status Change
+    EnterpriseUser --> EnterpriseAdmin : Admin Role
+    EnterpriseUser --> EnterpriseMember : Member Role
+    EnterpriseUser --> Inactive : Status Change
     
     Inactive --> [*]
 ```
@@ -233,25 +255,26 @@ graph TB
         F --> H[TeamPolicy]
         F --> I[InvitationPolicy]
         F --> J[PlanPolicy]
+        F --> K[EnterpriseGroupPolicy]
     end
     
     subgraph "Security Checks"
-        K[CSRF Protection]
-        L[User Status Check]
-        M[Team Membership]
-        N[Role Validation]
-        O[Invitation Expiry]
+        L[CSRF Protection]
+        M[User Status Check]
+        N[Team/Enterprise Membership]
+        O[Role Validation]
+        P[Invitation Expiry]
     end
     
     subgraph "Access Control"
         P{Request} --> A
         A --> F
-        F --> K
-        K --> L
+        F --> L
         L --> M
         M --> N
         N --> O
-        O --> Q{Allowed?}
+        O --> P
+        P --> Q{Allowed?}
         Q -->|Yes| R[Process Request]
         Q -->|No| S[Reject/Redirect]
     end
@@ -266,6 +289,8 @@ graph TB
         B[Stimulus JS]
         C[Turbo]
         D[Phosphor Icons]
+        E[ViewComponents]
+        F[Tab Navigation]
     end
     
     subgraph "Controllers"
@@ -273,10 +298,12 @@ graph TB
         E --> F[Admin::BaseController]
         E --> G[Teams::BaseController]
         E --> H[Users::BaseController]
+        E --> X[Enterprise::BaseController]
         F --> I[Admin::Super::*]
         F --> J[Admin::Site::*]
         G --> K[Teams::Admin::*]
         G --> L[Teams::*]
+        X --> Y[Enterprise::*]
     end
     
     subgraph "Models"

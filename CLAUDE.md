@@ -25,12 +25,14 @@ Generate a complete Ruby on Rails 8 SaaS application with the following exact sp
 ### Core Concept
 - **Triple-track SaaS application** with three distinct user ecosystems:
   - **Direct Users**: Individual users with personal billing who can also create teams
-  - **Invited Users**: Team members who join via invitation only
-  - **Enterprise Users**: Large organizations with custom plans (contact sales)
+  - **Invited Users**: Team members who join via invitation only  
+  - **Enterprise Users**: Large organizations with enterprise plans (invitation-based)
 - **Teams operate independently** with their own URLs, billing, and members
+- **Enterprise groups operate independently** with dedicated management interfaces
 - **Individual users operate independently** with personal billing and features
 - **Direct users CAN create and own teams** while maintaining individual features
 - **No crossover** between invited team members and individual user features
+- **Enterprise users are separate** from both direct and team users
 
 ### User Types & Access Patterns
 
@@ -43,9 +45,10 @@ Generate a complete Ruby on Rails 8 SaaS application with the following exact sp
 
 2. **Site Admin** 
    - Customer support and user management
-   - Cannot create teams or enterprise groups
-   - Cannot access billing
+   - Cannot create teams or enterprise groups (read-only access)
+   - Cannot modify billing but can view organization details
    - Can manage user status and provide support
+   - Can view both teams and enterprise groups for support
    - Access: `/admin/site/dashboard`
 
 #### Individual Users (Direct Registration)
@@ -76,14 +79,16 @@ Generate a complete Ruby on Rails 8 SaaS application with the following exact sp
 #### Enterprise Users (Invitation Only)
 6. **Enterprise Admin**
    - Manages enterprise organization
-   - Invited via email by Super Admin
-   - Can manage enterprise members and settings
+   - Invited via email by Super Admin during group creation
+   - Full access to member management, billing, and settings
+   - Can invite/remove members and manage roles
    - Access: `/enterprise/enterprise-slug/`
-
+   
 7. **Enterprise Member**
    - Part of enterprise organization
    - Invited by Enterprise Admin
-   - Access to enterprise features
+   - Standard access to enterprise features
+   - Cannot access billing or member management
    - Access: `/enterprise/enterprise-slug/`
 
 ## Technical Stack
@@ -178,12 +183,16 @@ CREATE TABLE users (
   system_role ENUM('super_admin', 'site_admin', 'user') DEFAULT 'user',
   
   -- User Type & Status
-  user_type ENUM('direct', 'invited') DEFAULT 'direct',
+  user_type ENUM('direct', 'invited', 'enterprise') DEFAULT 'direct',
   status ENUM('active', 'inactive', 'locked') DEFAULT 'active',
   
-  -- Team Association (only for invited users)
+  -- Team Association (only for invited team users)
   team_id BIGINT REFERENCES teams(id),
   team_role ENUM('admin', 'member'),
+  
+  -- Enterprise Association (only for enterprise users)
+  enterprise_group_id BIGINT REFERENCES enterprise_groups(id),
+  enterprise_group_role ENUM('admin', 'member'),
   
   -- Individual Billing (only for direct users)
   stripe_customer_id VARCHAR(255), -- Pay gem will use this
@@ -197,9 +206,10 @@ CREATE TABLE users (
   updated_at TIMESTAMP NOT NULL,
   
   -- Constraints
-  CONSTRAINT user_type_team_check CHECK (
-    (user_type = 'direct' AND team_id IS NULL AND team_role IS NULL) OR
-    (user_type = 'invited' AND team_id IS NOT NULL AND team_role IS NOT NULL)
+  CONSTRAINT user_type_check CHECK (
+    (user_type = 'direct' AND team_id IS NULL AND team_role IS NULL AND enterprise_group_id IS NULL AND enterprise_group_role IS NULL) OR
+    (user_type = 'invited' AND team_id IS NOT NULL AND team_role IS NOT NULL AND enterprise_group_id IS NULL AND enterprise_group_role IS NULL) OR
+    (user_type = 'enterprise' AND team_id IS NULL AND team_role IS NULL AND enterprise_group_id IS NOT NULL AND enterprise_group_role IS NOT NULL)
   )
 );
 
@@ -243,12 +253,57 @@ CREATE INDEX idx_teams_admin_id ON teams(admin_id);
 CREATE INDEX idx_teams_status ON teams(status);
 ```
 
-### Invitations Table
+### Enterprise Groups Table
+```sql
+CREATE TABLE enterprise_groups (
+  id BIGINT PRIMARY KEY,
+  
+  -- Group Identity
+  name VARCHAR(255) NOT NULL,
+  slug VARCHAR(255) UNIQUE NOT NULL,
+  
+  -- Group Management
+  admin_id BIGINT REFERENCES users(id), -- Can be NULL during creation
+  created_by_id BIGINT NOT NULL REFERENCES users(id), -- Super Admin
+  
+  -- Plan & Billing
+  plan_id BIGINT NOT NULL REFERENCES plans(id),
+  status ENUM('active', 'suspended', 'cancelled') DEFAULT 'active',
+  stripe_customer_id VARCHAR(255), -- Pay gem integration
+  trial_ends_at TIMESTAMP,
+  current_period_end TIMESTAMP,
+  
+  -- Configuration
+  settings JSON,
+  max_members INTEGER DEFAULT 100,
+  custom_domain VARCHAR(255),
+  contact_email VARCHAR(255),
+  contact_phone VARCHAR(255),
+  billing_address TEXT,
+  
+  created_at TIMESTAMP NOT NULL,
+  updated_at TIMESTAMP NOT NULL
+);
+
+CREATE INDEX idx_enterprise_groups_slug ON enterprise_groups(slug);
+CREATE INDEX idx_enterprise_groups_admin_id ON enterprise_groups(admin_id);
+CREATE INDEX idx_enterprise_groups_status ON enterprise_groups(status);
+```
+
+### Invitations Table (Polymorphic)
 ```sql
 CREATE TABLE invitations (
   id BIGINT PRIMARY KEY,
   
-  team_id BIGINT NOT NULL REFERENCES teams(id),
+  -- Legacy team support
+  team_id BIGINT REFERENCES teams(id), -- Kept for backward compatibility
+  
+  -- Polymorphic association
+  invitable_type VARCHAR(255), -- 'Team' or 'EnterpriseGroup'
+  invitable_id BIGINT,
+  invitation_type ENUM('team', 'enterprise') DEFAULT 'team',
+  
+  -- Invitation details
   email VARCHAR(255) NOT NULL,
   role ENUM('admin', 'member') DEFAULT 'member',
   token VARCHAR(255) UNIQUE NOT NULL,
@@ -268,7 +323,8 @@ CREATE TABLE invitations (
 
 CREATE INDEX idx_invitations_token ON invitations(token);
 CREATE INDEX idx_invitations_email ON invitations(email);
-CREATE INDEX idx_invitations_team_id ON invitations(team_id);
+CREATE INDEX idx_invitations_invitable ON invitations(invitable_type, invitable_id);
+CREATE INDEX idx_invitations_invitation_type ON invitations(invitation_type);
 ```
 
 ### Plans Table
@@ -277,7 +333,7 @@ CREATE TABLE plans (
   id BIGINT PRIMARY KEY,
   
   name VARCHAR(255) NOT NULL,
-  plan_type ENUM('individual', 'team') NOT NULL,
+  plan_segment ENUM('individual', 'team', 'enterprise') NOT NULL,
   stripe_price_id VARCHAR(255), -- NULL for free plans
   amount_cents INTEGER DEFAULT 0,
   interval ENUM('month', 'year'),

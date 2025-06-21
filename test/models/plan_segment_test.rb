@@ -4,7 +4,6 @@ class PlanSegmentTest < ActiveSupport::TestCase
   def setup
     @individual_plan = Plan.create!(
       name: "Individual Test Plan",
-      plan_type: "individual",
       plan_segment: "individual",
       amount_cents: 1000,
       active: true
@@ -12,7 +11,6 @@ class PlanSegmentTest < ActiveSupport::TestCase
 
     @team_plan = Plan.create!(
       name: "Team Test Plan",
-      plan_type: "team",
       plan_segment: "team",
       amount_cents: 5000,
       max_team_members: 10,
@@ -21,7 +19,6 @@ class PlanSegmentTest < ActiveSupport::TestCase
 
     @enterprise_plan = Plan.create!(
       name: "Enterprise Test Plan",
-      plan_type: "team",
       plan_segment: "enterprise",
       amount_cents: 50000,
       max_team_members: 100,
@@ -38,37 +35,34 @@ class PlanSegmentTest < ActiveSupport::TestCase
   test "plan type must match segment for individual plans" do
     plan = Plan.new(
       name: "Invalid Plan",
-      plan_type: "team",
       plan_segment: "individual",
       amount_cents: 1000
     )
 
     assert_not plan.valid?
-    assert_includes plan.errors[:plan_segment], "must match plan_type"
+    assert_includes plan.errors[:plan_segment], "must match plan_segment"
   end
 
   test "plan type must be team for team segment" do
     plan = Plan.new(
       name: "Invalid Plan",
-      plan_type: "individual",
       plan_segment: "team",
       amount_cents: 1000
     )
 
     assert_not plan.valid?
-    assert_includes plan.errors[:plan_segment], "must match plan_type"
+    assert_includes plan.errors[:plan_segment], "must match plan_segment"
   end
 
   test "plan type must be team for enterprise segment" do
     plan = Plan.new(
       name: "Invalid Plan",
-      plan_type: "individual",
       plan_segment: "enterprise",
       amount_cents: 1000
     )
 
     assert_not plan.valid?
-    assert_includes plan.errors[:plan_segment], "must match plan_type"
+    assert_includes plan.errors[:plan_segment], "must match plan_segment"
   end
 
   test "available_for_signup scope excludes enterprise plans" do

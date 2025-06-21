@@ -49,19 +49,19 @@
   <div class="bg-white rounded-lg shadow p-6 mb-8">
     <h2 class="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h2>
     <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-      <%= link_to "#", 
+      <%= link_to new_member_path(enterprise_group_slug: @enterprise_group.slug), 
           class: "flex items-center p-4 border border-gray-200 rounded-lg hover:border-purple-300 hover:bg-purple-50 transition-colors" do %>
         <%= icon "user-plus", class: "h-5 w-5 text-purple-600 mr-3" %>
         <span class="text-sm font-medium text-gray-900">Invite Members</span>
       <% end %>
       
-      <%= link_to "#", 
+      <%= link_to billing_index_path(enterprise_group_slug: @enterprise_group.slug), 
           class: "flex items-center p-4 border border-gray-200 rounded-lg hover:border-purple-300 hover:bg-purple-50 transition-colors" do %>
         <%= icon "credit-card", class: "h-5 w-5 text-purple-600 mr-3" %>
         <span class="text-sm font-medium text-gray-900">Manage Billing</span>
       <% end %>
       
-      <%= link_to "#", 
+      <%= link_to settings_path(enterprise_group_slug: @enterprise_group.slug), 
           class: "flex items-center p-4 border border-gray-200 rounded-lg hover:border-purple-300 hover:bg-purple-50 transition-colors" do %>
         <%= icon "gear", class: "h-5 w-5 text-purple-600 mr-3" %>
         <span class="text-sm font-medium text-gray-900">Settings</span>

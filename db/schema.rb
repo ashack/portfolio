@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_06_20_154017) do
+ActiveRecord::Schema[8.0].define(version: 2025_06_21_000001) do
   create_table "admin_activity_logs", force: :cascade do |t|
     t.integer "admin_user_id", null: false
     t.string "controller", null: false
@@ -130,6 +130,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_20_154017) do
     t.string "custom_domain"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "contact_email"
+    t.string "contact_phone"
+    t.text "billing_address"
     t.index ["admin_id"], name: "index_enterprise_groups_on_admin_id"
     t.index ["created_by_id"], name: "index_enterprise_groups_on_created_by_id"
     t.index ["plan_id"], name: "index_enterprise_groups_on_plan_id"

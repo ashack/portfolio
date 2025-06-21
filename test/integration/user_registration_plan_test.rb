@@ -5,7 +5,6 @@ class UserRegistrationPlanTest < ActionDispatch::IntegrationTest
     # Create test plans
     @free_plan = Plan.create!(
       name: "Test Free",
-      plan_type: "individual",
       plan_segment: "individual",
       amount_cents: 0,
       active: true
@@ -13,7 +12,6 @@ class UserRegistrationPlanTest < ActionDispatch::IntegrationTest
 
     @pro_plan = Plan.create!(
       name: "Test Pro",
-      plan_type: "individual",
       plan_segment: "individual",
       amount_cents: 1900,
       active: true
