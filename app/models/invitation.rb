@@ -25,8 +25,8 @@ class Invitation < ApplicationRecord
 
   scope :pending, -> { where(accepted_at: nil) }
   scope :active, -> { where("expires_at > ?", Time.current) }
-  scope :for_teams, -> { where(invitation_type: 'team') }
-  scope :for_enterprise, -> { where(invitation_type: 'enterprise') }
+  scope :for_teams, -> { where(invitation_type: "team") }
+  scope :for_enterprise, -> { where(invitation_type: "enterprise") }
 
   def to_param
     token
@@ -71,22 +71,22 @@ class Invitation < ApplicationRecord
       end
 
       update!(accepted_at: Time.current)
-      
+
       # Update enterprise group admin if this is an enterprise admin invitation
       if enterprise_invitation? && admin?
         invitable.update!(admin: user)
       end
-      
+
       user
     end
   end
 
   def team_invitation?
-    invitation_type == 'team' || team.present?
+    invitation_type == "team" || team.present?
   end
 
   def enterprise_invitation?
-    invitation_type == 'enterprise'
+    invitation_type == "enterprise"
   end
 
   private

@@ -14,7 +14,7 @@ class EnterpriseGroup < ApplicationRecord
   validates :created_by_id, presence: true
   validates :plan_id, presence: true
   validate :plan_must_be_enterprise
-  
+
   # Admin is optional during creation (will be set when invitation is accepted)
   validates :admin_id, presence: true, on: :update, if: :admin_required?
 
@@ -33,17 +33,17 @@ class EnterpriseGroup < ApplicationRecord
   def can_add_members?
     member_count < max_members
   end
-  
+
   def pending_admin_invitation
     invitations.pending.admin.first
   end
-  
+
   def has_pending_admin_invitation?
     pending_admin_invitation.present?
   end
 
   private
-  
+
   def admin_required?
     !has_pending_admin_invitation?
   end

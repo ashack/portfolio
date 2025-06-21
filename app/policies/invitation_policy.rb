@@ -33,11 +33,11 @@ class InvitationPolicy < ApplicationPolicy
     return false unless @record.team_invitation?
     @user&.team_id == @record&.team_id && @user&.team_role == "admin"
   end
-  
+
   def enterprise_admin_for_group?
     return false unless @record.enterprise_invitation?
     return false unless @user&.enterprise?
-    
+
     # Check if user is admin of the enterprise group
     @user.enterprise_group_id == @record.invitable_id && @user.enterprise_group_role == "admin"
   end
@@ -53,7 +53,7 @@ class InvitationPolicy < ApplicationPolicy
       elsif @user.team_admin?
         scope.where(team_id: @user.team_id)
       elsif @user.enterprise_admin?
-        scope.where(invitable_type: 'EnterpriseGroup', invitable_id: @user.enterprise_group_id)
+        scope.where(invitable_type: "EnterpriseGroup", invitable_id: @user.enterprise_group_id)
       else
         scope.none
       end

@@ -35,7 +35,7 @@ class Admin::Super::EnterpriseGroupsController < ApplicationController
       render :new, status: :unprocessable_entity
       return
     end
-    
+
     # Check if email already exists
     if User.exists?(email: params[:admin_email].downcase)
       @enterprise_group.errors.add(:admin, "email already has an account")
@@ -119,5 +119,4 @@ class Admin::Super::EnterpriseGroupsController < ApplicationController
       :name, :plan_id, :max_members, :trial_ends_at, :status
     )
   end
-
 end

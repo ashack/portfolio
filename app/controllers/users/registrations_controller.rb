@@ -53,7 +53,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
 
       # No plan needed for invited/enterprise users
       resource.plan_id = nil
-      
+
       # Skip email confirmation for invited users (they already received an invitation)
       resource.skip_confirmation!
 
@@ -62,12 +62,12 @@ class Users::RegistrationsController < Devise::RegistrationsController
         if @invitation
           Rails.logger.info "Attempting to mark invitation #{@invitation.id} (#{@invitation.email}) as accepted"
           Rails.logger.info "Invitation type: #{@invitation.invitation_type}, before update: accepted_at=#{@invitation.accepted_at}"
-          
+
           @invitation.update_column(:accepted_at, Time.current)
           @invitation.reload
-          
+
           Rails.logger.info "Invitation after update: accepted_at=#{@invitation.accepted_at}, accepted?=#{@invitation.accepted?}"
-          
+
           # Update enterprise group admin if this is an enterprise admin invitation
           if @invitation.enterprise_invitation? && @invitation.admin? && @invitation.invitable
             Rails.logger.info "Updating enterprise group admin to user #{resource.id}"
@@ -76,7 +76,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
         else
           Rails.logger.error "No @invitation found when trying to mark as accepted!"
         end
-        
+
         # Clean up session
         session.delete(:invitation_token)
 

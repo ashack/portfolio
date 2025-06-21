@@ -15,16 +15,16 @@ module TabNavigationHelper
   def organization_tabs
     [
       build_tab(
-        name: 'Teams',
+        name: "Teams",
         path: admin_super_teams_path,
         count: Team.count,
-        active_paths: ['/admin/super/teams']
+        active_paths: [ "/admin/super/teams" ]
       ),
       build_tab(
-        name: 'Enterprise Groups',
+        name: "Enterprise Groups",
         path: admin_super_enterprise_groups_path,
         count: EnterpriseGroup.count,
-        active_paths: ['/admin/super/enterprise_groups']
+        active_paths: [ "/admin/super/enterprise_groups" ]
       )
     ]
   rescue => e
@@ -36,23 +36,23 @@ module TabNavigationHelper
   def user_management_tabs
     [
       build_tab(
-        name: 'All Users',
+        name: "All Users",
         path: admin_super_users_path,
         count: User.count
       ),
       build_tab(
-        name: 'Direct Users',
-        path: admin_super_users_path(user_type: 'direct'),
+        name: "Direct Users",
+        path: admin_super_users_path(user_type: "direct"),
         count: User.direct.count
       ),
       build_tab(
-        name: 'Team Members',
-        path: admin_super_users_path(user_type: 'invited'),
+        name: "Team Members",
+        path: admin_super_users_path(user_type: "invited"),
         count: User.invited.count
       ),
       build_tab(
-        name: 'Enterprise Users',
-        path: admin_super_users_path(user_type: 'enterprise'),
+        name: "Enterprise Users",
+        path: admin_super_users_path(user_type: "enterprise"),
         count: User.enterprise.count
       )
     ]
@@ -62,21 +62,21 @@ module TabNavigationHelper
   def billing_tabs(team)
     [
       build_tab(
-        name: 'Overview',
+        name: "Overview",
         path: team_admin_billing_path(team)
       ),
       build_tab(
-        name: 'Subscription',
+        name: "Subscription",
         path: team_admin_subscription_path(team),
         badge: team.plan.humanize,
-        badge_class: 'bg-green-100 text-green-800'
+        badge_class: "bg-green-100 text-green-800"
       ),
       build_tab(
-        name: 'Payment Methods',
+        name: "Payment Methods",
         path: team_admin_payment_methods_path(team)
       ),
       build_tab(
-        name: 'Invoices',
+        name: "Invoices",
         path: team_admin_invoices_path(team),
         count: team.pay_charges.count
       )

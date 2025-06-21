@@ -26,7 +26,7 @@ class User < ApplicationRecord
 
   # Virtual attribute for team name during registration
   attr_accessor :team_name
-  
+
   # Virtual attribute to skip invitation conflict check when accepting an invitation
   attr_accessor :accepting_invitation
 
@@ -186,7 +186,7 @@ class User < ApplicationRecord
   # Validation method to check for email conflicts with pending invitations
   def email_not_in_pending_invitations
     return unless email.present?
-    
+
     # Skip this validation when accepting an invitation
     return if accepting_invitation
 

@@ -34,7 +34,7 @@ class TabNavigationComponent < ViewComponent::Base
     def active?
       return @active if defined?(@active)
       return false unless path
-      
+
       helpers.current_page?(path)
     end
 
