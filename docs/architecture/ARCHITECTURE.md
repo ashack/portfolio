@@ -2,7 +2,7 @@
 
 ## Overview
 
-This is a comprehensive **Team-Based SaaS Rails 8.0.2 application** built with a unique dual-track user system that completely separates individual users from team-based users. The application implements a sophisticated multi-tenant architecture with enterprise-grade authentication, authorization, and billing systems.
+This is a comprehensive **Triple-Track SaaS Rails 8.0.2 application** built with a unique three-tier user system that supports individual users, team-based collaboration, and enterprise organizations. The application implements a sophisticated multi-tenant architecture with enterprise-grade authentication, authorization, and billing systems.
 
 ### System Architecture Overview
 
@@ -636,21 +636,30 @@ flowchart TD
     
     UserTypeCheck --> DirectUser{Direct User?}
     UserTypeCheck --> InvitedUser{Invited User?}
+    UserTypeCheck --> EnterpriseUser{Enterprise User?}
     
     DirectUser -->|Yes| DirectUserAccess[Individual Features<br/>Personal Billing]
     InvitedUser -->|Yes| TeamRoleCheck{Team Role?}
+    EnterpriseUser -->|Yes| EnterpriseRoleCheck{Enterprise Role?}
     
     TeamRoleCheck --> TeamAdmin{Team Admin?}
     TeamRoleCheck --> TeamMember{Team Member?}
     
+    EnterpriseRoleCheck --> EnterpriseAdmin{Enterprise Admin?}
+    EnterpriseRoleCheck --> EnterpriseMember{Enterprise Member?}
+    
     TeamAdmin -->|Yes| TeamAdminAccess[Team Management<br/>Billing Control]
     TeamMember -->|Yes| TeamMemberAccess[Team Features<br/>Limited Access]
+    EnterpriseAdmin -->|Yes| EnterpriseAdminAccess[Enterprise Management<br/>Organization Control]
+    EnterpriseMember -->|Yes| EnterpriseMemberAccess[Enterprise Features<br/>Limited Access]
     
     SuperAdminAccess --> PunditPolicy[Pundit Policy Check]
     SiteAdminAccess --> PunditPolicy
     DirectUserAccess --> PunditPolicy
     TeamAdminAccess --> PunditPolicy
     TeamMemberAccess --> PunditPolicy
+    EnterpriseAdminAccess --> PunditPolicy
+    EnterpriseMemberAccess --> PunditPolicy
     
     PunditPolicy --> PolicyResult{Policy<br/>Authorized?}
     PolicyResult -->|Yes| AccessGranted[Access Granted<br/>Execute Action]
@@ -857,7 +866,7 @@ flowchart TD
 
 ## Key Design Decisions
 
-### 1. Dual-Track User System
+### 1. Triple-Track User System
 **Decision**: Complete separation between individual and team users
 **Rationale**: Simplifies billing, permissions, and user experience
 **Trade-off**: Users cannot switch between modes

@@ -4,7 +4,7 @@ class PlanValidationsTest < ActiveSupport::TestCase
   def setup
     @plan = Plan.new(
       name: "Test Plan",
-      plan_type: "individual",
+      plan_segment: "individual",
       amount_cents: 1999,
       interval: "month",
       features: [ "feature1", "feature2" ]
@@ -27,25 +27,25 @@ class PlanValidationsTest < ActiveSupport::TestCase
 
     duplicate = Plan.new(
       name: @plan.name,
-      plan_type: "individual"
+      plan_segment: "individual"
     )
 
     assert duplicate.valid?
   end
 
   # Plan type validation tests
-  test "plan_type presence validation" do
-    @plan.plan_type = nil
+  test "plan_segment presence validation" do
+    @plan.plan_segment = nil
     assert_not @plan.valid?
-    assert_includes @plan.errors[:plan_type], "can't be blank"
+    assert_includes @plan.errors[:plan_segment], "can't be blank"
   end
 
-  test "plan_type enum validation" do
-    assert_equal 0, Plan.plan_types["individual"]
-    assert_equal 1, Plan.plan_types["team"]
+  test "plan_segment enum validation" do
+    assert_equal 0, Plan.plan_segments["individual"]
+    assert_equal 1, Plan.plan_segments["team"]
 
     assert_raises(ArgumentError) do
-      @plan.plan_type = "invalid"
+      @plan.plan_segment = "invalid"
     end
   end
 
@@ -84,7 +84,7 @@ class PlanValidationsTest < ActiveSupport::TestCase
 
   # Team-specific validation tests
   test "max_team_members required for team plans" do
-    @plan.plan_type = "team"
+    @plan.plan_segment = "team"
     @plan.max_team_members = nil
 
     assert_not @plan.valid?
@@ -92,7 +92,7 @@ class PlanValidationsTest < ActiveSupport::TestCase
   end
 
   test "max_team_members must be positive for team plans" do
-    @plan.plan_type = "team"
+    @plan.plan_segment = "team"
 
     @plan.max_team_members = 0
     assert_not @plan.valid?
@@ -104,7 +104,7 @@ class PlanValidationsTest < ActiveSupport::TestCase
   end
 
   test "max_team_members can be any positive number for team plans" do
-    @plan.plan_type = "team"
+    @plan.plan_segment = "team"
 
     [ 1, 5, 10, 100, 1000 ].each do |count|
       @plan.max_team_members = count
@@ -113,14 +113,14 @@ class PlanValidationsTest < ActiveSupport::TestCase
   end
 
   test "max_team_members validation only runs for team plans" do
-    @plan.plan_type = "individual"
+    @plan.plan_segment = "individual"
     @plan.max_team_members = nil
 
     assert @plan.valid?
   end
 
   test "max_team_members validation uses conditional" do
-    @plan.plan_type = "individual"
+    @plan.plan_segment = "individual"
     @plan.max_team_members = 0  # Would be invalid for team
 
     assert @plan.valid?
@@ -228,14 +228,14 @@ class PlanValidationsTest < ActiveSupport::TestCase
   # Complex validation scenarios
   test "multiple validation errors" do
     @plan.name = nil
-    @plan.plan_type = nil
+    @plan.plan_segment = nil
     @plan.amount_cents = -100
     @plan.interval = "invalid"
 
     assert_not @plan.valid?
 
     assert @plan.errors[:name].any?
-    assert @plan.errors[:plan_type].any?
+    assert @plan.errors[:plan_segment].any?
     assert @plan.errors[:amount_cents].any?
     assert @plan.errors[:interval].any?
   end
@@ -243,7 +243,7 @@ class PlanValidationsTest < ActiveSupport::TestCase
   test "team plan with all required fields" do
     team_plan = Plan.new(
       name: "Team Pro",
-      plan_type: "team",
+      plan_segment: "team",
       amount_cents: 9999,
       interval: "month",
       max_team_members: 10,
@@ -257,7 +257,7 @@ class PlanValidationsTest < ActiveSupport::TestCase
   test "individual plan without team fields" do
     individual_plan = Plan.new(
       name: "Personal",
-      plan_type: "individual",
+      plan_segment: "individual",
       amount_cents: 499,
       interval: "month",
       features: [ "basic features" ],

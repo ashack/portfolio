@@ -83,6 +83,27 @@ module TabNavigationHelper
     ]
   end
 
+  # Helper for site admin organization tabs
+  def site_admin_organization_tabs
+    [
+      build_tab(
+        name: "Teams",
+        path: admin_site_organizations_path,  # No tab parameter for default
+        count: Team.count,
+        active_paths: [ "/admin/site/teams", "/admin/site/organizations" ]
+      ),
+      build_tab(
+        name: "Enterprise Groups",
+        path: admin_site_organizations_path(tab: "enterprise"),
+        count: EnterpriseGroup.count,
+        active_paths: [ "/admin/site/enterprise_groups" ]
+      )
+    ]
+  rescue => e
+    Rails.logger.error "Error building site admin organization tabs: #{e.message}"
+    []
+  end
+
   # Generic tab builder for custom use cases
   def custom_tabs(&block)
     tabs = []

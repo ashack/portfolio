@@ -287,7 +287,8 @@ class AuditLogServiceTest < ActiveSupport::TestCase
       team: team,
       email: "invitee@example.com",
       invited_by: @admin_user,
-      role: "member"
+      role: "member",
+      invitation_type: "team"
     )
 
     assert_difference "AuditLog.count", 1 do

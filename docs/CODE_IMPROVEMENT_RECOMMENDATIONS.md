@@ -4,7 +4,7 @@
 
 This document provides a comprehensive analysis of the Rails SaaS application codebase with detailed improvement recommendations. The analysis covers architecture, security, performance, and maintainability aspects based on a thorough review of models, controllers, views, services, and security implementations.
 
-**Overall Assessment**: The application demonstrates professional Rails development with solid architectural foundations. The dual-track user system is well-implemented, and the codebase follows many Rails best practices. However, there are significant opportunities to enhance security, reduce complexity, and improve maintainability.
+**Overall Assessment**: The application demonstrates professional Rails development with solid architectural foundations. The triple-track user system (individual, team, and enterprise) is well-implemented, and the codebase follows many Rails best practices. However, there are significant opportunities to enhance security, reduce complexity, and improve maintainability.
 
 ## Table of Contents
 
@@ -21,9 +21,9 @@ This document provides a comprehensive analysis of the Rails SaaS application co
 
 ### 1. Security Vulnerabilities
 
-#### Missing Rate Limiting
-**Issue**: No Rack::Attack configuration despite gem inclusion
-**Impact**: Application vulnerable to brute force attacks
+#### Rate Limiting Configuration
+**Status**: Rack::Attack is now properly configured
+**Current Implementation**: Comprehensive rate limiting for login attempts, signups, and invitations
 **Solution**:
 ```ruby
 # config/initializers/rack_attack.rb
@@ -140,10 +140,12 @@ app/models/concerns/
 ├── user/
 │   ├── validations.rb
 │   ├── team_constraints.rb
+│   ├── enterprise_constraints.rb
 │   └── authentication.rb
 ├── shared/
 │   ├── email_normalizable.rb
-│   └── tokenizable.rb
+│   ├── tokenizable.rb
+│   └── sluggable.rb
 ```
 
 ### 4. Add Database Constraints
@@ -156,8 +158,9 @@ class AddDatabaseConstraints < ActiveRecord::Migration[8.0]
       ALTER TABLE users
       ADD CONSTRAINT check_user_team_consistency
       CHECK (
-        (user_type = 0 AND team_id IS NULL AND team_role IS NULL) OR
-        (user_type = 1 AND team_id IS NOT NULL AND team_role IS NOT NULL)
+        (user_type = 0 AND team_id IS NULL AND enterprise_group_id IS NULL) OR
+        (user_type = 1 AND team_id IS NOT NULL AND enterprise_group_id IS NULL) OR
+        (user_type = 2 AND team_id IS NULL AND enterprise_group_id IS NOT NULL)
       )
     SQL
   end
@@ -240,23 +243,32 @@ end
 
 ## View Layer Improvements
 
-### 1. Extract Shared Partials
+### 1. Use ViewComponents for Reusability
 
-**Flash Messages** - Create `app/views/shared/_flash_messages.html.erb`:
-```erb
-<% if flash[:notice].present? %>
-  <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4" 
-       role="alert" 
-       data-controller="flash"
-       data-flash-delay-value="5000">
-    <span class="block sm:inline"><%= flash[:notice] %></span>
-    <button type="button" 
-            class="absolute top-0 bottom-0 right-0 px-4 py-3"
-            data-action="click->flash#dismiss">
-      <%= icon "x", variant: :fill, class: "h-6 w-6 text-green-500" %>
-    </button>
-  </div>
-<% end %>
+**Tab Navigation** - Already implemented as `TabNavigationComponent`
+**Flash Messages** - Create `app/components/flash_component.rb`:
+```ruby
+class FlashComponent < ViewComponent::Base
+  def initialize(type:, message:)
+    @type = type
+    @message = message
+  end
+
+  private
+
+  def css_classes
+    case @type
+    when :notice, :success
+      "bg-green-100 border-green-400 text-green-700"
+    when :alert, :error
+      "bg-red-100 border-red-400 text-red-700"
+    when :warning
+      "bg-yellow-100 border-yellow-400 text-yellow-700"
+    else
+      "bg-blue-100 border-blue-400 text-blue-700"
+    end
+  end
+end
 ```
 
 ### 2. Create Helper Methods
@@ -374,7 +386,7 @@ end
 
 ### 2. Extract Missing Services
 
-#### Invitation Acceptance Service
+#### Polymorphic Invitation Acceptance Service
 ```ruby
 # app/services/invitations/acceptance_service.rb
 class Invitations::AcceptanceService < ApplicationService
@@ -402,14 +414,28 @@ class Invitations::AcceptanceService < ApplicationService
   private
 
   def create_user
-    User.create!(
+    attributes = {
       email: @invitation.email,
-      user_type: "invited",
-      team: @invitation.team,
-      team_role: @invitation.role,
       status: "active",
       **@user_attributes
-    )
+    }
+
+    case @invitation.invitation_type
+    when "team"
+      attributes.merge!(
+        user_type: "invited",
+        team: @invitation.invitable,
+        team_role: @invitation.role
+      )
+    when "enterprise"
+      attributes.merge!(
+        user_type: "enterprise",
+        enterprise_group: @invitation.invitable,
+        enterprise_group_role: @invitation.role
+      )
+    end
+
+    User.create!(attributes)
   end
 
   def mark_invitation_accepted
@@ -423,6 +449,7 @@ end
 Split AuditLogService into focused services:
 - `Audit::UserActionLogger`
 - `Audit::TeamActionLogger`
+- `Audit::EnterpriseActionLogger`
 - `Audit::SecurityEventLogger`
 
 ## Security Enhancements
@@ -515,6 +542,12 @@ end
 # Add counter caches
 class Team < ApplicationRecord
   has_many :users, dependent: :restrict_with_error, counter_cache: true
+  has_many :invitations, as: :invitable, counter_cache: true
+end
+
+class EnterpriseGroup < ApplicationRecord
+  has_many :users, dependent: :restrict_with_error, counter_cache: true
+  has_many :invitations, as: :invitable, counter_cache: true
 end
 ```
 
@@ -543,9 +576,9 @@ end
 ## Implementation Roadmap
 
 ### Phase 1: Security Hardening (Week 1-2)
-1. Enable and configure Rack::Attack
+1. ~~Enable and configure Rack::Attack~~ ✅ Complete
 2. Implement CSP and security headers
-3. Add 2FA for admin accounts
+3. Add 2FA for admin accounts and enterprise admins
 4. Configure Devise security settings
 5. Add input sanitization
 
@@ -592,6 +625,8 @@ end
 3. **CQRS Pattern**: Separate read/write models for scalability
 4. **Real-time Features**: ActionCable for live updates
 5. **Microservices**: Extract billing and notifications to separate services
+6. **Enterprise SSO**: Implement SAML/OAuth for enterprise groups
+7. **Multi-tenancy**: Database-level isolation for enterprise groups
 
 ## Metrics for Success
 

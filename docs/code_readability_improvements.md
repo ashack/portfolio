@@ -18,6 +18,7 @@ This document outlines the planned improvements to enhance code readability and 
 - Performance concerns with OpenStruct usage
 - Business logic mixed into controllers
 - Risk with Thread-local storage usage
+- Polymorphic invitation complexity could use abstraction
 
 ## Improvement Tasks
 
@@ -55,6 +56,20 @@ module User::TeamMembership
   end
 end
 
+# app/models/concerns/user/enterprise_membership.rb
+module User::EnterpriseMembership
+  extend ActiveSupport::Concern
+  
+  included do
+    belongs_to :enterprise_group, optional: true
+    enum :enterprise_group_role, { member: 0, admin: 1 }
+    
+    # Enterprise-related validations
+    validates :enterprise_group_id, presence: true, if: :enterprise?
+    validates :enterprise_group_role, presence: true, if: :enterprise?
+  end
+end
+
 # app/models/concerns/user/billing_customer.rb
 module User::BillingCustomer
   extend ActiveSupport::Concern
@@ -80,18 +95,37 @@ module AppConstants
   INVITATION_EXPIRY = 7.days
   ACTIVITY_TIMEOUT = 7.days
   
-  # Member limits
-  MEMBER_LIMITS = {
+  # Team member limits
+  TEAM_MEMBER_LIMITS = {
     starter: 5,
     pro: 15,
     enterprise: 100
   }.freeze
   
+  # Enterprise member limits
+  ENTERPRISE_MEMBER_LIMITS = {
+    small: 50,
+    medium: 200,
+    large: 1000,
+    unlimited: nil
+  }.freeze
+  
   # Plan features
   PLAN_FEATURES = {
-    starter: ['basic_dashboard', 'email_support'],
-    pro: ['basic_dashboard', 'advanced_features', 'priority_support'],
-    enterprise: ['all_features', 'phone_support', 'custom_integrations']
+    # Individual plans
+    individual_free: ['basic_dashboard', 'email_support'],
+    individual_pro: ['basic_dashboard', 'advanced_features', 'priority_support'],
+    individual_premium: ['all_features', 'phone_support'],
+    
+    # Team plans
+    team_starter: ['team_dashboard', 'collaboration', 'email_support'],
+    team_pro: ['team_dashboard', 'collaboration', 'advanced_team_features', 'priority_support'],
+    team_enterprise: ['all_team_features', 'phone_support', 'custom_integrations'],
+    
+    # Enterprise plans
+    enterprise_small: ['enterprise_dashboard', 'sso', 'dedicated_support'],
+    enterprise_medium: ['enterprise_dashboard', 'sso', 'api_access', 'dedicated_support'],
+    enterprise_large: ['all_features', 'white_label', 'custom_development']
   }.freeze
   
   # Password requirements

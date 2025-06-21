@@ -5,7 +5,7 @@ class PagesControllerTest < ActionDispatch::IntegrationTest
     # Create test plans
     @individual_free_plan = Plan.create!(
       name: "Individual Free",
-      plan_type: "individual",
+      plan_segment: "individual",
       amount_cents: 0,
       features: [ "basic_dashboard", "email_support" ],
       active: true
@@ -13,7 +13,7 @@ class PagesControllerTest < ActionDispatch::IntegrationTest
 
     @individual_pro_plan = Plan.create!(
       name: "Individual Pro",
-      plan_type: "individual",
+      plan_segment: "individual",
       stripe_price_id: "price_individual_pro",
       amount_cents: 1900,
       interval: "month",
@@ -23,7 +23,7 @@ class PagesControllerTest < ActionDispatch::IntegrationTest
 
     @individual_inactive_plan = Plan.create!(
       name: "Individual Legacy",
-      plan_type: "individual",
+      plan_segment: "individual",
       amount_cents: 999,
       features: [ "basic_dashboard" ],
       active: false
@@ -31,7 +31,7 @@ class PagesControllerTest < ActionDispatch::IntegrationTest
 
     @team_starter_plan = Plan.create!(
       name: "Team Starter",
-      plan_type: "team",
+      plan_segment: "team",
       stripe_price_id: "price_team_starter",
       amount_cents: 4900,
       interval: "month",
@@ -42,7 +42,7 @@ class PagesControllerTest < ActionDispatch::IntegrationTest
 
     @team_pro_plan = Plan.create!(
       name: "Team Pro",
-      plan_type: "team",
+      plan_segment: "team",
       stripe_price_id: "price_team_pro",
       amount_cents: 9900,
       interval: "month",
@@ -53,7 +53,7 @@ class PagesControllerTest < ActionDispatch::IntegrationTest
 
     @team_inactive_plan = Plan.create!(
       name: "Team Legacy",
-      plan_type: "team",
+      plan_segment: "team",
       amount_cents: 2999,
       max_team_members: 10,
       features: [ "team_dashboard", "collaboration" ],

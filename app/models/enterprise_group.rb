@@ -1,4 +1,5 @@
 class EnterpriseGroup < ApplicationRecord
+  include Pay::Billable
   pay_customer # For enterprise billing
 
   belongs_to :admin, class_name: "User", optional: true

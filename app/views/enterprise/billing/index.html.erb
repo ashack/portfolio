@@ -1,0 +1,238 @@
+<% content_for :page_title, "Billing & Subscription" %>
+
+<% if @enterprise_group.stripe_customer_id.blank? %>
+  <!-- No Billing Setup Yet -->
+  <div class="max-w-4xl mx-auto">
+    <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-6">
+      <div class="flex">
+        <div class="flex-shrink-0">
+          <%= icon "warning", class: "h-5 w-5 text-yellow-400" %>
+        </div>
+        <div class="ml-3">
+          <h3 class="text-sm font-medium text-yellow-800">Billing Not Set Up</h3>
+          <div class="mt-2 text-sm text-yellow-700">
+            <p>Your organization's billing has not been configured yet. Please contact our enterprise sales team to set up your billing and payment method.</p>
+            <p class="mt-2">
+              Email: <a href="mailto:enterprise@example.com" class="font-medium underline">enterprise@example.com</a>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Current Plan Info Even Without Billing -->
+    <div class="mt-6 bg-white rounded-lg shadow">
+      <div class="px-6 py-4 border-b border-gray-200">
+        <h2 class="text-lg font-semibold text-gray-900">Your Plan</h2>
+      </div>
+      <div class="p-6">
+        <h3 class="text-2xl font-bold text-gray-900"><%= @enterprise_group.plan.name %></h3>
+        <p class="text-gray-600">Enterprise Plan</p>
+        <div class="mt-4 space-y-2">
+          <div class="flex items-center text-sm">
+            <%= icon "check", class: "h-5 w-5 text-green-500 mr-3" %>
+            <span>Up to <%= @enterprise_group.max_members %> team members</span>
+          </div>
+          <div class="flex items-center text-sm">
+            <%= icon "check", class: "h-5 w-5 text-green-500 mr-3" %>
+            <span>Priority support</span>
+          </div>
+          <div class="flex items-center text-sm">
+            <%= icon "check", class: "h-5 w-5 text-green-500 mr-3" %>
+            <span>Advanced analytics</span>
+          </div>
+          <div class="flex items-center text-sm">
+            <%= icon "check", class: "h-5 w-5 text-green-500 mr-3" %>
+            <span>Custom integrations</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+<% else %>
+  <!-- Normal Billing View -->
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+  <!-- Main Content -->
+  <div class="lg:col-span-2 space-y-6">
+    <!-- Current Plan -->
+    <div class="bg-white rounded-lg shadow">
+      <div class="px-6 py-4 border-b border-gray-200">
+        <h2 class="text-lg font-semibold text-gray-900">Current Plan</h2>
+      </div>
+      <div class="p-6">
+        <div class="flex items-center justify-between mb-6">
+          <div>
+            <h3 class="text-2xl font-bold text-gray-900"><%= @enterprise_group.plan.name %></h3>
+            <p class="text-gray-600">Enterprise Plan</p>
+          </div>
+          <div class="text-right">
+            <p class="text-3xl font-bold text-gray-900">
+              <%= number_to_currency(@enterprise_group.plan.amount_cents / 100.0) %>
+            </p>
+            <p class="text-gray-600">per <%= @enterprise_group.plan.interval || 'month' %></p>
+          </div>
+        </div>
+        
+        <div class="space-y-3">
+          <div class="flex items-center text-sm">
+            <%= icon "check", class: "h-5 w-5 text-green-500 mr-3" %>
+            <span>Up to <%= @enterprise_group.max_members %> team members</span>
+          </div>
+          <div class="flex items-center text-sm">
+            <%= icon "check", class: "h-5 w-5 text-green-500 mr-3" %>
+            <span>Priority support</span>
+          </div>
+          <div class="flex items-center text-sm">
+            <%= icon "check", class: "h-5 w-5 text-green-500 mr-3" %>
+            <span>Advanced analytics</span>
+          </div>
+          <div class="flex items-center text-sm">
+            <%= icon "check", class: "h-5 w-5 text-green-500 mr-3" %>
+            <span>Custom integrations</span>
+          </div>
+        </div>
+        
+        <% if @subscription %>
+          <div class="mt-6 pt-6 border-t border-gray-200">
+            <div class="flex justify-between text-sm">
+              <span class="text-gray-600">Status</span>
+              <span class="font-medium <%= @subscription.status == 'active' ? 'text-green-600' : 'text-red-600' %>">
+                <%= @subscription.status.capitalize %>
+              </span>
+            </div>
+            <% if @subscription.ends_at %>
+              <div class="flex justify-between text-sm mt-2">
+                <span class="text-gray-600">Current period ends</span>
+                <span class="font-medium"><%= @subscription.ends_at.strftime("%B %d, %Y") %></span>
+              </div>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+
+    <!-- Payment Method -->
+    <div class="bg-white rounded-lg shadow">
+      <div class="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
+        <h2 class="text-lg font-semibold text-gray-900">Payment Method</h2>
+        <button class="text-sm text-purple-600 hover:text-purple-900">Update</button>
+      </div>
+      <div class="p-6">
+        <% if @payment_method %>
+          <div class="flex items-center">
+            <div class="flex-shrink-0">
+              <%= icon "credit-card", class: "h-8 w-8 text-gray-400" %>
+            </div>
+            <div class="ml-4">
+              <p class="text-sm font-medium text-gray-900">
+                <%= @payment_method.card_type&.capitalize || 'Card' %> ending in <%= @payment_method.card_last4 %>
+              </p>
+              <p class="text-sm text-gray-500">
+                Expires <%= @payment_method.card_exp_month %>/<%= @payment_method.card_exp_year %>
+              </p>
+            </div>
+          </div>
+        <% else %>
+          <p class="text-gray-500">No payment method on file</p>
+          <button class="mt-4 px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700">
+            Add Payment Method
+          </button>
+        <% end %>
+      </div>
+    </div>
+
+    <!-- Recent Invoices -->
+    <div class="bg-white rounded-lg shadow">
+      <div class="px-6 py-4 border-b border-gray-200">
+        <h2 class="text-lg font-semibold text-gray-900">Recent Invoices</h2>
+      </div>
+      <div class="divide-y divide-gray-200">
+        <% if @invoices.any? %>
+          <% @invoices.each do |invoice| %>
+            <div class="px-6 py-4 flex items-center justify-between">
+              <div>
+                <p class="text-sm font-medium text-gray-900">
+                  Charge #<%= invoice.id %>
+                </p>
+                <p class="text-sm text-gray-500">
+                  <%= invoice.created_at.strftime("%B %d, %Y") %>
+                </p>
+              </div>
+              <div class="flex items-center space-x-4">
+                <span class="text-sm font-medium text-gray-900">
+                  <%= number_to_currency(invoice.amount / 100.0) %>
+                </span>
+                <span class="px-2 py-1 text-xs font-medium rounded-full 
+                  <%= invoice.refunded? ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800' %>">
+                  <%= invoice.refunded? ? 'Refunded' : 'Paid' %>
+                </span>
+                <%= link_to "View", 
+                    billing_path(enterprise_group_slug: @enterprise_group.slug, id: invoice.id),
+                    class: "text-sm text-purple-600 hover:text-purple-900" %>
+              </div>
+            </div>
+          <% end %>
+        <% else %>
+          <div class="px-6 py-8 text-center">
+            <p class="text-gray-500">No invoices yet</p>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sidebar -->
+  <div class="space-y-6">
+    <!-- Upcoming Invoice -->
+    <% if @upcoming_invoice %>
+      <div class="bg-white rounded-lg shadow">
+        <div class="px-6 py-4 border-b border-gray-200">
+          <h3 class="text-sm font-semibold text-gray-900">Next Invoice</h3>
+        </div>
+        <div class="p-6">
+          <div class="text-center">
+            <p class="text-3xl font-bold text-gray-900">
+              <%= number_to_currency(@upcoming_invoice.amount_cents / 100.0) %>
+            </p>
+            <p class="text-sm text-gray-600 mt-1">
+              Due <%= @upcoming_invoice.date.strftime("%B %d, %Y") %>
+            </p>
+          </div>
+        </div>
+      </div>
+    <% end %>
+
+    <!-- Actions -->
+    <div class="bg-white rounded-lg shadow">
+      <div class="px-6 py-4 border-b border-gray-200">
+        <h3 class="text-sm font-semibold text-gray-900">Actions</h3>
+      </div>
+      <div class="p-6 space-y-3">
+        <button class="w-full px-4 py-2 text-sm font-medium text-purple-600 border border-purple-600 rounded-md hover:bg-purple-50">
+          Download All Invoices
+        </button>
+        <button class="w-full px-4 py-2 text-sm font-medium text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50">
+          Update Billing Info
+        </button>
+        <% if @subscription && @subscription.status == 'active' %>
+          <%= button_to "Cancel Subscription", 
+              cancel_subscription_billing_index_path(enterprise_group_slug: @enterprise_group.slug),
+              method: :post,
+              data: { confirm: "Are you sure? This will cancel your subscription at the end of the current billing period." },
+              class: "w-full px-4 py-2 text-sm font-medium text-red-600 border border-red-600 rounded-md hover:bg-red-50" %>
+        <% end %>
+      </div>
+    </div>
+
+    <!-- Need Help? -->
+    <div class="bg-purple-50 rounded-lg p-6">
+      <h3 class="text-sm font-semibold text-purple-900 mb-2">Need Help?</h3>
+      <p class="text-sm text-purple-700 mb-4">
+        Contact our enterprise support team for billing assistance.
+      </p>
+      <a href="mailto:enterprise@example.com" class="text-sm font-medium text-purple-600 hover:text-purple-900">
+        enterprise@example.com
+      </a>
+    </div>
+  </div>
+<% end %>

@@ -1,0 +1,141 @@
+<% content_for :page_title, "Organizations Management" %>
+
+<div class="bg-white shadow overflow-hidden sm:rounded-lg">
+  <div class="px-4 py-5 sm:p-6">
+    <!-- Tabs -->
+    <%= render 'shared/tab_navigation', tabs: site_admin_organization_tabs %>
+
+    <!-- Content -->
+    <div class="mt-6 space-y-6">
+
+
+      <!-- Teams Section -->
+      <% if @show_teams %>
+        <div class="bg-white border border-gray-200 overflow-hidden sm:rounded-md">
+    <div class="px-4 py-5 sm:px-6 border-b border-gray-200">
+      <h3 class="text-lg leading-6 font-medium text-gray-900">Teams</h3>
+      <p class="mt-1 max-w-2xl text-sm text-gray-500">Standard team organizations</p>
+    </div>
+    
+    <% if @teams.any? %>
+      <ul role="list" class="divide-y divide-gray-200">
+        <% @teams.each do |team| %>
+          <li>
+            <div class="px-4 py-4 flex items-center justify-between hover:bg-gray-50">
+              <div class="flex items-center">
+                <div class="flex-shrink-0 h-10 w-10">
+                  <div class="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
+                    <span class="text-sm font-medium text-blue-700">
+                      <%= team.name.first.upcase %>
+                    </span>
+                  </div>
+                </div>
+                <div class="ml-4">
+                  <div class="flex items-center">
+                    <p class="text-sm font-medium text-gray-900">
+                      <%= team.name %>
+                    </p>
+                    <span class="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
+                      <%= team.status == 'active' ? 'bg-green-100 text-green-800' : 
+                          team.status == 'suspended' ? 'bg-yellow-100 text-yellow-800' : 
+                          'bg-red-100 text-red-800' %>">
+                      <%= team.status.humanize %>
+                    </span>
+                    <span class="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
+                      <%= team.plan == 'starter' ? 'bg-gray-100 text-gray-800' : 
+                          team.plan == 'pro' ? 'bg-blue-100 text-blue-800' : 
+                          'bg-purple-100 text-purple-800' %>">
+                      <%= team.plan.humanize %>
+                    </span>
+                  </div>
+                  <p class="text-sm text-gray-500">
+                    Slug: <%= team.slug %> • 
+                    Admin: <%= team.admin.email %> • 
+                    Members: <%= team.member_count %>
+                  </p>
+                  <p class="text-xs text-gray-400">
+                    Created: <%= team.created_at.strftime("%b %d, %Y") %>
+                  </p>
+                </div>
+              </div>
+              <div class="flex items-center space-x-2">
+                <%= link_to "View", admin_site_team_path(team), 
+                    class: "inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" %>
+              </div>
+            </div>
+          </li>
+        <% end %>
+      </ul>
+    <% else %>
+      <div class="text-center py-8">
+        <p class="text-sm text-gray-500">No teams found</p>
+      </div>
+    <% end %>
+        </div>
+      <% end %>
+
+      <!-- Enterprise Groups Section -->
+      <% if @show_enterprise_groups %>
+        <div class="bg-white border border-gray-200 overflow-hidden sm:rounded-md <%= 'mt-6' if @show_teams %>">
+    <div class="px-4 py-5 sm:px-6 border-b border-gray-200">
+      <h3 class="text-lg leading-6 font-medium text-gray-900">Enterprise Groups</h3>
+      <p class="mt-1 max-w-2xl text-sm text-gray-500">Large organizations with custom plans</p>
+    </div>
+    
+    <% if @enterprise_groups.any? %>
+      <ul role="list" class="divide-y divide-gray-200">
+        <% @enterprise_groups.each do |group| %>
+          <li>
+            <div class="px-4 py-4 flex items-center justify-between hover:bg-gray-50">
+              <div class="flex items-center">
+                <div class="flex-shrink-0 h-10 w-10">
+                  <div class="h-10 w-10 rounded-full bg-purple-100 flex items-center justify-center">
+                    <span class="text-sm font-medium text-purple-700">
+                      <%= group.name.first.upcase %>
+                    </span>
+                  </div>
+                </div>
+                <div class="ml-4">
+                  <div class="flex items-center">
+                    <p class="text-sm font-medium text-gray-900">
+                      <%= group.name %>
+                    </p>
+                    <span class="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
+                      <%= group.status == 'active' ? 'bg-green-100 text-green-800' : 
+                          group.status == 'suspended' ? 'bg-yellow-100 text-yellow-800' : 
+                          'bg-red-100 text-red-800' %>">
+                      <%= group.status.humanize %>
+                    </span>
+                    <span class="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                      Enterprise
+                    </span>
+                  </div>
+                  <p class="text-sm text-gray-500">
+                    Slug: <%= group.slug %> • 
+                    Admin: <%= group.admin&.email || "Pending invitation" %> • 
+                    Members: <%= group.member_count %> / <%= group.max_members %>
+                  </p>
+                  <p class="text-xs text-gray-400">
+                    Created: <%= group.created_at.strftime("%b %d, %Y") %> • 
+                    Plan: <%= group.plan.name %>
+                  </p>
+                </div>
+              </div>
+              <div class="flex items-center space-x-2">
+                <%= link_to "View", admin_site_enterprise_group_path(group), 
+                    class: "inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500" %>
+              </div>
+            </div>
+          </li>
+        <% end %>
+      </ul>
+    <% else %>
+      <div class="text-center py-8">
+        <p class="text-sm text-gray-500">No enterprise groups found</p>
+      </div>
+        <% end %>
+      </div>
+    <% end %>
+    </div>
+  </div>
+</div>

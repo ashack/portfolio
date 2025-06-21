@@ -38,12 +38,27 @@ Rack::Attack is configured to provide comprehensive rate limiting and security p
 
 ### 3. Team-Specific Throttling
 
-#### Invitations
+#### Team Invitations
 - **Limit**: 20 invitations per day per authenticated user
 - **Path**: `/teams/*/admin/invitations` (POST)
 - **Purpose**: Prevent invitation spam
 
-### 4. API Throttling (Future)
+### 4. Enterprise-Specific Throttling
+
+#### Enterprise Invitations
+- **Limit**: 30 invitations per day per authenticated user
+- **Path**: `/enterprise/*/members` (POST)
+- **Purpose**: Prevent invitation spam in enterprise groups
+
+#### Enterprise Admin Actions
+- **Limit**: 100 administrative actions per hour per authenticated user
+- **Paths**: 
+  - `/admin/super/enterprise_groups/*` (POST, PATCH, DELETE)
+  - `/enterprise/*/settings` (PATCH)
+  - `/enterprise/*/members/*/revoke_invitation` (DELETE)
+- **Purpose**: Prevent abuse of administrative functions
+
+### 5. API Throttling (Future)
 - **Limit**: 100 requests per minute per authenticated user
 - **Path**: `/api/*`
 - **Purpose**: Fair API usage
@@ -75,6 +90,7 @@ Blocks requests to common vulnerability paths:
 - WordPress paths (/wp-admin, /wp-login)
 - phpMyAdmin paths
 - Common backdoor filenames
+- Enterprise paths without proper authentication
 
 ## Safelists
 
@@ -159,6 +175,24 @@ done
 throttle('custom/rule', limit: 10, period: 1.hour) do |req|
   # Your logic here
   req.ip if req.path == '/custom/path' && req.post?
+end
+```
+
+### Enterprise-Specific Rules
+```ruby
+# Throttle enterprise invitation sending
+throttle('enterprise/invitations', limit: 30, period: 1.day) do |req|
+  if req.path =~ %r{^/enterprise/.+/members$} && req.post?
+    req.authenticated_user_id
+  end
+end
+
+# Throttle enterprise admin actions
+throttle('enterprise/admin_actions', limit: 100, period: 1.hour) do |req|
+  if req.path =~ %r{^/(admin/super/enterprise_groups|enterprise/.+/(settings|members/.+/revoke_invitation))} && 
+     %w[POST PATCH DELETE].include?(req.request_method)
+    req.authenticated_user_id
+  end
 end
 ```
 

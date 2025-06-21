@@ -89,7 +89,9 @@ Rails.application.routes.draw do
         end
       end
 
-      resources :teams, only: [ :index, :show ]
+      resources :organizations, only: [ :index ]
+      resources :teams, only: [ :show ]
+      resources :enterprise_groups, only: [ :show ]
       resources :support, only: [ :index, :show, :update ]
       resource :profile, only: [ :show, :edit, :update ], controller: "profile"
     end
@@ -162,12 +164,20 @@ Rails.application.routes.draw do
   scope "/enterprise/:enterprise_group_slug" do
     root "enterprise/dashboard#index", as: :enterprise_dashboard
 
-    namespace :enterprise do
-      resources :members, only: [ :index, :show ]
-      resources :profile, only: [ :show, :edit, :update ]
-      resources :billing, only: [ :index, :show ]
-      resources :settings, only: [ :index, :update ]
+    resources :members, controller: "enterprise/members" do
+      member do
+        post :resend_invitation
+        delete :revoke_invitation
+      end
     end
+    resources :profile, controller: "enterprise/profile", only: [ :show, :edit, :update ]
+    resources :billing, controller: "enterprise/billing", only: [ :index, :show ] do
+      collection do
+        post :update_payment_method
+        post :cancel_subscription
+      end
+    end
+    resource :settings, controller: "enterprise/settings", only: [ :show, :update ]
   end
 
   # Redirect after sign in based on user type

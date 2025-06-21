@@ -28,24 +28,24 @@
           <% end %>
           
           <% if current_user.enterprise_admin? %>
-            <%= link_to "#", 
-                class: "block px-4 py-2 rounded hover:bg-purple-800 transition-colors" do %>
+            <%= link_to members_path(enterprise_group_slug: @enterprise_group.slug), 
+                class: "#{request.path.include?('/members') ? 'bg-purple-800' : ''} block px-4 py-2 rounded hover:bg-purple-800 transition-colors" do %>
               <div class="flex items-center">
                 <%= icon "users", class: "h-5 w-5 mr-3" %>
                 Members
               </div>
             <% end %>
             
-            <%= link_to "#", 
-                class: "block px-4 py-2 rounded hover:bg-purple-800 transition-colors" do %>
+            <%= link_to billing_index_path(enterprise_group_slug: @enterprise_group.slug), 
+                class: "#{request.path.include?('/billing') ? 'bg-purple-800' : ''} block px-4 py-2 rounded hover:bg-purple-800 transition-colors" do %>
               <div class="flex items-center">
                 <%= icon "credit-card", class: "h-5 w-5 mr-3" %>
                 Billing
               </div>
             <% end %>
             
-            <%= link_to "#", 
-                class: "block px-4 py-2 rounded hover:bg-purple-800 transition-colors" do %>
+            <%= link_to settings_path(enterprise_group_slug: @enterprise_group.slug), 
+                class: "#{request.path.include?('/settings') ? 'bg-purple-800' : ''} block px-4 py-2 rounded hover:bg-purple-800 transition-colors" do %>
               <div class="flex items-center">
                 <%= icon "gear", class: "h-5 w-5 mr-3" %>
                 Settings

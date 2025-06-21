@@ -5,7 +5,7 @@ class Users::RegistrationsControllerPlanSegmentTest < ActionDispatch::Integratio
     # Create plans for different segments
     @individual_free = Plan.create!(
       name: "Individual Free",
-      plan_type: "individual",
+      plan_segment: "individual",
       plan_segment: "individual",
       amount_cents: 0,
       active: true
@@ -13,7 +13,7 @@ class Users::RegistrationsControllerPlanSegmentTest < ActionDispatch::Integratio
 
     @individual_pro = Plan.create!(
       name: "Individual Pro",
-      plan_type: "individual",
+      plan_segment: "individual",
       plan_segment: "individual",
       amount_cents: 1900,
       active: true
@@ -21,7 +21,7 @@ class Users::RegistrationsControllerPlanSegmentTest < ActionDispatch::Integratio
 
     @team_starter = Plan.create!(
       name: "Team Starter",
-      plan_type: "team",
+      plan_segment: "team",
       plan_segment: "team",
       amount_cents: 4900,
       max_team_members: 5,
@@ -30,7 +30,7 @@ class Users::RegistrationsControllerPlanSegmentTest < ActionDispatch::Integratio
 
     @enterprise_plan = Plan.create!(
       name: "Enterprise",
-      plan_type: "team",
+      plan_segment: "team",
       plan_segment: "enterprise",
       amount_cents: 99900,
       max_team_members: 500,

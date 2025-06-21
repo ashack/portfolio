@@ -1,0 +1,154 @@
+<% content_for :page_title, "Members" %>
+
+<% content_for :header_actions do %>
+  <% if current_user.enterprise_admin? %>
+    <%= link_to new_member_path(enterprise_group_slug: @enterprise_group.slug),
+        class: "inline-flex items-center px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white font-medium rounded-md transition-colors" do %>
+      <%= icon "user-plus", class: "h-5 w-5 mr-2" %>
+      Invite Member
+    <% end %>
+  <% end %>
+<% end %>
+
+<!-- Stats Cards -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+  <div class="bg-white rounded-lg shadow p-6">
+    <div class="flex items-center justify-between">
+      <div>
+        <p class="text-sm font-medium text-gray-600">Active Members</p>
+        <p class="text-2xl font-bold text-gray-900"><%= @members.active.count %></p>
+      </div>
+      <div class="p-3 bg-green-100 rounded-lg">
+        <%= icon "users", class: "h-6 w-6 text-green-600" %>
+      </div>
+    </div>
+  </div>
+
+  <div class="bg-white rounded-lg shadow p-6">
+    <div class="flex items-center justify-between">
+      <div>
+        <p class="text-sm font-medium text-gray-600">Pending Invitations</p>
+        <p class="text-2xl font-bold text-gray-900"><%= @pending_invitations.count %></p>
+      </div>
+      <div class="p-3 bg-yellow-100 rounded-lg">
+        <%= icon "envelope", class: "h-6 w-6 text-yellow-600" %>
+      </div>
+    </div>
+  </div>
+
+  <div class="bg-white rounded-lg shadow p-6">
+    <div class="flex items-center justify-between">
+      <div>
+        <p class="text-sm font-medium text-gray-600">Member Limit</p>
+        <p class="text-2xl font-bold text-gray-900">
+          <%= @members.count %> / <%= @enterprise_group.max_members %>
+        </p>
+      </div>
+      <div class="p-3 bg-purple-100 rounded-lg">
+        <%= icon "chart-bar", class: "h-6 w-6 text-purple-600" %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Pending Invitations -->
+<% if @pending_invitations.any? %>
+  <div class="bg-white rounded-lg shadow mb-8">
+    <div class="px-6 py-4 border-b border-gray-200">
+      <h2 class="text-lg font-semibold text-gray-900">Pending Invitations</h2>
+    </div>
+    <div class="divide-y divide-gray-200">
+      <% @pending_invitations.each do |invitation| %>
+        <div class="px-6 py-4 flex items-center justify-between">
+          <div>
+            <p class="text-sm font-medium text-gray-900"><%= invitation.email %></p>
+            <p class="text-sm text-gray-500">
+              Invited <%= time_ago_in_words(invitation.created_at) %> ago by <%= invitation.invited_by.email %>
+            </p>
+          </div>
+          <div class="flex items-center space-x-2">
+            <span class="px-2 py-1 text-xs font-medium rounded-full 
+              <%= invitation.role == 'admin' ? 'bg-purple-100 text-purple-800' : 'bg-gray-100 text-gray-800' %>">
+              <%= invitation.role.capitalize %>
+            </span>
+            <% if current_user.enterprise_admin? %>
+              <%= button_to "Resend", 
+                  resend_invitation_member_path(enterprise_group_slug: @enterprise_group.slug, id: invitation.id),
+                  method: :post,
+                  class: "text-sm text-purple-600 hover:text-purple-900" %>
+              <%= button_to "Revoke", 
+                  revoke_invitation_member_path(enterprise_group_slug: @enterprise_group.slug, id: invitation.id),
+                  method: :delete,
+                  data: { confirm: "Are you sure?" },
+                  class: "text-sm text-red-600 hover:text-red-900" %>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+<% end %>
+
+<!-- Active Members -->
+<div class="bg-white rounded-lg shadow">
+  <div class="px-6 py-4 border-b border-gray-200">
+    <h2 class="text-lg font-semibold text-gray-900">Active Members</h2>
+  </div>
+  <div class="divide-y divide-gray-200">
+    <% @members.each do |member| %>
+      <div class="px-6 py-4">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center">
+            <div class="h-10 w-10 rounded-full bg-purple-100 flex items-center justify-center">
+              <span class="text-sm font-medium text-purple-700">
+                <%= member.email.first.upcase %>
+              </span>
+            </div>
+            <div class="ml-4">
+              <p class="text-sm font-medium text-gray-900">
+                <%= link_to member.email, member_path(enterprise_group_slug: @enterprise_group.slug, id: member.id),
+                    class: "hover:text-purple-600" %>
+              </p>
+              <p class="text-sm text-gray-500">
+                <%= member.full_name.present? ? member.full_name : "No name set" %>
+                • Joined <%= member.created_at.strftime("%B %d, %Y") %>
+              </p>
+            </div>
+          </div>
+          <div class="flex items-center space-x-4">
+            <span class="px-2 py-1 text-xs font-medium rounded-full 
+              <%= member.enterprise_admin? ? 'bg-purple-100 text-purple-800' : 'bg-gray-100 text-gray-800' %>">
+              <%= member.enterprise_admin? ? 'Admin' : 'Member' %>
+            </span>
+            <span class="px-2 py-1 text-xs font-medium rounded-full 
+              <%= member.status == 'active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' %>">
+              <%= member.status.capitalize %>
+            </span>
+            <% if current_user.enterprise_admin? && member != current_user %>
+              <div class="relative" data-controller="dropdown">
+                <button type="button" 
+                        data-action="click->dropdown#toggle click@window->dropdown#hide"
+                        class="text-gray-400 hover:text-gray-600">
+                  <%= icon "dots-three-vertical", class: "h-5 w-5" %>
+                </button>
+                <div data-dropdown-target="menu" 
+                     class="hidden absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
+                  <div class="py-1">
+                    <%= link_to "Edit Role", 
+                        edit_member_path(enterprise_group_slug: @enterprise_group.slug, id: member.id),
+                        class: "block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" %>
+                    <%= button_to "Remove Member", 
+                        member_path(enterprise_group_slug: @enterprise_group.slug, id: member.id),
+                        method: :delete,
+                        data: { confirm: "Are you sure? This will permanently remove the member." },
+                        class: "block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100" %>
+                  </div>
+                </div>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>
