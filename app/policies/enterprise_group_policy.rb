@@ -1,7 +1,7 @@
 class EnterpriseGroupPolicy < ApplicationPolicy
   class Scope < ApplicationPolicy::Scope
     def resolve
-      if user.admin?
+      if user&.system_role == "super_admin" || user&.system_role == "site_admin"
         scope.all
       else
         scope.none

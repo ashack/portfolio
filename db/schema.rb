@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_06_19_111650) do
+ActiveRecord::Schema[8.0].define(version: 2025_06_20_154017) do
   create_table "admin_activity_logs", force: :cascade do |t|
     t.integer "admin_user_id", null: false
     t.string "controller", null: false
@@ -118,7 +118,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_19_111650) do
   create_table "enterprise_groups", force: :cascade do |t|
     t.string "name", null: false
     t.string "slug", null: false
-    t.bigint "admin_id", null: false
+    t.bigint "admin_id"
     t.bigint "created_by_id", null: false
     t.bigint "plan_id", null: false
     t.integer "status", default: 0
@@ -138,7 +138,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_19_111650) do
   end
 
   create_table "invitations", force: :cascade do |t|
-    t.bigint "team_id", null: false
+    t.bigint "team_id"
     t.string "email", null: false
     t.integer "role", default: 0
     t.string "token", null: false
@@ -147,10 +147,15 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_19_111650) do
     t.datetime "expires_at", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "invitable_type"
+    t.integer "invitable_id"
+    t.string "invitation_type", default: "team", null: false
     t.index "LOWER(email)", name: "index_invitations_on_lower_email"
     t.index ["accepted_at"], name: "index_invitations_on_accepted_at"
     t.index ["email"], name: "index_invitations_on_email"
     t.index ["expires_at"], name: "index_invitations_on_expires_at"
+    t.index ["invitable_type", "invitable_id"], name: "index_invitations_on_invitable"
+    t.index ["invitation_type"], name: "index_invitations_on_invitation_type"
     t.index ["team_id"], name: "index_invitations_on_team_id"
     t.index ["token"], name: "index_invitations_on_token", unique: true
   end

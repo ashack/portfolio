@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Team Invitation - SaaS App</title>
+    <title><%= @invitation.enterprise_invitation? ? 'Enterprise' : 'Team' %> Invitation - SaaS App</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
@@ -21,7 +21,13 @@
           You're Invited!
         </h2>
         <p class="mt-2 text-center text-sm text-gray-600">
-          Join the <strong><%= @invitation.team.name %></strong> team
+          <% if @invitation.enterprise_invitation? && @invitation.invitable %>
+            Manage the <strong><%= @invitation.invitable.name %></strong> enterprise organization
+          <% elsif @invitation.team %>
+            Join the <strong><%= @invitation.team.name %></strong> team
+          <% else %>
+            Accept this invitation
+          <% end %>
         </p>
       </div>
 
@@ -29,15 +35,36 @@
         <!-- Invitation Details -->
         <div class="space-y-4">
           <div class="text-center">
-            <div class="flex-shrink-0 mx-auto h-16 w-16 bg-gray-200 rounded-full flex items-center justify-center">
-              <span class="text-xl font-bold text-gray-700"><%= @invitation.team.name.first.upcase %></span>
-            </div>
-            <h3 class="mt-4 text-lg font-medium text-gray-900">
-              <%= @invitation.team.name %>
-            </h3>
-            <p class="text-sm text-gray-500">
-              <%= @invitation.team.plan.capitalize %> Plan • <%= @invitation.team.member_count %> members
-            </p>
+            <% if @invitation.enterprise_invitation? && @invitation.invitable %>
+              <div class="flex-shrink-0 mx-auto h-16 w-16 bg-purple-200 rounded-full flex items-center justify-center">
+                <span class="text-xl font-bold text-purple-700"><%= @invitation.invitable.name.first.upcase %></span>
+              </div>
+              <h3 class="mt-4 text-lg font-medium text-gray-900">
+                <%= @invitation.invitable.name %>
+              </h3>
+              <p class="text-sm text-gray-500">
+                Enterprise Organization • Up to <%= @invitation.invitable.max_members %> members
+              </p>
+            <% elsif @invitation.team %>
+              <div class="flex-shrink-0 mx-auto h-16 w-16 bg-gray-200 rounded-full flex items-center justify-center">
+                <span class="text-xl font-bold text-gray-700"><%= @invitation.team.name.first.upcase %></span>
+              </div>
+              <h3 class="mt-4 text-lg font-medium text-gray-900">
+                <%= @invitation.team.name %>
+              </h3>
+              <p class="text-sm text-gray-500">
+                <%= @invitation.team.plan.capitalize %> Plan • <%= @invitation.team.member_count %> members
+              </p>
+            <% else %>
+              <div class="flex-shrink-0 mx-auto h-16 w-16 bg-gray-200 rounded-full flex items-center justify-center">
+                <svg class="h-8 w-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                </svg>
+              </div>
+              <h3 class="mt-4 text-lg font-medium text-gray-900">
+                Invitation
+              </h3>
+            <% end %>
           </div>
 
           <div class="border-t border-gray-200 pt-4">
@@ -47,7 +74,7 @@
                 <dd class="text-sm text-gray-900">
                   <span class="px-2 py-1 text-xs font-medium rounded 
                     <%= @invitation.role == 'admin' ? 'bg-purple-100 text-purple-800' : 'bg-gray-100 text-gray-800' %>">
-                    Team <%= @invitation.role.capitalize %>
+                    <%= @invitation.enterprise_invitation? ? 'Enterprise' : 'Team' %> <%= @invitation.role.capitalize %>
                   </span>
                 </dd>
               </div>
@@ -77,20 +104,49 @@
             </dl>
           </div>
 
-          <!-- Team Features -->
-          <div class="border-t border-gray-200 pt-4">
-            <h4 class="text-sm font-medium text-gray-900 mb-3">What you'll get:</h4>
-            <ul class="space-y-2 text-sm text-gray-600">
-              <% @invitation.team.plan_features.each do |feature| %>
-                <li class="flex items-center">
-                  <svg class="h-4 w-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
-                  </svg>
-                  <%= feature.humanize %>
-                </li>
-              <% end %>
-            </ul>
-          </div>
+          <!-- Features -->
+          <% if (@invitation.enterprise_invitation? && @invitation.invitable) || (@invitation.team) %>
+            <div class="border-t border-gray-200 pt-4">
+              <h4 class="text-sm font-medium text-gray-900 mb-3">What you'll get:</h4>
+              <ul class="space-y-2 text-sm text-gray-600">
+                <% if @invitation.enterprise_invitation? && @invitation.invitable %>
+                  <li class="flex items-center">
+                    <svg class="h-4 w-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                    </svg>
+                    Full enterprise admin access
+                  </li>
+                  <li class="flex items-center">
+                    <svg class="h-4 w-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                    </svg>
+                    Manage organization members
+                  </li>
+                  <li class="flex items-center">
+                    <svg class="h-4 w-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                    </svg>
+                    Enterprise billing management
+                  </li>
+                  <li class="flex items-center">
+                    <svg class="h-4 w-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                    </svg>
+                    Dedicated enterprise support
+                  </li>
+                <% elsif @invitation.team %>
+                  <% @invitation.team.plan_features.each do |feature| %>
+                    <li class="flex items-center">
+                      <svg class="h-4 w-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                      </svg>
+                      <%= feature.humanize %>
+                    </li>
+                  <% end %>
+                <% end %>
+              </ul>
+            </div>
+          <% end %>
         </div>
 
         <!-- Action Buttons -->

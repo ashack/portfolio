@@ -63,6 +63,38 @@
               <% if @enterprise_group.admin.full_name.present? %>
                 (<%= @enterprise_group.admin.full_name %>)
               <% end %>
+            <% elsif @enterprise_group.has_pending_admin_invitation? %>
+              <div class="space-y-2">
+                <div class="flex items-center">
+                  <span class="text-amber-600">
+                    Invitation sent to <%= @enterprise_group.pending_admin_invitation.email %>
+                  </span>
+                  <span class="ml-2 px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-amber-100 text-amber-800">
+                    Pending
+                  </span>
+                </div>
+                <p class="text-xs text-gray-500">
+                  <% if @enterprise_group.pending_admin_invitation.expired? %>
+                    <span class="text-red-600">Expired <%= time_ago_in_words(@enterprise_group.pending_admin_invitation.expires_at) %> ago</span>
+                  <% else %>
+                    Expires in <%= distance_of_time_in_words_to_now(@enterprise_group.pending_admin_invitation.expires_at) %>
+                  <% end %>
+                </p>
+                <div class="flex space-x-2 mt-2">
+                  <%= button_to "Resend Invitation", 
+                      resend_admin_super_enterprise_group_invitation_path(@enterprise_group, @enterprise_group.pending_admin_invitation),
+                      method: :post,
+                      class: "inline-flex items-center px-3 py-1 border border-transparent text-xs font-medium rounded text-white bg-blue-600 hover:bg-blue-700" %>
+                  <%= button_to "Revoke Invitation", 
+                      revoke_admin_super_enterprise_group_invitation_path(@enterprise_group, @enterprise_group.pending_admin_invitation),
+                      method: :delete,
+                      data: { turbo_confirm: "Are you sure you want to revoke this invitation?" },
+                      class: "inline-flex items-center px-3 py-1 border border-red-300 text-xs font-medium rounded text-red-700 bg-white hover:bg-red-50" %>
+                  <%= link_to "View All Invitations", 
+                      admin_super_enterprise_group_invitations_path(@enterprise_group),
+                      class: "inline-flex items-center px-3 py-1 border border-gray-300 text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50" %>
+                </div>
+              </div>
             <% else %>
               <span class="text-gray-500">No admin assigned</span>
             <% end %>
@@ -100,6 +132,71 @@
           </dd>
         </div>
       </dl>
+    </div>
+  </div>
+
+  <!-- Invitations List -->
+  <div class="bg-white shadow overflow-hidden sm:rounded-lg">
+    <div class="px-4 py-5 sm:px-6 flex justify-between items-center">
+      <div>
+        <h3 class="text-lg leading-6 font-medium text-gray-900">
+          Recent Invitations
+        </h3>
+        <p class="mt-1 max-w-2xl text-sm text-gray-500">
+          Recent invitations sent for this enterprise group.
+        </p>
+      </div>
+      <% if @enterprise_group.invitations.any? %>
+        <%= link_to "View All", admin_super_enterprise_group_invitations_path(@enterprise_group),
+            class: "text-sm text-indigo-600 hover:text-indigo-900" %>
+      <% end %>
+    </div>
+    <div class="border-t border-gray-200">
+      <% recent_invitations = @enterprise_group.invitations.includes(:invited_by).order(created_at: :desc).limit(5) %>
+      <% if recent_invitations.any? %>
+        <ul class="divide-y divide-gray-200">
+          <% recent_invitations.each do |invitation| %>
+            <li class="px-4 py-4 sm:px-6">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                  <div class="flex-shrink-0">
+                    <div class="h-8 w-8 rounded-full bg-gray-300 flex items-center justify-center">
+                      <span class="text-xs font-medium text-gray-700">
+                        <%= invitation.email.first.upcase %>
+                      </span>
+                    </div>
+                  </div>
+                  <div class="ml-4">
+                    <div class="text-sm font-medium text-gray-900"><%= invitation.email %></div>
+                    <div class="text-sm text-gray-500">
+                      Invited <%= time_ago_in_words(invitation.created_at) %> ago by <%= invitation.invited_by.email %>
+                    </div>
+                  </div>
+                </div>
+                <div class="flex items-center">
+                  <% if invitation.accepted? %>
+                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                      Accepted
+                    </span>
+                  <% elsif invitation.expired? %>
+                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
+                      Expired
+                    </span>
+                  <% else %>
+                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-amber-100 text-amber-800">
+                      Pending
+                    </span>
+                  <% end %>
+                </div>
+              </div>
+            </li>
+          <% end %>
+        </ul>
+      <% else %>
+        <div class="text-center py-8">
+          <p class="text-sm text-gray-500">No invitations sent yet.</p>
+        </div>
+      <% end %>
     </div>
   </div>
 

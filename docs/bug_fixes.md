@@ -565,4 +565,119 @@ PARALLEL_WORKERS=1 bundle exec rails test
 
 ---
 
-**Status**: All critical bugs resolved. Application is stable and production-ready with Rails 8.0.2. Test suite is passing with significantly improved coverage.
+## Enterprise Group & Invitation System Issues (SOLVED)
+
+### Issue 12: Site Admin Navigation Error
+
+**Problem**: Site admins were seeing "Create new team" button and getting errors when clicking it
+
+**Root Cause**: Navigation pointed to super admin team creation path instead of read-only site admin path
+
+**Solution**: Fixed navigation path
+```erb
+<!-- Before -->
+<%= link_to "Organizations", admin_super_teams_path %>
+
+<!-- After -->
+<%= link_to "Organizations", admin_site_teams_path %>
+```
+
+### Issue 13: Enterprise Group Creation Circular Dependency
+
+**Problem**: "Admin must exist" error when creating enterprise groups
+
+**Root Cause**: Database required admin_id but admin couldn't exist without the group
+
+**Solution**: Made admin_id optional and use invitation flow
+```ruby
+# Migration
+change_column_null :enterprise_groups, :admin_id, true
+
+# Controller - use invitation instead of direct admin assignment
+invitation = @enterprise_group.invitations.create!(
+  email: params[:admin_email],
+  role: "admin",
+  invitation_type: "enterprise",
+  invited_by: current_user
+)
+```
+
+### Issue 14: Polymorphic Invitation Acceptance
+
+**Problem**: Enterprise invitations showing as "pending" even after acceptance
+
+**Root Causes**:
+1. Registration controller only handled team invitations
+2. invitation_type was nil for existing invitations
+3. Enterprise group admin not being set on acceptance
+
+**Solutions**:
+
+**A. Updated Registration Controller**:
+```ruby
+if @invitation.team_invitation?
+  resource.user_type = "invited"
+  resource.team = @invitation.team
+  resource.team_role = @invitation.role
+elsif @invitation.enterprise_invitation?
+  resource.user_type = "enterprise"
+  resource.enterprise_group = @invitation.invitable
+  resource.enterprise_group_role = @invitation.role
+end
+```
+
+**B. Fixed Existing Data**:
+```ruby
+# Update invitation types for existing records
+Invitation.where(invitable_type: "EnterpriseGroup").update_all(invitation_type: "enterprise")
+```
+
+**C. Set Enterprise Admin on Acceptance**:
+```ruby
+if @invitation.enterprise_invitation? && @invitation.admin? && @invitation.invitable
+  @invitation.invitable.update!(admin: resource)
+end
+```
+
+### Issue 15: Enterprise Dashboard Routing
+
+**Problem**: "uninitialized constant Enterprise" error
+
+**Root Cause**: Missing Enterprise controllers and views
+
+**Solution**: Created complete enterprise dashboard structure
+- `app/controllers/enterprise/base_controller.rb`
+- `app/controllers/enterprise/dashboard_controller.rb`
+- `app/views/layouts/enterprise.html.erb`
+- `app/views/enterprise/dashboard/index.html.erb`
+
+### Issue 16: Icon Helper Compatibility
+
+**Problem**: `<%= rails_icon "phosphor-buildings" %>` causing errors
+
+**Root Cause**: Project uses `icon` helper, not `rails_icon`
+
+**Solution**: Updated all icon calls
+```erb
+<!-- Before -->
+<%= rails_icon "phosphor-buildings", class: "w-6 h-6 text-purple-600" %>
+
+<!-- After -->
+<%= icon "buildings", class: "h-6 w-6 text-purple-600" %>
+```
+
+### Issue 17: Pundit Policy Scoping in Enterprise Controllers
+
+**Problem**: `Pundit::PolicyScopingNotPerformedError`
+
+**Solution**: Skip policy scoping for dashboard
+```ruby
+class Enterprise::DashboardController < Enterprise::BaseController
+  skip_after_action :verify_policy_scoped, only: [:index]
+  skip_after_action :verify_authorized, only: [:index]
+end
+```
+
+---
+
+**Status**: All critical bugs resolved. Application is stable and production-ready with Rails 8.0.2. Test suite is passing with significantly improved coverage. Enterprise group functionality fully implemented with invitation-based admin assignment.

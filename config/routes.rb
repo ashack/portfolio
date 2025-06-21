@@ -61,7 +61,14 @@ Rails.application.routes.draw do
       resources :settings, only: [ :index, :update ]
       resources :analytics, only: [ :index ]
       resources :plans
-      resources :enterprise_groups
+      resources :enterprise_groups do
+        resources :invitations, controller: "enterprise_group_invitations", only: [:index] do
+          member do
+            post :resend
+            delete :revoke
+          end
+        end
+      end
 
       resources :email_change_requests, only: [ :index, :show ], param: :token do
         member do
@@ -151,13 +158,15 @@ Rails.application.routes.draw do
     end
   end
   
-  # Enterprise Group Routes (future implementation)
+  # Enterprise Group Routes
   scope "/enterprise/:enterprise_group_slug" do
-    root "enterprise/dashboard#index", as: :enterprise_group_root
+    root "enterprise/dashboard#index", as: :enterprise_dashboard
     
     namespace :enterprise do
       resources :members, only: [ :index, :show ]
       resources :profile, only: [ :show, :edit, :update ]
+      resources :billing, only: [ :index, :show ]
+      resources :settings, only: [ :index, :update ]
     end
   end
 

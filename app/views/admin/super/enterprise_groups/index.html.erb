@@ -104,9 +104,11 @@
         </div>
 
         <!-- Pagination -->
-        <div class="mt-6">
-          <%== pagy_bootstrap_nav(@pagy) if @pagy.pages > 1 %>
-        </div>
+        <% if defined?(@pagy) && @pagy.pages > 1 %>
+          <div class="mt-6">
+            <%== pagy_nav(@pagy) %>
+          </div>
+        <% end %>
       <% else %>
         <div class="text-center py-12">
           <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">

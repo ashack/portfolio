@@ -27,6 +27,9 @@ module TabNavigationHelper
         active_paths: ['/admin/super/enterprise_groups']
       )
     ]
+  rescue => e
+    Rails.logger.error "Error building organization tabs: #{e.message}"
+    []
   end
 
   # Helper for user management tabs

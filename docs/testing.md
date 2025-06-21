@@ -124,12 +124,14 @@ Recent improvements:
 - Added service tests for Teams::CreationService, Users::StatusManagementService, AuditLogService
 - Added rails-controller-testing gem and user fixtures
 - Fixed test failures from 34 down to 14 (mostly design issues and existing failures)
+- Added enterprise group model tests
+- Fixed polymorphic invitation tests
 
 To further improve coverage:
-1. Add controller tests for all actions
-2. Create system tests for critical user flows
-3. Write service object tests
-4. Add mailer tests
+1. Add controller tests for enterprise controllers
+2. Create system tests for enterprise flows
+3. Write more comprehensive service object tests
+4. Add mailer tests for enterprise invitations
 5. Test API endpoints
 
 ## Writing Tests
@@ -150,6 +152,15 @@ user = sign_in_with(
   user_type: "direct",
   team: team,
   team_role: "admin"
+)
+
+# For enterprise users
+enterprise_user = sign_in_with(
+  email: "enterprise@example.com",
+  password: "Password123!",
+  user_type: "enterprise",
+  enterprise_group: enterprise_group,
+  enterprise_group_role: "admin"
 )
 ```
 

@@ -13,7 +13,7 @@ class Admin::Super::EnterpriseGroupsController < ApplicationController
 
   def show
     authorize @enterprise_group
-    @members = @enterprise_group.users.includes(:enterprise_group_role)
+    @members = @enterprise_group.users
   end
 
   def new
@@ -28,19 +28,49 @@ class Admin::Super::EnterpriseGroupsController < ApplicationController
     @enterprise_group.created_by = current_user
     authorize @enterprise_group
 
-    if @enterprise_group.save
-      # Create the enterprise admin user
-      if params[:admin_email].present?
-        create_enterprise_admin(params[:admin_email])
+    # Validate admin email is present
+    if params[:admin_email].blank?
+      @enterprise_group.errors.add(:admin, "email must be provided")
+      @enterprise_plans = Plan.for_enterprise.active
+      render :new, status: :unprocessable_entity
+      return
+    end
+    
+    # Check if email already exists
+    if User.exists?(email: params[:admin_email].downcase)
+      @enterprise_group.errors.add(:admin, "email already has an account")
+      @enterprise_plans = Plan.for_enterprise.active
+      render :new, status: :unprocessable_entity
+      return
+    end
+
+    # Create enterprise group and invitation in a transaction
+    ActiveRecord::Base.transaction do
+      # Save the enterprise group without an admin
+      @enterprise_group.save!
+
+      # Create invitation for the admin
+      invitation = @enterprise_group.invitations.create!(
+        email: params[:admin_email],
+        role: "admin",
+        invitation_type: "enterprise",
+        invited_by: current_user
+      )
+
+      # Send invitation email
+      if Rails.env.development?
+        EnterpriseGroupMailer.admin_invitation(invitation, @enterprise_group).deliver_now
+      else
+        EnterpriseGroupMailer.admin_invitation(invitation, @enterprise_group).deliver_later
       end
 
       redirect_to admin_super_enterprise_group_path(@enterprise_group),
-                  notice: "Enterprise group was successfully created."
-    else
-      @enterprise_plans = Plan.for_enterprise.active
-      @available_admins = User.direct_users.active.where(owns_team: false)
-      render :new, status: :unprocessable_entity
+                  notice: "Enterprise group was successfully created. An invitation has been sent to #{params[:admin_email]}."
     end
+  rescue ActiveRecord::RecordInvalid => e
+    Rails.logger.error "Failed to create enterprise group: #{e.message}"
+    @enterprise_plans = Plan.for_enterprise.active
+    render :new, status: :unprocessable_entity
   end
 
   def edit
@@ -90,23 +120,4 @@ class Admin::Super::EnterpriseGroupsController < ApplicationController
     )
   end
 
-  def create_enterprise_admin(email)
-    # Create new user as enterprise admin
-    user = User.create!(
-      email: email,
-      password: SecureRandom.hex(16), # Temporary password
-      user_type: "enterprise",
-      enterprise_group: @enterprise_group,
-      enterprise_group_role: "admin",
-      status: "active",
-      skip_confirmation: true # They'll set password on first login
-    )
-
-    @enterprise_group.update!(admin: user)
-
-    # Send invitation email
-    EnterpriseGroupMailer.admin_invitation(user, @enterprise_group).deliver_later
-  rescue ActiveRecord::RecordInvalid => e
-    Rails.logger.error "Failed to create enterprise admin: #{e.message}"
-  end
 end

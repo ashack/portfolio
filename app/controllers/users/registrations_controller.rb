@@ -34,15 +34,24 @@ class Users::RegistrationsController < Devise::RegistrationsController
       filtered_params = sign_up_params.except(:team_name, :plan_id)
       build_resource(filtered_params)
 
-      # Set invited user attributes
+      # Set invited user attributes based on invitation type
       resource.accepting_invitation = true  # Skip invitation conflict validation
-      resource.user_type = "invited"
       resource.status = "active"
       resource.email = @invitation.email
-      resource.team = @invitation.team
-      resource.team_role = @invitation.role
 
-      # No plan needed for invited users
+      if @invitation.team_invitation?
+        # Handle team invitation
+        resource.user_type = "invited"
+        resource.team = @invitation.team
+        resource.team_role = @invitation.role
+      elsif @invitation.enterprise_invitation?
+        # Handle enterprise invitation
+        resource.user_type = "enterprise"
+        resource.enterprise_group = @invitation.invitable
+        resource.enterprise_group_role = @invitation.role
+      end
+
+      # No plan needed for invited/enterprise users
       resource.plan_id = nil
       
       # Skip email confirmation for invited users (they already received an invitation)
@@ -52,12 +61,18 @@ class Users::RegistrationsController < Devise::RegistrationsController
         # Mark invitation as accepted
         if @invitation
           Rails.logger.info "Attempting to mark invitation #{@invitation.id} (#{@invitation.email}) as accepted"
-          Rails.logger.info "Invitation before update: accepted_at=#{@invitation.accepted_at}"
+          Rails.logger.info "Invitation type: #{@invitation.invitation_type}, before update: accepted_at=#{@invitation.accepted_at}"
           
           @invitation.update_column(:accepted_at, Time.current)
           @invitation.reload
           
           Rails.logger.info "Invitation after update: accepted_at=#{@invitation.accepted_at}, accepted?=#{@invitation.accepted?}"
+          
+          # Update enterprise group admin if this is an enterprise admin invitation
+          if @invitation.enterprise_invitation? && @invitation.admin? && @invitation.invitable
+            Rails.logger.info "Updating enterprise group admin to user #{resource.id}"
+            @invitation.invitable.update!(admin: resource)
+          end
         else
           Rails.logger.error "No @invitation found when trying to mark as accepted!"
         end
@@ -173,6 +188,8 @@ class Users::RegistrationsController < Devise::RegistrationsController
       user_dashboard_path
     elsif resource.invited? && resource.team
       team_root_path(team_slug: resource.team.slug)
+    elsif resource.enterprise? && resource.enterprise_group
+      enterprise_dashboard_path(enterprise_group_slug: resource.enterprise_group.slug)
     else
       root_path
     end

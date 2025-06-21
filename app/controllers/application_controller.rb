@@ -38,7 +38,7 @@ class ApplicationController < ActionController::Base
     elsif current_user.invited? && current_user.team
       team_root_path(team_slug: current_user.team.slug)
     elsif current_user.enterprise? && current_user.enterprise_group
-      enterprise_group_root_path(enterprise_group_slug: current_user.enterprise_group.slug)
+      enterprise_dashboard_path(enterprise_group_slug: current_user.enterprise_group.slug)
     else
       root_path
     end

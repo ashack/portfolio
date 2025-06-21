@@ -12,7 +12,7 @@ This large specification file has been reorganized into focused documentation in
 - **[Common Pitfalls](docs/pitfalls.md)** - Anti-patterns and prevention strategies
 - **[Testing Guide](docs/testing.md)** - Minitest setup, SimpleCov coverage, best practices
 
-**STATUS**: ✅ Production-ready Rails 8.0.2 SaaS application with comprehensive security, dual-track user system, professional UI, Phosphor icon system, and Minitest/SimpleCov testing setup.
+**STATUS**: ✅ Production-ready Rails 8.0.2 SaaS application with comprehensive security, triple-track user system (Direct, Team, Enterprise), professional UI, Phosphor icon system, polymorphic invitation system, and Minitest/SimpleCov testing setup.
 
 ---
 
@@ -37,13 +37,14 @@ Generate a complete Ruby on Rails 8 SaaS application with the following exact sp
 #### System Administration Users
 1. **Super Admin**
    - Platform owner with complete system access
-   - Only role that can create teams
-   - Can manage all users and teams
+   - Can create teams and enterprise groups
+   - Can manage all users, teams, and enterprise organizations
    - Access: `/admin/super/dashboard`
 
 2. **Site Admin** 
    - Customer support and user management
-   - Cannot create teams or access billing
+   - Cannot create teams or enterprise groups
+   - Cannot access billing
    - Can manage user status and provide support
    - Access: `/admin/site/dashboard`
 
@@ -72,12 +73,18 @@ Generate a complete Ruby on Rails 8 SaaS application with the following exact sp
    - Cannot become individual user or join other teams
    - Access: `/teams/team-slug/`
 
-#### Enterprise Users (Contact Sales)
-6. **Enterprise User**
-   - Large organizations with custom requirements
-   - Managed by Super Admin through enterprise groups
-   - Custom billing and feature sets
-   - Access: `/enterprise/group-slug/`
+#### Enterprise Users (Invitation Only)
+6. **Enterprise Admin**
+   - Manages enterprise organization
+   - Invited via email by Super Admin
+   - Can manage enterprise members and settings
+   - Access: `/enterprise/enterprise-slug/`
+
+7. **Enterprise Member**
+   - Part of enterprise organization
+   - Invited by Enterprise Admin
+   - Access to enterprise features
+   - Access: `/enterprise/enterprise-slug/`
 
 ## Technical Stack
 
@@ -1351,9 +1358,46 @@ class YourTest < ActiveSupport::TestCase
 end
 ```
 
+## Recent Architectural Updates (June 2025)
+
+### 1. Enterprise Groups Implementation
+- Complete enterprise organization management system
+- Invitation-based admin assignment (no circular dependencies)
+- Purple-themed enterprise dashboard at `/enterprise/enterprise-slug/`
+- Enterprise admins can manage members and settings
+- Separate billing and feature access for enterprise organizations
+
+### 2. Polymorphic Invitation System
+- Invitations now support both teams and enterprise groups
+- `invitable` polymorphic association for flexibility
+- `invitation_type` enum distinguishes between team and enterprise invitations
+- Proper handling in registration controller for all invitation types
+- Email notifications with Letter Opener integration in development
+
+### 3. Enhanced User Type System
+- Three distinct user types: Direct, Invited, Enterprise
+- Direct users can register and create teams
+- Invited users join via team invitations only
+- Enterprise users join via enterprise group invitations
+- No crossover between different user types
+
+### 4. Enterprise Dashboard Features
+- Complete enterprise namespace with controllers and views
+- Member management interface
+- Quick actions for enterprise admins
+- Consistent purple theme throughout enterprise UI
+- Proper authorization and access control
+
+### 5. Bug Fixes and Improvements
+- Fixed site admin navigation to prevent unauthorized team creation
+- Resolved circular dependency in enterprise group creation
+- Fixed invitation acceptance status updates
+- Proper icon helper usage (`icon` not `rails_icon`)
+- Pundit policy scoping for enterprise controllers
+
 ### Test Coverage
 
-SimpleCov is configured to track both line and branch coverage. Current coverage is ~4% with a target of 90%+.
+SimpleCov is configured to track both line and branch coverage. Current coverage is ~24% with a target of 90%+.
 
 See [Testing Guide](docs/testing.md) for comprehensive testing documentation.
 
