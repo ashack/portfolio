@@ -1,0 +1,256 @@
+<% content_for :page_title, @enterprise_group.name %>
+<% content_for :header_actions do %>
+  <% if policy(@enterprise_group).edit? %>
+    <%= link_to "Edit", edit_admin_super_enterprise_group_path(@enterprise_group), class: "inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50" %>
+  <% end %>
+  <% if policy(@enterprise_group).destroy? %>
+    <%= button_to "Delete", admin_super_enterprise_group_path(@enterprise_group), 
+        method: :delete,
+        data: { turbo_confirm: "Are you sure? This will permanently delete this enterprise group." },
+        class: "ml-3 inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700" %>
+  <% end %>
+<% end %>
+
+<div class="grid grid-cols-1 gap-6">
+  <!-- Enterprise Group Information -->
+  <div class="bg-white shadow overflow-hidden sm:rounded-lg">
+    <div class="px-4 py-5 sm:px-6">
+      <h3 class="text-lg leading-6 font-medium text-gray-900">
+        Enterprise Group Information
+      </h3>
+      <p class="mt-1 max-w-2xl text-sm text-gray-500">
+        Details about this enterprise organization.
+      </p>
+    </div>
+    <div class="border-t border-gray-200">
+      <dl>
+        <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+          <dt class="text-sm font-medium text-gray-500">Organization Name</dt>
+          <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2"><%= @enterprise_group.name %></dd>
+        </div>
+        <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+          <dt class="text-sm font-medium text-gray-500">URL Slug</dt>
+          <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">/<%= @enterprise_group.slug %></dd>
+        </div>
+        <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+          <dt class="text-sm font-medium text-gray-500">Status</dt>
+          <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+              <%= @enterprise_group.status == 'active' ? 'bg-green-100 text-green-800' : 
+                  @enterprise_group.status == 'suspended' ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800' %>">
+              <%= @enterprise_group.status.capitalize %>
+            </span>
+          </dd>
+        </div>
+        <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+          <dt class="text-sm font-medium text-gray-500">Plan</dt>
+          <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+            <% if @enterprise_group.plan %>
+              <%= @enterprise_group.plan.name %>
+              <span class="text-gray-500">
+                (<%= number_to_currency(@enterprise_group.plan.amount_cents / 100.0) %>/<%= @enterprise_group.plan.interval %>)
+              </span>
+            <% else %>
+              <span class="text-gray-500">No plan assigned</span>
+            <% end %>
+          </dd>
+        </div>
+        <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+          <dt class="text-sm font-medium text-gray-500">Admin</dt>
+          <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+            <% if @enterprise_group.admin %>
+              <%= @enterprise_group.admin.email %>
+              <% if @enterprise_group.admin.full_name.present? %>
+                (<%= @enterprise_group.admin.full_name %>)
+              <% end %>
+            <% elsif @enterprise_group.has_pending_admin_invitation? %>
+              <div class="space-y-2">
+                <div class="flex items-center">
+                  <span class="text-amber-600">
+                    Invitation sent to <%= @enterprise_group.pending_admin_invitation.email %>
+                  </span>
+                  <span class="ml-2 px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-amber-100 text-amber-800">
+                    Pending
+                  </span>
+                </div>
+                <p class="text-xs text-gray-500">
+                  <% if @enterprise_group.pending_admin_invitation.expired? %>
+                    <span class="text-red-600">Expired <%= time_ago_in_words(@enterprise_group.pending_admin_invitation.expires_at) %> ago</span>
+                  <% else %>
+                    Expires in <%= distance_of_time_in_words_to_now(@enterprise_group.pending_admin_invitation.expires_at) %>
+                  <% end %>
+                </p>
+                <div class="flex space-x-2 mt-2">
+                  <%= button_to "Resend Invitation", 
+                      resend_admin_super_enterprise_group_invitation_path(@enterprise_group, @enterprise_group.pending_admin_invitation),
+                      method: :post,
+                      class: "inline-flex items-center px-3 py-1 border border-transparent text-xs font-medium rounded text-white bg-blue-600 hover:bg-blue-700" %>
+                  <%= button_to "Revoke Invitation", 
+                      revoke_admin_super_enterprise_group_invitation_path(@enterprise_group, @enterprise_group.pending_admin_invitation),
+                      method: :delete,
+                      data: { turbo_confirm: "Are you sure you want to revoke this invitation?" },
+                      class: "inline-flex items-center px-3 py-1 border border-red-300 text-xs font-medium rounded text-red-700 bg-white hover:bg-red-50" %>
+                  <%= link_to "View All Invitations", 
+                      admin_super_enterprise_group_invitations_path(@enterprise_group),
+                      class: "inline-flex items-center px-3 py-1 border border-gray-300 text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50" %>
+                </div>
+              </div>
+            <% else %>
+              <span class="text-gray-500">No admin assigned</span>
+            <% end %>
+          </dd>
+        </div>
+        <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+          <dt class="text-sm font-medium text-gray-500">Members</dt>
+          <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+            <%= @enterprise_group.users.count %> / <%= @enterprise_group.max_members %>
+            <div class="mt-1">
+              <div class="bg-gray-200 rounded-full h-2 w-48">
+                <div class="bg-indigo-600 h-2 rounded-full" style="width: <%= (@enterprise_group.users.count.to_f / @enterprise_group.max_members * 100).round %>%"></div>
+              </div>
+            </div>
+          </dd>
+        </div>
+        <% if @enterprise_group.trial_ends_at %>
+          <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+            <dt class="text-sm font-medium text-gray-500">Trial Ends</dt>
+            <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+              <%= @enterprise_group.trial_ends_at.strftime("%B %d, %Y") %>
+              <% if @enterprise_group.trial_ends_at > Time.current %>
+                <span class="text-green-600">(<%= distance_of_time_in_words_to_now(@enterprise_group.trial_ends_at) %> remaining)</span>
+              <% else %>
+                <span class="text-red-600">(Trial expired)</span>
+              <% end %>
+            </dd>
+          </div>
+        <% end %>
+        <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+          <dt class="text-sm font-medium text-gray-500">Created</dt>
+          <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+            <%= @enterprise_group.created_at.strftime("%B %d, %Y at %I:%M %p") %>
+            by <%= @enterprise_group.created_by.email %>
+          </dd>
+        </div>
+      </dl>
+    </div>
+  </div>
+
+  <!-- Invitations List -->
+  <div class="bg-white shadow overflow-hidden sm:rounded-lg">
+    <div class="px-4 py-5 sm:px-6 flex justify-between items-center">
+      <div>
+        <h3 class="text-lg leading-6 font-medium text-gray-900">
+          Recent Invitations
+        </h3>
+        <p class="mt-1 max-w-2xl text-sm text-gray-500">
+          Recent invitations sent for this enterprise group.
+        </p>
+      </div>
+      <% if @enterprise_group.invitations.any? %>
+        <%= link_to "View All", admin_super_enterprise_group_invitations_path(@enterprise_group),
+            class: "text-sm text-indigo-600 hover:text-indigo-900" %>
+      <% end %>
+    </div>
+    <div class="border-t border-gray-200">
+      <% recent_invitations = @enterprise_group.invitations.includes(:invited_by).order(created_at: :desc).limit(5) %>
+      <% if recent_invitations.any? %>
+        <ul class="divide-y divide-gray-200">
+          <% recent_invitations.each do |invitation| %>
+            <li class="px-4 py-4 sm:px-6">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                  <div class="flex-shrink-0">
+                    <div class="h-8 w-8 rounded-full bg-gray-300 flex items-center justify-center">
+                      <span class="text-xs font-medium text-gray-700">
+                        <%= invitation.email.first.upcase %>
+                      </span>
+                    </div>
+                  </div>
+                  <div class="ml-4">
+                    <div class="text-sm font-medium text-gray-900"><%= invitation.email %></div>
+                    <div class="text-sm text-gray-500">
+                      Invited <%= time_ago_in_words(invitation.created_at) %> ago by <%= invitation.invited_by.email %>
+                    </div>
+                  </div>
+                </div>
+                <div class="flex items-center">
+                  <% if invitation.accepted? %>
+                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                      Accepted
+                    </span>
+                  <% elsif invitation.expired? %>
+                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
+                      Expired
+                    </span>
+                  <% else %>
+                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-amber-100 text-amber-800">
+                      Pending
+                    </span>
+                  <% end %>
+                </div>
+              </div>
+            </li>
+          <% end %>
+        </ul>
+      <% else %>
+        <div class="text-center py-8">
+          <p class="text-sm text-gray-500">No invitations sent yet.</p>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <!-- Members List -->
+  <div class="bg-white shadow overflow-hidden sm:rounded-lg">
+    <div class="px-4 py-5 sm:px-6">
+      <h3 class="text-lg leading-6 font-medium text-gray-900">
+        Members
+      </h3>
+      <p class="mt-1 max-w-2xl text-sm text-gray-500">
+        Users in this enterprise group.
+      </p>
+    </div>
+    <div class="border-t border-gray-200">
+      <% if @enterprise_group.users.any? %>
+        <ul class="divide-y divide-gray-200">
+          <% @enterprise_group.users.each do |user| %>
+            <li class="px-4 py-4 sm:px-6">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                  <div class="flex-shrink-0">
+                    <div class="h-10 w-10 rounded-full bg-gray-300 flex items-center justify-center">
+                      <span class="text-sm font-medium text-gray-700">
+                        <%= user.email.first.upcase %>
+                      </span>
+                    </div>
+                  </div>
+                  <div class="ml-4">
+                    <div class="text-sm font-medium text-gray-900"><%= user.email %></div>
+                    <div class="text-sm text-gray-500">
+                      <%= user.full_name.present? ? user.full_name : "No name set" %>
+                      <% if user.enterprise_group_role == "admin" %>
+                        <span class="ml-2 px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-purple-100 text-purple-800">
+                          Admin
+                        </span>
+                      <% end %>
+                    </div>
+                  </div>
+                </div>
+                <div class="flex items-center">
+                  <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                    <%= user.status == 'active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' %>">
+                    <%= user.status.capitalize %>
+                  </span>
+                </div>
+              </div>
+            </li>
+          <% end %>
+        </ul>
+      <% else %>
+        <div class="text-center py-12">
+          <p class="text-sm text-gray-500">No members yet.</p>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

@@ -4,7 +4,9 @@ Rails.application.routes.draw do
 
   # Email Change Requests
   resources :email_change_requests, only: [ :index, :new, :create, :show ], param: :token
-  devise_for :users
+  devise_for :users, controllers: {
+    registrations: "users/registrations"
+  }
 
   # Devise showcase (remove in production)
   get "devise_showcase", to: "devise_showcase#index" if Rails.env.development?
@@ -23,6 +25,8 @@ Rails.application.routes.draw do
   root "home#index"
   get "/pricing", to: "pages#pricing"
   get "/features", to: "pages#features"
+  get "/choose-plan-type", to: "pages#choose_plan_type", as: :choose_plan_type
+  get "/contact-sales", to: "pages#contact_sales", as: :contact_sales
 
   # Health check
   get "up" => "rails/health#show", as: :rails_health_check
@@ -56,6 +60,15 @@ Rails.application.routes.draw do
 
       resources :settings, only: [ :index, :update ]
       resources :analytics, only: [ :index ]
+      resources :plans
+      resources :enterprise_groups do
+        resources :invitations, controller: "enterprise_group_invitations", only: [ :index ] do
+          member do
+            post :resend
+            delete :revoke
+          end
+        end
+      end
 
       resources :email_change_requests, only: [ :index, :show ], param: :token do
         member do
@@ -88,7 +101,8 @@ Rails.application.routes.draw do
 
     namespace :users do
       resources :billing, only: [ :index, :show, :edit, :update ]
-      resources :subscription, only: [ :show, :edit, :update, :destroy ]
+      resource :subscription, only: [ :show, :edit, :update, :destroy ]
+      resources :plan_migrations, only: [ :new, :create ]
       resources :profile, only: [ :show, :edit, :update ]
       resources :settings, only: [ :index, :update ]
     end
@@ -141,6 +155,18 @@ Rails.application.routes.draw do
     member do
       patch :accept
       patch :decline
+    end
+  end
+
+  # Enterprise Group Routes
+  scope "/enterprise/:enterprise_group_slug" do
+    root "enterprise/dashboard#index", as: :enterprise_dashboard
+
+    namespace :enterprise do
+      resources :members, only: [ :index, :show ]
+      resources :profile, only: [ :show, :edit, :update ]
+      resources :billing, only: [ :index, :show ]
+      resources :settings, only: [ :index, :update ]
     end
   end
 

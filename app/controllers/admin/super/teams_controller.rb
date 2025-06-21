@@ -1,4 +1,8 @@
-class Admin::Super::TeamsController < Admin::Super::BaseController
+class Admin::Super::TeamsController < ApplicationController
+  include ActivityTrackable
+
+  layout "admin"
+  before_action :require_admin!
   before_action :set_team, only: [ :show, :edit, :update, :assign_admin, :change_status, :destroy ]
 
   def index
@@ -48,7 +52,13 @@ class Admin::Super::TeamsController < Admin::Super::BaseController
     new_admin = User.find(params[:admin_id])
 
     if @team.update(admin: new_admin)
-      new_admin.update!(team: @team, team_role: "admin", user_type: "invited")
+      # Handle direct users who will own the team
+      if new_admin.direct?
+        new_admin.update!(team: @team, team_role: "admin", owns_team: true)
+      else
+        # Invited users just manage the team
+        new_admin.update!(team: @team, team_role: "admin")
+      end
       redirect_to admin_super_team_path(@team), notice: "Team admin was successfully assigned."
     else
       redirect_to admin_super_team_path(@team), alert: "Failed to assign team admin."
@@ -72,11 +82,18 @@ class Admin::Super::TeamsController < Admin::Super::BaseController
 
   private
 
+  def require_admin!
+    unless current_user&.super_admin? || current_user&.site_admin?
+      flash[:alert] = "You must be an admin to access this area."
+      redirect_to root_path
+    end
+  end
+
   def set_team
     @team = Team.find_by!(slug: params[:id])
   end
 
   def team_params
-    params.require(:team).permit(:name, :plan, :max_members, :custom_domain)
+    params.require(:team).permit(:name, :slug, :plan, :status, :max_members, :custom_domain, :admin_id, :trial_ends_at)
   end
 end

@@ -11,7 +11,12 @@ class Teams::CreationService
     return failure("Only super admins can create teams") unless @super_admin.super_admin?
     return failure("Admin user must exist") unless @admin_user&.persisted?
     return failure("User already has a team") if @admin_user.team.present?
-    return failure("Only invited users can be assigned as team admins") unless @admin_user.invited?
+
+    # Allow both direct users and invited users to be team admins
+    # Direct users can own teams, invited users can be assigned to manage teams
+    if @admin_user.direct? && @admin_user.owns_team?
+      return failure("Direct user already owns a team")
+    end
 
     Team.transaction do
       team = create_team
@@ -38,11 +43,20 @@ class Teams::CreationService
   end
 
   def assign_admin(team)
-    # User is already invited type, just update their team assignment
-    @admin_user.update!(
-      team: team,
-      team_role: "admin"
-    )
+    if @admin_user.direct?
+      # Direct user owns the team
+      @admin_user.update!(
+        team: team,
+        team_role: "admin",
+        owns_team: true
+      )
+    else
+      # Invited user manages the team but doesn't own it
+      @admin_user.update!(
+        team: team,
+        team_role: "admin"
+      )
+    end
   end
 
   def setup_billing(team)

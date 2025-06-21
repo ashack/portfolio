@@ -1,0 +1,121 @@
+<% content_for :title, "Migrate to #{@target_plan.name}" %>
+
+<div class="min-h-screen bg-gray-50 py-6">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6">
+    <!-- Header -->
+    <div class="bg-white shadow rounded-lg mb-6">
+      <div class="px-4 py-5 sm:p-6">
+        <div class="flex items-center justify-between">
+          <div>
+            <h1 class="text-2xl font-bold text-gray-900">Plan Migration</h1>
+            <p class="mt-1 text-sm text-gray-500">
+              Migrate from <%= @current_plan&.name || "Free Plan" %> to <%= @target_plan.name %>
+            </p>
+          </div>
+          <div>
+            <%= link_to users_subscription_path, class: "inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50" do %>
+              <%= icon "arrow-left", class: "-ml-1 mr-2 h-4 w-4" %>
+              Back to Subscription
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Migration Details -->
+    <div class="bg-white shadow rounded-lg">
+      <div class="px-4 py-5 sm:p-6">
+        <h3 class="text-lg font-medium text-gray-900 mb-4">Migration Details</h3>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+          <!-- Current Plan -->
+          <div class="border rounded-lg p-4 <%= @current_plan&.plan_segment == 'individual' ? 'border-blue-200 bg-blue-50' : 'border-green-200 bg-green-50' %>">
+            <h4 class="font-medium text-gray-900 mb-2">Current Plan</h4>
+            <p class="text-2xl font-bold text-gray-900"><%= @current_plan&.name || "Free Plan" %></p>
+            <p class="text-sm text-gray-600 mt-1">
+              Type: <%= @current_plan&.plan_segment&.capitalize || "Individual" %>
+            </p>
+            <p class="text-sm text-gray-600">
+              Price: <%= @current_plan&.formatted_price || "Free" %>
+            </p>
+          </div>
+          
+          <!-- Target Plan -->
+          <div class="border rounded-lg p-4 <%= @target_plan.plan_segment == 'team' ? 'border-green-200 bg-green-50' : 'border-blue-200 bg-blue-50' %>">
+            <h4 class="font-medium text-gray-900 mb-2">New Plan</h4>
+            <p class="text-2xl font-bold text-gray-900"><%= @target_plan.name %></p>
+            <p class="text-sm text-gray-600 mt-1">
+              Type: <%= @target_plan.plan_segment.capitalize %>
+            </p>
+            <p class="text-sm text-gray-600">
+              Price: <%= @target_plan.formatted_price %>
+            </p>
+          </div>
+        </div>
+        
+        <% if @requires_team_creation %>
+          <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
+            <div class="flex">
+              <%= icon "warning-circle", class: "h-5 w-5 text-yellow-400" %>
+              <div class="ml-3">
+                <h3 class="text-sm font-medium text-yellow-800">Team Creation Required</h3>
+                <p class="text-sm text-yellow-700 mt-1">
+                  Migrating to a team plan requires creating a team. You'll become the team admin.
+                </p>
+              </div>
+            </div>
+          </div>
+        <% end %>
+        
+        <!-- Migration Form -->
+        <%= form_with url: users_plan_migrations_path, local: true do |form| %>
+          <%= hidden_field_tag :plan_id, @target_plan.id %>
+          
+          <% if @requires_team_creation %>
+            <div class="mb-6">
+              <%= form.label :team_name, "Team Name", class: "block text-sm font-medium text-gray-700" %>
+              <div class="mt-1">
+                <%= form.text_field :team_name, 
+                    class: "appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm",
+                    placeholder: "Enter your team name",
+                    required: true %>
+              </div>
+              <p class="mt-1 text-sm text-gray-500">
+                This will be your team's name and URL identifier
+              </p>
+            </div>
+          <% end %>
+          
+          <!-- What Happens Next -->
+          <div class="bg-gray-50 rounded-lg p-4 mb-6">
+            <h4 class="text-sm font-medium text-gray-900 mb-2">What happens when you migrate:</h4>
+            <ul class="text-sm text-gray-600 space-y-1">
+              <% if @target_plan.plan_segment == "team" %>
+                <% if @requires_team_creation %>
+                  <li>• A new team will be created with you as the admin</li>
+                <% end %>
+                <li>• Your billing will switch to team-based pricing</li>
+                <li>• You'll gain access to team collaboration features</li>
+                <li>• You can invite team members up to your plan limit</li>
+              <% else %>
+                <li>• Your billing will switch to individual pricing</li>
+                <li>• You'll keep your team (if you have one) but pay individually</li>
+                <li>• You'll have access to individual plan features</li>
+              <% end %>
+            </ul>
+          </div>
+          
+          <div class="flex justify-end space-x-3">
+            <%= link_to "Cancel", users_subscription_path, 
+                class: "inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50" %>
+            <%= form.submit "Migrate to #{@target_plan.name}", 
+                class: "inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700",
+                data: { 
+                  confirm: "Are you sure you want to migrate to #{@target_plan.name}? This will change your billing immediately." 
+                } %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>

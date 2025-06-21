@@ -5,8 +5,12 @@ class User < ApplicationRecord
          :recoverable, :rememberable, :validatable, :confirmable, :trackable, :lockable
 
   belongs_to :team, optional: true
+  belongs_to :plan, optional: true
+  belongs_to :enterprise_group, optional: true
   has_many :created_teams, class_name: "Team", foreign_key: "created_by_id"
   has_many :administered_teams, class_name: "Team", foreign_key: "admin_id"
+  has_many :created_enterprise_groups, class_name: "EnterpriseGroup", foreign_key: "created_by_id"
+  has_many :administered_enterprise_groups, class_name: "EnterpriseGroup", foreign_key: "admin_id"
   has_many :sent_invitations, class_name: "Invitation", foreign_key: "invited_by_id"
   has_many :ahoy_visits, class_name: "Ahoy::Visit"
   has_many :audit_logs, foreign_key: "user_id", dependent: :destroy
@@ -15,9 +19,16 @@ class User < ApplicationRecord
   has_many :approved_email_changes, class_name: "EmailChangeRequest", foreign_key: "approved_by_id"
 
   enum :system_role, { user: 0, site_admin: 1, super_admin: 2 }
-  enum :user_type, { direct: 0, invited: 1 }
+  enum :user_type, { direct: 0, invited: 1, enterprise: 2 }
   enum :status, { active: 0, inactive: 1, locked: 2 }
   enum :team_role, { member: 0, admin: 1 }
+  enum :enterprise_group_role, { member: 0, admin: 1 }, prefix: true
+
+  # Virtual attribute for team name during registration
+  attr_accessor :team_name
+
+  # Virtual attribute to skip invitation conflict check when accepting an invitation
+  attr_accessor :accepting_invitation
 
   validates :user_type, presence: true
   validates :status, presence: true
@@ -44,13 +55,19 @@ class User < ApplicationRecord
   # Core business rule: prevent user_type changes after creation
   validate :user_type_cannot_be_changed, if: :user_type_changed?
 
-  # Validation: direct users cannot have team associations
-  validates :team_id, absence: { message: "cannot be set for direct users" }, if: :direct?
-  validates :team_role, absence: { message: "cannot be set for direct users" }, if: :direct?
+  # Validation: direct users can have team associations only if they own the team
+  validate :direct_user_team_ownership
 
   # Validation: invited users must have team associations
   validates :team_id, presence: { message: "is required for team members" }, if: :invited?
   validates :team_role, presence: { message: "is required for team members" }, if: :invited?
+
+  # Validation: enterprise users must have enterprise group associations
+  validates :enterprise_group_id, presence: { message: "is required for enterprise users" }, if: :enterprise?
+  validates :enterprise_group_role, presence: { message: "is required for enterprise users" }, if: :enterprise?
+
+  # Validation: ensure no cross-contamination between user types
+  validate :user_type_associations_valid
 
   # Custom validation to ensure team constraints remain intact
   validate :team_constraints_remain_intact, if: :team_association_changed?
@@ -74,11 +91,23 @@ class User < ApplicationRecord
   end
 
   def team_admin?
-    invited? && team_role == "admin"
+    (invited? && team_role == "admin") || (direct? && owns_team? && team.present?)
   end
 
   def team_member?
     invited? && team_role == "member"
+  end
+
+  def enterprise_admin?
+    enterprise? && enterprise_group_role == "admin"
+  end
+
+  def enterprise_member?
+    enterprise? && enterprise_group_role == "member"
+  end
+
+  def can_create_team?
+    direct? && !owns_team?
   end
 
   # Override Devise method to check status
@@ -157,6 +186,9 @@ class User < ApplicationRecord
   # Validation method to check for email conflicts with pending invitations
   def email_not_in_pending_invitations
     return unless email.present?
+
+    # Skip this validation when accepting an invitation
+    return if accepting_invitation
 
     # Check if the new email conflicts with any pending invitations
     pending_invitation = Invitation.pending.active.find_by(email: email.downcase)
@@ -243,8 +275,37 @@ class User < ApplicationRecord
   end
 
   def validate_direct_user_team_constraints
-    if team_id.present? || team_role.present?
-      errors.add(:base, "direct users cannot have team associations")
+    if team_id.present? && !owns_team?
+      errors.add(:base, "direct users can only be associated with teams they own")
+    end
+  end
+
+  def direct_user_team_ownership
+    if direct? && team_id.present? && !owns_team?
+      errors.add(:team_id, "direct users can only be associated with teams they own")
+    end
+  end
+
+  def user_type_associations_valid
+    case user_type
+    when "direct"
+      if enterprise_group_id.present? || enterprise_group_role.present?
+        errors.add(:base, "direct users cannot have enterprise group associations")
+      end
+    when "invited"
+      if enterprise_group_id.present? || enterprise_group_role.present?
+        errors.add(:base, "team members cannot have enterprise group associations")
+      end
+      if owns_team?
+        errors.add(:owns_team, "team members cannot own teams")
+      end
+    when "enterprise"
+      if team_id.present? || team_role.present?
+        errors.add(:base, "enterprise users cannot have team associations")
+      end
+      if owns_team?
+        errors.add(:owns_team, "enterprise users cannot own teams")
+      end
     end
   end
 

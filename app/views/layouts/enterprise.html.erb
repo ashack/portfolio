@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= @enterprise_group&.name || 'Enterprise' %> - SaaS App</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+  </head>
+
+  <body class="bg-gray-100">
+    <div class="min-h-screen flex">
+      <!-- Sidebar -->
+      <div class="bg-purple-900 text-white w-64 py-4 px-6">
+        <div class="mb-8">
+          <h2 class="text-2xl font-bold"><%= @enterprise_group.name %></h2>
+          <p class="text-purple-300 text-sm">Enterprise Dashboard</p>
+        </div>
+        
+        <nav class="space-y-2">
+          <%= link_to enterprise_dashboard_path(enterprise_group_slug: @enterprise_group.slug), 
+              class: "#{request.path == enterprise_dashboard_path(enterprise_group_slug: @enterprise_group.slug) ? 'bg-purple-800' : ''} block px-4 py-2 rounded hover:bg-purple-800 transition-colors" do %>
+            <div class="flex items-center">
+              <%= icon "house", class: "h-5 w-5 mr-3" %>
+              Dashboard
+            </div>
+          <% end %>
+          
+          <% if current_user.enterprise_admin? %>
+            <%= link_to "#", 
+                class: "block px-4 py-2 rounded hover:bg-purple-800 transition-colors" do %>
+              <div class="flex items-center">
+                <%= icon "users", class: "h-5 w-5 mr-3" %>
+                Members
+              </div>
+            <% end %>
+            
+            <%= link_to "#", 
+                class: "block px-4 py-2 rounded hover:bg-purple-800 transition-colors" do %>
+              <div class="flex items-center">
+                <%= icon "credit-card", class: "h-5 w-5 mr-3" %>
+                Billing
+              </div>
+            <% end %>
+            
+            <%= link_to "#", 
+                class: "block px-4 py-2 rounded hover:bg-purple-800 transition-colors" do %>
+              <div class="flex items-center">
+                <%= icon "gear", class: "h-5 w-5 mr-3" %>
+                Settings
+              </div>
+            <% end %>
+          <% end %>
+        </nav>
+        
+        <div class="mt-auto pt-8 border-t border-purple-800">
+          <div class="flex items-center justify-between mb-4">
+            <div>
+              <p class="font-medium"><%= current_user.email %></p>
+              <p class="text-xs text-purple-300">
+                <%= current_user.enterprise_admin? ? 'Admin' : 'Member' %>
+              </p>
+            </div>
+          </div>
+          <%= button_to "Sign Out", destroy_user_session_path, 
+              method: :delete, 
+              class: "w-full px-4 py-2 bg-purple-800 hover:bg-purple-700 rounded transition-colors text-sm" %>
+        </div>
+      </div>
+
+      <!-- Main Content -->
+      <div class="flex-1 flex flex-col">
+        <!-- Top Bar -->
+        <header class="bg-white shadow-sm">
+          <div class="px-8 py-4">
+            <div class="flex items-center justify-between">
+              <h1 class="text-2xl font-semibold text-gray-900">
+                <%= content_for?(:page_title) ? yield(:page_title) : "Enterprise Dashboard" %>
+              </h1>
+              <div class="flex items-center space-x-4">
+                <% if content_for?(:header_actions) %>
+                  <%= yield(:header_actions) %>
+                <% end %>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        <!-- Page Content -->
+        <main class="flex-1 p-8">
+          <% if notice.present? %>
+            <div class="mb-4 p-4 bg-green-100 border border-green-400 text-green-700 rounded">
+              <%= notice %>
+            </div>
+          <% end %>
+          
+          <% if alert.present? %>
+            <div class="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
+              <%= alert %>
+            </div>
+          <% end %>
+          
+          <%= yield %>
+        </main>
+      </div>
+    </div>
+  </body>
+</html>

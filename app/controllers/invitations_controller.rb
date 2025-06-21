@@ -22,6 +22,8 @@ class InvitationsController < ApplicationController
     elsif @invitation.expired?
       redirect_to root_path, alert: "This invitation has expired."
     else
+      # Store invitation token in session for the registration process
+      session[:invitation_token] = @invitation.token
       # Redirect to devise registration with invitation token
       redirect_to new_user_registration_path(invitation_token: @invitation.token)
     end

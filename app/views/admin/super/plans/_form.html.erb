@@ -1,0 +1,128 @@
+<%= form_with(model: [:admin, :super, plan], local: true) do |form| %>
+  <% if plan.errors.any? %>
+    <div class="mb-4 bg-red-50 border border-red-200 rounded-md p-4">
+      <h2 class="text-sm font-semibold text-red-800 mb-2">
+        <%= pluralize(plan.errors.count, "error") %> prohibited this plan from being saved:
+      </h2>
+      <ul class="list-disc list-inside text-sm text-red-600">
+        <% plan.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="space-y-6">
+    <div>
+      <%= form.label :name, class: "block text-sm font-medium text-gray-700 mb-1" %>
+      <%= form.text_field :name, class: "w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500" %>
+    </div>
+
+    <div>
+      <%= form.label :plan_segment, class: "block text-sm font-medium text-gray-700 mb-1" %>
+      <%= form.select :plan_segment, options_for_select([
+        ["Individual - Available for public signup", "individual"],
+        ["Team - Available for public signup", "team"],
+        ["Enterprise - Contact sales only", "enterprise"]
+      ], plan.plan_segment), {}, class: "w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500" %>
+      <p class="mt-1 text-sm text-gray-500">Enterprise plans are not shown during public registration</p>
+    </div>
+
+    <div>
+      <%= form.label :stripe_price_id, class: "block text-sm font-medium text-gray-700 mb-1" %>
+      <%= form.text_field :stripe_price_id, class: "w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500" %>
+      <p class="mt-1 text-sm text-gray-500">Leave blank for free plans</p>
+    </div>
+
+    <div>
+      <%= form.label :amount_cents, "Price (in cents)", class: "block text-sm font-medium text-gray-700 mb-1" %>
+      <%= form.number_field :amount_cents, class: "w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500" %>
+      <p class="mt-1 text-sm text-gray-500">Enter price in cents (e.g., 999 for $9.99)</p>
+    </div>
+
+    <div>
+      <%= form.label :interval, class: "block text-sm font-medium text-gray-700 mb-1" %>
+      <%= form.select :interval, options_for_select([
+        ["Monthly", "month"],
+        ["Yearly", "year"]
+      ], plan.interval), { include_blank: "Select interval (for paid plans)" }, class: "w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500" %>
+    </div>
+
+    <div id="team-specific-fields" class="<%= 'hidden' unless plan.plan_segment == 'team' || plan.plan_segment == 'enterprise' %>">
+      <%= form.label :max_team_members, class: "block text-sm font-medium text-gray-700 mb-1" %>
+      <%= form.number_field :max_team_members, class: "w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500" %>
+      <p class="mt-1 text-sm text-gray-500">Maximum number of team members allowed</p>
+    </div>
+
+    <div>
+      <%= form.label :features, class: "block text-sm font-medium text-gray-700 mb-1" %>
+      <div id="features-container" class="space-y-2">
+        <% (plan.features || []).each_with_index do |feature, index| %>
+          <div class="flex items-center gap-2 feature-row">
+            <%= text_field_tag "plan[features][]", feature, class: "flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500" %>
+            <button type="button" class="remove-feature text-red-600 hover:text-red-800">
+              <%= icon "x-circle", class: "w-5 h-5" %>
+            </button>
+          </div>
+        <% end %>
+      </div>
+      <button type="button" id="add-feature" class="mt-2 text-sm text-blue-600 hover:text-blue-800 flex items-center gap-1">
+        <%= icon "plus-circle", class: "w-4 h-4" %>
+        Add Feature
+      </button>
+    </div>
+
+    <div>
+      <%= form.label :active, class: "flex items-center gap-2" %>
+        <%= form.check_box :active, class: "rounded border-gray-300 text-blue-600 focus:ring-blue-500" %>
+        <span class="text-sm font-medium text-gray-700">Active</span>
+      </label>
+    </div>
+
+    <div class="flex gap-4">
+      <%= form.submit class: "px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" %>
+      <%= link_to "Cancel", admin_super_plans_path, class: "px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400" %>
+    </div>
+  </div>
+<% end %>
+
+<script>
+  // Show/hide team-specific fields based on plan segment
+  document.getElementById('plan_plan_segment').addEventListener('change', function() {
+    const teamFields = document.getElementById('team-specific-fields');
+    if (this.value === 'team' || this.value === 'enterprise') {
+      teamFields.classList.remove('hidden');
+    } else {
+      teamFields.classList.add('hidden');
+    }
+  });
+
+  // Add feature functionality
+  document.getElementById('add-feature').addEventListener('click', function() {
+    const container = document.getElementById('features-container');
+    const newRow = document.createElement('div');
+    newRow.className = 'flex items-center gap-2 feature-row';
+    newRow.innerHTML = `
+      <input type="text" name="plan[features][]" class="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500" />
+      <button type="button" class="remove-feature text-red-600 hover:text-red-800">
+        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 256 256"><path d="M205.66,194.34a8,8,0,0,1-11.32,11.32L128,139.31,61.66,205.66a8,8,0,0,1-11.32-11.32L116.69,128,50.34,61.66A8,8,0,0,1,61.66,50.34L128,116.69l66.34-66.35a8,8,0,0,1,11.32,11.32L139.31,128Z"></path></svg>
+      </button>
+    `;
+    container.appendChild(newRow);
+    attachRemoveHandlers();
+  });
+
+  // Remove feature functionality
+  function attachRemoveHandlers() {
+    document.querySelectorAll('.remove-feature').forEach(button => {
+      button.removeEventListener('click', removeFeature);
+      button.addEventListener('click', removeFeature);
+    });
+  }
+
+  function removeFeature(e) {
+    e.currentTarget.closest('.feature-row').remove();
+  }
+
+  attachRemoveHandlers();
+</script>

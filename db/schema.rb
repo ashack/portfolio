@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_06_14_124349) do
+ActiveRecord::Schema[8.0].define(version: 2025_06_20_154017) do
   create_table "admin_activity_logs", force: :cascade do |t|
     t.integer "admin_user_id", null: false
     t.string "controller", null: false
@@ -115,8 +115,30 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_14_124349) do
     t.index ["user_id"], name: "index_email_change_requests_on_user_id"
   end
 
+  create_table "enterprise_groups", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "slug", null: false
+    t.bigint "admin_id"
+    t.bigint "created_by_id", null: false
+    t.bigint "plan_id", null: false
+    t.integer "status", default: 0
+    t.string "stripe_customer_id"
+    t.datetime "trial_ends_at"
+    t.datetime "current_period_end"
+    t.json "settings"
+    t.integer "max_members", default: 100
+    t.string "custom_domain"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["admin_id"], name: "index_enterprise_groups_on_admin_id"
+    t.index ["created_by_id"], name: "index_enterprise_groups_on_created_by_id"
+    t.index ["plan_id"], name: "index_enterprise_groups_on_plan_id"
+    t.index ["slug"], name: "index_enterprise_groups_on_slug", unique: true
+    t.index ["status"], name: "index_enterprise_groups_on_status"
+  end
+
   create_table "invitations", force: :cascade do |t|
-    t.bigint "team_id", null: false
+    t.bigint "team_id"
     t.string "email", null: false
     t.integer "role", default: 0
     t.string "token", null: false
@@ -125,10 +147,15 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_14_124349) do
     t.datetime "expires_at", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "invitable_type"
+    t.integer "invitable_id"
+    t.string "invitation_type", default: "team", null: false
     t.index "LOWER(email)", name: "index_invitations_on_lower_email"
     t.index ["accepted_at"], name: "index_invitations_on_accepted_at"
     t.index ["email"], name: "index_invitations_on_email"
     t.index ["expires_at"], name: "index_invitations_on_expires_at"
+    t.index ["invitable_type", "invitable_id"], name: "index_invitations_on_invitable"
+    t.index ["invitation_type"], name: "index_invitations_on_invitation_type"
     t.index ["team_id"], name: "index_invitations_on_team_id"
     t.index ["token"], name: "index_invitations_on_token", unique: true
   end
@@ -226,7 +253,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_14_124349) do
 
   create_table "plans", force: :cascade do |t|
     t.string "name", null: false
-    t.integer "plan_type", null: false
     t.string "stripe_price_id"
     t.integer "amount_cents", default: 0
     t.string "interval"
@@ -235,8 +261,10 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_14_124349) do
     t.boolean "active", default: true
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "plan_segment", default: "individual", null: false
     t.index ["active"], name: "index_plans_on_active"
-    t.index ["plan_type"], name: "index_plans_on_plan_type"
+    t.index ["plan_segment"], name: "index_plans_on_plan_segment"
+    t.check_constraint "plan_segment IN ('individual', 'team', 'enterprise')", name: "valid_plan_segment"
   end
 
   create_table "teams", force: :cascade do |t|
@@ -289,10 +317,17 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_14_124349) do
     t.datetime "locked_at"
     t.integer "failed_attempts", default: 0, null: false
     t.string "unlock_token"
+    t.integer "plan_id"
+    t.bigint "enterprise_group_id"
+    t.integer "enterprise_group_role"
+    t.boolean "owns_team", default: false
     t.index "LOWER(email)", name: "index_users_on_lower_email"
     t.index ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true
     t.index ["email"], name: "index_users_on_email", unique: true
+    t.index ["enterprise_group_id", "enterprise_group_role"], name: "index_users_on_enterprise_associations"
+    t.index ["enterprise_group_id"], name: "index_users_on_enterprise_group_id"
     t.index ["last_activity_at"], name: "index_users_on_last_activity_at"
+    t.index ["plan_id"], name: "index_users_on_plan_id"
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
     t.index ["status"], name: "index_users_on_status"
     t.index ["team_id", "team_role"], name: "index_users_on_team_associations"
@@ -306,6 +341,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_14_124349) do
   add_foreign_key "audit_logs", "users", column: "target_user_id"
   add_foreign_key "email_change_requests", "users"
   add_foreign_key "email_change_requests", "users", column: "approved_by_id"
+  add_foreign_key "enterprise_groups", "plans"
+  add_foreign_key "enterprise_groups", "users", column: "admin_id"
+  add_foreign_key "enterprise_groups", "users", column: "created_by_id"
   add_foreign_key "invitations", "teams"
   add_foreign_key "invitations", "users", column: "invited_by_id"
   add_foreign_key "pay_charges", "pay_customers", column: "customer_id"
@@ -314,5 +352,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_14_124349) do
   add_foreign_key "pay_subscriptions", "pay_customers", column: "customer_id"
   add_foreign_key "teams", "users", column: "admin_id"
   add_foreign_key "teams", "users", column: "created_by_id"
+  add_foreign_key "users", "enterprise_groups"
+  add_foreign_key "users", "plans"
   add_foreign_key "users", "teams"
 end

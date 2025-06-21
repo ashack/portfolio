@@ -548,6 +548,97 @@ end
 | Missing navigation | Poor UX | Include back links |
 | Profile permission gaps | Privilege escalation | Context-aware permissions |
 
+## Enterprise Group Pitfalls
+
+### 19. Circular Dependency in Enterprise Group Creation
+
+**❌ What Goes Wrong**:
+```ruby
+# Enterprise group requires admin, but admin requires enterprise group
+validates :admin_id, presence: true
+# Admin user can't exist without group, group can't exist without admin!
+```
+
+**⚠️ The Trap**: Creating mutual dependencies between models
+
+**✅ Solution**: Make admin optional and use invitations
+```ruby
+# Make admin_id nullable
+validates :admin_id, presence: true, on: :update, if: :admin_required?
+
+# Use invitation flow
+invitation = @enterprise_group.invitations.create!(
+  email: admin_email,
+  role: "admin",
+  invitation_type: "enterprise"
+)
+```
+
+**🔍 Why This Happens**: Complex relationships need careful consideration
+
+### 20. Polymorphic Invitation Type Confusion
+
+**❌ What Goes Wrong**:
+```ruby
+# invitation_type field is nil for existing records
+invitation.enterprise_invitation?  # Returns false even for enterprise invitations!
+```
+
+**⚠️ The Trap**: Adding enums to existing polymorphic records
+
+**✅ Solution**: Migrate existing data
+```ruby
+# Fix existing invitations
+Invitation.where(invitable_type: "EnterpriseGroup").update_all(invitation_type: "enterprise")
+```
+
+**🔍 Why This Happens**: Database migrations don't update existing records
+
+### 21. Registration Controller Not Handling Enterprise Users
+
+**❌ What Goes Wrong**:
+```ruby
+# Registration only handles team invitations
+if @invitation
+  resource.user_type = "invited"
+  resource.team = @invitation.team  # Fails for enterprise invitations!
+end
+```
+
+**⚠️ The Trap**: Assuming all invitations are team invitations
+
+**✅ Solution**: Handle all invitation types
+```ruby
+if @invitation.team_invitation?
+  resource.user_type = "invited"
+  resource.team = @invitation.team
+elsif @invitation.enterprise_invitation?
+  resource.user_type = "enterprise"
+  resource.enterprise_group = @invitation.invitable
+end
+```
+
+**🔍 Why This Happens**: Code written before polymorphic invitations
+
+### 22. Icon Helper Naming Inconsistency
+
+**❌ What Goes Wrong**:
+```erb
+<!-- Different icon helper names in different views -->
+<%= rails_icon "phosphor-buildings" %>  <!-- Doesn't exist -->
+<%= icon "buildings" %>  <!-- Correct helper -->
+```
+
+**⚠️ The Trap**: Inconsistent helper naming across views
+
+**✅ Solution**: Use consistent helper names
+```erb
+<!-- Always use the configured helper -->
+<%= icon "buildings", class: "h-6 w-6 text-purple-600" %>
+```
+
+**🔍 Why This Happens**: Copy-pasting from different sources
+
 ---
 
 **Remember**: Most pitfalls are avoidable with defensive programming, comprehensive testing, and proper debugging practices. When in doubt, check the logs first!

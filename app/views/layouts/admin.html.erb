@@ -57,8 +57,9 @@
             
             <div class="ml-4 space-y-1">
               <%= link_to "Dashboard", admin_super_root_path, class: "#{request.path == admin_super_root_path ? 'bg-gray-700' : ''} text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-sm font-medium" %>
-              <%= link_to "Teams", admin_super_teams_path, class: "#{request.path.include?('/admin/super/teams') ? 'bg-gray-700' : ''} text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-sm font-medium" %>
+              <%= link_to "Organizations", admin_super_teams_path, class: "#{request.path.include?('/admin/super/teams') || request.path.include?('/admin/super/enterprise_groups') ? 'bg-gray-700' : ''} text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-sm font-medium" %>
               <%= link_to "Users", admin_super_users_path, class: "#{request.path.include?('/admin/super/users') ? 'bg-gray-700' : ''} text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-sm font-medium" %>
+              <%= link_to "Plans", admin_super_plans_path, class: "#{request.path.include?('/admin/super/plans') ? 'bg-gray-700' : ''} text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-sm font-medium" %>
               <%= link_to "Email Requests", admin_super_email_change_requests_path, class: "#{request.path.include?('/admin/super/email_change_requests') ? 'bg-gray-700' : ''} text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-sm font-medium" %>
               <%= link_to "Support", admin_site_support_index_path, class: "#{request.path.include?('/admin/site/support') ? 'bg-gray-700' : ''} text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-sm font-medium" %>
               <%= link_to "Analytics", admin_super_analytics_path, class: "#{request.path.include?('/admin/super/analytics') ? 'bg-gray-700' : ''} text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-sm font-medium" %>
@@ -74,8 +75,8 @@
             
             <div class="ml-4 space-y-1">
               <%= link_to "Dashboard", admin_site_root_path, class: "#{request.path == admin_site_root_path ? 'bg-gray-700' : ''} text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-sm font-medium" %>
+              <%= link_to "Organizations", admin_site_teams_path, class: "#{request.path.include?('/admin/site/teams') ? 'bg-gray-700' : ''} text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-sm font-medium" %>
               <%= link_to "Users", admin_site_users_path, class: "#{request.path.include?('/admin/site/users') ? 'bg-gray-700' : ''} text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-sm font-medium" %>
-              <%= link_to "Teams", admin_site_teams_path, class: "#{request.path.include?('/admin/site/teams') ? 'bg-gray-700' : ''} text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-sm font-medium" %>
               <%= link_to "Support", admin_site_support_index_path, class: "#{request.path.include?('/admin/site/support') ? 'bg-gray-700' : ''} text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-sm font-medium" %>
               <%= link_to "My Profile", admin_site_profile_path, class: "#{request.path.include?('/admin/site/profile') ? 'bg-gray-700' : ''} text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-sm font-medium" %>
             </div>

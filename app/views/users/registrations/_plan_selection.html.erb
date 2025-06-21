@@ -1,0 +1,86 @@
+<div class="space-y-4">
+  <% if @plan_segment == "team" %>
+    <div class="rounded-md bg-blue-50 p-4">
+      <div class="flex">
+        <div class="flex-shrink-0">
+          <svg class="h-5 w-5 text-blue-400" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+          </svg>
+        </div>
+        <div class="ml-3 flex-1 md:flex md:justify-between">
+          <p class="text-sm text-blue-700">
+            Team registration is currently in beta. After signing up, you'll be contacted to set up your team.
+          </p>
+        </div>
+      </div>
+    </div>
+  <% end %>
+  
+  <h3 class="text-lg font-medium text-gray-900">
+    Choose Your Plan
+  </h3>
+  
+  <div class="grid grid-cols-1 md:grid-cols-<%= @available_plans.count %> gap-4">
+    <% @available_plans.each_with_index do |plan, index| %>
+      <div class="relative">
+        <input type="radio" 
+               name="user[plan_id]" 
+               id="plan_<%= plan.id %>" 
+               value="<%= plan.id %>" 
+               class="sr-only peer"
+               <%= 'checked' if index == 0 %>
+               data-plan-name="<%= plan.name %>"
+               data-plan-price="<%= plan.amount_cents %>"
+               data-plan-segment="<%= plan.plan_segment %>"
+               data-action="change->plan-selection#checkSelectedPlan">
+        
+        <label for="plan_<%= plan.id %>" 
+               class="block p-6 bg-white border-2 border-gray-200 rounded-lg cursor-pointer hover:border-indigo-500 peer-checked:border-indigo-600 peer-checked:bg-indigo-50 transition-all">
+          
+          <div class="flex flex-col">
+            <div class="flex items-center justify-between mb-2">
+              <h4 class="text-lg font-semibold text-gray-900"><%= plan.name %></h4>
+              <% if plan.plan_segment == 'team' %>
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                  Team
+                </span>
+              <% elsif plan.plan_segment == 'individual' %>
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                  Individual
+                </span>
+              <% end %>
+            </div>
+            
+            <div class="mt-2">
+              <% if plan.amount_cents == 0 %>
+                <p class="text-2xl font-bold text-gray-900">Free</p>
+              <% else %>
+                <p class="text-2xl font-bold text-gray-900">
+                  $<%= plan.amount_cents / 100.0 %>
+                  <span class="text-sm font-normal text-gray-500">/<%= plan.interval || 'month' %></span>
+                </p>
+              <% end %>
+            </div>
+            
+            <% if plan.features.present? %>
+              <ul class="mt-4 space-y-2">
+                <% plan.features.each do |feature| %>
+                  <li class="flex items-start">
+                    <svg class="w-5 h-5 text-green-500 mt-0.5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                    <span class="text-sm text-gray-600"><%= feature.humanize %></span>
+                  </li>
+                <% end %>
+              </ul>
+            <% end %>
+          </div>
+        </label>
+      </div>
+    <% end %>
+  </div>
+  
+  <p class="text-sm text-gray-500 mt-4">
+    You can change your plan at any time from your account dashboard.
+  </p>
+</div>

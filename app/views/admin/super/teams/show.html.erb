@@ -2,8 +2,9 @@
 <% content_for :header_actions do %>
   <div class="flex space-x-3">
     <%= link_to "Edit Team", edit_admin_super_team_path(@team), class: "inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50" %>
-    <%= link_to "Delete Team", admin_super_team_path(@team), method: :delete, 
-        confirm: "Are you sure? This will permanently delete the team and all its data.", 
+    <%= button_to "Delete Team", admin_super_team_path(@team), 
+        method: :delete, 
+        data: { turbo_confirm: "Are you sure? This will permanently delete the team and all its data." },
         class: "inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700" %>
   </div>
 <% end %>
@@ -54,6 +55,15 @@
                 <div class="ml-3">
                   <p class="text-sm text-gray-900"><%= @team.admin.email %></p>
                   <p class="text-xs text-gray-500"><%= @team.admin.full_name %></p>
+                  <% if @team.admin.direct? && @team.admin.owns_team? %>
+                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">
+                      Team Owner
+                    </span>
+                  <% else %>
+                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800">
+                      Team Manager
+                    </span>
+                  <% end %>
                 </div>
               </div>
             </dd>
@@ -160,7 +170,8 @@
       <h3 class="text-lg leading-6 font-medium text-gray-900">Team Actions</h3>
       <div class="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-3">
         <% if @team.status == 'active' %>
-          <%= link_to change_status_admin_super_team_path(@team, status: 'suspended'), method: :patch, 
+          <%= button_to change_status_admin_super_team_path(@team, status: 'suspended'), 
+              method: :patch, 
               class: "inline-flex items-center justify-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50" do %>
             <svg class="-ml-1 mr-2 h-4 w-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
@@ -168,7 +179,8 @@
             Suspend Team
           <% end %>
         <% else %>
-          <%= link_to change_status_admin_super_team_path(@team, status: 'active'), method: :patch, 
+          <%= button_to change_status_admin_super_team_path(@team, status: 'active'), 
+              method: :patch, 
               class: "inline-flex items-center justify-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700" do %>
             <svg class="-ml-1 mr-2 h-4 w-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1m-6 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>

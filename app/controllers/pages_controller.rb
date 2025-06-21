@@ -10,4 +10,12 @@ class PagesController < ApplicationController
 
   def features
   end
+
+  def choose_plan_type
+    # Clear any previous plan segment selection
+    session.delete(:plan_segment)
+  end
+
+  def contact_sales
+  end
 end

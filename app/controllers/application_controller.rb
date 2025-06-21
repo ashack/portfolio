@@ -16,7 +16,33 @@ class ApplicationController < ActionController::Base
 
   rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
 
+  protected
+
+  # Devise redirect after sign in
+  def after_sign_in_path_for(resource)
+    stored_location_for(resource) || redirect_after_sign_in_path
+  end
+
   private
+
+  def redirect_after_sign_in_path
+    if current_user.super_admin?
+      admin_super_root_path
+    elsif current_user.site_admin?
+      admin_site_root_path
+    elsif current_user.direct? && current_user.owns_team? && current_user.team
+      # Direct users who own a team go to their team dashboard
+      team_root_path(team_slug: current_user.team.slug)
+    elsif current_user.direct?
+      user_dashboard_path
+    elsif current_user.invited? && current_user.team
+      team_root_path(team_slug: current_user.team.slug)
+    elsif current_user.enterprise? && current_user.enterprise_group
+      enterprise_dashboard_path(enterprise_group_slug: current_user.enterprise_group.slug)
+    else
+      root_path
+    end
+  end
 
   # Additional CSRF protection helper for AJAX requests
   def verify_csrf_token_for_ajax

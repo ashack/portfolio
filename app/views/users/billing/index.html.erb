@@ -25,28 +25,47 @@
     <!-- Subscription Status -->
     <div class="bg-white shadow rounded-lg mb-6">
       <div class="px-4 py-5 sm:p-6">
-        <h3 class="text-lg font-medium text-gray-900 mb-4">Current Subscription</h3>
-        <% if @charges.any? || @payment_methods.any? %>
-          <div class="border border-green-200 rounded-md p-4 bg-green-50">
-            <div class="flex">
-              <svg class="h-5 w-5 text-green-400" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
-              </svg>
-              <div class="ml-3">
-                <h4 class="text-sm font-medium text-green-800">Payment system configured</h4>
-                <p class="text-sm text-green-700">You have payment methods and/or billing history.</p>
+        <h3 class="text-lg font-medium text-gray-900 mb-4">Current Plan</h3>
+        <% if current_user.plan %>
+          <div class="border border-<%= current_user.plan.free? ? 'gray' : 'green' %>-200 rounded-md p-4 bg-<%= current_user.plan.free? ? 'gray' : 'green' %>-50">
+            <div class="flex justify-between items-start">
+              <div class="flex">
+                <svg class="h-5 w-5 text-<%= current_user.plan.free? ? 'gray' : 'green' %>-400" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                </svg>
+                <div class="ml-3">
+                  <h4 class="text-sm font-medium text-<%= current_user.plan.free? ? 'gray' : 'green' %>-800"><%= current_user.plan.name %></h4>
+                  <p class="text-sm text-<%= current_user.plan.free? ? 'gray' : 'green' %>-700"><%= current_user.plan.formatted_price %></p>
+                  <% if current_user.plan.features.present? %>
+                    <ul class="mt-2 text-sm text-<%= current_user.plan.free? ? 'gray' : 'green' %>-600">
+                      <% current_user.plan.features.first(3).each do |feature| %>
+                        <li>• <%= feature.humanize %></li>
+                      <% end %>
+                    </ul>
+                  <% end %>
+                </div>
               </div>
+              <% unless current_user.plan.name.include?("Premium") %>
+                <div class="ml-4">
+                  <%= link_to pricing_path, class: "inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700" do %>
+                    <svg class="-ml-1 mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                    </svg>
+                    Upgrade Plan
+                  <% end %>
+                </div>
+              <% end %>
             </div>
           </div>
         <% else %>
-          <div class="border border-yellow-200 rounded-md p-4 bg-yellow-50">
+          <div class="border border-red-200 rounded-md p-4 bg-red-50">
             <div class="flex">
-              <svg class="h-5 w-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+              <svg class="h-5 w-5 text-red-400" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
               </svg>
               <div class="ml-3">
-                <h4 class="text-sm font-medium text-yellow-800">Free Plan</h4>
-                <p class="text-sm text-yellow-700">You're currently on the free plan. Upgrade to access premium features.</p>
+                <h4 class="text-sm font-medium text-red-800">No Plan Selected</h4>
+                <p class="text-sm text-red-700">Please select a plan to access features.</p>
               </div>
             </div>
             <div class="mt-4">
@@ -54,7 +73,7 @@
                 <svg class="-ml-1 mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
                 </svg>
-                View Pricing Plans
+                Select a Plan
               <% end %>
             </div>
           </div>

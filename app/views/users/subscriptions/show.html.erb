@@ -1,0 +1,124 @@
+<% content_for :title, "My Subscription" %>
+
+<div class="min-h-screen bg-gray-50 py-6">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6">
+    <!-- Header -->
+    <div class="bg-white shadow rounded-lg mb-6">
+      <div class="px-4 py-5 sm:p-6">
+        <div class="flex items-center justify-between">
+          <div>
+            <h1 class="text-2xl font-bold text-gray-900">My Subscription</h1>
+            <p class="mt-1 text-sm text-gray-500">Manage your plan and subscription details.</p>
+          </div>
+          <div>
+            <%= link_to user_dashboard_path, class: "inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50" do %>
+              <%= icon "arrow-left", class: "-ml-1 mr-2 h-4 w-4" %>
+              Back to Dashboard
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Current Plan -->
+    <div class="bg-white shadow rounded-lg mb-6">
+      <div class="px-4 py-5 sm:p-6">
+        <h3 class="text-lg font-medium text-gray-900 mb-4">Current Plan</h3>
+        
+        <% if @current_plan %>
+          <div class="border rounded-lg p-6 <%= @current_plan.free? ? 'border-gray-200 bg-gray-50' : 'border-green-200 bg-green-50' %>">
+            <div class="flex justify-between items-start">
+              <div>
+                <h4 class="text-xl font-semibold text-gray-900"><%= @current_plan.name %></h4>
+                <p class="text-2xl font-bold text-gray-900 mt-2">
+                  <%= @current_plan.formatted_price %>
+                </p>
+                
+                <% if @current_plan.features.present? %>
+                  <div class="mt-4">
+                    <p class="text-sm font-medium text-gray-700 mb-2">Included features:</p>
+                    <ul class="space-y-1">
+                      <% @current_plan.features.each do |feature| %>
+                        <li class="flex items-start">
+                          <%= icon "check-circle", class: "h-5 w-5 text-green-500 mt-0.5 mr-2 flex-shrink-0" %>
+                          <span class="text-sm text-gray-600"><%= feature.humanize %></span>
+                        </li>
+                      <% end %>
+                    </ul>
+                  </div>
+                <% end %>
+
+                <div class="mt-6 flex space-x-3">
+                  <% unless @current_plan.name.include?("Premium") %>
+                    <%= link_to edit_users_subscription_path, class: "inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700" do %>
+                      <%= icon "arrow-up", class: "-ml-1 mr-2 h-4 w-4" %>
+                      Change Plan
+                    <% end %>
+                  <% end %>
+                  
+                  <% if current_user.direct? %>
+                    <% if @current_plan&.plan_segment == "individual" %>
+                      <%= link_to "Switch to Team Plan", choose_plan_type_path, 
+                          class: "inline-flex items-center px-4 py-2 border border-indigo-300 shadow-sm text-sm font-medium rounded-md text-indigo-700 bg-white hover:bg-indigo-50" %>
+                    <% elsif @current_plan&.plan_segment == "team" %>
+                      <%= link_to "Switch to Individual Plan", choose_plan_type_path, 
+                          class: "inline-flex items-center px-4 py-2 border border-indigo-300 shadow-sm text-sm font-medium rounded-md text-indigo-700 bg-white hover:bg-indigo-50" %>
+                    <% end %>
+                  <% end %>
+                  
+                  <% if policy(:subscription).destroy? %>
+                    <%= link_to users_subscription_path, 
+                        method: :delete,
+                        data: { 
+                          confirm: "Are you sure you want to cancel your subscription? You will be downgraded to the free plan.",
+                          turbo_confirm: "Are you sure you want to cancel your subscription? You will be downgraded to the free plan."
+                        },
+                        class: "inline-flex items-center px-4 py-2 border border-red-300 shadow-sm text-sm font-medium rounded-md text-red-700 bg-white hover:bg-red-50" do %>
+                      <%= icon "x-circle", class: "-ml-1 mr-2 h-4 w-4" %>
+                      Cancel Subscription
+                    <% end %>
+                  <% end %>
+                </div>
+              </div>
+              
+              <div class="ml-4">
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium <%= @current_plan.free? ? 'bg-gray-100 text-gray-800' : 'bg-green-100 text-green-800' %>">
+                  <%= @current_plan.free? ? 'Free' : 'Active' %>
+                </span>
+              </div>
+            </div>
+          </div>
+        <% else %>
+          <div class="border border-red-200 rounded-lg p-6 bg-red-50">
+            <div class="flex">
+              <%= icon "warning-circle", class: "h-6 w-6 text-red-400" %>
+              <div class="ml-3">
+                <h4 class="text-sm font-medium text-red-800">No Plan Selected</h4>
+                <p class="text-sm text-red-700 mt-1">Please select a plan to access features.</p>
+                <div class="mt-4">
+                  <%= link_to edit_users_subscription_path, class: "inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700" do %>
+                    <%= icon "plus-circle", class: "-ml-1 mr-2 h-4 w-4" %>
+                    Select a Plan
+                  <% end %>
+                </div>
+              </div>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+
+    <!-- Subscription History -->
+    <div class="bg-white shadow rounded-lg">
+      <div class="px-4 py-5 sm:p-6">
+        <h3 class="text-lg font-medium text-gray-900 mb-4">Subscription Activity</h3>
+        <div class="text-sm text-gray-500">
+          <p>Account created: <%= current_user.created_at.strftime("%B %d, %Y") %></p>
+          <% if @current_plan %>
+            <p>Current plan: <%= @current_plan.name %></p>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

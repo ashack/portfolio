@@ -69,11 +69,13 @@ end
 ```
 
 #### Critical Authorization Rules
-1. **Super Admin Only**: Team creation, system settings, billing oversight
-2. **Site Admin**: User management, support tools (no billing access)
+1. **Super Admin Only**: Team creation, system settings, billing oversight, enterprise group management
+2. **Site Admin**: User management, support tools (no billing access), read-only team/enterprise viewing
 3. **Team Admin**: Team member management, team billing, invitations
 4. **Team Member**: Team feature access only
-5. **Direct User**: Individual features and billing only
+5. **Direct User**: Individual features and billing only, can create teams
+6. **Enterprise Admin**: Enterprise member management, billing, settings
+7. **Enterprise Member**: Enterprise feature access only
 
 ### Mass Assignment Protection
 
@@ -107,7 +109,8 @@ end
 -- User type validation
 CONSTRAINT user_type_team_check CHECK (
   (user_type = 'direct' AND team_id IS NULL AND team_role IS NULL) OR
-  (user_type = 'invited' AND team_id IS NOT NULL AND team_role IS NOT NULL)
+  (user_type = 'invited' AND team_id IS NOT NULL AND team_role IS NOT NULL) OR
+  (user_type = 'enterprise' AND enterprise_group_id IS NOT NULL AND enterprise_group_role IS NOT NULL)
 )
 
 -- Invitation email validation
@@ -165,13 +168,23 @@ end
 ## Critical Business Logic Security
 
 ### User Type Isolation
-1. **Direct users CANNOT join teams** - Database constraint enforced
-2. **Invited users CANNOT become direct users** - Application logic enforced
-3. **Team members CANNOT access other teams** - Authorization enforced
-4. **Email uniqueness** - Validated across entire system
+1. **Direct users CANNOT join teams via invitation** - Database constraint enforced
+2. **Direct users CAN create and own teams** - Application logic enforced
+3. **Invited users CANNOT become direct users** - Application logic enforced
+4. **Team members CANNOT access other teams** - Authorization enforced
+5. **Enterprise users CANNOT join teams** - Database constraint enforced
+6. **Email uniqueness** - Validated across entire system
 
 ### Invitation Security
+
+#### Polymorphic Invitations
+The invitation system supports both team and enterprise invitations through polymorphic associations:
+
 ```ruby
+# app/models/invitation.rb
+belongs_to :invitable, polymorphic: true, optional: true
+enum :invitation_type, { team: 0, enterprise: 1 }
+
 # Only new emails can be invited
 validate :email_not_in_users_table
 
@@ -181,6 +194,12 @@ def email_not_in_users_table
   end
 end
 ```
+
+#### Enterprise Group Security
+- Enterprise groups require invitations for admin assignment
+- No circular dependency - admin_id is optional during creation
+- Admin is set when invitation is accepted
+- Enterprise admins can manage members and billing
 
 ## Production Security Checklist
 
