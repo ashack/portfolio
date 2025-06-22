@@ -1,0 +1,331 @@
+test_name,file_path,line_number
+loads dashboard with comprehensive statistics and recent data,test/controllers/admin/super/dashboard_controller_test.rb,51
+handles empty database gracefully,test/controllers/admin/super/dashboard_controller_test.rb,126
+should get new,test/controllers/admin/super/plans_controller_test.rb,49
+should create plan,test/controllers/admin/super/plans_controller_test.rb,55
+should show plan,test/controllers/admin/super/plans_controller_test.rb,82
+should get edit,test/controllers/admin/super/plans_controller_test.rb,88
+should update plan,test/controllers/admin/super/plans_controller_test.rb,94
+should destroy plan,test/controllers/admin/super/plans_controller_test.rb,112
+should handle invalid plan params,test/controllers/admin/super/plans_controller_test.rb,121
+should display correct form fields for team plan,test/controllers/admin/super/plans_controller_test.rb,133
+should display correct form fields for individual plan,test/controllers/admin/super/plans_controller_test.rb,142
+plan index should show all plans,test/controllers/admin/super/plans_controller_test.rb,151
+should authorize all actions through policy,test/controllers/admin/super/plans_controller_test.rb,178
+should get members index,test/controllers/enterprise/members_controller_test.rb,41
+should get new invitation form,test/controllers/enterprise/members_controller_test.rb,46
+should create invitation,test/controllers/enterprise/members_controller_test.rb,51
+non-admin cannot invite members,test/controllers/enterprise/members_controller_test.rb,63
+routes users to correct dashboards based on user type and role,test/controllers/home_controller_test.rb,7
+routes invited team members to their team dashboard,test/controllers/home_controller_test.rb,31
+allows unauthenticated access to homepage,test/controllers/home_controller_test.rb,53
+can access choose plan type page,test/controllers/pages_controller_choose_plan_type_test.rb,30
+individual plan link goes to registration with correct segment,test/controllers/pages_controller_choose_plan_type_test.rb,44
+team plan link goes to registration with correct segment,test/controllers/pages_controller_choose_plan_type_test.rb,51
+enterprise plan shows contact sales message,test/controllers/pages_controller_choose_plan_type_test.rb,58
+enterprise plan link exists,test/controllers/pages_controller_choose_plan_type_test.rb,65
+should get pricing without authentication,test/controllers/pages_controller_test.rb,64
+pricing page shows only active individual plans,test/controllers/pages_controller_test.rb,69
+pricing page shows only active team plans,test/controllers/pages_controller_test.rb,83
+pricing page works when signed in as direct user,test/controllers/pages_controller_test.rb,94
+pricing page works when signed in as team member,test/controllers/pages_controller_test.rb,104
+should get features without authentication,test/controllers/pages_controller_test.rb,122
+features page displays correctly,test/controllers/pages_controller_test.rb,127
+features page works when signed in,test/controllers/pages_controller_test.rb,134
+pricing action does not trigger authorization checks,test/controllers/pages_controller_test.rb,141
+features action does not trigger authorization checks,test/controllers/pages_controller_test.rb,147
+pricing page handles no plans gracefully,test/controllers/pages_controller_test.rb,153
+prevents access by non-direct users,test/controllers/users/dashboard_controller_test.rb,14
+handles payment processor states correctly,test/controllers/users/dashboard_controller_test.rb,45
+loads dashboard with user data and recent activities,test/controllers/users/dashboard_controller_test.rb,69
+registration page with individual segment shows all available plans,test/controllers/users/registrations_controller_plan_segment_test.rb,37
+registration page with team segment shows all available plans,test/controllers/users/registrations_controller_plan_segment_test.rb,50
+registration page without segment defaults to individual,test/controllers/users/registrations_controller_plan_segment_test.rb,63
+can register with individual plan,test/controllers/users/registrations_controller_plan_segment_test.rb,72
+team registration requires team name,test/controllers/users/registrations_controller_plan_segment_test.rb,93
+cannot register with enterprise plan,test/controllers/users/registrations_controller_plan_segment_test.rb,114
+registers new user with selected plan,test/controllers/users/registrations_controller_test.rb,91
+validates plan selection and requirements,test/controllers/users/registrations_controller_test.rb,121
+defaults to free plan when no plan selected,test/controllers/users/registrations_controller_test.rb,161
+newly registered users are direct type,test/controllers/users/registrations_controller_test.rb,180
+registration form displays correctly with plans and features,test/controllers/users/registrations_controller_test.rb,200
+user registration assigns selected plan,test/integration/user_registration_plan_test.rb,21
+user registration defaults to free plan when no plan selected,test/integration/user_registration_plan_test.rb,46
+should be valid with valid attributes,test/models/admin_activity_log_test.rb,29
+should require admin_user,test/models/admin_activity_log_test.rb,33
+should require controller,test/models/admin_activity_log_test.rb,39
+should require action,test/models/admin_activity_log_test.rb,45
+should require method,test/models/admin_activity_log_test.rb,51
+should require path,test/models/admin_activity_log_test.rb,57
+should require timestamp,test/models/admin_activity_log_test.rb,63
+critical_activity? returns true for critical controller and action,test/models/admin_activity_log_test.rb,69
+critical_activity? returns false for non-critical action,test/models/admin_activity_log_test.rb,75
+critical_activity? returns false for non-critical controller,test/models/admin_activity_log_test.rb,81
+critical_activity? identifies all high-risk operations comprehensively,test/models/admin_activity_log_test.rb,87
+admin_name returns full name when available,test/models/admin_activity_log_test.rb,109
+admin_name returns email when full name not available,test/models/admin_activity_log_test.rb,113
+controller_category returns correct category,test/models/admin_activity_log_test.rb,120
+parsed_params returns parsed JSON,test/models/admin_activity_log_test.rb,137
+parsed_params returns empty hash for invalid JSON,test/models/admin_activity_log_test.rb,144
+parsed_params returns empty hash for blank params,test/models/admin_activity_log_test.rb,149
+filtered_params_summary excludes sensitive keys,test/models/admin_activity_log_test.rb,154
+parameter filtering protects all sensitive information types,test/models/admin_activity_log_test.rb,161
+filtered_params_summary handles empty params,test/models/admin_activity_log_test.rb,183
+filtered_params_summary truncates long parameter lists,test/models/admin_activity_log_test.rb,188
+recent scope orders by timestamp desc,test/models/admin_activity_log_test.rb,195
+by_controller scope filters correctly,test/models/admin_activity_log_test.rb,207
+by_action scope filters correctly,test/models/admin_activity_log_test.rb,224
+by_method scope filters correctly,test/models/admin_activity_log_test.rb,241
+by_admin scope filters correctly,test/models/admin_activity_log_test.rb,258
+by_ip scope filters correctly,test/models/admin_activity_log_test.rb,284
+time scopes filter correctly,test/models/admin_activity_log_test.rb,302
+activity_summary returns correct statistics,test/models/admin_activity_log_test.rb,337
+admin_activity_report returns admin specific statistics,test/models/admin_activity_log_test.rb,378
+security_report detects suspicious patterns,test/models/admin_activity_log_test.rb,410
+detect_suspicious_patterns identifies rapid activity,test/models/admin_activity_log_test.rb,414
+analyze_ip_patterns returns correct statistics,test/models/admin_activity_log_test.rb,418
+validates all required security fields individually,test/models/admin_activity_log_test.rb,426
+IP tracking enables comprehensive security pattern detection,test/models/admin_activity_log_test.rb,456
+comprehensive time-based filtering for security investigations,test/models/admin_activity_log_test.rb,487
+activity summary provides comprehensive analytics,test/models/admin_activity_log_test.rb,550
+admin activity report provides detailed admin-specific analytics,test/models/admin_activity_log_test.rb,592
+should be valid with valid attributes,test/models/ahoy/event_test.rb,35
+should require visit,test/models/ahoy/event_test.rb,39
+should be valid without user,test/models/ahoy/event_test.rb,45
+belongs to visit association,test/models/ahoy/event_test.rb,50
+belongs to user association,test/models/ahoy/event_test.rb,56
+serializes properties as JSON,test/models/ahoy/event_test.rb,61
+can store complex properties,test/models/ahoy/event_test.rb,70
+tracks different event types,test/models/ahoy/event_test.rb,93
+can track anonymous events,test/models/ahoy/event_test.rb,132
+can query events by name,test/models/ahoy/event_test.rb,146
+can query events by time range,test/models/ahoy/event_test.rb,173
+can track custom metrics in properties,test/models/ahoy/event_test.rb,196
+tracks event sequence within a visit,test/models/ahoy/event_test.rb,218
+should be valid with valid attributes,test/models/ahoy/visit_test.rb,29
+should be valid without user,test/models/ahoy/visit_test.rb,33
+should have many events,test/models/ahoy/visit_test.rb,38
+belongs to user association,test/models/ahoy/visit_test.rb,62
+can track anonymous visits,test/models/ahoy/visit_test.rb,68
+stores visit metadata,test/models/ahoy/visit_test.rb,83
+tracks visit duration,test/models/ahoy/visit_test.rb,96
+can query visits by timeframe,test/models/ahoy/visit_test.rb,100
+tracks location information,test/models/ahoy/visit_test.rb,119
+tracks utm parameters,test/models/ahoy/visit_test.rb,130
+should be valid with valid attributes,test/models/audit_log_test.rb,43
+should require user,test/models/audit_log_test.rb,47
+should require target_user,test/models/audit_log_test.rb,54
+should require action,test/models/audit_log_test.rb,61
+should validate action is in allowed list,test/models/audit_log_test.rb,67
+belongs to user and target_user,test/models/audit_log_test.rb,73
+can have same user as both admin and target,test/models/audit_log_test.rb,78
+USER_MANAGEMENT_ACTIONS contains expected actions,test/models/audit_log_test.rb,87
+SECURITY_ACTIONS contains expected actions,test/models/audit_log_test.rb,95
+ADMIN_ACTIONS contains expected actions,test/models/audit_log_test.rb,103
+TEAM_ACTIONS contains expected actions,test/models/audit_log_test.rb,112
+SYSTEM_ACTIONS contains expected actions,test/models/audit_log_test.rb,121
+ACTION_TYPES includes all action arrays,test/models/audit_log_test.rb,129
+all action types are valid,test/models/audit_log_test.rb,140
+audit logs are immutable after creation,test/models/audit_log_test.rb,155
+critical actions are properly identified,test/models/audit_log_test.rb,172
+audit trail captures all required accountability information,test/models/audit_log_test.rb,196
+admin_name returns full name when available,test/models/audit_log_test.rb,226
+admin_name returns email when full name not available,test/models/audit_log_test.rb,230
+target_user_name returns full name when available,test/models/audit_log_test.rb,237
+target_user_name returns email when full name not available,test/models/audit_log_test.rb,241
+action_category returns correct category for each action type,test/models/audit_log_test.rb,248
+action_category returns Other for unknown actions,test/models/audit_log_test.rb,263
+action_severity returns correct severity levels,test/models/audit_log_test.rb,269
+action_icon returns correct icon for each category,test/models/audit_log_test.rb,288
+time_ago_in_words returns formatted time,test/models/audit_log_test.rb,303
+formatted_details returns empty hash for nil details,test/models/audit_log_test.rb,312
+formatted_details returns empty hash for empty details,test/models/audit_log_test.rb,317
+formatted_details formats user_update correctly,test/models/audit_log_test.rb,322
+formatted_details handles user_update with no changes,test/models/audit_log_test.rb,336
+formatted_details formats status_change correctly,test/models/audit_log_test.rb,343
+formatted_details formats role_change correctly,test/models/audit_log_test.rb,349
+formatted_details returns raw details for other actions,test/models/audit_log_test.rb,362
+recent scope orders by created_at desc,test/models/audit_log_test.rb,373
+by_action scope filters correctly,test/models/audit_log_test.rb,388
+by_admin scope filters by user_id,test/models/audit_log_test.rb,402
+for_user scope filters by target_user_id,test/models/audit_log_test.rb,424
+critical_actions scope includes security and deletion actions,test/models/audit_log_test.rb,445
+with_ip scope filters by IP address,test/models/audit_log_test.rb,466
+time-based scopes filter correctly,test/models/audit_log_test.rb,481
+by_category scope filters by action category,test/models/audit_log_test.rb,524
+activity_summary returns comprehensive statistics,test/models/audit_log_test.rb,548
+admin_activity_report provides admin-specific analytics,test/models/audit_log_test.rb,583
+handles multiple validation errors gracefully,test/models/audit_log_test.rb,613
+security actions are properly categorized,test/models/audit_log_test.rb,624
+comprehensive action validation across all categories,test/models/audit_log_test.rb,633
+time-based filtering for security incident investigation,test/models/audit_log_test.rb,655
+cache_key_for_collection returns consistent key for all scope,test/models/concerns/cacheable_test.rb,55
+cache_key_for_collection includes count in key,test/models/concerns/cacheable_test.rb,63
+cache_key_for_collection includes max updated_at in key,test/models/concerns/cacheable_test.rb,75
+cache_key_for_collection works with custom scopes,test/models/concerns/cacheable_test.rb,87
+cache_key_for_collection handles empty collections,test/models/concerns/cacheable_test.rb,97
+cache_key_for_collection handles nil max updated_at,test/models/concerns/cacheable_test.rb,105
+cache_key_with_version returns unique key per instance,test/models/concerns/cacheable_test.rb,116
+cache_key_with_version changes when model is updated,test/models/concerns/cacheable_test.rb,125
+cache_key_with_version includes model name,test/models/concerns/cacheable_test.rb,137
+cache_key_with_version formats timestamp correctly,test/models/concerns/cacheable_test.rb,143
+clear_model_caches is called after commit,test/models/concerns/cacheable_test.rb,156
+clear_model_caches is called on update,test/models/concerns/cacheable_test.rb,166
+clear_model_caches is called on destroy,test/models/concerns/cacheable_test.rb,174
+clear_model_caches is not called on failed save,test/models/concerns/cacheable_test.rb,182
+multiple models can include Cacheable,test/models/concerns/cacheable_test.rb,196
+cache keys are unique across different model classes,test/models/concerns/cacheable_test.rb,209
+handles models with very long updated_at timestamps,test/models/concerns/cacheable_test.rb,219
+handles concurrent updates gracefully,test/models/concerns/cacheable_test.rb,229
+Team model has its own caching implementation,test/models/concerns/cacheable_test.rb,275
+EnterpriseGroup model includes Cacheable concern,test/models/concerns/cacheable_test.rb,288
+Team has custom caching implementation,test/models/concerns/cacheable_test.rb,294
+EnterpriseGroup cache_key_for_collection works correctly,test/models/concerns/cacheable_test.rb,304
+should be valid with valid attributes,test/models/email_change_request_test.rb,36
+should require user,test/models/email_change_request_test.rb,40
+should require new_email,test/models/email_change_request_test.rb,46
+should require valid email format,test/models/email_change_request_test.rb,52
+should require reason,test/models/email_change_request_test.rb,69
+reason should have minimum length,test/models/email_change_request_test.rb,75
+reason should have maximum length,test/models/email_change_request_test.rb,81
+should have status enum with correct values,test/models/email_change_request_test.rb,87
+status defaults to pending,test/models/email_change_request_test.rb,104
+cannot change to current email,test/models/email_change_request_test.rb,127
+cannot have multiple pending requests,test/models/email_change_request_test.rb,137
+generates token on create,test/models/email_change_request_test.rb,154
+generates unique tokens,test/models/email_change_request_test.rb,161
+token is URL-safe,test/models/email_change_request_test.rb,180
+token only generated for new records,test/models/email_change_request_test.rb,185
+sets requested_at on create,test/models/email_change_request_test.rb,195
+can_be_approved_by? returns false if not pending,test/models/email_change_request_test.rb,212
+can_be_approved_by? returns false if expired,test/models/email_change_request_test.rb,219
+can_be_approved_by? returns true for team admin of same team,test/models/email_change_request_test.rb,226
+approve! updates user email and request status,test/models/email_change_request_test.rb,274
+approve! fails if cannot be approved by user,test/models/email_change_request_test.rb,297
+reject! updates request status,test/models/email_change_request_test.rb,312
+recent scope orders by requested_at desc,test/models/email_change_request_test.rb,333
+for_approval scope returns pending requests ordered by requested_at,test/models/email_change_request_test.rb,354
+by_user scope filters by user,test/models/email_change_request_test.rb,389
+expired? returns true when requested_at is older than 30 days,test/models/email_change_request_test.rb,413
+expired? returns false when requested_at is within 30 days,test/models/email_change_request_test.rb,418
+to_param returns token,test/models/email_change_request_test.rb,423
+time_ago_in_words returns human readable time,test/models/email_change_request_test.rb,428
+status_badge_class returns appropriate classes,test/models/email_change_request_test.rb,433
+expire_old_requests updates old pending requests to expired,test/models/email_change_request_test.rb,451
+belongs to user,test/models/email_change_request_test.rb,484
+belongs to approved_by user,test/models/email_change_request_test.rb,488
+user can have many email change requests,test/models/email_change_request_test.rb,493
+validation errors don't prevent token generation,test/models/email_change_request_test.rb,511
+sends email notification after create,test/models/email_change_request_test.rb,521
+should be valid with valid attributes,test/models/enterprise_group_test.rb,32
+should require name,test/models/enterprise_group_test.rb,36
+should require name to be at least 2 characters,test/models/enterprise_group_test.rb,42
+should require name to be at most 100 characters,test/models/enterprise_group_test.rb,48
+should require created_by,test/models/enterprise_group_test.rb,54
+should require plan,test/models/enterprise_group_test.rb,60
+should require plan to be enterprise segment,test/models/enterprise_group_test.rb,66
+should allow admin to be optional on create,test/models/enterprise_group_test.rb,80
+should generate slug from name,test/models/enterprise_group_test.rb,87
+should generate unique slug when name conflicts,test/models/enterprise_group_test.rb,92
+should sanitize slug from special characters,test/models/enterprise_group_test.rb,105
+should remove leading and trailing hyphens from slug,test/models/enterprise_group_test.rb,111
+should validate slug format,test/models/enterprise_group_test.rb,117
+should require unique slug,test/models/enterprise_group_test.rb,124
+should have status enum with correct values,test/models/enterprise_group_test.rb,140
+should have many users,test/models/enterprise_group_test.rb,152
+should restrict destroying with users,test/models/enterprise_group_test.rb,167
+active scope returns only active groups,test/models/enterprise_group_test.rb,200
+find_by_slug! finds and caches the result,test/models/enterprise_group_test.rb,216
+to_param returns slug,test/models/enterprise_group_test.rb,230
+clear_caches is called on update,test/models/enterprise_group_test.rb,238
+member_count returns number of users,test/models/enterprise_group_test.rb,260
+pending_admin_invitation returns pending admin invitation,test/models/enterprise_group_test.rb,299
+has_pending_admin_invitation? returns true when pending admin invitation exists,test/models/enterprise_group_test.rb,323
+admin validation on update when no pending invitation,test/models/enterprise_group_test.rb,339
+admin validation skipped on update when pending invitation exists,test/models/enterprise_group_test.rb,350
+includes Pay::Billable module,test/models/enterprise_group_test.rb,371
+includes Cacheable concern,test/models/enterprise_group_test.rb,376
+token generation and security,test/models/invitation_test.rb,221
+invitation status transitions and immutability,test/models/invitation_test.rb,281
+field validations work correctly,test/models/invitation_test.rb,306
+scopes filter invitations correctly,test/models/invitation_test.rb,337
+helper methods work correctly,test/models/invitation_test.rb,384
+handles edge cases correctly,test/models/invitation_test.rb,414
+free plan detection and pricing,test/models/plan_test.rb,70
+enterprise plans require contact sales,test/models/plan_test.rb,93
+feature management works correctly,test/models/plan_test.rb,114
+field validations work correctly,test/models/plan_test.rb,133
+scopes filter plans correctly,test/models/plan_test.rb,163
+display methods format plan information correctly,test/models/plan_test.rb,216
+team must have admin user,test/models/team_test.rb,68
+team prevents user deletion when users exist,test/models/team_test.rb,123
+find_by_slug! uses caching effectively,test/models/team_test.rb,145
+plan_features returns correct features for each plan,test/models/team_test.rb,159
+field validations work correctly,test/models/team_test.rb,179
+associations work correctly,test/models/team_test.rb,213
+scopes filter correctly,test/models/team_test.rb,249
+team settings can store complex JSON data,test/models/team_test.rb,285
+direct_users scope returns only direct users,test/models/user_scopes_and_queries_test.rb,135
+team_members scope returns only invited team users,test/models/user_scopes_and_queries_test.rb,147
+with_associations scope prevents N+1 queries,test/models/user_scopes_and_queries_test.rb,158
+with_team_details scope includes team information,test/models/user_scopes_and_queries_test.rb,172
+status enum queries work correctly,test/models/user_scopes_and_queries_test.rb,192
+user_type enum queries work correctly,test/models/user_scopes_and_queries_test.rb,206
+system_role enum queries work correctly,test/models/user_scopes_and_queries_test.rb,220
+team_role enum queries work correctly,test/models/user_scopes_and_queries_test.rb,234
+enterprise_group_role enum queries work correctly,test/models/user_scopes_and_queries_test.rb,244
+active direct users query,test/models/user_scopes_and_queries_test.rb,256
+active team members query,test/models/user_scopes_and_queries_test.rb,266
+count users by type,test/models/user_scopes_and_queries_test.rb,276
+users with specific team,test/models/user_scopes_and_queries_test.rb,302
+users with specific enterprise group,test/models/user_scopes_and_queries_test.rb,312
+search by email,test/models/user_scopes_and_queries_test.rb,322
+recently created users,test/models/user_scopes_and_queries_test.rb,332
+users with confirmed email,test/models/user_scopes_and_queries_test.rb,346
+order by created_at,test/models/user_scopes_and_queries_test.rb,366
+order by email alphabetically,test/models/user_scopes_and_queries_test.rb,373
+team role transitions work correctly,test/models/user_test.rb,172
+field validations work correctly,test/models/user_test.rb,236
+role helper methods work correctly,test/models/user_test.rb,259
+full_name handles edge cases correctly,test/models/user_test.rb,296
+user status transitions follow business rules,test/models/user_test.rb,407
+log creates audit log with basic params,test/services/audit_log_service_test.rb,27
+log handles nil request gracefully,test/services/audit_log_service_test.rb,47
+log rescues and logs invalid records,test/services/audit_log_service_test.rb,62
+log_user_update creates audit log with changes,test/services/audit_log_service_test.rb,81
+log_user_update skips when changes are empty,test/services/audit_log_service_test.rb,102
+log_status_change creates proper audit log,test/services/audit_log_service_test.rb,113
+log_role_change creates proper audit log,test/services/audit_log_service_test.rb,131
+log_password_reset creates proper audit log,test/services/audit_log_service_test.rb,148
+log_email_confirm creates proper audit log,test/services/audit_log_service_test.rb,162
+log_account_unlock creates proper audit log,test/services/audit_log_service_test.rb,175
+log_impersonate creates proper audit log,test/services/audit_log_service_test.rb,188
+log_admin_login creates self-referential log,test/services/audit_log_service_test.rb,201
+log_admin_logout calculates session duration,test/services/audit_log_service_test.rb,216
+log_admin_logout handles no previous login,test/services/audit_log_service_test.rb,243
+log_team_action creates log with team details,test/services/audit_log_service_test.rb,255
+log_invitation_action creates log with invitation details,test/services/audit_log_service_test.rb,279
+log_system_action creates self-referential log,test/services/audit_log_service_test.rb,311
+log_bulk_operation creates log with operation details,test/services/audit_log_service_test.rb,328
+log_security_event creates log with security flag,test/services/audit_log_service_test.rb,346
+all methods include timestamp in details,test/services/audit_log_service_test.rb,363
+regular user cannot change user status,test/services/users/status_management_service_test.rb,75
+team admin cannot change user status,test/services/users/status_management_service_test.rb,93
+rejects invalid status values,test/services/users/status_management_service_test.rb,117
+logs status change with AuditLogService,test/services/users/status_management_service_test.rb,126
+sends notification when status changes,test/services/users/status_management_service_test.rb,147
+does not send notification when status stays the same,test/services/users/status_management_service_test.rb,160
+forces signout when deactivating user,test/services/users/status_management_service_test.rb,175
+forces signout when locking user,test/services/users/status_management_service_test.rb,186
+does not force signout when activating user,test/services/users/status_management_service_test.rb,197
+handles request parameter being nil,test/services/users/status_management_service_test.rb,208
+rolls back transaction on failure,test/services/users/status_management_service_test.rb,218
+validates all valid statuses,test/services/users/status_management_service_test.rb,234
+result object has correct structure for success,test/services/users/status_management_service_test.rb,248
+result object has correct structure for failure,test/services/users/status_management_service_test.rb,257
+visiting the registration page,test/system/user_registration_test.rb,24
+registering a new direct user with plan,test/system/user_registration_test.rb,39
+registration with invalid data shows errors,test/system/user_registration_test.rb,62
+registration with mismatched passwords shows error,test/system/user_registration_test.rb,71
+registration with existing email shows error,test/system/user_registration_test.rb,83
+user can register with free plan by default,test/system/user_registration_test.rb,104

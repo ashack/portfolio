@@ -71,7 +71,7 @@ class EnterpriseGroupTest < ActiveSupport::TestCase
       max_team_members: 10,
       active: true
     )
-    
+
     @enterprise_group.plan = non_enterprise_plan
     assert_not @enterprise_group.valid?
     assert_includes @enterprise_group.errors[:plan], "must be an enterprise plan"
@@ -91,14 +91,14 @@ class EnterpriseGroupTest < ActiveSupport::TestCase
 
   test "should generate unique slug when name conflicts" do
     @enterprise_group.save!
-    
+
     group2 = EnterpriseGroup.new(
       name: "Test Enterprise",
       created_by: @super_admin,
       plan: @enterprise_plan
     )
     group2.save!
-    
+
     assert_equal "test-enterprise-1", group2.slug
   end
 
@@ -123,7 +123,7 @@ class EnterpriseGroupTest < ActiveSupport::TestCase
 
   test "should require unique slug" do
     @enterprise_group.save!
-    
+
     duplicate = EnterpriseGroup.new(
       name: "Different Name",
       created_by: @super_admin,
@@ -131,7 +131,7 @@ class EnterpriseGroupTest < ActiveSupport::TestCase
     )
     duplicate.save! # Generate slug first
     duplicate.slug = @enterprise_group.slug
-    
+
     assert_not duplicate.valid?
     assert_includes duplicate.errors[:slug], "has already been taken"
   end
@@ -140,10 +140,10 @@ class EnterpriseGroupTest < ActiveSupport::TestCase
   test "should have status enum with correct values" do
     @enterprise_group.status = "active"
     assert @enterprise_group.active?
-    
+
     @enterprise_group.status = "suspended"
     assert @enterprise_group.suspended?
-    
+
     @enterprise_group.status = "cancelled"
     assert @enterprise_group.cancelled?
   end
@@ -151,7 +151,7 @@ class EnterpriseGroupTest < ActiveSupport::TestCase
   # Association tests
   test "should have many users" do
     @enterprise_group.save!
-    
+
     user = User.create!(
       email: "enterprise_user@example.com",
       password: "Password123!",
@@ -160,13 +160,13 @@ class EnterpriseGroupTest < ActiveSupport::TestCase
       enterprise_group_role: "member",
       confirmed_at: Time.current
     )
-    
+
     assert_includes @enterprise_group.users, user
   end
 
   test "should restrict destroying with users" do
     @enterprise_group.save!
-    
+
     user = User.create!(
       email: "enterprise_user@example.com",
       password: "Password123!",
@@ -175,7 +175,7 @@ class EnterpriseGroupTest < ActiveSupport::TestCase
       enterprise_group_role: "member",
       confirmed_at: Time.current
     )
-    
+
     # Rails 8 raises RecordNotDestroyed for restrict_with_error
     assert_raises(ActiveRecord::RecordNotDestroyed) do
       @enterprise_group.destroy!
@@ -184,7 +184,7 @@ class EnterpriseGroupTest < ActiveSupport::TestCase
 
   test "should have many invitations as invitable" do
     @enterprise_group.save!
-    
+
     invitation = Invitation.create!(
       invitable: @enterprise_group,
       email: "invited@example.com",
@@ -192,21 +192,21 @@ class EnterpriseGroupTest < ActiveSupport::TestCase
       invited_by: @super_admin,
       invitation_type: "enterprise"
     )
-    
+
     assert_includes @enterprise_group.invitations, invitation
   end
 
   # Scope tests
   test "active scope returns only active groups" do
     @enterprise_group.save!
-    
+
     suspended = EnterpriseGroup.create!(
       name: "Suspended Enterprise",
       created_by: @super_admin,
       plan: @enterprise_plan,
       status: "suspended"
     )
-    
+
     active_groups = EnterpriseGroup.active
     assert_includes active_groups, @enterprise_group
     assert_not_includes active_groups, suspended
@@ -215,21 +215,21 @@ class EnterpriseGroupTest < ActiveSupport::TestCase
   # Cache tests
   test "find_by_slug! finds and caches the result" do
     @enterprise_group.save!
-    
+
     # Clear cache first
     Rails.cache.clear
-    
+
     # First call should find and cache
     result = EnterpriseGroup.find_by_slug!(@enterprise_group.slug)
     assert_equal @enterprise_group.id, result.id
-    
+
     # For caching test, we'd need to mock Rails.cache or test indirectly
     # The caching behavior is tested by the method working correctly
   end
 
   test "to_param returns slug" do
     @enterprise_group.save!
-    
+
     # to_param should return the slug
     param = @enterprise_group.to_param
     assert_equal @enterprise_group.slug, param
@@ -237,7 +237,7 @@ class EnterpriseGroupTest < ActiveSupport::TestCase
 
   test "clear_caches is called on update" do
     @enterprise_group.save!
-    
+
     # Set up admin to satisfy update validation
     admin = User.create!(
       email: "admin@example.com",
@@ -248,10 +248,10 @@ class EnterpriseGroupTest < ActiveSupport::TestCase
       confirmed_at: Time.current
     )
     @enterprise_group.update!(admin: admin)
-    
+
     # Update to trigger cache clear
     assert @enterprise_group.update(name: "Updated Enterprise")
-    
+
     # The cache clearing behavior is tested by successful update
     # Actual cache testing would require mocking Rails.cache
   end
@@ -260,7 +260,7 @@ class EnterpriseGroupTest < ActiveSupport::TestCase
   test "member_count returns number of users" do
     @enterprise_group.save!
     assert_equal 0, @enterprise_group.member_count
-    
+
     2.times do |i|
       User.create!(
         email: "member#{i}@example.com",
@@ -271,16 +271,16 @@ class EnterpriseGroupTest < ActiveSupport::TestCase
         confirmed_at: Time.current
       )
     end
-    
+
     assert_equal 2, @enterprise_group.member_count
   end
 
   test "can_add_members? checks against max_members" do
     @enterprise_group.max_members = 2
     @enterprise_group.save!
-    
+
     assert @enterprise_group.can_add_members?
-    
+
     2.times do |i|
       User.create!(
         email: "member#{i}@example.com",
@@ -291,14 +291,14 @@ class EnterpriseGroupTest < ActiveSupport::TestCase
         confirmed_at: Time.current
       )
     end
-    
+
     assert_not @enterprise_group.can_add_members?
   end
 
   # Admin invitation tests
   test "pending_admin_invitation returns pending admin invitation" do
     @enterprise_group.save!
-    
+
     # Create non-admin invitation
     member_inv = Invitation.create!(
       invitable: @enterprise_group,
@@ -307,7 +307,7 @@ class EnterpriseGroupTest < ActiveSupport::TestCase
       invited_by: @super_admin,
       invitation_type: "enterprise"
     )
-    
+
     # Create admin invitation
     admin_inv = Invitation.create!(
       invitable: @enterprise_group,
@@ -316,15 +316,15 @@ class EnterpriseGroupTest < ActiveSupport::TestCase
       invited_by: @super_admin,
       invitation_type: "enterprise"
     )
-    
+
     assert_equal admin_inv, @enterprise_group.pending_admin_invitation
   end
 
   test "has_pending_admin_invitation? returns true when pending admin invitation exists" do
     @enterprise_group.save!
-    
+
     assert_not @enterprise_group.has_pending_admin_invitation?
-    
+
     Invitation.create!(
       invitable: @enterprise_group,
       email: "admin@example.com",
@@ -332,24 +332,24 @@ class EnterpriseGroupTest < ActiveSupport::TestCase
       invited_by: @super_admin,
       invitation_type: "enterprise"
     )
-    
+
     assert @enterprise_group.has_pending_admin_invitation?
   end
 
   test "admin validation on update when no pending invitation" do
     @enterprise_group.save!
-    
+
     # Try to update without admin
     @enterprise_group.admin = nil
     @enterprise_group.name = "Updated Name"
-    
+
     assert_not @enterprise_group.valid?(:update)
     assert_includes @enterprise_group.errors[:admin_id], "can't be blank"
   end
 
   test "admin validation skipped on update when pending invitation exists" do
     @enterprise_group.save!
-    
+
     # Create pending admin invitation
     Invitation.create!(
       invitable: @enterprise_group,
@@ -358,11 +358,11 @@ class EnterpriseGroupTest < ActiveSupport::TestCase
       invited_by: @super_admin,
       invitation_type: "enterprise"
     )
-    
+
     # Update should work without admin
     @enterprise_group.admin = nil
     @enterprise_group.name = "Updated Name"
-    
+
     assert @enterprise_group.valid?(:update)
     assert @enterprise_group.save
   end

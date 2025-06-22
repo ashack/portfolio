@@ -7,7 +7,7 @@ class Enterprise::MembersController < Enterprise::BaseController
   def index
     @members = @enterprise_group.users.includes(:ahoy_visits).order(created_at: :desc)
     @pagy_members, @members = pagy(@members, page_param: :members_page)
-    
+
     @pending_invitations = @enterprise_group.invitations.pending.includes(:invited_by).order(created_at: :desc)
     @pagy_invitations, @pending_invitations = pagy(@pending_invitations, page_param: :invitations_page)
   end

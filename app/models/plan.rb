@@ -22,13 +22,13 @@ class Plan < ApplicationRecord
 
   validates :name, presence: true
   validates :plan_segment, presence: true
-  
+
   # Price validation - 0 for free plans
   validates :amount_cents, numericality: { greater_than_or_equal_to: 0 }
-  
+
   # Team plans must specify member limit
   validates :max_team_members, numericality: { greater_than: 0 }, if: :plan_segment_team?
-  
+
   # Billing interval for paid plans
   validates :interval, inclusion: { in: %w[month year] }, allow_nil: true
 
@@ -38,15 +38,15 @@ class Plan < ApplicationRecord
 
   # Only show active plans
   scope :active, -> { where(active: true) }
-  
+
   # Filter by plan segment
   scope :for_individuals, -> { where(plan_segment: "individual") }
   scope :for_teams, -> { where(plan_segment: "team") }
   scope :for_enterprise, -> { where(plan_segment: "enterprise") }
-  
+
   # Plans available for self-service signup (excludes enterprise)
   scope :available_for_signup, -> { active.where.not(plan_segment: "enterprise") }
-  
+
   # Generic segment filter
   scope :by_segment, ->(segment) { where(plan_segment: segment) }
 

@@ -2,19 +2,19 @@ require "test_helper"
 
 class HomeControllerTest < ActionDispatch::IntegrationTest
   # ========== CRITICAL TESTS (Weight 7-8) ==========
-  
+
   # Weight: 8 - Critical routing matrix for all user types
   test "routes users to correct dashboards based on user type and role" do
     routing_matrix = [
       # [email, user_type, system_role, team, expected_path]
-      ["superadmin@example.com", "direct", "super_admin", nil, :admin_super_root_path],
-      ["siteadmin@example.com", "direct", "site_admin", nil, :admin_site_root_path],
-      ["directuser@example.com", "direct", "user", nil, :user_dashboard_path],
+      [ "superadmin@example.com", "direct", "super_admin", nil, :admin_super_root_path ],
+      [ "siteadmin@example.com", "direct", "site_admin", nil, :admin_site_root_path ],
+      [ "directuser@example.com", "direct", "user", nil, :user_dashboard_path ]
     ]
 
     routing_matrix.each do |email, user_type, system_role, team, expected_path|
       sign_out :user if defined?(current_user)
-      
+
       user = sign_in_with(
         email: email,
         user_type: user_type,
@@ -22,7 +22,7 @@ class HomeControllerTest < ActionDispatch::IntegrationTest
       )
 
       get root_path
-      assert_redirected_to send(expected_path), 
+      assert_redirected_to send(expected_path),
         "Expected #{system_role} #{user_type} user to be redirected to #{expected_path}"
     end
   end
@@ -48,7 +48,7 @@ class HomeControllerTest < ActionDispatch::IntegrationTest
   end
 
   # ========== MEDIUM PRIORITY TESTS (Weight 5-6) ==========
-  
+
   # Weight: 5 - Public access control
   test "allows unauthenticated access to homepage" do
     sign_out :user if defined?(current_user)
