@@ -11,7 +11,7 @@ BUSINESS_RULES = {
     category: "User Type System",
     weight: 10,
     risk: "HIGH",
-    test_patterns: ["user type cannot be changed", "user_type immutability", "type immutable"]
+    test_patterns: [ "user type cannot be changed", "user_type immutability", "type immutable" ]
   },
   "CR-U2" => {
     code: "CR-U2",
@@ -19,7 +19,7 @@ BUSINESS_RULES = {
     category: "User Type System",
     weight: 10,
     risk: "HIGH",
-    test_patterns: ["user type associations", "user type isolation", "direct users cannot have team", "invited users must have team", "enterprise users"]
+    test_patterns: [ "user type associations", "user type isolation", "direct users cannot have team", "invited users must have team", "enterprise users" ]
   },
   "CR-U3" => {
     code: "CR-U3",
@@ -27,9 +27,9 @@ BUSINESS_RULES = {
     category: "User Type System",
     weight: 10,
     risk: "HIGH",
-    test_patterns: ["direct users can own teams", "owns_team", "team ownership"]
+    test_patterns: [ "direct users can own teams", "owns_team", "team ownership" ]
   },
-  
+
   # User Type System - Important Rules (Weight 6-8)
   "IR-U1" => {
     code: "IR-U1",
@@ -37,7 +37,7 @@ BUSINESS_RULES = {
     category: "User Type System",
     weight: 8,
     risk: "MEDIUM",
-    test_patterns: ["email uniqueness", "unique email", "duplicate email"]
+    test_patterns: [ "email uniqueness", "unique email", "duplicate email" ]
   },
   "IR-U2" => {
     code: "IR-U2",
@@ -45,7 +45,7 @@ BUSINESS_RULES = {
     category: "User Type System",
     weight: 7,
     risk: "MEDIUM",
-    test_patterns: ["status management", "active users", "can_sign_in", "authentication status"]
+    test_patterns: [ "status management", "active users", "can_sign_in", "authentication status" ]
   },
   "IR-U3" => {
     code: "IR-U3",
@@ -53,9 +53,9 @@ BUSINESS_RULES = {
     category: "User Type System",
     weight: 6,
     risk: "MEDIUM",
-    test_patterns: ["email normalization", "normalize email", "lowercase email"]
+    test_patterns: [ "email normalization", "normalize email", "lowercase email" ]
   },
-  
+
   # Authentication & Authorization - Critical Rules
   "CR-A1" => {
     code: "CR-A1",
@@ -63,7 +63,7 @@ BUSINESS_RULES = {
     category: "Authentication & Authorization",
     weight: 9,
     risk: "HIGH",
-    test_patterns: ["password complexity", "password requirements", "password validation"]
+    test_patterns: [ "password complexity", "password requirements", "password validation" ]
   },
   "CR-A2" => {
     code: "CR-A2",
@@ -71,7 +71,7 @@ BUSINESS_RULES = {
     category: "Authentication & Authorization",
     weight: 10,
     risk: "HIGH",
-    test_patterns: ["system role", "super admin", "site admin", "role hierarchy", "denies access to non-super-admins", "requires authentication", "should not get index as regular user"]
+    test_patterns: [ "system role", "super admin", "site admin", "role hierarchy", "denies access to non-super-admins", "requires authentication", "should not get index as regular user" ]
   },
   "CR-A3" => {
     code: "CR-A3",
@@ -79,9 +79,9 @@ BUSINESS_RULES = {
     category: "Authentication & Authorization",
     weight: 9,
     risk: "HIGH",
-    test_patterns: ["self role change", "own role", "system_role_change_allowed"]
+    test_patterns: [ "self role change", "own role", "system_role_change_allowed" ]
   },
-  
+
   # Team Management - Critical Rules
   "CR-T1" => {
     code: "CR-T1",
@@ -89,7 +89,7 @@ BUSINESS_RULES = {
     category: "Team Management",
     weight: 9,
     risk: "HIGH",
-    test_patterns: ["team creation", "create team", "super admin"]
+    test_patterns: [ "team creation", "create team", "super admin" ]
   },
   "CR-T2" => {
     code: "CR-T2",
@@ -97,7 +97,7 @@ BUSINESS_RULES = {
     category: "Team Management",
     weight: 9,
     risk: "HIGH",
-    test_patterns: ["member limit", "plan limit", "can_add_members", "max_members"]
+    test_patterns: [ "member limit", "plan limit", "can_add_members", "max_members" ]
   },
   "CR-T3" => {
     code: "CR-T3",
@@ -105,7 +105,7 @@ BUSINESS_RULES = {
     category: "Team Management",
     weight: 9,
     risk: "HIGH",
-    test_patterns: ["admin requirement", "last admin", "admin presence", "delete last admin"]
+    test_patterns: [ "admin requirement", "last admin", "admin presence", "delete last admin" ]
   },
   "CR-T4" => {
     code: "CR-T4",
@@ -113,9 +113,9 @@ BUSINESS_RULES = {
     category: "Team Management",
     weight: 9,
     risk: "HIGH",
-    test_patterns: ["team billing", "stripe subscription", "pay_customer"]
+    test_patterns: [ "team billing", "stripe subscription", "pay_customer" ]
   },
-  
+
   # Team Management - Important Rules
   "IR-T1" => {
     code: "IR-T1",
@@ -123,7 +123,7 @@ BUSINESS_RULES = {
     category: "Team Management",
     weight: 7,
     risk: "MEDIUM",
-    test_patterns: ["slug unique", "slug generation", "url safe"]
+    test_patterns: [ "slug unique", "slug generation", "url safe" ]
   },
   "IR-T2" => {
     code: "IR-T2",
@@ -131,9 +131,9 @@ BUSINESS_RULES = {
     category: "Team Management",
     weight: 8,
     risk: "MEDIUM",
-    test_patterns: ["deletion prevention", "restrict_with_error", "team with users"]
+    test_patterns: [ "deletion prevention", "restrict_with_error", "team with users" ]
   },
-  
+
   # Enterprise Groups
   "CR-E1" => {
     code: "CR-E1",
@@ -141,7 +141,7 @@ BUSINESS_RULES = {
     category: "Enterprise Groups",
     weight: 9,
     risk: "HIGH",
-    test_patterns: ["enterprise admin", "admin assignment", "invitation acceptance"]
+    test_patterns: [ "enterprise admin", "admin assignment", "invitation acceptance" ]
   },
   "CR-E2" => {
     code: "CR-E2",
@@ -149,9 +149,9 @@ BUSINESS_RULES = {
     category: "Enterprise Groups",
     weight: 9,
     risk: "HIGH",
-    test_patterns: ["enterprise isolation", "enterprise users cannot", "enterprise associations"]
+    test_patterns: [ "enterprise isolation", "enterprise users cannot", "enterprise associations" ]
   },
-  
+
   # Invitation System - Critical Rules
   "CR-I1" => {
     code: "CR-I1",
@@ -159,7 +159,7 @@ BUSINESS_RULES = {
     category: "Invitation System",
     weight: 10,
     risk: "HIGH",
-    test_patterns: ["email not in users", "new email only", "existing user", "email must not exist", "email cannot exist in users table", "invitation email cannot exist in users table"]
+    test_patterns: [ "email not in users", "new email only", "existing user", "email must not exist", "email cannot exist in users table", "invitation email cannot exist in users table" ]
   },
   "CR-I2" => {
     code: "CR-I2",
@@ -167,7 +167,7 @@ BUSINESS_RULES = {
     category: "Invitation System",
     weight: 8,
     risk: "MEDIUM",
-    test_patterns: ["invitation expir", "expires_at", "7 days"]
+    test_patterns: [ "invitation expir", "expires_at", "7 days" ]
   },
   "CR-I3" => {
     code: "CR-I3",
@@ -175,7 +175,7 @@ BUSINESS_RULES = {
     category: "Invitation System",
     weight: 9,
     risk: "HIGH",
-    test_patterns: ["polymorphic", "invitable", "invitation type"]
+    test_patterns: [ "polymorphic", "invitable", "invitation type" ]
   },
   "CR-I4" => {
     code: "CR-I4",
@@ -183,9 +183,9 @@ BUSINESS_RULES = {
     category: "Invitation System",
     weight: 10,
     risk: "HIGH",
-    test_patterns: ["accept creates", "user type on accept", "invitation acceptance", "accept! creates correct user type with proper associations"]
+    test_patterns: [ "accept creates", "user type on accept", "invitation acceptance", "accept! creates correct user type with proper associations" ]
   },
-  
+
   # Invitation System - Important Rules
   "IR-I1" => {
     code: "IR-I1",
@@ -193,9 +193,9 @@ BUSINESS_RULES = {
     category: "Invitation System",
     weight: 8,
     risk: "MEDIUM",
-    test_patterns: ["token unique", "secure token", "invitation token"]
+    test_patterns: [ "token unique", "secure token", "invitation token" ]
   },
-  
+
   # Billing & Subscriptions
   "CR-B1" => {
     code: "CR-B1",
@@ -203,7 +203,7 @@ BUSINESS_RULES = {
     category: "Billing & Subscriptions",
     weight: 9,
     risk: "HIGH",
-    test_patterns: ["billing separation", "separate billing", "team billing", "individual billing"]
+    test_patterns: [ "billing separation", "separate billing", "team billing", "individual billing" ]
   },
   "CR-B2" => {
     code: "CR-B2",
@@ -211,7 +211,7 @@ BUSINESS_RULES = {
     category: "Billing & Subscriptions",
     weight: 9,
     risk: "HIGH",
-    test_patterns: ["plan enforcement", "plan features", "plan limits"]
+    test_patterns: [ "plan enforcement", "plan features", "plan limits" ]
   },
   "CR-B3" => {
     code: "CR-B3",
@@ -219,9 +219,9 @@ BUSINESS_RULES = {
     category: "Billing & Subscriptions",
     weight: 8,
     risk: "HIGH",
-    test_patterns: ["plan segment", "individual team enterprise", "plan_segment"]
+    test_patterns: [ "plan segment", "individual team enterprise", "plan_segment" ]
   },
-  
+
   # Security Constraints
   "CR-S1" => {
     code: "CR-S1",
@@ -229,7 +229,7 @@ BUSINESS_RULES = {
     category: "Security Constraints",
     weight: 9,
     risk: "HIGH",
-    test_patterns: ["csrf", "forgery protection"]
+    test_patterns: [ "csrf", "forgery protection" ]
   },
   "CR-S2" => {
     code: "CR-S2",
@@ -237,9 +237,9 @@ BUSINESS_RULES = {
     category: "Security Constraints",
     weight: 9,
     risk: "HIGH",
-    test_patterns: ["strong parameters", "mass assignment", "permit"]
+    test_patterns: [ "strong parameters", "mass assignment", "permit" ]
   },
-  
+
   # Data Integrity
   "CR-D1" => {
     code: "CR-D1",
@@ -247,7 +247,7 @@ BUSINESS_RULES = {
     category: "Data Integrity",
     weight: 8,
     risk: "HIGH",
-    test_patterns: ["foreign key", "referential integrity", "belongs_to"]
+    test_patterns: [ "foreign key", "referential integrity", "belongs_to" ]
   },
   "CR-D2" => {
     code: "CR-D2",
@@ -255,17 +255,17 @@ BUSINESS_RULES = {
     category: "Data Integrity",
     weight: 7,
     risk: "MEDIUM",
-    test_patterns: ["email normal", "lowercase email", "strip email"]
+    test_patterns: [ "email normal", "lowercase email", "strip email" ]
   }
 }
 
 # Extract all tests from test files
 def extract_tests_from_files
   tests = []
-  
+
   Dir.glob('test/**/*_test.rb').each do |file_path|
     next if file_path.include?('test_helper')
-    
+
     File.readlines(file_path).each_with_index do |line, index|
       if match = line.match(/^\s*test\s+["'](.+?)["']\s+do/)
         test_name = match[1]
@@ -278,14 +278,14 @@ def extract_tests_from_files
       end
     end
   end
-  
+
   tests
 end
 
 # Match tests to business rules
 def match_test_to_rules(test)
   matched_rules = []
-  
+
   BUSINESS_RULES.each do |code, rule|
     rule[:test_patterns].each do |pattern|
       if test[:normalized_name].include?(pattern.downcase)
@@ -294,7 +294,7 @@ def match_test_to_rules(test)
       end
     end
   end
-  
+
   matched_rules
 end
 
@@ -309,7 +309,7 @@ unmatched_tests = []
 
 all_tests.each do |test|
   matched_rules = match_test_to_rules(test)
-  
+
   if matched_rules.empty?
     unmatched_tests << test
   else
@@ -349,12 +349,12 @@ uncovered_rules.each do |code, rule|
 end
 
 # Sort by weight (descending) and then by category
-test_mappings.sort_by! { |m| [-m[:weight], m[:category], m[:business_rule_code]] }
+test_mappings.sort_by! { |m| [ -m[:weight], m[:category], m[:business_rule_code] ] }
 
 # Write CSV
 CSV.open('docs/business_logic_test_coverage.csv', 'w') do |csv|
-  csv << ['test_name', 'file_path', 'line_number', 'business_rule_code', 'business_rule', 'category', 'weight', 'risk_level', 'coverage_status']
-  
+  csv << [ 'test_name', 'file_path', 'line_number', 'business_rule_code', 'business_rule', 'category', 'weight', 'risk_level', 'coverage_status' ]
+
   test_mappings.each do |mapping|
     csv << [
       mapping[:test_name],
@@ -378,7 +378,7 @@ puts "Uncovered rules: #{uncovered_rules.length}"
 puts "Coverage: #{(covered_rule_codes.length.to_f / BUSINESS_RULES.length * 100).round(1)}%"
 
 # Coverage by weight
-weight_groups = test_mappings.group_by { |m| 
+weight_groups = test_mappings.group_by { |m|
   case m[:weight]
   when 9..10 then "Critical (9-10)"
   when 6..8 then "Important (6-8)"
@@ -409,9 +409,9 @@ puts "Unmatched tests: #{unmatched_tests.length}"
 # Save unmatched tests for review
 if unmatched_tests.any?
   CSV.open('docs/unmatched_tests.csv', 'w') do |csv|
-    csv << ['test_name', 'file_path', 'line_number']
+    csv << [ 'test_name', 'file_path', 'line_number' ]
     unmatched_tests.each do |test|
-      csv << [test[:test_name], test[:file_path], test[:line_number]]
+      csv << [ test[:test_name], test[:file_path], test[:line_number] ]
     end
   end
   puts "Unmatched tests saved to: docs/unmatched_tests.csv"
