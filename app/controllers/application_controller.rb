@@ -44,18 +44,29 @@ class ApplicationController < ActionController::Base
     end
   end
 
-  # Additional CSRF protection helper for AJAX requests
-  def verify_csrf_token_for_ajax
-    return true unless request.xhr?
+  # Handle CSRF token verification failures
+  def handle_unverified_request
+    # Log CSRF failures for security monitoring
+    Rails.logger.warn "[SECURITY] CSRF verification failed for #{request.remote_ip}"
+    Rails.logger.warn "[SECURITY] Request: #{request.method} #{request.path}"
 
-    unless verified_request?
-      respond_to do |format|
-        format.json { render json: { error: "CSRF token verification failed" }, status: :forbidden }
-        format.html { redirect_to root_path, alert: "Security token verification failed" }
+    respond_to do |format|
+      format.json do
+        render json: { error: "CSRF token verification failed. Please refresh and try again." },
+               status: :unprocessable_entity
       end
-      return false
+      format.turbo_stream do
+        reset_session
+        redirect_to new_user_session_path,
+          alert: "Your session has expired. Please sign in again.",
+          status: :see_other
+      end
+      format.html do
+        reset_session
+        redirect_to new_user_session_path,
+          alert: "Your session has expired. Please sign in again."
+      end
     end
-    true
   end
 
   def check_user_status

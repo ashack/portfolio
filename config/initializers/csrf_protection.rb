@@ -13,24 +13,6 @@ Rails.application.configure do
   config.action_controller.log_warning_on_csrf_failure = true
 end
 
-# Custom CSRF failure handling
-class ActionController::Base
-  private
-
-  def handle_unverified_request
-    # Log CSRF failures for security monitoring
-    Rails.logger.warn "[SECURITY] CSRF verification failed for #{request.remote_ip} - #{request.user_agent}"
-    Rails.logger.warn "[SECURITY] Request: #{request.method} #{request.path}"
-    Rails.logger.warn "[SECURITY] Referrer: #{request.referrer}" if request.referrer
-
-    # Call the default behavior
-    super
-  end
-end
-
-# Additional security headers for CSRF protection
-# Note: Rack::Attack is loaded in config/application.rb
-
 # Security note: CSRF tokens are automatically included in:
 # - form_with helper (default)
 # - form_for helper

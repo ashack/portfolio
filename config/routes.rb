@@ -5,7 +5,8 @@ Rails.application.routes.draw do
   # Email Change Requests
   resources :email_change_requests, only: [ :index, :new, :create, :show ], param: :token
   devise_for :users, controllers: {
-    registrations: "users/registrations"
+    registrations: "users/registrations",
+    sessions: "users/sessions"
   }
 
   # Devise showcase (remove in production)

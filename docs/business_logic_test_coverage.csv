@@ -1,0 +1,59 @@
+test_name,file_path,line_number,business_rule_code,business_rule,category,weight,risk_level,coverage_status
+can_be_approved_by? returns true for super admin,test/models/email_change_request_test.rb,207,CR-A2,System role hierarchy and permissions,Authentication & Authorization,10,HIGH,covered
+requires authentication,test/controllers/admin/super/dashboard_controller_test.rb,41,CR-A2,System role hierarchy and permissions,Authentication & Authorization,10,HIGH,covered
+should get index as super admin,test/controllers/admin/super/plans_controller_test.rb,20,CR-A2,System role hierarchy and permissions,Authentication & Authorization,10,HIGH,covered
+super admin can change user status to inactive,test/services/users/status_management_service_test.rb,33,CR-A2,System role hierarchy and permissions,Authentication & Authorization,10,HIGH,covered
+should not get index as site admin,test/controllers/admin/super/plans_controller_test.rb,26,CR-A2,System role hierarchy and permissions,Authentication & Authorization,10,HIGH,covered
+should not get index as regular user,test/controllers/admin/super/plans_controller_test.rb,39,CR-A2,System role hierarchy and permissions,Authentication & Authorization,10,HIGH,covered
+system role permissions follow proper hierarchy,test/models/user_test.rb,362,CR-A2,System role hierarchy and permissions,Authentication & Authorization,10,HIGH,covered
+requires authentication,test/controllers/users/dashboard_controller_test.rb,37,CR-A2,System role hierarchy and permissions,Authentication & Authorization,10,HIGH,covered
+super admin can reactivate user,test/services/users/status_management_service_test.rb,53,CR-A2,System role hierarchy and permissions,Authentication & Authorization,10,HIGH,covered
+site admin can change user status,test/services/users/status_management_service_test.rb,65,CR-A2,System role hierarchy and permissions,Authentication & Authorization,10,HIGH,covered
+denies access to non-super-admins,test/controllers/admin/super/dashboard_controller_test.rb,15,CR-A2,System role hierarchy and permissions,Authentication & Authorization,10,HIGH,covered
+super admin can change user status to locked,test/services/users/status_management_service_test.rb,43,CR-A2,System role hierarchy and permissions,Authentication & Authorization,10,HIGH,covered
+invitation email cannot exist in users table,test/models/invitation_test.rb,53,CR-I1,New email only - not in users table,Invitation System,10,HIGH,covered
+accept! creates correct user type with proper associations,test/models/invitation_test.rb,82,CR-I4,Invitation acceptance creates correct user type,Invitation System,10,HIGH,covered
+user type cannot be changed after creation,test/models/user_test.rb,40,CR-U1,User type immutability - cannot be changed after creation,User Type System,10,HIGH,covered
+user type associations are properly isolated,test/models/user_test.rb,55,CR-U2,User type isolation - exclusive associations per type,User Type System,10,HIGH,covered
+user type isolation matrix prevents all invalid combinations,test/models/user_test.rb,314,CR-U2,User type isolation - exclusive associations per type,User Type System,10,HIGH,covered
+direct users can own teams but not be invited members,test/models/user_test.rb,131,CR-U3,Direct user team ownership - only associated with owned teams,User Type System,10,HIGH,covered
+password complexity requirements are enforced,test/models/user_test.rb,103,CR-A1,Password complexity requirements,Authentication & Authorization,9,HIGH,covered
+enforces strong password requirements,test/controllers/users/registrations_controller_test.rb,45,CR-A1,Password complexity requirements,Authentication & Authorization,9,HIGH,covered
+NO TEST COVERAGE,N/A,N/A,CR-A3,Self-role change prevention,Authentication & Authorization,9,HIGH,NOT COVERED
+plan segmentation enforces billing separation,test/models/plan_test.rb,21,CR-B1,Billing separation - team vs individual,Billing & Subscriptions,9,HIGH,covered
+NO TEST COVERAGE,N/A,N/A,CR-B2,Plan enforcement - features and limits,Billing & Subscriptions,9,HIGH,NOT COVERED
+NO TEST COVERAGE,N/A,N/A,CR-E1,Admin assignment via invitation,Enterprise Groups,9,HIGH,NOT COVERED
+NO TEST COVERAGE,N/A,N/A,CR-E2,Enterprise user isolation,Enterprise Groups,9,HIGH,NOT COVERED
+should have many invitations as invitable,test/models/enterprise_group_test.rb,185,CR-I3,Polymorphic type safety,Invitation System,9,HIGH,covered
+polymorphic invitation type safety enforced,test/models/invitation_test.rb,135,CR-I3,Polymorphic type safety,Invitation System,9,HIGH,covered
+NO TEST COVERAGE,N/A,N/A,CR-S1,CSRF protection,Security Constraints,9,HIGH,NOT COVERED
+NO TEST COVERAGE,N/A,N/A,CR-S2,Mass assignment protection,Security Constraints,9,HIGH,NOT COVERED
+super admin can change user status to locked,test/services/users/status_management_service_test.rb,43,CR-T1,Team creation authority - only Super Admins,Team Management,9,HIGH,covered
+complete team creation flow works correctly,test/models/team_test.rb,348,CR-T1,Team creation authority - only Super Admins,Team Management,9,HIGH,covered
+can_be_approved_by? returns true for super admin,test/models/email_change_request_test.rb,207,CR-T1,Team creation authority - only Super Admins,Team Management,9,HIGH,covered
+should get index as super admin,test/controllers/admin/super/plans_controller_test.rb,20,CR-T1,Team creation authority - only Super Admins,Team Management,9,HIGH,covered
+super admin can change user status to inactive,test/services/users/status_management_service_test.rb,33,CR-T1,Team creation authority - only Super Admins,Team Management,9,HIGH,covered
+super admin can reactivate user,test/services/users/status_management_service_test.rb,53,CR-T1,Team creation authority - only Super Admins,Team Management,9,HIGH,covered
+can_add_members? checks against max_members,test/models/enterprise_group_test.rb,278,CR-T2,Member limit enforcement per plan,Team Management,9,HIGH,covered
+team enforces member limits based on plan,test/models/team_test.rb,44,CR-T2,Member limit enforcement per plan,Team Management,9,HIGH,covered
+team plans enforce member limit requirements,test/models/plan_test.rb,42,CR-T2,Member limit enforcement per plan,Team Management,9,HIGH,covered
+cannot delete last admin from team,test/models/team_test.rb,303,CR-T3,Admin requirement - team must have admin,Team Management,9,HIGH,covered
+NO TEST COVERAGE,N/A,N/A,CR-T4,Team billing independence,Team Management,9,HIGH,NOT COVERED
+registration preserves plan_segment in session on validation error,test/controllers/users/registrations_controller_plan_segment_test.rb,123,CR-B3,Plan segmentation by user type,Billing & Subscriptions,8,HIGH,covered
+plan segmentation enforces billing separation,test/models/plan_test.rb,21,CR-B3,Plan segmentation by user type,Billing & Subscriptions,8,HIGH,covered
+shows all three plan segment options,test/controllers/pages_controller_choose_plan_type_test.rb,36,CR-B3,Plan segmentation by user type,Billing & Subscriptions,8,HIGH,covered
+NO TEST COVERAGE,N/A,N/A,CR-D1,Foreign key integrity,Data Integrity,8,HIGH,NOT COVERED
+invitation expiration and acceptance rules,test/models/invitation_test.rb,178,CR-I2,Invitation expiration after 7 days,Invitation System,8,MEDIUM,covered
+NO TEST COVERAGE,N/A,N/A,IR-I1,Token uniqueness,Invitation System,8,MEDIUM,NOT COVERED
+NO TEST COVERAGE,N/A,N/A,IR-T2,User deletion prevention with members,Team Management,8,MEDIUM,NOT COVERED
+email change request enforces email uniqueness,test/models/email_change_request_test.rb,113,IR-U1,Email uniqueness across system,User Type System,8,MEDIUM,covered
+validates email uniqueness,test/controllers/users/registrations_controller_test.rb,65,IR-U1,Email uniqueness across system,User Type System,8,MEDIUM,covered
+email uniqueness prevents conflicts with invitations,test/models/user_test.rb,152,IR-U1,Email uniqueness across system,User Type System,8,MEDIUM,covered
+email normalization and validation,test/models/invitation_test.rb,259,CR-D2,Email normalization in all models,Data Integrity,7,MEDIUM,covered
+email normalization ensures consistency,test/models/user_test.rb,206,CR-D2,Email normalization in all models,Data Integrity,7,MEDIUM,covered
+slug generation and uniqueness,test/models/team_test.rb,86,IR-T1,Slug uniqueness and URL safety,Team Management,7,MEDIUM,covered
+authentication status controls access appropriately,test/models/user_test.rb,219,IR-U2,Status management - only active users can sign in,User Type System,7,MEDIUM,covered
+active scope returns only active users,test/models/user_scopes_and_queries_test.rb,121,IR-U2,Status management - only active users can sign in,User Type System,7,MEDIUM,covered
+count active users by type,test/models/user_scopes_and_queries_test.rb,287,IR-U2,Status management - only active users can sign in,User Type System,7,MEDIUM,covered
+email normalization and validation,test/models/invitation_test.rb,259,IR-U3,Email normalization - lowercase and trimmed,User Type System,6,MEDIUM,covered
+email normalization ensures consistency,test/models/user_test.rb,206,IR-U3,Email normalization - lowercase and trimmed,User Type System,6,MEDIUM,covered

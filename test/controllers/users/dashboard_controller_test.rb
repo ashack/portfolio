@@ -9,7 +9,7 @@ class Users::DashboardControllerTest < ActionDispatch::IntegrationTest
   end
 
   # ========== CRITICAL TESTS (Weight 7-9) ==========
-  
+
   # Weight: 9 - Critical access control (CR-U2)
   test "prevents access by non-direct users" do
     sign_out @direct_user
@@ -64,7 +64,7 @@ class Users::DashboardControllerTest < ActionDispatch::IntegrationTest
   end
 
   # ========== MEDIUM PRIORITY TESTS (Weight 5-6) ==========
-  
+
   # Weight: 6 - Basic functionality and data loading
   test "loads dashboard with user data and recent activities" do
     # Create test activities
@@ -84,7 +84,7 @@ class Users::DashboardControllerTest < ActionDispatch::IntegrationTest
     assert_equal @direct_user, assigns(:user)
     assert_not_nil assigns(:recent_activities)
     assert_equal 5, assigns(:recent_activities).count
-    
+
     # Verify ordering
     activities = assigns(:recent_activities)
     assert activities.first.started_at > activities.last.started_at,

@@ -132,7 +132,7 @@ class AuditLogTest < ActiveSupport::TestCase
                   AuditLog::ADMIN_ACTIONS +
                   AuditLog::TEAM_ACTIONS +
                   AuditLog::SYSTEM_ACTIONS
-    
+
     assert_equal all_actions.sort, AuditLog::ACTION_TYPES.sort
     assert_equal all_actions.uniq.sort, AuditLog::ACTION_TYPES.sort, "ACTION_TYPES should not have duplicates"
   end
@@ -154,16 +154,16 @@ class AuditLogTest < ActiveSupport::TestCase
 
   test "audit logs are immutable after creation" do
     @audit_log.save!
-    
+
     # Attempt to modify various fields
     original_action = @audit_log.action
     original_user_id = @audit_log.user_id
     original_target_user_id = @audit_log.target_user_id
-    
+
     @audit_log.action = "user_delete"
     @audit_log.user_id = 999
     @audit_log.target_user_id = 999
-    
+
     # In a real immutable implementation, save would fail
     # For now, we're testing that the fields can be tracked
     assert_equal original_action, @audit_log.reload.action
@@ -172,18 +172,18 @@ class AuditLogTest < ActiveSupport::TestCase
   test "critical actions are properly identified" do
     # Check what the scope actually includes based on the model definition
     # scope :critical_actions, -> { where(action: SECURITY_ACTIONS + [ "user_delete", "team_delete" ]) }
-    expected_critical = AuditLog::SECURITY_ACTIONS + ["user_delete", "team_delete"]
-    
+    expected_critical = AuditLog::SECURITY_ACTIONS + [ "user_delete", "team_delete" ]
+
     expected_critical.each do |action|
       log = AuditLog.create!(
         user: @admin,
         target_user: @target_user,
         action: action
       )
-      
+
       assert_includes AuditLog.critical_actions, log, "Action '#{action}' should be critical"
     end
-    
+
     # Test that critical_system_change is NOT in critical_actions scope (it's not included in the model)
     non_critical_log = AuditLog.create!(
       user: @admin,
@@ -200,8 +200,8 @@ class AuditLogTest < ActiveSupport::TestCase
       target_user: @target_user,
       action: "permissions_change",
       details: {
-        permissions_added: ["admin_access"],
-        permissions_removed: ["read_only"],
+        permissions_added: [ "admin_access" ],
+        permissions_removed: [ "read_only" ],
         reason: "Promotion to admin",
         authorized_by: "CEO"
       },
@@ -209,7 +209,7 @@ class AuditLogTest < ActiveSupport::TestCase
       user_agent: "Mozilla/5.0",
       created_at: Time.current
     )
-    
+
     # Verify all accountability fields
     assert_not_nil log.user_id, "Must track who performed action"
     assert_not_nil log.target_user_id, "Must track who was affected"
@@ -253,7 +253,7 @@ class AuditLogTest < ActiveSupport::TestCase
       "team_create" => "Team Management",
       "data_export" => "System"
     }
-    
+
     category_tests.each do |action, expected_category|
       @audit_log.action = action
       assert_equal expected_category, @audit_log.action_category
@@ -277,7 +277,7 @@ class AuditLogTest < ActiveSupport::TestCase
       "status_change" => "medium",
       "user_create" => "low"
     }
-    
+
     severity_tests.each do |action, expected_severity|
       @audit_log.action = action
       assert_equal expected_severity, @audit_log.action_severity,
@@ -293,7 +293,7 @@ class AuditLogTest < ActiveSupport::TestCase
       "team_create" => "users",
       "data_export" => "cog"
     }
-    
+
     icon_tests.each do |action, expected_icon|
       @audit_log.action = action
       assert_equal expected_icon, @audit_log.action_icon
@@ -327,7 +327,7 @@ class AuditLogTest < ActiveSupport::TestCase
         "first_name" => { "from" => "John", "to" => "Jane" }
       }
     }
-    
+
     formatted = @audit_log.formatted_details
     assert_equal "old@example.com → new@example.com", formatted["Email"]
     assert_equal "John → Jane", formatted["First name"]
@@ -336,7 +336,7 @@ class AuditLogTest < ActiveSupport::TestCase
   test "formatted_details handles user_update with no changes" do
     @audit_log.action = "user_update"
     @audit_log.details = { "note" => "No changes" }
-    
+
     assert_equal @audit_log.details, @audit_log.formatted_details
   end
 
@@ -353,7 +353,7 @@ class AuditLogTest < ActiveSupport::TestCase
       "new_role" => "admin",
       "timestamp" => Time.current
     }
-    
+
     formatted = @audit_log.formatted_details
     assert_equal "member → admin", formatted["Role Change"]
     assert_not_nil formatted["Timestamp"]
@@ -362,7 +362,7 @@ class AuditLogTest < ActiveSupport::TestCase
   test "formatted_details returns raw details for other actions" do
     @audit_log.action = "team_create"
     @audit_log.details = { "team_name" => "New Team", "plan" => "pro" }
-    
+
     assert_equal @audit_log.details, @audit_log.formatted_details
   end
 
@@ -373,13 +373,13 @@ class AuditLogTest < ActiveSupport::TestCase
   test "recent scope orders by created_at desc" do
     older_log = @audit_log.dup
     older_log.save!
-    
+
     newer_log = AuditLog.create!(
       user: @admin,
       target_user: @target_user,
       action: "user_update"
     )
-    
+
     recent = AuditLog.recent
     assert_equal newer_log, recent.first
     assert_equal older_log, recent.second
@@ -387,13 +387,13 @@ class AuditLogTest < ActiveSupport::TestCase
 
   test "by_action scope filters correctly" do
     @audit_log.save!
-    
+
     other_log = AuditLog.create!(
       user: @admin,
       target_user: @target_user,
       action: "user_update"
     )
-    
+
     status_logs = AuditLog.by_action("status_change")
     assert_includes status_logs, @audit_log
     assert_not_includes status_logs, other_log
@@ -401,7 +401,7 @@ class AuditLogTest < ActiveSupport::TestCase
 
   test "by_admin scope filters by user_id" do
     @audit_log.save!
-    
+
     other_admin = User.create!(
       email: "other_admin@example.com",
       password: "Password123!",
@@ -409,13 +409,13 @@ class AuditLogTest < ActiveSupport::TestCase
       user_type: "direct",
       confirmed_at: Time.current
     )
-    
+
     other_log = AuditLog.create!(
       user: other_admin,
       target_user: @target_user,
       action: "user_update"
     )
-    
+
     admin_logs = AuditLog.by_admin(@admin.id)
     assert_includes admin_logs, @audit_log
     assert_not_includes admin_logs, other_log
@@ -423,20 +423,20 @@ class AuditLogTest < ActiveSupport::TestCase
 
   test "for_user scope filters by target_user_id" do
     @audit_log.save!
-    
+
     other_target = User.create!(
       email: "other_target@example.com",
       password: "Password123!",
       user_type: "direct",
       confirmed_at: Time.current
     )
-    
+
     other_log = AuditLog.create!(
       user: @admin,
       target_user: other_target,
       action: "user_update"
     )
-    
+
     target_logs = AuditLog.for_user(@target_user.id)
     assert_includes target_logs, @audit_log
     assert_not_includes target_logs, other_log
@@ -444,19 +444,19 @@ class AuditLogTest < ActiveSupport::TestCase
 
   test "critical_actions scope includes security and deletion actions" do
     @audit_log.save!
-    
+
     critical_log = AuditLog.create!(
       user: @admin,
       target_user: @target_user,
       action: "user_delete"
     )
-    
+
     security_log = AuditLog.create!(
       user: @admin,
       target_user: @target_user,
       action: "password_reset"
     )
-    
+
     critical = AuditLog.critical_actions
     assert_includes critical, critical_log
     assert_includes critical, security_log
@@ -465,14 +465,14 @@ class AuditLogTest < ActiveSupport::TestCase
 
   test "with_ip scope filters by IP address" do
     @audit_log.save!
-    
+
     other_log = AuditLog.create!(
       user: @admin,
       target_user: @target_user,
       action: "user_update",
       ip_address: "192.168.1.1"
     )
-    
+
     ip_logs = AuditLog.with_ip("127.0.0.1")
     assert_includes ip_logs, @audit_log
     assert_not_includes ip_logs, other_log
@@ -482,7 +482,7 @@ class AuditLogTest < ActiveSupport::TestCase
     # Today
     today_log = @audit_log
     today_log.save!
-    
+
     # Yesterday
     yesterday_log = AuditLog.create!(
       user: @admin,
@@ -490,7 +490,7 @@ class AuditLogTest < ActiveSupport::TestCase
       action: "user_update",
       created_at: 1.day.ago
     )
-    
+
     # Last week
     last_week_log = AuditLog.create!(
       user: @admin,
@@ -498,7 +498,7 @@ class AuditLogTest < ActiveSupport::TestCase
       action: "role_change",
       created_at: 8.days.ago
     )
-    
+
     # Last month
     last_month_log = AuditLog.create!(
       user: @admin,
@@ -506,15 +506,15 @@ class AuditLogTest < ActiveSupport::TestCase
       action: "team_create",
       created_at: 32.days.ago
     )
-    
+
     # Test scopes
     assert_includes AuditLog.today, today_log
     assert_not_includes AuditLog.today, yesterday_log
-    
+
     assert_includes AuditLog.this_week, today_log
     assert_includes AuditLog.this_week, yesterday_log
     assert_not_includes AuditLog.this_week, last_week_log
-    
+
     assert_includes AuditLog.this_month, today_log
     assert_includes AuditLog.this_month, yesterday_log
     assert_includes AuditLog.this_month, last_week_log
@@ -523,20 +523,20 @@ class AuditLogTest < ActiveSupport::TestCase
 
   test "by_category scope filters by action category" do
     @audit_log.save!
-    
+
     security_log = AuditLog.create!(
       user: @admin,
       target_user: @target_user,
       action: "password_reset"
     )
-    
+
     # The by_category scope expects the category name exactly as the constant prefix
     user_mgmt_logs = AuditLog.where(action: AuditLog::USER_MANAGEMENT_ACTIONS)
     security_logs = AuditLog.where(action: AuditLog::SECURITY_ACTIONS)
-    
+
     assert_includes user_mgmt_logs, @audit_log  # status_change is user management
     assert_not_includes user_mgmt_logs, security_log
-    
+
     assert_includes security_logs, security_log
     assert_not_includes security_logs, @audit_log
   end
@@ -548,13 +548,13 @@ class AuditLogTest < ActiveSupport::TestCase
   test "activity_summary returns comprehensive statistics" do
     # Create diverse logs
     @audit_log.save!
-    
+
     AuditLog.create!(
       user: @admin,
       target_user: @target_user,
       action: "user_delete"
     )
-    
+
     other_admin = User.create!(
       email: "other@example.com",
       password: "Password123!",
@@ -562,15 +562,15 @@ class AuditLogTest < ActiveSupport::TestCase
       user_type: "direct",
       confirmed_at: Time.current
     )
-    
+
     AuditLog.create!(
       user: other_admin,
       target_user: @target_user,
       action: "password_reset"
     )
-    
+
     summary = AuditLog.activity_summary(:today)
-    
+
     assert_equal 3, summary[:total_actions]
     assert_equal 2, summary[:unique_admins]
     assert_equal 2, summary[:critical_actions]  # user_delete and password_reset
@@ -582,21 +582,21 @@ class AuditLogTest < ActiveSupport::TestCase
 
   test "admin_activity_report provides admin-specific analytics" do
     @audit_log.save!
-    
+
     AuditLog.create!(
       user: @admin,
       target_user: @target_user,
       action: "user_update"
     )
-    
+
     AuditLog.create!(
       user: @admin,
       target_user: @target_user,
       action: "password_reset"
     )
-    
+
     report = AuditLog.admin_activity_report(@admin, :today)
-    
+
     assert_equal @admin, report[:admin]
     assert_equal 3, report[:total_actions]
     assert_equal 1, report[:actions_by_type]["status_change"]
@@ -613,7 +613,7 @@ class AuditLogTest < ActiveSupport::TestCase
   test "handles multiple validation errors gracefully" do
     log = AuditLog.new
     assert_not log.valid?
-    
+
     # Should have errors for all required fields
     assert log.errors[:user].present?
     assert log.errors[:target_user].present?
@@ -639,7 +639,7 @@ class AuditLogTest < ActiveSupport::TestCase
       "TEAM_ACTIONS" => AuditLog::TEAM_ACTIONS,
       "SYSTEM_ACTIONS" => AuditLog::SYSTEM_ACTIONS
     }
-    
+
     all_categories.each do |category_name, actions|
       actions.each do |action|
         log = AuditLog.new(
@@ -655,7 +655,7 @@ class AuditLogTest < ActiveSupport::TestCase
   test "time-based filtering for security incident investigation" do
     # Create logs simulating a security incident timeline
     incident_start = 2.hours.ago
-    
+
     # Initial suspicious activity
     suspicious_log = AuditLog.create!(
       user: @admin,
@@ -664,25 +664,25 @@ class AuditLogTest < ActiveSupport::TestCase
       created_at: incident_start,
       ip_address: "192.168.1.100"
     )
-    
+
     # Follow-up actions
     followup_logs = []
     5.times do |i|
       followup_logs << AuditLog.create!(
         user: @admin,
         target_user: @target_user,
-        action: ["password_reset", "account_unlock", "email_confirm"].sample,
+        action: [ "password_reset", "account_unlock", "email_confirm" ].sample,
         created_at: incident_start + (i * 10).minutes,
         ip_address: "192.168.1.100"
       )
     end
-    
+
     # Query logs from the incident timeframe
     incident_logs = AuditLog.where("created_at >= ?", incident_start - 10.minutes)
                             .where("created_at <= ?", Time.current)
                             .with_ip("192.168.1.100")
                             .recent
-    
+
     assert_equal 6, incident_logs.count
     assert_includes incident_logs, suspicious_log
     followup_logs.each { |log| assert_includes incident_logs, log }

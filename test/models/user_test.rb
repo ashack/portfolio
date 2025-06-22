@@ -10,20 +10,20 @@ class UserTest < ActiveSupport::TestCase
       user_type: "direct",
       status: "active"
     )
-    
+
     @team = Team.create!(
       name: "Test Team",
       admin: users(:super_admin),
       created_by: users(:super_admin)
     )
-    
+
     @enterprise_plan = Plan.create!(
       name: "Enterprise Plan",
       plan_segment: "enterprise",
       amount_cents: 99900,
       active: true
     )
-    
+
     @enterprise_group = EnterpriseGroup.create!(
       name: "Test Enterprise",
       created_by: users(:super_admin),
@@ -35,18 +35,18 @@ class UserTest < ActiveSupport::TestCase
   # ========================================================================
   # CRITICAL TESTS (Weight: 9-10)
   # ========================================================================
-  
+
   # Weight: 10 - CR-U1: User type immutability - core system integrity
   test "user type cannot be changed after creation" do
     @user.skip_confirmation!
     @user.save!
-    
+
     # Test all possible type changes
-    ["invited", "enterprise"].each do |new_type|
+    [ "invited", "enterprise" ].each do |new_type|
       @user.reload
       @user.user_type = new_type
       assert_not @user.valid?
-      assert_includes @user.errors[:user_type], 
+      assert_includes @user.errors[:user_type],
         "cannot be changed from 'direct' to '#{new_type}' - this is a core business rule"
     end
   end
@@ -59,7 +59,7 @@ class UserTest < ActiveSupport::TestCase
     @user.team_role = "member"
     assert_not @user.valid?
     assert_includes @user.errors[:team_id], "direct users can only be associated with teams they own"
-    
+
     # Direct users cannot have enterprise associations
     @user.team = nil
     @user.team_role = nil
@@ -67,14 +67,14 @@ class UserTest < ActiveSupport::TestCase
     @user.enterprise_group_role = "member"
     assert_not @user.valid?
     assert_includes @user.errors[:base], "direct users cannot have enterprise group associations"
-    
+
     # Invited users must have team associations
-    @user = User.new(email: "invited@example.com", password: "Password123!", 
+    @user = User.new(email: "invited@example.com", password: "Password123!",
                      user_type: "invited")
     assert_not @user.valid?
     assert_includes @user.errors[:team_id], "is required for team members"
     assert_includes @user.errors[:team_role], "is required for team members"
-    
+
     # Invited users cannot have enterprise associations
     @user.team = @team
     @user.team_role = "member"
@@ -82,14 +82,14 @@ class UserTest < ActiveSupport::TestCase
     @user.enterprise_group_role = "member"
     assert_not @user.valid?
     assert_includes @user.errors[:base], "team members cannot have enterprise group associations"
-    
+
     # Enterprise users must have enterprise associations
-    @user = User.new(email: "enterprise@example.com", password: "Password123!", 
+    @user = User.new(email: "enterprise@example.com", password: "Password123!",
                      user_type: "enterprise")
     assert_not @user.valid?
     assert_includes @user.errors[:enterprise_group_id], "is required for enterprise users"
     assert_includes @user.errors[:enterprise_group_role], "is required for enterprise users"
-    
+
     # Enterprise users cannot have team associations
     @user.enterprise_group = @enterprise_group
     @user.enterprise_group_role = "member"
@@ -109,14 +109,14 @@ class UserTest < ActiveSupport::TestCase
       "Password!" => "must include at least one number",
       "Password123" => "must include at least one special character"
     }
-    
+
     test_cases.each do |password, expected_error|
       @user.password = password
       assert_not @user.valid?
       assert @user.errors[:password].any? { |e| e.include?(expected_error.split.last(3).join(" ")) },
         "Password '#{password}' should have error containing '#{expected_error}'"
     end
-    
+
     # Test that all errors show at once
     @user.password = "pass"
     assert_not @user.valid?
@@ -131,16 +131,16 @@ class UserTest < ActiveSupport::TestCase
   test "direct users can own teams but not be invited members" do
     @user.skip_confirmation!
     @user.save!
-    
+
     # Direct users can own teams
     owned_team = Team.create!(
       name: "Owned Team",
       admin: @user,
       created_by: users(:super_admin)
     )
-    
+
     assert_includes @user.administered_teams, owned_team
-    
+
     # But cannot be assigned as team members
     @user.team = @team
     @user.team_role = "member"
@@ -152,12 +152,12 @@ class UserTest < ActiveSupport::TestCase
   test "email uniqueness prevents conflicts with invitations" do
     @user.skip_confirmation!
     @user.save!
-    
+
     # Cannot create duplicate user
     duplicate_user = @user.dup
     assert_not duplicate_user.valid?
     assert_includes duplicate_user.errors[:email], "has already been taken"
-    
+
     # Email normalization prevents case-based duplicates
     duplicate_user.email = "TEST@EXAMPLE.COM"
     assert_not duplicate_user.valid?
@@ -179,12 +179,12 @@ class UserTest < ActiveSupport::TestCase
       team_role: "member",
       confirmed_at: Time.current
     )
-    
+
     # Member can be promoted to admin
     member_user.team_role = "admin"
     assert member_user.valid?
     assert member_user.save
-    
+
     # Create another admin so we have 2 admins total
     another_admin = User.create!(
       email: "admin2@example.com",
@@ -194,7 +194,7 @@ class UserTest < ActiveSupport::TestCase
       team_role: "admin",
       confirmed_at: Time.current
     )
-    
+
     # Admin can be demoted when another admin exists
     member_user.reload
     member_user.team_role = "member"
@@ -208,7 +208,7 @@ class UserTest < ActiveSupport::TestCase
     @user.email = "  TeSt@ExAmPlE.cOm  "
     @user.valid?
     assert_equal "test@example.com", @user.email
-    
+
     # Handles nil gracefully
     @user.email = nil
     assert_nothing_raised { @user.valid? }
@@ -220,9 +220,9 @@ class UserTest < ActiveSupport::TestCase
     # Active users can sign in
     @user.status = "active"
     assert @user.can_sign_in?
-    
+
     # Inactive and locked users cannot sign in
-    ["inactive", "locked"].each do |status|
+    [ "inactive", "locked" ].each do |status|
       @user.status = status
       assert_not @user.can_sign_in?
     end
@@ -238,17 +238,17 @@ class UserTest < ActiveSupport::TestCase
     @user.email = nil
     assert_not @user.valid?
     assert_includes @user.errors[:email], "can't be blank"
-    
+
     @user.email = "invalid-email"
     assert_not @user.valid?
     assert @user.errors[:email].any?
-    
+
     # User type and status validation
     @user.email = "test@example.com"
     @user.user_type = nil
     assert_not @user.valid?
     assert_includes @user.errors[:user_type], "can't be blank"
-    
+
     @user.user_type = "direct"
     @user.status = nil
     assert_not @user.valid?
@@ -262,25 +262,25 @@ class UserTest < ActiveSupport::TestCase
                             user_type: "invited", team: @team, team_role: "admin")
     assert invited_admin.team_admin?
     assert_not invited_admin.team_member?
-    
+
     invited_member = User.new(email: "member@example.com", password: "Password123!",
                              user_type: "invited", team: @team, team_role: "member")
     assert_not invited_member.team_admin?
     assert invited_member.team_member?
-    
+
     # Enterprise roles
     ent_admin = User.new(email: "entadmin@example.com", password: "Password123!",
                         user_type: "enterprise", enterprise_group: @enterprise_group,
                         enterprise_group_role: "admin")
     assert ent_admin.enterprise_admin?
     assert_not ent_admin.enterprise_member?
-    
+
     ent_member = User.new(email: "entmember@example.com", password: "Password123!",
                          user_type: "enterprise", enterprise_group: @enterprise_group,
                          enterprise_group_role: "member")
     assert_not ent_member.enterprise_admin?
     assert ent_member.enterprise_member?
-    
+
     # Direct users have no team/enterprise roles
     assert_not @user.team_admin?
     assert_not @user.team_member?
@@ -297,10 +297,10 @@ class UserTest < ActiveSupport::TestCase
     @user.first_name = nil
     @user.last_name = nil
     assert_equal "", @user.full_name
-    
+
     @user.first_name = "John"
     assert_equal "John", @user.full_name
-    
+
     @user.first_name = nil
     @user.last_name = "Doe"
     assert_equal "Doe", @user.full_name
@@ -315,28 +315,28 @@ class UserTest < ActiveSupport::TestCase
     # Matrix of all user type and association combinations
     test_matrix = [
       # [user_type, team?, team_role?, enterprise?, enterprise_role?, should_be_valid?]
-      ["direct", nil, nil, nil, nil, true],
-      ["direct", @team, "member", nil, nil, false],
-      ["direct", @team, "admin", nil, nil, false],
-      ["direct", nil, nil, @enterprise_group, "member", false],
-      ["direct", nil, nil, @enterprise_group, "admin", false],
-      ["direct", @team, "member", @enterprise_group, "member", false],
-      
-      ["invited", nil, nil, nil, nil, false],
-      ["invited", @team, nil, nil, nil, false],
-      ["invited", @team, "member", nil, nil, true],
-      ["invited", @team, "admin", nil, nil, true],
-      ["invited", @team, "member", @enterprise_group, "member", false],
-      ["invited", nil, nil, @enterprise_group, "member", false],
-      
-      ["enterprise", nil, nil, nil, nil, false],
-      ["enterprise", nil, nil, @enterprise_group, nil, false],
-      ["enterprise", nil, nil, @enterprise_group, "member", true],
-      ["enterprise", nil, nil, @enterprise_group, "admin", true],
-      ["enterprise", @team, "member", @enterprise_group, "member", false],
-      ["enterprise", @team, "member", nil, nil, false]
+      [ "direct", nil, nil, nil, nil, true ],
+      [ "direct", @team, "member", nil, nil, false ],
+      [ "direct", @team, "admin", nil, nil, false ],
+      [ "direct", nil, nil, @enterprise_group, "member", false ],
+      [ "direct", nil, nil, @enterprise_group, "admin", false ],
+      [ "direct", @team, "member", @enterprise_group, "member", false ],
+
+      [ "invited", nil, nil, nil, nil, false ],
+      [ "invited", @team, nil, nil, nil, false ],
+      [ "invited", @team, "member", nil, nil, true ],
+      [ "invited", @team, "admin", nil, nil, true ],
+      [ "invited", @team, "member", @enterprise_group, "member", false ],
+      [ "invited", nil, nil, @enterprise_group, "member", false ],
+
+      [ "enterprise", nil, nil, nil, nil, false ],
+      [ "enterprise", nil, nil, @enterprise_group, nil, false ],
+      [ "enterprise", nil, nil, @enterprise_group, "member", true ],
+      [ "enterprise", nil, nil, @enterprise_group, "admin", true ],
+      [ "enterprise", @team, "member", @enterprise_group, "member", false ],
+      [ "enterprise", @team, "member", nil, nil, false ]
     ]
-    
+
     test_matrix.each do |user_type, team, team_role, enterprise, enterprise_role, should_be_valid|
       user = User.new(
         email: "test_#{user_type}_#{team_role}_#{enterprise_role}@example.com",
@@ -347,9 +347,9 @@ class UserTest < ActiveSupport::TestCase
         enterprise_group: enterprise,
         enterprise_group_role: enterprise_role
       )
-      
+
       if should_be_valid
-        assert user.valid?, 
+        assert user.valid?,
           "User type '#{user_type}' with team_role '#{team_role}' and enterprise_role '#{enterprise_role}' should be valid but has errors: #{user.errors.full_messages.join(', ')}"
       else
         assert_not user.valid?,
@@ -362,13 +362,13 @@ class UserTest < ActiveSupport::TestCase
   test "system role permissions follow proper hierarchy" do
     @user.skip_confirmation!
     @user.save!
-    
+
     # Users cannot self-promote
     original_role = @user.system_role
     @user.system_role = "site_admin"
     # This is allowed at model level - controller should prevent
     assert @user.valid?
-    
+
     # Super admin has highest privileges
     super_admin = User.create!(
       email: "super@example.com",
@@ -379,7 +379,7 @@ class UserTest < ActiveSupport::TestCase
     assert super_admin.super_admin?
     assert_not super_admin.site_admin?
     assert_not super_admin.user?
-    
+
     # Site admin has medium privileges
     site_admin = User.create!(
       email: "site@example.com",
@@ -390,7 +390,7 @@ class UserTest < ActiveSupport::TestCase
     assert site_admin.site_admin?
     assert_not site_admin.super_admin?
     assert_not site_admin.user?
-    
+
     # Regular user has basic privileges
     regular_user = User.create!(
       email: "regular@example.com",
@@ -407,30 +407,30 @@ class UserTest < ActiveSupport::TestCase
   test "user status transitions follow business rules" do
     @user.skip_confirmation!
     @user.save!
-    
+
     # Valid status values
-    valid_statuses = ["active", "inactive", "locked"]
+    valid_statuses = [ "active", "inactive", "locked" ]
     valid_statuses.each do |status|
       @user.status = status
       assert @user.valid?, "Status '#{status}' should be valid"
     end
-    
+
     # Active -> Inactive (valid for suspension)
     @user.status = "active"
     @user.save!
     @user.status = "inactive"
     assert @user.valid?
-    
+
     # Inactive -> Active (valid for reactivation)
     @user.save!
     @user.status = "active"
     assert @user.valid?
-    
+
     # Active -> Locked (valid for security)
     @user.save!
     @user.status = "locked"
     assert @user.valid?
-    
+
     # Locked users need admin intervention to unlock
     @user.save!
     @user.status = "active"

@@ -18,24 +18,24 @@ class Team < ApplicationRecord
   # The designated admin user for this team
   # Can be changed but team must always have one
   belongs_to :admin, class_name: "User"
-  
+
   # The super admin who created this team
   # Immutable - tracks who created the team for audit purposes
   belongs_to :created_by, class_name: "User"
-  
+
   # Team members - uses restrict_with_error to prevent deletion
   # Teams with users cannot be deleted (must remove users first)
   has_many :users, dependent: :restrict_with_error
-  
+
   # Team invitations - automatically cleaned up when team is deleted
   has_many :invitations, dependent: :destroy
 
   # Subscription plan level
   # - starter: Basic features, 5 members max
-  # - pro: Advanced features, 15 members max  
+  # - pro: Advanced features, 15 members max
   # - enterprise: Full features, 100 members max
   enum :plan, { starter: 0, pro: 1, enterprise: 2 }
-  
+
   # Team account status
   # - active: Normal operation
   # - suspended: Temporarily disabled (e.g., payment issue)
@@ -44,14 +44,14 @@ class Team < ApplicationRecord
 
   # Name validation - user-friendly team identifier
   validates :name, presence: true, length: { minimum: 2, maximum: 50 }
-  
+
   # Slug validation - URL-safe unique identifier
   # Used in URLs: /teams/team-slug/
   validates :slug, presence: true, uniqueness: true, format: { with: /\A[a-z0-9\-]+\z/ }
-  
+
   # Ensure team always has an admin
   validates :admin_id, presence: true
-  
+
   # Track who created the team
   validates :created_by_id, presence: true
 
@@ -61,13 +61,13 @@ class Team < ApplicationRecord
   # ========================================================================
   # SCOPES
   # ========================================================================
-  
+
   # Filter for active teams only
   scope :active, -> { where(status: "active") }
-  
+
   # Eager load associations to prevent N+1 queries
   scope :with_associations, -> { includes(:admin, :created_by, :users) }
-  
+
   # Include user count for efficient member limit checks
   scope :with_counts, -> { left_joins(:users).group(:id).select("teams.*, COUNT(users.id) as users_count") }
 

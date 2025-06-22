@@ -50,16 +50,16 @@ class EmailChangeRequestTest < ActiveSupport::TestCase
   end
 
   test "should require valid email format" do
-    invalid_emails = ["invalid-email", "@example.com", "user@", "user @example.com"]
-    
+    invalid_emails = [ "invalid-email", "@example.com", "user@", "user @example.com" ]
+
     invalid_emails.each do |email|
       @request.new_email = email
       assert_not @request.valid?, "Email '#{email}' should be invalid"
       assert_includes @request.errors[:new_email], "is invalid"
     end
-    
-    valid_emails = ["different@example.com", "user.name@example.co.uk", "user+tag@example.com"]
-    
+
+    valid_emails = [ "different@example.com", "user.name@example.co.uk", "user+tag@example.com" ]
+
     valid_emails.each do |email|
       @request.new_email = email
       assert @request.valid?, "Email '#{email}' should be valid"
@@ -86,16 +86,16 @@ class EmailChangeRequestTest < ActiveSupport::TestCase
 
   test "should have status enum with correct values" do
     @request.save! # Need to save to have requested_at set
-    
+
     @request.status = "pending"
     assert @request.pending?
-    
+
     @request.status = "approved"
     assert @request.approved?
-    
+
     @request.status = "rejected"
     assert @request.rejected?
-    
+
     # expired? is a method that checks requested_at, not a status enum value
     @request.status = "expired"
     assert_equal "expired", @request.status
@@ -118,7 +118,7 @@ class EmailChangeRequestTest < ActiveSupport::TestCase
       user_type: "direct",
       confirmed_at: Time.current
     )
-    
+
     @request.new_email = existing_user.email
     assert_not @request.valid?
     assert_includes @request.errors[:new_email], "is already taken by another user"
@@ -128,7 +128,7 @@ class EmailChangeRequestTest < ActiveSupport::TestCase
     @request.new_email = @user.email
     assert_not @request.valid?
     assert_includes @request.errors[:new_email], "must be different from current email"
-    
+
     # Case insensitive check - model doesn't do case insensitive comparison
     @request.new_email = @user.email.upcase
     assert @request.valid? # Model allows different case
@@ -136,13 +136,13 @@ class EmailChangeRequestTest < ActiveSupport::TestCase
 
   test "cannot have multiple pending requests" do
     @request.save!
-    
+
     duplicate = EmailChangeRequest.new(
       user: @user,
       new_email: "another@example.com",
       reason: "Another reason"
     )
-    
+
     assert_not duplicate.valid?
     assert_includes duplicate.errors[:base], "You already have a pending email change request"
   end
@@ -195,7 +195,7 @@ class EmailChangeRequestTest < ActiveSupport::TestCase
   test "sets requested_at on create" do
     assert_nil @request.requested_at
     @request.save!
-    
+
     assert_not_nil @request.requested_at
     assert_in_delta Time.current, @request.requested_at, 1.second
   end
@@ -212,14 +212,14 @@ class EmailChangeRequestTest < ActiveSupport::TestCase
   test "can_be_approved_by? returns false if not pending" do
     @request.save!
     @request.update!(status: "approved")
-    
+
     assert_not @request.can_be_approved_by?(@super_admin)
   end
 
   test "can_be_approved_by? returns false if expired" do
     @request.save!
     @request.update_column(:requested_at, 31.days.ago)
-    
+
     assert_not @request.can_be_approved_by?(@super_admin)
   end
 
@@ -231,13 +231,13 @@ class EmailChangeRequestTest < ActiveSupport::TestCase
       user_type: "direct",
       confirmed_at: Time.current
     )
-    
+
     team = Team.create!(
       name: "Test Team",
       admin: temp_admin,
       created_by: @super_admin
     )
-    
+
     # Create team admin as invited user with team association
     team_admin = User.create!(
       email: "teamadmin@example.com",
@@ -247,10 +247,10 @@ class EmailChangeRequestTest < ActiveSupport::TestCase
       team_role: "admin",
       confirmed_at: Time.current
     )
-    
+
     # Update team to use real admin
     team.update!(admin: team_admin)
-    
+
     # Create team member
     team_member = User.create!(
       email: "teammember@example.com",
@@ -260,21 +260,21 @@ class EmailChangeRequestTest < ActiveSupport::TestCase
       team_role: "member",
       confirmed_at: Time.current
     )
-    
+
     # Create request for team member
     team_request = EmailChangeRequest.create!(
       user: team_member,
       new_email: "newteammember@example.com",
       reason: "Team member wants to change"
     )
-    
+
     assert team_request.can_be_approved_by?(team_admin)
   end
 
   test "approve! updates user email and request status" do
     @request.save!
     old_email = @user.email
-    
+
     # Skip actual email update due to Devise mapping error in test
     # Just test the approval workflow
     @request.stub :can_be_approved_by?, true do
@@ -285,7 +285,7 @@ class EmailChangeRequestTest < ActiveSupport::TestCase
           approved_at: Time.current,
           notes: "Approved for testing"
         )
-        
+
         assert @request.approved?
         assert_equal @super_admin, @request.approved_by
         assert_not_nil @request.approved_at
@@ -300,9 +300,9 @@ class EmailChangeRequestTest < ActiveSupport::TestCase
       password: "Password123!",
       confirmed_at: Time.current
     )
-    
+
     @request.save!
-    
+
     AuditLogService.stub :log, true do
       result = @request.approve!(regular_user)
       assert_not result
@@ -311,12 +311,12 @@ class EmailChangeRequestTest < ActiveSupport::TestCase
 
   test "reject! updates request status" do
     @request.save!
-    
+
     # Mock AuditLogService and EmailChangeMailer
     AuditLogService.stub :log, true do
       EmailChangeMailer.stub :rejected_notification, OpenStruct.new(deliver_later: true) do
         result = @request.reject!(@super_admin, notes: "Invalid domain")
-        
+
         assert result
         assert @request.rejected?
         assert_equal @super_admin, @request.approved_by
@@ -333,9 +333,9 @@ class EmailChangeRequestTest < ActiveSupport::TestCase
   test "recent scope orders by requested_at desc" do
     old = @request
     old.save!
-    
+
     sleep 0.1
-    
+
     new = EmailChangeRequest.create!(
       user: User.create!(
         email: "new_user@example.com",
@@ -345,7 +345,7 @@ class EmailChangeRequestTest < ActiveSupport::TestCase
       new_email: "newest@example.com",
       reason: "Newer request"
     )
-    
+
     recent = EmailChangeRequest.recent
     assert_equal new, recent.first
     assert_equal old, recent.second
@@ -353,7 +353,7 @@ class EmailChangeRequestTest < ActiveSupport::TestCase
 
   test "for_approval scope returns pending requests ordered by requested_at" do
     @request.save!
-    
+
     # Create newer pending request
     newer = EmailChangeRequest.create!(
       user: User.create!(
@@ -364,7 +364,7 @@ class EmailChangeRequestTest < ActiveSupport::TestCase
       new_email: "newer_new@example.com",
       reason: "Newer pending request"
     )
-    
+
     # Create approved request (should not be included)
     approved = EmailChangeRequest.create!(
       user: User.create!(
@@ -376,31 +376,31 @@ class EmailChangeRequestTest < ActiveSupport::TestCase
       reason: "Approved request",
       status: "approved"
     )
-    
+
     for_approval = EmailChangeRequest.for_approval
     assert_includes for_approval, @request
     assert_includes for_approval, newer
     assert_not_includes for_approval, approved
-    
+
     # Should be ordered oldest first
     assert_equal @request, for_approval.first
   end
 
   test "by_user scope filters by user" do
     @request.save!
-    
+
     other_user = User.create!(
       email: "other@example.com",
       password: "Password123!",
       confirmed_at: Time.current
     )
-    
+
     other_request = EmailChangeRequest.create!(
       user: other_user,
       new_email: "other_new@example.com",
       reason: "Other user request"
     )
-    
+
     user_requests = EmailChangeRequest.by_user(@user)
     assert_includes user_requests, @request
     assert_not_includes user_requests, other_request
@@ -437,7 +437,7 @@ class EmailChangeRequestTest < ActiveSupport::TestCase
       "rejected" => "bg-red-100 text-red-800",
       "expired" => "bg-gray-100 text-gray-800"
     }
-    
+
     status_classes.each do |status, expected_class|
       @request.status = status
       assert_equal expected_class, @request.status_badge_class
@@ -456,7 +456,7 @@ class EmailChangeRequestTest < ActiveSupport::TestCase
       reason: "Old request"
     )
     old_request.update_column(:requested_at, 31.days.ago)
-    
+
     # Create recent pending request
     recent_request = EmailChangeRequest.create!(
       user: User.create!(
@@ -467,12 +467,12 @@ class EmailChangeRequestTest < ActiveSupport::TestCase
       new_email: "recent_new@example.com",
       reason: "Recent request"
     )
-    
+
     EmailChangeRequest.expire_old_requests
-    
+
     old_request.reload
     recent_request.reload
-    
+
     assert old_request.expired?
     assert recent_request.pending?
   end
@@ -493,13 +493,13 @@ class EmailChangeRequestTest < ActiveSupport::TestCase
   test "user can have many email change requests" do
     @request.save!
     @request.update!(status: "approved")
-    
+
     new_request = EmailChangeRequest.create!(
       user: @user,
       new_email: "another_new@example.com",
       reason: "Another change"
     )
-    
+
     assert_includes @user.email_change_requests, @request
     assert_includes @user.email_change_requests, new_request
   end
@@ -511,9 +511,9 @@ class EmailChangeRequestTest < ActiveSupport::TestCase
   test "validation errors don't prevent token generation" do
     @request.new_email = "invalid email"
     @request.user = nil
-    
+
     assert_not @request.valid?
-    
+
     # Token should still be generated (happens before validation)
     assert_not_nil @request.token
   end

@@ -121,15 +121,15 @@ class Users::RegistrationsControllerTest < ActionDispatch::IntegrationTest
   test "validates plan selection and requirements" do
     plan_validation_matrix = [
       # [plan, team_name, expected_result, error_message]
-      [@team_plan, nil, false, "Team name is required when selecting a team plan"],
-      [@inactive_plan, nil, false, "must be a valid plan"],
-      [999999, nil, false, "must be a valid plan"],
+      [ @team_plan, nil, false, "Team name is required when selecting a team plan" ],
+      [ @inactive_plan, nil, false, "must be a valid plan" ],
+      [ 999999, nil, false, "must be a valid plan" ]
       # Free plan with no team name should succeed - removed as it's tested separately
     ]
 
     plan_validation_matrix.each do |plan, team_name, should_succeed, error_msg|
       plan_id = plan.is_a?(Plan) ? plan.id : plan
-      
+
       assert_no_difference("User.count") do
         params = {
           user: {
@@ -142,7 +142,7 @@ class Users::RegistrationsControllerTest < ActionDispatch::IntegrationTest
           }
         }
         params[:user][:team_name] = team_name if team_name
-        
+
         post user_registration_path, params: params
       end
 

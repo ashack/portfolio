@@ -25,35 +25,35 @@ class User < ApplicationRecord
 
   # Association to team (only for invited users)
   belongs_to :team, optional: true
-  
+
   # Association to plan (for direct users with individual billing)
   belongs_to :plan, optional: true
-  
+
   # Association to enterprise group (only for enterprise users)
   belongs_to :enterprise_group, optional: true
-  
+
   # Teams created by this user (super admins only)
   has_many :created_teams, class_name: "Team", foreign_key: "created_by_id"
-  
+
   # Teams where this user is the designated admin
   has_many :administered_teams, class_name: "Team", foreign_key: "admin_id"
-  
+
   # Enterprise groups created by this user (super admins only)
   has_many :created_enterprise_groups, class_name: "EnterpriseGroup", foreign_key: "created_by_id"
-  
+
   # Enterprise groups where this user is the admin
   has_many :administered_enterprise_groups, class_name: "EnterpriseGroup", foreign_key: "admin_id"
-  
+
   # Invitations sent by this user
   has_many :sent_invitations, class_name: "Invitation", foreign_key: "invited_by_id"
-  
+
   # Analytics tracking via Ahoy
   has_many :ahoy_visits, class_name: "Ahoy::Visit"
-  
+
   # Audit logs for security and compliance
   has_many :audit_logs, foreign_key: "user_id", dependent: :destroy
   has_many :target_audit_logs, class_name: "AuditLog", foreign_key: "target_user_id", dependent: :destroy
-  
+
   # Email change requests (require admin approval)
   has_many :email_change_requests, dependent: :destroy
   has_many :approved_email_changes, class_name: "EmailChangeRequest", foreign_key: "approved_by_id"
@@ -63,24 +63,24 @@ class User < ApplicationRecord
   # - site_admin: Customer support, read-only billing
   # - super_admin: Full system access, can create teams/enterprises
   enum :system_role, { user: 0, site_admin: 1, super_admin: 2 }
-  
+
   # User account type (IMMUTABLE after creation)
   # - direct: Self-registered, can create teams
   # - invited: Joined via team invitation
   # - enterprise: Joined via enterprise invitation
   enum :user_type, { direct: 0, invited: 1, enterprise: 2 }
-  
+
   # Account status for access control
   # - active: Normal access
   # - inactive: Cannot sign in (deactivated)
   # - locked: Cannot sign in (security flag)
   enum :status, { active: 0, inactive: 1, locked: 2 }
-  
+
   # Role within a team (invited users only)
   # - member: Basic team access
   # - admin: Can manage team members and settings
   enum :team_role, { member: 0, admin: 1 }
-  
+
   # Role within enterprise group (enterprise users only)
   # Prefixed to avoid conflicts with team_role
   enum :enterprise_group_role, { member: 0, admin: 1 }, prefix: true
@@ -96,7 +96,7 @@ class User < ApplicationRecord
   # ========================================================================
   # VALIDATIONS
   # ========================================================================
-  
+
   # Basic presence validations
   validates :user_type, presence: true
   validates :status, presence: true
@@ -156,7 +156,7 @@ class User < ApplicationRecord
   # ========================================================================
   # CALLBACKS
   # ========================================================================
-  
+
   # Normalize email to lowercase for consistency
   # Prevents duplicate accounts with different case
   before_validation :normalize_email
@@ -164,19 +164,19 @@ class User < ApplicationRecord
   # ========================================================================
   # SCOPES
   # ========================================================================
-  
+
   # Filter for active users only
   scope :active, -> { where(status: "active") }
-  
+
   # Filter for direct (self-registered) users
   scope :direct_users, -> { where(user_type: "direct") }
-  
+
   # Filter for team members (invited users)
   scope :team_members, -> { where(user_type: "invited") }
-  
+
   # Eager load associations to prevent N+1 queries
   scope :with_associations, -> { includes(:team, :plan, :enterprise_group) }
-  
+
   # Eager load team details for team member listings
   scope :with_team_details, -> { includes(team: [ :admin, :users ]) }
 
