@@ -3,6 +3,8 @@ class ApplicationController < ActionController::Base
   include Pagy::Backend
   include ActivityTracking
 
+  helper_method :pagy_url_for
+
   # CSRF Protection - Protect all forms from Cross-Site Request Forgery
   protect_from_forgery with: :exception
 
@@ -84,5 +86,16 @@ class ApplicationController < ActionController::Base
 
   def skip_pundit?
     devise_controller? || params[:controller] =~ /(^pages$)|(^home$)|(^redirect$)/
+  end
+
+  # Helper for Pagy to generate URLs with preserved parameters
+  def pagy_url_for(pagy, page, absolute: false)
+    params = if respond_to?(:filter_params, true)
+      filter_params.merge(page: page)
+    else
+      request.query_parameters.merge(page: page)
+    end
+
+    url_for(params.merge(only_path: !absolute))
   end
 end

@@ -23,6 +23,9 @@
       </div>
 
       <% if @enterprise_groups.any? %>
+        <!-- Results Info -->
+        <%= render 'shared/results_info', pagy: @pagy %>
+        
         <div class="overflow-x-auto shadow md:rounded-lg">
           <table class="min-w-full divide-y divide-gray-300">
             <thead class="bg-gray-50">
@@ -104,11 +107,9 @@
         </div>
 
         <!-- Pagination -->
-        <% if defined?(@pagy) && @pagy.pages > 1 %>
-          <div class="mt-6">
-            <%== pagy_nav(@pagy) %>
-          </div>
-        <% end %>
+        <div class="mt-6">
+          <%= render 'shared/pagination', pagy: @pagy %>
+        </div>
       <% else %>
         <div class="text-center py-12">
           <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">

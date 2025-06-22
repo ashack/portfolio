@@ -1,9 +1,29 @@
 class Admin::Super::UsersController < Admin::Super::BaseController
+  include Paginatable
+
   before_action :set_user, only: [ :show, :edit, :update, :promote_to_site_admin, :demote_from_site_admin, :set_status, :activity, :impersonate, :reset_password, :confirm_email, :resend_confirmation, :unlock_account ]
 
   def index
-    @users = policy_scope(User).includes(:team, :plan, :enterprise_group).order(created_at: :desc)
-    @pagy, @users = pagy(@users)
+    @users = policy_scope(User).includes(:team, :plan, :enterprise_group)
+
+    # Apply filters
+    @users = @users.where(user_type: params[:user_type]) if params[:user_type].present?
+    @users = @users.where(status: params[:status]) if params[:status].present?
+
+    # Apply search
+    if params[:search].present?
+      search_term = "%#{params[:search]}%"
+      @users = @users.where(
+        "email LIKE ? OR first_name LIKE ? OR last_name LIKE ?",
+        search_term, search_term, search_term
+      )
+    end
+
+    # Apply sorting
+    @users = @users.order(created_at: :desc)
+
+    # Paginate
+    @pagy, @users = pagy(@users, items: @items_per_page, page: @page)
   end
 
   def show

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_06_21_142742) do
+ActiveRecord::Schema[8.0].define(version: 2025_06_22_141047) do
   create_table "admin_activity_logs", force: :cascade do |t|
     t.integer "admin_user_id", null: false
     t.string "controller", null: false
@@ -301,6 +301,14 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_21_142742) do
     t.index ["status"], name: "index_teams_on_status"
   end
 
+  create_table "user_preferences", force: :cascade do |t|
+    t.integer "user_id", null: false
+    t.json "pagination_settings", default: {}
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_user_preferences_on_user_id", unique: true
+  end
+
   create_table "users", force: :cascade do |t|
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
@@ -368,6 +376,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_21_142742) do
   add_foreign_key "pay_subscriptions", "pay_customers", column: "customer_id"
   add_foreign_key "teams", "users", column: "admin_id"
   add_foreign_key "teams", "users", column: "created_by_id"
+  add_foreign_key "user_preferences", "users"
   add_foreign_key "users", "enterprise_groups"
   add_foreign_key "users", "plans"
   add_foreign_key "users", "teams"
