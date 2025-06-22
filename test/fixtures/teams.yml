@@ -1,0 +1,45 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+active_team:
+  name: Active Team
+  slug: active-team
+  admin: super_admin
+  created_by: super_admin
+  plan: starter
+  status: active
+  max_members: 5
+  created_at: <%= 20.days.ago %>
+  updated_at: <%= 20.days.ago %>
+
+other_team:
+  name: Other Team
+  slug: other-team
+  admin: super_admin
+  created_by: super_admin
+  plan: pro
+  status: active
+  max_members: 15
+  created_at: <%= 15.days.ago %>
+  updated_at: <%= 15.days.ago %>
+
+team_with_members:
+  name: Team With Members
+  slug: team-with-members
+  admin: team_admin
+  created_by: super_admin
+  plan: starter
+  status: active
+  max_members: 5
+  created_at: <%= 10.days.ago %>
+  updated_at: <%= 10.days.ago %>
+
+suspended_team:
+  name: Suspended Team
+  slug: suspended-team
+  admin: super_admin
+  created_by: super_admin
+  plan: starter
+  status: suspended
+  max_members: 5
+  created_at: <%= 10.days.ago %>
+  updated_at: <%= 10.days.ago %>

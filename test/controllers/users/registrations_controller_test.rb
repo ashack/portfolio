@@ -71,8 +71,8 @@ class Users::RegistrationsControllerTest < ActionDispatch::IntegrationTest
       }
     end
 
-    # Should redirect to dashboard after successful registration
-    assert_redirected_to user_dashboard_path
+    # Should redirect to sign in due to email confirmation requirement
+    assert_redirected_to new_user_session_path
 
     # Check the created user
     user = User.last
@@ -102,7 +102,7 @@ class Users::RegistrationsControllerTest < ActionDispatch::IntegrationTest
     assert_equal @free_plan, user.plan
   end
 
-  test "should not allow registration with team plan" do
+  test "should not allow registration with team plan without team name" do
     assert_no_difference("User.count") do
       post user_registration_path, params: {
         user: {
@@ -112,12 +112,13 @@ class Users::RegistrationsControllerTest < ActionDispatch::IntegrationTest
           password: "Password123!",
           password_confirmation: "Password123!",
           plan_id: @team_plan.id
+          # Missing team_name
         }
       }
     end
 
     assert_response :unprocessable_entity
-    assert_match "must be a valid individual plan", response.body
+    assert_match "Team name is required when selecting a team plan", response.body
   end
 
   test "should not allow registration with inactive plan" do
@@ -135,7 +136,7 @@ class Users::RegistrationsControllerTest < ActionDispatch::IntegrationTest
     end
 
     assert_response :unprocessable_entity
-    assert_match "must be a valid individual plan", response.body
+    assert_match "must be a valid plan", response.body
   end
 
   test "should not allow registration with invalid plan id" do
@@ -153,7 +154,7 @@ class Users::RegistrationsControllerTest < ActionDispatch::IntegrationTest
     end
 
     assert_response :unprocessable_entity
-    assert_match "must be a valid individual plan", response.body
+    assert_match "must be a valid plan", response.body
   end
 
   test "should enforce strong password requirements" do

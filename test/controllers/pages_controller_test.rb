@@ -151,8 +151,8 @@ class PagesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "pricing page handles no plans gracefully" do
-    # Delete all plans
-    Plan.destroy_all
+    # Deactivate all plans instead of destroying them to avoid foreign key constraints
+    Plan.update_all(active: false)
 
     get pricing_path
     assert_response :success

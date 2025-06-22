@@ -7,7 +7,8 @@ class AdminActivityLogTest < ActiveSupport::TestCase
       password: "Password123!",
       first_name: "Admin",
       last_name: "User",
-      system_role: "super_admin"
+      system_role: "super_admin",
+      user_type: "direct"
     )
     @admin.skip_confirmation!
     @admin.save!
@@ -83,6 +84,28 @@ class AdminActivityLogTest < ActiveSupport::TestCase
     assert_not @log.critical_activity?
   end
 
+  test "critical_activity? identifies all high-risk operations comprehensively" do
+    # Test all critical controller/action combinations
+    critical_tests = [
+      { controller: "admin/super/users", action: "destroy", expected: true },
+      { controller: "admin/super/teams", action: "delete", expected: true },
+      { controller: "admin/site/users", action: "impersonate", expected: true },
+      { controller: "teams/admin", action: "update", expected: true },
+      { controller: "teams/members", action: "create", expected: true },
+      { controller: "admin/super/users", action: "index", expected: false },
+      { controller: "home", action: "destroy", expected: false },
+      { controller: "admin/super/reports", action: "view", expected: false }
+    ]
+    
+    critical_tests.each do |test_case|
+      @log.controller = test_case[:controller]
+      @log.action = test_case[:action]
+      
+      assert_equal test_case[:expected], @log.critical_activity?,
+        "#{test_case[:controller]}##{test_case[:action]} should be #{test_case[:expected] ? 'critical' : 'non-critical'}"
+    end
+  end
+
   test "admin_name returns full name when available" do
     assert_equal "Admin User", @log.admin_name
   end
@@ -133,6 +156,28 @@ class AdminActivityLogTest < ActiveSupport::TestCase
     summary = @log.filtered_params_summary
     assert_not summary.include?("password")
     assert summary.include?("user")
+  end
+
+  test "parameter filtering protects all sensitive information types" do
+    # Test password filtering
+    @log.params = '{"user":{"password":"secret123","password_confirmation":"secret123","name":"Test"}}'
+    summary = @log.filtered_params_summary
+    assert_not summary.include?("password")
+    assert_not summary.include?("password_confirmation")
+    assert summary.include?("user"), "Non-sensitive params should be visible"
+    
+    # Test authenticity token filtering
+    @log.params = '{"authenticity_token":"abc123","user":{"email":"test@example.com"}}'
+    summary = @log.filtered_params_summary
+    assert_not summary.include?("authenticity_token")
+    
+    # Verify parsed params still work
+    parsed = @log.parsed_params
+    assert_equal "test@example.com", parsed["user"]["email"]
+    
+    # Invalid JSON handling
+    @log.params = "invalid json {{"
+    assert_equal({}, @log.parsed_params, "Invalid JSON should return empty hash")
   end
 
   test "filtered_params_summary handles empty params" do
@@ -216,7 +261,8 @@ class AdminActivityLogTest < ActiveSupport::TestCase
     other_admin = User.new(
       email: "other@example.com",
       password: "Password123!",
-      system_role: "site_admin"
+      system_role: "site_admin",
+      user_type: "direct"
     )
     other_admin.skip_confirmation!
     other_admin.save!
@@ -304,7 +350,8 @@ class AdminActivityLogTest < ActiveSupport::TestCase
     other_admin = User.new(
       email: "other@example.com",
       password: "Password123!",
-      system_role: "site_admin"
+      system_role: "site_admin",
+      user_type: "direct"
     )
     other_admin.skip_confirmation!
     other_admin.save!
@@ -370,5 +417,209 @@ class AdminActivityLogTest < ActiveSupport::TestCase
 
   test "analyze_ip_patterns returns correct statistics" do
     skip "Method expects ActiveRecord relation, not array"
+  end
+
+  # ========================================================================
+  # COMPREHENSIVE SECURITY & VALIDATION TESTS
+  # ========================================================================
+
+  test "validates all required security fields individually" do
+    # Test each required field
+    required_fields = {
+      admin_user: "must exist",
+      controller: "can't be blank",
+      action: "can't be blank", 
+      method: "can't be blank",
+      path: "can't be blank",
+      timestamp: "can't be blank"
+    }
+    
+    required_fields.each do |field, error_message|
+      log = AdminActivityLog.new(
+        admin_user: (field == :admin_user ? nil : @admin),
+        controller: (field == :controller ? nil : "admin/super/users"),
+        action: (field == :action ? nil : "update"),
+        method: (field == :method ? nil : "PATCH"),
+        path: (field == :path ? nil : "/test"),
+        timestamp: (field == :timestamp ? nil : Time.current)
+      )
+      assert_not log.valid?
+      assert_includes log.errors[field], error_message,
+        "Field #{field} should have error '#{error_message}'"
+    end
+    
+    # Verify IP and user agent are tracked
+    assert @log.ip_address.present?, "IP address tracking is critical for security"
+    assert @log.user_agent.present?, "User agent helps detect anomalies"
+  end
+
+  test "IP tracking enables comprehensive security pattern detection" do
+    # Create activities from different IPs with patterns
+    ips = ["192.168.1.1", "10.0.0.1", "172.16.0.1", "192.168.1.1"]
+    logs = []
+    
+    ips.each_with_index do |ip, i|
+      logs << AdminActivityLog.create!(
+        admin_user: @admin,
+        controller: "admin/super/users",
+        action: i.even? ? "update" : "destroy",
+        method: i.even? ? "PATCH" : "DELETE",
+        path: "/test/#{i}",
+        ip_address: ip,
+        timestamp: Time.current - i.minutes
+      )
+    end
+    
+    # Test IP filtering
+    ip_logs = AdminActivityLog.by_ip("192.168.1.1")
+    assert_equal 2, ip_logs.count
+    
+    # Verify all filtered logs have correct IP
+    ip_logs.each do |log|
+      assert_equal "192.168.1.1", log.ip_address
+    end
+    
+    # Test unique IP counting
+    unique_ips = AdminActivityLog.where(id: logs.map(&:id)).distinct.count(:ip_address)
+    assert_equal 3, unique_ips
+  end
+
+  test "comprehensive time-based filtering for security investigations" do
+    # Create logs at specific times for precise testing
+    now = Time.current
+    
+    # Today - critical activity
+    today_log = AdminActivityLog.create!(
+      admin_user: @admin,
+      controller: "admin/super/users",
+      action: "delete",
+      method: "DELETE",
+      path: "/admin/super/users/1",
+      timestamp: now
+    )
+    
+    # Yesterday - team update
+    yesterday_log = AdminActivityLog.create!(
+      admin_user: @admin,
+      controller: "admin/super/teams",
+      action: "update",
+      method: "PATCH",
+      path: "/admin/super/teams/1",
+      timestamp: 1.day.ago
+    )
+    
+    # Last week - impersonation
+    last_week_log = AdminActivityLog.create!(
+      admin_user: @admin,
+      controller: "admin/site/users",
+      action: "impersonate",
+      method: "POST",
+      path: "/admin/site/users/1/impersonate",
+      timestamp: 8.days.ago
+    )
+    
+    # Last month - old activity
+    last_month_log = AdminActivityLog.create!(
+      admin_user: @admin,
+      controller: "admin/super/users",
+      action: "index",
+      method: "GET",
+      path: "/admin/super/users",
+      timestamp: 32.days.ago
+    )
+    
+    # Test all time scopes
+    assert_includes AdminActivityLog.today, today_log
+    assert_not_includes AdminActivityLog.today, yesterday_log
+    
+    assert_includes AdminActivityLog.this_week, today_log
+    assert_includes AdminActivityLog.this_week, yesterday_log
+    assert_not_includes AdminActivityLog.this_week, last_week_log
+    
+    assert_includes AdminActivityLog.this_month, today_log
+    assert_includes AdminActivityLog.this_month, yesterday_log
+    assert_includes AdminActivityLog.this_month, last_week_log
+    assert_not_includes AdminActivityLog.this_month, last_month_log
+    
+    # Verify recent ordering
+    recent = AdminActivityLog.recent
+    assert_equal today_log, recent.first
+    assert_equal yesterday_log, recent.second
+  end
+
+  test "activity summary provides comprehensive analytics" do
+    # Create diverse activities
+    @log.save!
+    
+    # Critical activity by same admin
+    AdminActivityLog.create!(
+      admin_user: @admin,
+      controller: "admin/super/teams",
+      action: "destroy",
+      method: "DELETE",
+      path: "/admin/super/teams/1",
+      timestamp: Time.current
+    )
+    
+    # Activity by different admin
+    other_admin = User.create!(
+      email: "site_admin@example.com",
+      password: "Password123!",
+      system_role: "site_admin",
+      user_type: "direct",
+      confirmed_at: Time.current
+    )
+    
+    AdminActivityLog.create!(
+      admin_user: other_admin,
+      controller: "admin/site/users",
+      action: "set_status",
+      method: "PATCH",
+      path: "/admin/site/users/2/set_status",
+      timestamp: Time.current
+    )
+    
+    summary = AdminActivityLog.activity_summary(:today)
+    
+    assert_equal 3, summary[:total_activities]
+    assert_equal 2, summary[:unique_admins]
+    assert summary[:critical_activities] >= 2, "Should detect at least 2 critical activities"
+    assert_equal 1, summary[:controller_breakdown]["admin/super/teams"]
+    assert_equal 1, summary[:action_breakdown]["destroy"]
+    assert_equal 2, summary[:method_breakdown]["PATCH"]
+  end
+
+  test "admin activity report provides detailed admin-specific analytics" do
+    # Create multiple activities for comprehensive reporting
+    @log.save!
+    
+    activities = [
+      { controller: "admin/super/teams", action: "create", method: "POST" },
+      { controller: "admin/super/users", action: "impersonate", method: "POST" },
+      { controller: "admin/super/users", action: "index", method: "GET", ip: "10.0.0.1" }
+    ]
+    
+    activities.each_with_index do |activity, i|
+      AdminActivityLog.create!(
+        admin_user: @admin,
+        controller: activity[:controller],
+        action: activity[:action],
+        method: activity[:method],
+        path: "/test/#{i}",
+        ip_address: activity[:ip] || "192.168.1.1",
+        timestamp: Time.current - i.seconds
+      )
+    end
+    
+    report = AdminActivityLog.admin_activity_report(@admin, :today)
+    
+    assert_equal @admin, report[:admin]
+    assert_equal 4, report[:total_activities]
+    assert_equal 2, report[:controllers_accessed]
+    assert report[:critical_activities] >= 3, "create, impersonate, and update are critical"
+    assert_equal 2, report[:unique_ips]
+    assert report[:recent_activities].count <= 10
+    # Recent activities should include the first created log
+    assert_includes report[:recent_activities].map(&:id), @log.id
   end
 end

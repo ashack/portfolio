@@ -237,6 +237,8 @@ class Admin::Super::DashboardControllerTest < ActionDispatch::IntegrationTest
 
   test "should handle empty database gracefully" do
     # Delete all data except the logged-in super admin
+    # First remove users from teams to avoid foreign key constraints
+    User.where.not(id: @super_admin.id).update_all(team_id: nil, team_role: nil)
     Team.destroy_all
     User.where.not(id: @super_admin.id).destroy_all
 
