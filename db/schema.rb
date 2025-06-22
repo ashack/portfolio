@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_06_21_000001) do
+ActiveRecord::Schema[8.0].define(version: 2025_06_21_142742) do
   create_table "admin_activity_logs", force: :cascade do |t|
     t.integer "admin_user_id", null: false
     t.string "controller", null: false
@@ -86,10 +86,13 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_21_000001) do
     t.string "user_agent", limit: 500
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["action", "created_at"], name: "index_audit_logs_on_action_and_created"
     t.index ["action"], name: "index_audit_logs_on_action"
     t.index ["created_at"], name: "index_audit_logs_on_created_at"
+    t.index ["target_user_id", "created_at"], name: "index_audit_logs_on_target_user_and_created"
     t.index ["target_user_id", "created_at"], name: "index_audit_logs_on_target_user_id_and_created_at"
     t.index ["target_user_id"], name: "index_audit_logs_on_target_user_id"
+    t.index ["user_id", "created_at"], name: "index_audit_logs_on_user_and_created"
     t.index ["user_id", "created_at"], name: "index_audit_logs_on_user_id_and_created_at"
     t.index ["user_id"], name: "index_audit_logs_on_user_id"
   end
@@ -136,7 +139,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_21_000001) do
     t.index ["admin_id"], name: "index_enterprise_groups_on_admin_id"
     t.index ["created_by_id"], name: "index_enterprise_groups_on_created_by_id"
     t.index ["plan_id"], name: "index_enterprise_groups_on_plan_id"
+    t.index ["slug", "status"], name: "index_enterprise_groups_on_slug_and_status"
     t.index ["slug"], name: "index_enterprise_groups_on_slug", unique: true
+    t.index ["status", "created_at"], name: "index_enterprise_groups_on_status_and_created"
     t.index ["status"], name: "index_enterprise_groups_on_status"
   end
 
@@ -155,8 +160,10 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_21_000001) do
     t.string "invitation_type", default: "team", null: false
     t.index "LOWER(email)", name: "index_invitations_on_lower_email"
     t.index ["accepted_at"], name: "index_invitations_on_accepted_at"
+    t.index ["email", "accepted_at"], name: "index_invitations_on_email_and_accepted"
     t.index ["email"], name: "index_invitations_on_email"
     t.index ["expires_at"], name: "index_invitations_on_expires_at"
+    t.index ["invitable_type", "invitable_id", "accepted_at"], name: "index_invitations_on_invitable_and_accepted"
     t.index ["invitable_type", "invitable_id"], name: "index_invitations_on_invitable"
     t.index ["invitation_type"], name: "index_invitations_on_invitation_type"
     t.index ["team_id"], name: "index_invitations_on_team_id"
@@ -266,6 +273,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_21_000001) do
     t.datetime "updated_at", null: false
     t.string "plan_segment", default: "individual", null: false
     t.index ["active"], name: "index_plans_on_active"
+    t.index ["plan_segment", "active"], name: "index_plans_on_segment_and_active"
     t.index ["plan_segment"], name: "index_plans_on_plan_segment"
     t.check_constraint "plan_segment IN ('individual', 'team', 'enterprise')", name: "valid_plan_segment"
   end
@@ -287,7 +295,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_21_000001) do
     t.datetime "updated_at", null: false
     t.index ["admin_id"], name: "index_teams_on_admin_id"
     t.index ["created_by_id"], name: "index_teams_on_created_by_id"
+    t.index ["slug", "status"], name: "index_teams_on_slug_and_status"
     t.index ["slug"], name: "index_teams_on_slug", unique: true
+    t.index ["status", "created_at"], name: "index_teams_on_status_and_created"
     t.index ["status"], name: "index_teams_on_status"
   end
 
@@ -326,13 +336,16 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_21_000001) do
     t.boolean "owns_team", default: false
     t.index "LOWER(email)", name: "index_users_on_lower_email"
     t.index ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true
+    t.index ["email", "status"], name: "index_users_on_email_and_status"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["enterprise_group_id", "enterprise_group_role"], name: "index_users_on_enterprise_associations"
     t.index ["enterprise_group_id"], name: "index_users_on_enterprise_group_id"
     t.index ["last_activity_at"], name: "index_users_on_last_activity_at"
     t.index ["plan_id"], name: "index_users_on_plan_id"
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
+    t.index ["status", "last_activity_at"], name: "index_users_on_status_and_activity"
     t.index ["status"], name: "index_users_on_status"
+    t.index ["team_id", "status"], name: "index_users_on_team_and_status"
     t.index ["team_id", "team_role"], name: "index_users_on_team_associations"
     t.index ["team_id"], name: "index_users_on_team_id"
     t.index ["unlock_token"], name: "index_users_on_unlock_token", unique: true

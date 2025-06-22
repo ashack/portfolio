@@ -5,9 +5,14 @@ class Admin::Site::SupportController < Admin::Site::BaseController
 
   def index
     # Support dashboard with user issues and team inquiries
-    @recent_user_issues = User.where(status: [ "inactive", "locked" ]).order(updated_at: :desc).limit(10)
-    @teams_needing_attention = Team.where(status: [ "suspended", "cancelled" ]).order(updated_at: :desc).limit(10)
-    @recent_failed_logins = User.where("failed_attempts > 0").order(updated_at: :desc).limit(10)
+    recent_user_issues = User.where(status: [ "inactive", "locked" ]).order(updated_at: :desc)
+    @pagy_issues, @recent_user_issues = pagy(recent_user_issues, page_param: :issues_page, items: 10)
+    
+    teams_needing_attention = Team.where(status: [ "suspended", "cancelled" ]).order(updated_at: :desc)
+    @pagy_teams, @teams_needing_attention = pagy(teams_needing_attention, page_param: :teams_page, items: 10)
+    
+    recent_failed_logins = User.where("failed_attempts > 0").order(updated_at: :desc)
+    @pagy_failed, @recent_failed_logins = pagy(recent_failed_logins, page_param: :failed_page, items: 10)
   end
 
   def show

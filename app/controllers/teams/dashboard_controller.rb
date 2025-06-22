@@ -4,7 +4,7 @@ class Teams::DashboardController < Teams::BaseController
   skip_after_action :verify_authorized, only: :index
 
   def index
-    @team_members = @team.users.order(created_at: :desc)
-    @recent_activities = @team.users.joins(:ahoy_visits).order("ahoy_visits.started_at DESC").limit(10)
+    @team_members = @team.users.includes(:ahoy_visits).order(created_at: :desc)
+    @recent_activities = @team.users.where.not(last_activity_at: nil).order(last_activity_at: :desc).limit(10)
   end
 end

@@ -6,7 +6,7 @@ class Admin::Super::TeamsController < ApplicationController
   before_action :set_team, only: [ :show, :edit, :update, :assign_admin, :change_status, :destroy ]
 
   def index
-    @teams = policy_scope(Team).includes(:admin, :created_by).order(created_at: :desc)
+    @teams = policy_scope(Team).includes(:admin, :created_by, :users).order(created_at: :desc)
     @pagy, @teams = pagy(@teams)
   end
 

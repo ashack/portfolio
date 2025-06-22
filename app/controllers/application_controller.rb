@@ -1,6 +1,7 @@
 class ApplicationController < ActionController::Base
   include Pundit::Authorization
   include Pagy::Backend
+  include ActivityTracking
 
   # CSRF Protection - Protect all forms from Cross-Site Request Forgery
   protect_from_forgery with: :exception
@@ -10,7 +11,6 @@ class ApplicationController < ActionController::Base
 
   before_action :authenticate_user!
   before_action :check_user_status, unless: :devise_controller?
-  before_action :track_user_activity
   after_action :verify_authorized, except: [ :index ], unless: :skip_pundit?
   after_action :verify_policy_scoped, only: [ :index ], unless: :skip_pundit?
 
@@ -63,12 +63,6 @@ class ApplicationController < ActionController::Base
       sign_out current_user
       redirect_to new_user_session_path,
         alert: "Your account has been deactivated."
-    end
-  end
-
-  def track_user_activity
-    if current_user
-      current_user.update_column(:last_activity_at, Time.current)
     end
   end
 

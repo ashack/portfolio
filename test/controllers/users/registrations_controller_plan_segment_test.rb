@@ -6,14 +6,12 @@ class Users::RegistrationsControllerPlanSegmentTest < ActionDispatch::Integratio
     @individual_free = Plan.create!(
       name: "Individual Free",
       plan_segment: "individual",
-      plan_segment: "individual",
       amount_cents: 0,
       active: true
     )
 
     @individual_pro = Plan.create!(
       name: "Individual Pro",
-      plan_segment: "individual",
       plan_segment: "individual",
       amount_cents: 1900,
       active: true
@@ -22,7 +20,6 @@ class Users::RegistrationsControllerPlanSegmentTest < ActionDispatch::Integratio
     @team_starter = Plan.create!(
       name: "Team Starter",
       plan_segment: "team",
-      plan_segment: "team",
       amount_cents: 4900,
       max_team_members: 5,
       active: true
@@ -30,7 +27,6 @@ class Users::RegistrationsControllerPlanSegmentTest < ActionDispatch::Integratio
 
     @enterprise_plan = Plan.create!(
       name: "Enterprise",
-      plan_segment: "team",
       plan_segment: "enterprise",
       amount_cents: 99900,
       max_team_members: 500,
@@ -93,7 +89,7 @@ class Users::RegistrationsControllerPlanSegmentTest < ActionDispatch::Integratio
     user = User.last
     assert_equal "direct", user.user_type
     assert_equal @individual_pro, user.plan
-    assert_redirected_to root_path
+    assert_redirected_to new_user_session_path  # Redirects to sign in due to email confirmation
   end
 
   test "team registration shows error message" do

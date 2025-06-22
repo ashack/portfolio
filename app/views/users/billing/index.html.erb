@@ -148,7 +148,7 @@
           
           <% if @charges.any? %>
             <div class="space-y-3">
-              <% @charges.limit(5).each do |charge| %>
+              <% @charges.each do |charge| %>
                 <div class="flex items-center justify-between py-3 border-b border-gray-200 last:border-b-0">
                   <div>
                     <p class="text-sm font-medium text-gray-900">$<%= sprintf("%.2f", charge.amount / 100.0) %></p>
@@ -167,11 +167,10 @@
               <% end %>
             </div>
             
-            <% if @charges.count > 5 %>
-              <div class="mt-4 text-center">
-                <button type="button" class="text-indigo-600 hover:text-indigo-900 text-sm font-medium">
-                  View all transactions
-                </button>
+            <!-- Pagination -->
+            <% if @pagy && @pagy.pages > 1 %>
+              <div class="mt-4 pt-3 border-t border-gray-200">
+                <%== pagy_bootstrap_nav(@pagy) %>
               </div>
             <% end %>
           <% else %>

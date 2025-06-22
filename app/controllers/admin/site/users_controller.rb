@@ -2,7 +2,7 @@ class Admin::Site::UsersController < Admin::Site::BaseController
   before_action :set_user, only: [ :show, :set_status, :activity, :impersonate ]
 
   def index
-    @users = policy_scope(User).where.not(system_role: "super_admin").order(created_at: :desc)
+    @users = policy_scope(User).includes(:team, :plan, :enterprise_group).where.not(system_role: "super_admin").order(created_at: :desc)
     @pagy, @users = pagy(@users)
   end
 

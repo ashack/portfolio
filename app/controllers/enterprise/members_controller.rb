@@ -5,8 +5,11 @@ class Enterprise::MembersController < Enterprise::BaseController
   skip_after_action :verify_authorized, only: [ :new, :create, :edit, :update, :destroy, :resend_invitation, :revoke_invitation ]
 
   def index
-    @members = @enterprise_group.users
-    @pending_invitations = @enterprise_group.invitations.pending.includes(:invited_by)
+    @members = @enterprise_group.users.includes(:ahoy_visits).order(created_at: :desc)
+    @pagy_members, @members = pagy(@members, page_param: :members_page)
+    
+    @pending_invitations = @enterprise_group.invitations.pending.includes(:invited_by).order(created_at: :desc)
+    @pagy_invitations, @pending_invitations = pagy(@pending_invitations, page_param: :invitations_page)
   end
 
   def show

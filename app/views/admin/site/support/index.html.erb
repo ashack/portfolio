@@ -143,6 +143,13 @@
           </li>
         <% end %>
       </ul>
+      
+      <!-- Pagination for user issues -->
+      <% if @pagy_issues && @pagy_issues.pages > 1 %>
+        <div class="px-4 py-3 border-t border-gray-200">
+          <%== pagy_bootstrap_nav(@pagy_issues) %>
+        </div>
+      <% end %>
     </div>
   <% end %>
 
@@ -196,6 +203,13 @@
           </li>
         <% end %>
       </ul>
+      
+      <!-- Pagination for team issues -->
+      <% if @pagy_teams && @pagy_teams.pages > 1 %>
+        <div class="px-4 py-3 border-t border-gray-200">
+          <%== pagy_bootstrap_nav(@pagy_teams) %>
+        </div>
+      <% end %>
     </div>
   <% end %>
 
@@ -257,6 +271,13 @@
           </li>
         <% end %>
       </ul>
+      
+      <!-- Pagination for failed logins -->
+      <% if @pagy_failed && @pagy_failed.pages > 1 %>
+        <div class="px-4 py-3 border-t border-gray-200">
+          <%== pagy_bootstrap_nav(@pagy_failed) %>
+        </div>
+      <% end %>
     </div>
   <% end %>
 

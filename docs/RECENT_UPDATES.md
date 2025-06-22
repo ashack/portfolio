@@ -159,6 +159,62 @@ The application now supports three distinct user ecosystems:
 3. API access for enterprise
 4. Advanced audit trails
 
+## Performance Optimizations (December 2024)
+
+### Background Job Processing
+- Replaced synchronous activity tracking with background jobs
+- Implemented `TrackUserActivityJob` with 5-minute update intervals
+- Added Redis caching to prevent duplicate job queuing
+- Removed database writes from request cycle
+
+### Caching Strategy
+- Implemented model-level caching for Team and EnterpriseGroup slugs
+- Added fragment caching to dashboard views
+- Created reusable `Cacheable` concern
+- Cache invalidation on model updates
+
+### Database Indexes
+- Added 15+ new indexes for performance
+- Composite indexes for common query patterns
+- Indexes for activity tracking, team queries, and audit logs
+- Migration with `if_not_exists` for safety
+
+### Benefits
+- Reduced database load
+- Faster response times
+- Better scalability
+- Improved user experience
+
+### Documentation
+- Created comprehensive `docs/performance_optimizations.md`
+- Added testing examples for caching and background jobs
+- Included monitoring recommendations
+- Best practices for future optimizations
+
+## N+1 Query Optimizations (December 2024)
+
+### Controller Improvements
+- Added `includes` to all controllers loading collections
+- Eager loading for User associations: `:team, :plan, :enterprise_group`
+- Eager loading for Team associations: `:admin, :created_by, :users`
+- Pre-calculated statistics in `Teams::Admin::MembersController`
+
+### Model Enhancements
+- Added `with_associations` scope to User and Team models
+- Added `with_counts` scope to Team for efficient member counting
+- Added `with_team_details` scope to User for nested associations
+
+### Query Objects
+- Created `UsersQuery` for complex user queries
+- Created `TeamsQuery` for team queries with user counts
+- Chainable methods for filtering and eager loading
+- Prevents N+1 queries in complex scenarios
+
+### View Optimizations
+- Updated member statistics to use pre-calculated values
+- Removed database queries from view files
+- Improved dashboard performance significantly
+
 ## Conclusion
 
-The transformation to a triple-track system with enterprise support represents a significant architectural evolution. The implementation maintains backward compatibility while adding powerful new features for large organizations. The codebase remains clean, well-documented, and ready for future enhancements.
+The transformation to a triple-track system with enterprise support, combined with recent performance optimizations, represents a significant architectural evolution. The implementation maintains backward compatibility while adding powerful new features for large organizations and ensuring the application scales efficiently. The codebase remains clean, well-documented, and ready for future enhancements.

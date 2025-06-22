@@ -3,6 +3,7 @@ class Admin::Super::PlansController < Admin::Super::BaseController
 
   def index
     @plans = policy_scope(Plan).order(:plan_segment, :amount_cents)
+    @pagy, @plans = pagy(@plans)
     authorize @plans
   end
 

@@ -2,8 +2,15 @@ class Teams::Admin::MembersController < Teams::Admin::BaseController
   before_action :set_member, only: [ :show, :change_role, :destroy ]
 
   def index
-    @members = @team.users.order(created_at: :desc)
+    @members = @team.users.includes(:ahoy_visits).order(created_at: :desc)
     @pagy, @members = pagy(@members)
+
+    # Calculate statistics efficiently
+    all_members = @team.users
+    @admin_count = all_members.where(team_role: "admin").count
+    @member_count = all_members.where(team_role: "member").count
+    @active_count = all_members.where("last_activity_at > ?", 7.days.ago).count
+
     skip_policy_scope
   end
 

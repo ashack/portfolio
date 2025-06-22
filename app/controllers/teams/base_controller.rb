@@ -13,7 +13,7 @@ class Teams::BaseController < ApplicationController
   end
 
   def set_team
-    @team = Team.find_by!(slug: params[:team_slug])
+    @team = Team.find_by_slug!(params[:team_slug])
 
     unless current_user.team_id == @team.id
       flash[:alert] = "You don't have access to this team."

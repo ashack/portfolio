@@ -127,16 +127,16 @@
     <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Member Statistics</h3>
     <div class="grid grid-cols-1 gap-5 sm:grid-cols-3">
       <div class="text-center">
-        <div class="text-2xl font-bold text-gray-900"><%= @members.where(team_role: 'admin').count %></div>
+        <div class="text-2xl font-bold text-gray-900"><%= @admin_count %></div>
         <div class="text-sm text-gray-500">Team Admins</div>
       </div>
       <div class="text-center">
-        <div class="text-2xl font-bold text-gray-900"><%= @members.where(team_role: 'member').count %></div>
+        <div class="text-2xl font-bold text-gray-900"><%= @member_count %></div>
         <div class="text-sm text-gray-500">Team Members</div>
       </div>
       <div class="text-center">
         <div class="text-2xl font-bold text-gray-900">
-          <%= @members.where('last_activity_at > ?', 7.days.ago).count %>
+          <%= @active_count %>
         </div>
         <div class="text-sm text-gray-500">Active This Week</div>
       </div>

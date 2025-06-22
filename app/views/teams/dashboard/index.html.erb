@@ -2,6 +2,7 @@
 
 <div class="space-y-6">
   <!-- Welcome Section -->
+  <% cache ["team-dashboard-welcome", @team, @team.updated_at, current_user.team_role] do %>
   <div class="bg-white overflow-hidden shadow rounded-lg">
     <div class="px-4 py-5 sm:p-6">
       <div class="flex items-center justify-between">
@@ -27,8 +28,10 @@
       </div>
     </div>
   </div>
+  <% end %>
 
   <!-- Team Stats -->
+  <% cache ["team-dashboard-stats", @team, @team.updated_at, @team_members.maximum(:updated_at)] do %>
   <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
     <div class="bg-white overflow-hidden shadow rounded-lg">
       <div class="p-5">
@@ -109,9 +112,11 @@
       </div>
     </div>
   </div>
+  <% end %>
 
   <div class="grid grid-cols-1 gap-8 lg:grid-cols-2">
     <!-- Team Members -->
+    <% cache ["team-dashboard-members", @team, @team_members.maximum(:updated_at)] do %>
     <div class="bg-white shadow rounded-lg">
       <div class="px-4 py-5 sm:p-6">
         <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Team Members</h3>
@@ -161,8 +166,10 @@
         <% end %>
       </div>
     </div>
+    <% end %>
 
     <!-- Recent Activity -->
+    <% cache ["team-dashboard-activity", @team, @recent_activities.maximum(:last_activity_at)], expires_in: 5.minutes do %>
     <div class="bg-white shadow rounded-lg">
       <div class="px-4 py-5 sm:p-6">
         <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Recent Team Activity</h3>
@@ -192,9 +199,11 @@
         <% end %>
       </div>
     </div>
+    <% end %>
   </div>
 
   <!-- Available Features -->
+  <% cache ["team-dashboard-features", @team, @team.plan] do %>
   <div class="bg-white shadow rounded-lg">
     <div class="px-4 py-5 sm:p-6">
       <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Available Team Features</h3>
@@ -215,6 +224,7 @@
       </div>
     </div>
   </div>
+  <% end %>
 
   <!-- Quick Actions -->
   <div class="bg-white shadow rounded-lg">
@@ -247,6 +257,7 @@
   </div>
 
   <!-- Team Information -->
+  <% cache ["team-dashboard-info", @team, current_user] do %>
   <div class="bg-white shadow rounded-lg">
     <div class="px-4 py-5 sm:p-6">
       <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Team Information</h3>
@@ -286,4 +297,5 @@
       </dl>
     </div>
   </div>
+  <% end %>
 </div>

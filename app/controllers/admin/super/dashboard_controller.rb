@@ -16,8 +16,8 @@ class Admin::Super::DashboardController < Admin::Super::BaseController
     @locked_users = User.locked.count
 
     # Recent data
-    @recent_teams = Team.order(created_at: :desc).limit(5)
-    @recent_users = User.where.not(system_role: "super_admin").order(created_at: :desc).limit(10)
-    @recent_activities = User.where.not(system_role: "super_admin").order(last_activity_at: :desc).limit(10)
+    @recent_teams = Team.includes(:admin).order(created_at: :desc).limit(5)
+    @recent_users = User.includes(:team, :plan).where.not(system_role: "super_admin").order(created_at: :desc).limit(10)
+    @recent_activities = User.includes(:team).where.not(system_role: "super_admin").order(last_activity_at: :desc).limit(10)
   end
 end

@@ -2,7 +2,7 @@ class Admin::Super::UsersController < Admin::Super::BaseController
   before_action :set_user, only: [ :show, :edit, :update, :promote_to_site_admin, :demote_from_site_admin, :set_status, :activity, :impersonate, :reset_password, :confirm_email, :resend_confirmation, :unlock_account ]
 
   def index
-    @users = policy_scope(User).order(created_at: :desc)
+    @users = policy_scope(User).includes(:team, :plan, :enterprise_group).order(created_at: :desc)
     @pagy, @users = pagy(@users)
   end
 

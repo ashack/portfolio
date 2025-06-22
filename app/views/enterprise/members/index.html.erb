@@ -86,6 +86,13 @@
         </div>
       <% end %>
     </div>
+    
+    <!-- Pagination for invitations -->
+    <% if @pagy_invitations && @pagy_invitations.pages > 1 %>
+      <div class="px-6 py-3 border-t border-gray-200">
+        <%== pagy_bootstrap_nav(@pagy_invitations) %>
+      </div>
+    <% end %>
   </div>
 <% end %>
 
@@ -151,4 +158,11 @@
       </div>
     <% end %>
   </div>
+  
+  <!-- Pagination for members -->
+  <% if @pagy_members && @pagy_members.pages > 1 %>
+    <div class="px-6 py-3 border-t border-gray-200">
+      <%== pagy_bootstrap_nav(@pagy_members) %>
+    </div>
+  <% end %>
 </div>

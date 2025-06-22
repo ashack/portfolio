@@ -1,39 +1,108 @@
+# User model represents all users in the system with three distinct types:
+# 1. Direct users - Register independently, can create teams, have personal billing
+# 2. Invited users - Join via team invitation only, no personal billing
+# 3. Enterprise users - Join via enterprise invitation only, separate billing
+#
+# CRITICAL BUSINESS RULES:
+# - User type CANNOT be changed after creation (CR-U1)
+# - Each user type has exclusive associations (CR-U2)
+# - Direct users can only be associated with teams they own (CR-U3)
 class User < ApplicationRecord
-  pay_customer # For individual user billing
+  # Pay gem integration for individual user billing (direct users only)
+  pay_customer
 
+  # Devise modules for authentication and security
+  # - database_authenticatable: Username/password authentication
+  # - registerable: Users can sign up
+  # - recoverable: Password reset functionality
+  # - rememberable: Remember me cookie support
+  # - validatable: Email/password validation
+  # - confirmable: Email confirmation required
+  # - trackable: Track sign in count, timestamps, IP
+  # - lockable: Lock account after failed attempts
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable, :confirmable, :trackable, :lockable
 
+  # Association to team (only for invited users)
   belongs_to :team, optional: true
+  
+  # Association to plan (for direct users with individual billing)
   belongs_to :plan, optional: true
+  
+  # Association to enterprise group (only for enterprise users)
   belongs_to :enterprise_group, optional: true
+  
+  # Teams created by this user (super admins only)
   has_many :created_teams, class_name: "Team", foreign_key: "created_by_id"
+  
+  # Teams where this user is the designated admin
   has_many :administered_teams, class_name: "Team", foreign_key: "admin_id"
+  
+  # Enterprise groups created by this user (super admins only)
   has_many :created_enterprise_groups, class_name: "EnterpriseGroup", foreign_key: "created_by_id"
+  
+  # Enterprise groups where this user is the admin
   has_many :administered_enterprise_groups, class_name: "EnterpriseGroup", foreign_key: "admin_id"
+  
+  # Invitations sent by this user
   has_many :sent_invitations, class_name: "Invitation", foreign_key: "invited_by_id"
+  
+  # Analytics tracking via Ahoy
   has_many :ahoy_visits, class_name: "Ahoy::Visit"
+  
+  # Audit logs for security and compliance
   has_many :audit_logs, foreign_key: "user_id", dependent: :destroy
   has_many :target_audit_logs, class_name: "AuditLog", foreign_key: "target_user_id", dependent: :destroy
+  
+  # Email change requests (require admin approval)
   has_many :email_change_requests, dependent: :destroy
   has_many :approved_email_changes, class_name: "EmailChangeRequest", foreign_key: "approved_by_id"
 
+  # System-wide administrative role
+  # - user: Standard user, no admin access
+  # - site_admin: Customer support, read-only billing
+  # - super_admin: Full system access, can create teams/enterprises
   enum :system_role, { user: 0, site_admin: 1, super_admin: 2 }
+  
+  # User account type (IMMUTABLE after creation)
+  # - direct: Self-registered, can create teams
+  # - invited: Joined via team invitation
+  # - enterprise: Joined via enterprise invitation
   enum :user_type, { direct: 0, invited: 1, enterprise: 2 }
+  
+  # Account status for access control
+  # - active: Normal access
+  # - inactive: Cannot sign in (deactivated)
+  # - locked: Cannot sign in (security flag)
   enum :status, { active: 0, inactive: 1, locked: 2 }
+  
+  # Role within a team (invited users only)
+  # - member: Basic team access
+  # - admin: Can manage team members and settings
   enum :team_role, { member: 0, admin: 1 }
+  
+  # Role within enterprise group (enterprise users only)
+  # Prefixed to avoid conflicts with team_role
   enum :enterprise_group_role, { member: 0, admin: 1 }, prefix: true
 
   # Virtual attribute for team name during registration
+  # Used when direct users select a team plan and need to provide team name
   attr_accessor :team_name
 
   # Virtual attribute to skip invitation conflict check when accepting an invitation
+  # Set to true in registration controller when processing invitation acceptance
   attr_accessor :accepting_invitation
 
+  # ========================================================================
+  # VALIDATIONS
+  # ========================================================================
+  
+  # Basic presence validations
   validates :user_type, presence: true
   validates :status, presence: true
 
-  # Enhanced field validations with helpful messages
+  # Name field validations with user-friendly error messages
+  # Allows common name characters including spaces, hyphens, apostrophes, periods
   validates :first_name, length: { maximum: 50, message: "must be 50 characters or less" },
                         format: { with: /\A[a-zA-Z\s\-'\.]*\z/, message: "can only contain letters, spaces, hyphens, apostrophes, and periods" },
                         allow_blank: true
@@ -42,75 +111,125 @@ class User < ApplicationRecord
                        format: { with: /\A[a-zA-Z\s\-'\.]*\z/, message: "can only contain letters, spaces, hyphens, apostrophes, and periods" },
                        allow_blank: true
 
+  # Email validation with custom messages
+  # Enforces uniqueness case-insensitively to prevent duplicate accounts
   validates :email, presence: { message: "is required" },
                    uniqueness: { case_sensitive: false, message: "is already taken" },
                    format: { with: URI::MailTo::EMAIL_REGEXP, message: "must be a valid email address" }
 
-  # Strong password requirements
+  # CR-A1: Strong password requirements
+  # Enforces: 8+ chars, uppercase, lowercase, number, special character
   validate :password_complexity, if: :password_required?
 
-  # Custom validation to check email conflicts with pending invitations
+  # CR-I1: Prevent email conflicts with pending invitations
+  # Ensures new users can't register with email that has pending invitation
   validate :email_not_in_pending_invitations, if: :email_changed?
 
-  # Core business rule: prevent user_type changes after creation
+  # CR-U1: Core business rule - user type immutability
+  # CRITICAL: Changing user type would break billing and permissions
   validate :user_type_cannot_be_changed, if: :user_type_changed?
 
-  # Validation: direct users can have team associations only if they own the team
+  # CR-U3: Direct users can only have team associations if they own the team
+  # Prevents direct users from bypassing invitation system
   validate :direct_user_team_ownership
 
-  # Validation: invited users must have team associations
+  # Invited user validations - must have team association
   validates :team_id, presence: { message: "is required for team members" }, if: :invited?
   validates :team_role, presence: { message: "is required for team members" }, if: :invited?
 
-  # Validation: enterprise users must have enterprise group associations
+  # Enterprise user validations - must have enterprise association
   validates :enterprise_group_id, presence: { message: "is required for enterprise users" }, if: :enterprise?
   validates :enterprise_group_role, presence: { message: "is required for enterprise users" }, if: :enterprise?
 
-  # Validation: ensure no cross-contamination between user types
+  # CR-U2: Ensure user type associations are mutually exclusive
+  # Direct users can't have enterprise associations, etc.
   validate :user_type_associations_valid
 
-  # Custom validation to ensure team constraints remain intact
+  # Additional team constraint validations
+  # Ensures team integrity (member limits, admin requirements, etc.)
   validate :team_constraints_remain_intact, if: :team_association_changed?
 
-  # Email normalization callback
-  before_validation :normalize_email
-
-  # Custom validation to prevent system role changes in certain contexts
+  # CR-A3: Prevent admins from changing their own system role
+  # Security measure to prevent privilege escalation
   validate :system_role_change_allowed, if: :system_role_changed?
 
-  scope :active, -> { where(status: "active") }
-  scope :direct_users, -> { where(user_type: "direct") }
-  scope :team_members, -> { where(user_type: "invited") }
+  # ========================================================================
+  # CALLBACKS
+  # ========================================================================
+  
+  # Normalize email to lowercase for consistency
+  # Prevents duplicate accounts with different case
+  before_validation :normalize_email
 
+  # ========================================================================
+  # SCOPES
+  # ========================================================================
+  
+  # Filter for active users only
+  scope :active, -> { where(status: "active") }
+  
+  # Filter for direct (self-registered) users
+  scope :direct_users, -> { where(user_type: "direct") }
+  
+  # Filter for team members (invited users)
+  scope :team_members, -> { where(user_type: "invited") }
+  
+  # Eager load associations to prevent N+1 queries
+  scope :with_associations, -> { includes(:team, :plan, :enterprise_group) }
+  
+  # Eager load team details for team member listings
+  scope :with_team_details, -> { includes(team: [ :admin, :users ]) }
+
+  # ========================================================================
+  # PUBLIC INSTANCE METHODS
+  # ========================================================================
+
+  # Returns the user's full name, handling nil values gracefully
   def full_name
     "#{first_name} #{last_name}".strip
   end
 
+  # Determines if user can sign in based on status
+  # Used by authentication system
   def can_sign_in?
     active?
   end
 
+  # Checks if user is a team admin
+  # Returns true for:
+  # - Invited users with admin role
+  # - Direct users who own a team
   def team_admin?
     (invited? && team_role == "admin") || (direct? && owns_team? && team.present?)
   end
 
+  # Checks if user is a regular team member (not admin)
   def team_member?
     invited? && team_role == "member"
   end
 
+  # Checks if user is an enterprise admin
   def enterprise_admin?
     enterprise? && enterprise_group_role == "admin"
   end
 
+  # Checks if user is an enterprise member (not admin)
   def enterprise_member?
     enterprise? && enterprise_group_role == "member"
   end
 
+  # Determines if user can create a new team
+  # Only direct users who don't already own a team can create one
   def can_create_team?
     direct? && !owns_team?
   end
 
-  # Override Devise method to check status
+  # ========================================================================
+  # DEVISE OVERRIDES
+  # ========================================================================
+
+  # Override Devise method to check our custom status field
+  # Prevents inactive/locked users from signing in
   def active_for_authentication?
     # First check Devise's built-in checks (including lockable)
     return false unless super
@@ -118,6 +237,8 @@ class User < ApplicationRecord
     can_sign_in?
   end
 
+  # Override Devise method to provide custom inactive messages
+  # Maps our status values to Devise message keys
   def inactive_message
     # Check Devise's lockable mechanism first
     if access_locked?
@@ -133,12 +254,16 @@ class User < ApplicationRecord
     end
   end
 
-  # Helper method to check if account needs unlocking
+  # ========================================================================
+  # HELPER METHODS
+  # ========================================================================
+
+  # Checks if account needs unlocking (for admin UI)
   def needs_unlock?
     access_locked? && (failed_attempts > 0 || locked_at.present?)
   end
 
-  # Helper method to get lock status for admin display
+  # Returns human-readable lock status for admin display
   def lock_status
     if access_locked?
       if failed_attempts > 0
@@ -153,12 +278,23 @@ class User < ApplicationRecord
 
   private
 
-  # Normalize email to lowercase for consistency
+  # ========================================================================
+  # PRIVATE VALIDATION METHODS
+  # ========================================================================
+
+  # Normalizes email to lowercase and strips whitespace
+  # Called before validation to ensure consistency
   def normalize_email
     self.email = email&.downcase&.strip
   end
 
-  # Strong password validation
+  # CR-A1: Enforces strong password requirements
+  # Requirements:
+  # - Minimum 8 characters
+  # - At least one uppercase letter (A-Z)
+  # - At least one lowercase letter (a-z)
+  # - At least one number (0-9)
+  # - At least one special character
   def password_complexity
     return if password.blank?
 
@@ -183,7 +319,9 @@ class User < ApplicationRecord
     end
   end
 
-  # Validation method to check for email conflicts with pending invitations
+  # CR-I1: Prevents email conflicts with pending invitations
+  # Users cannot register with an email that has a pending invitation
+  # Exception: When accepting_invitation is true (set during invitation acceptance)
   def email_not_in_pending_invitations
     return unless email.present?
 
@@ -198,7 +336,9 @@ class User < ApplicationRecord
     end
   end
 
-  # Core business rule: user_type cannot be changed after user creation
+  # CR-U1: Core business rule - user type immutability
+  # CRITICAL: User type determines billing model, permissions, and associations
+  # Changing it would corrupt the system's data integrity
   def user_type_cannot_be_changed
     return if new_record? # Allow setting user_type during creation
 
