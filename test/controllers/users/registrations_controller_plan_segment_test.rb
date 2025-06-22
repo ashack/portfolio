@@ -34,31 +34,29 @@ class Users::RegistrationsControllerPlanSegmentTest < ActionDispatch::Integratio
     )
   end
 
-  test "registration page with individual segment shows only individual plans" do
+  test "registration page with individual segment shows all available plans" do
     get new_user_registration_path(plan_segment: "individual")
     assert_response :success
 
-    # Should show individual plans
+    # Shows ALL available plans (both individual and team)
     assert_match @individual_free.name, @response.body
     assert_match @individual_pro.name, @response.body
+    assert_match @team_starter.name, @response.body
 
-    # Should not show team or enterprise plans
-    assert_no_match @team_starter.name, @response.body
+    # But not enterprise plans
     assert_no_match @enterprise_plan.name, @response.body
   end
 
-  test "registration page with team segment shows warning and team plans" do
+  test "registration page with team segment shows all available plans" do
     get new_user_registration_path(plan_segment: "team")
     assert_response :success
 
-    # Should show team registration notice
-    assert_match "Team registration is currently in beta", @response.body
-
-    # Should show team plans
+    # Shows ALL available plans (both individual and team)
+    assert_match @individual_free.name, @response.body
+    assert_match @individual_pro.name, @response.body
     assert_match @team_starter.name, @response.body
 
-    # Should not show individual or enterprise plans
-    assert_no_match @individual_free.name, @response.body
+    # But not enterprise plans
     assert_no_match @enterprise_plan.name, @response.body
   end
 
@@ -92,21 +90,25 @@ class Users::RegistrationsControllerPlanSegmentTest < ActionDispatch::Integratio
     assert_redirected_to new_user_session_path  # Redirects to sign in due to email confirmation
   end
 
-  test "team registration shows error message" do
-    post user_registration_path, params: {
-      user: {
-        email: "teamuser@example.com",
-        password: "Password123!",
-        password_confirmation: "Password123!",
-        first_name: "Team",
-        last_name: "User",
-        plan_id: @team_starter.id,
-        plan_segment: "team"
+  test "team registration requires team name" do
+    # When selecting a team plan, team name is required
+    assert_no_difference("User.count") do
+      post user_registration_path, params: {
+        user: {
+          email: "teamuser@example.com",
+          password: "Password123!",
+          password_confirmation: "Password123!",
+          first_name: "Team",
+          last_name: "User",
+          plan_id: @team_starter.id,
+          plan_segment: "team"
+          # Missing team_name
+        }
       }
-    }
+    end
 
     assert_response :unprocessable_entity
-    assert_match "Team registration requires additional steps", @response.body
+    assert_match "Team name is required when selecting a team plan", @response.body
   end
 
   test "cannot register with enterprise plan" do
@@ -129,6 +131,7 @@ class Users::RegistrationsControllerPlanSegmentTest < ActionDispatch::Integratio
     }
 
     assert_response :unprocessable_entity
-    assert_match "Choose Your Individual Plan", @response.body
+    # Just verify we show the form again, not the specific text
+    assert_match /Choose Your Plan/i, @response.body
   end
 end
