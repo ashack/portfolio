@@ -1,0 +1,12 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+active_enterprise:
+  name: Active Enterprise
+  slug: active-enterprise
+  admin: enterprise_admin
+  created_by: super_admin
+  plan: enterprise_standard
+  status: active
+  max_members: 100
+  created_at: <%= 20.days.ago %>
+  updated_at: <%= 20.days.ago %>

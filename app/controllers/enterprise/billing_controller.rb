@@ -14,7 +14,8 @@ class Enterprise::BillingController < Enterprise::BaseController
     end
 
     if @enterprise_group.respond_to?(:charges)
-      @invoices = @enterprise_group.charges.order(created_at: :desc).limit(10)
+      invoices = @enterprise_group.charges.order(created_at: :desc)
+      @pagy, @invoices = pagy(invoices, items: 20)
     else
       @invoices = []
     end

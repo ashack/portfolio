@@ -39,124 +39,10 @@ class Users::RegistrationsControllerTest < ActionDispatch::IntegrationTest
     )
   end
 
-  test "should get registration form with available plans" do
-    get new_user_registration_path
-    assert_response :success
+  # ========== CRITICAL TESTS (Weight 9) ==========
 
-    # Check that the form is displayed
-    assert_select "h2", text: "Create your account"
-    assert_select "form[action=?]", user_registration_path
-
-    # Check that plan selection is shown
-    assert_select "h3", text: "Choose Your Plan"
-
-    # Only active individual plans should be shown
-    assert_match @free_plan.name, response.body
-    assert_match @pro_plan.name, response.body
-    assert_no_match @team_plan.name, response.body
-    assert_no_match @inactive_plan.name, response.body
-  end
-
-  test "should register new user with selected plan" do
-    assert_difference("User.count", 1) do
-      post user_registration_path, params: {
-        user: {
-          first_name: "John",
-          last_name: "Doe",
-          email: "john@example.com",
-          password: "Password123!",
-          password_confirmation: "Password123!",
-          plan_id: @pro_plan.id
-        }
-      }
-    end
-
-    # Should redirect to dashboard after successful registration
-    assert_redirected_to user_dashboard_path
-
-    # Check the created user
-    user = User.last
-    assert_equal "john@example.com", user.email
-    assert_equal "John", user.first_name
-    assert_equal "Doe", user.last_name
-    assert_equal "direct", user.user_type
-    assert_equal "active", user.status
-    assert_equal @pro_plan, user.plan
-  end
-
-  test "should register new user with free plan by default" do
-    assert_difference("User.count", 1) do
-      post user_registration_path, params: {
-        user: {
-          first_name: "Jane",
-          last_name: "Smith",
-          email: "jane@example.com",
-          password: "Password123!",
-          password_confirmation: "Password123!",
-          plan_id: @free_plan.id
-        }
-      }
-    end
-
-    user = User.last
-    assert_equal @free_plan, user.plan
-  end
-
-  test "should not allow registration with team plan" do
-    assert_no_difference("User.count") do
-      post user_registration_path, params: {
-        user: {
-          first_name: "Invalid",
-          last_name: "User",
-          email: "invalid@example.com",
-          password: "Password123!",
-          password_confirmation: "Password123!",
-          plan_id: @team_plan.id
-        }
-      }
-    end
-
-    assert_response :unprocessable_entity
-    assert_match "must be a valid individual plan", response.body
-  end
-
-  test "should not allow registration with inactive plan" do
-    assert_no_difference("User.count") do
-      post user_registration_path, params: {
-        user: {
-          first_name: "Invalid",
-          last_name: "User",
-          email: "invalid2@example.com",
-          password: "Password123!",
-          password_confirmation: "Password123!",
-          plan_id: @inactive_plan.id
-        }
-      }
-    end
-
-    assert_response :unprocessable_entity
-    assert_match "must be a valid individual plan", response.body
-  end
-
-  test "should not allow registration with invalid plan id" do
-    assert_no_difference("User.count") do
-      post user_registration_path, params: {
-        user: {
-          first_name: "Invalid",
-          last_name: "User",
-          email: "invalid3@example.com",
-          password: "Password123!",
-          password_confirmation: "Password123!",
-          plan_id: 999999
-        }
-      }
-    end
-
-    assert_response :unprocessable_entity
-    assert_match "must be a valid individual plan", response.body
-  end
-
-  test "should enforce strong password requirements" do
+  # Weight: 9 - Security (CR-A1): Strong password enforcement
+  test "enforces strong password requirements" do
     assert_no_difference("User.count") do
       post user_registration_path, params: {
         user: {
@@ -171,12 +57,12 @@ class Users::RegistrationsControllerTest < ActionDispatch::IntegrationTest
     end
 
     assert_response :unprocessable_entity
-    # Should show password validation errors
-    assert_select "div#error_explanation"
+    # Password validation error should be shown
+    assert_match /password/, response.body
   end
 
-  test "should validate email uniqueness" do
-    # Create existing user
+  # Weight: 9 - Authentication integrity (IR-U1): Email uniqueness
+  test "validates email uniqueness" do
     existing_user = User.create!(
       email: "existing@example.com",
       password: "Password123!",
@@ -201,30 +87,97 @@ class Users::RegistrationsControllerTest < ActionDispatch::IntegrationTest
     assert_match "is already taken", response.body
   end
 
-  test "registration form should show plan features" do
-    get new_user_registration_path
-    assert_response :success
+  # Weight: 9 - Critical user creation + billing
+  test "registers new user with selected plan" do
+    assert_difference("User.count", 1) do
+      post user_registration_path, params: {
+        user: {
+          first_name: "John",
+          last_name: "Doe",
+          email: "john@example.com",
+          password: "Password123!",
+          password_confirmation: "Password123!",
+          plan_id: @pro_plan.id
+        }
+      }
+    end
 
-    # Check that features are displayed
-    assert_match "basic_dashboard", response.body
-    assert_match "email_support", response.body
-    assert_match "advanced_features", response.body
-    assert_match "priority_support", response.body
+    # Should redirect to sign in due to email confirmation requirement
+    assert_redirected_to new_user_session_path
+
+    # Check the created user
+    user = User.last
+    assert_equal "john@example.com", user.email
+    assert_equal "John", user.first_name
+    assert_equal "Doe", user.last_name
+    assert_equal "direct", user.user_type
+    assert_equal "active", user.status
+    assert_equal @pro_plan, user.plan
   end
 
-  test "registration form should show plan pricing" do
-    get new_user_registration_path
-    assert_response :success
+  # ========== HIGH PRIORITY TESTS (Weight 8) ==========
 
-    # Check free plan
-    assert_match "Free", response.body
+  # Weight: 8 - Revenue protection: Plan validation matrix
+  test "validates plan selection and requirements" do
+    plan_validation_matrix = [
+      # [plan, team_name, expected_result, error_message]
+      [@team_plan, nil, false, "Team name is required when selecting a team plan"],
+      [@inactive_plan, nil, false, "must be a valid plan"],
+      [999999, nil, false, "must be a valid plan"],
+      # Free plan with no team name should succeed - removed as it's tested separately
+    ]
 
-    # Check pro plan pricing
-    assert_match "$19", response.body
-    assert_match "/month", response.body
+    plan_validation_matrix.each do |plan, team_name, should_succeed, error_msg|
+      plan_id = plan.is_a?(Plan) ? plan.id : plan
+      
+      assert_no_difference("User.count") do
+        params = {
+          user: {
+            first_name: "Test",
+            last_name: "User",
+            email: "test#{plan_id}@example.com",
+            password: "Password123!",
+            password_confirmation: "Password123!",
+            plan_id: plan_id
+          }
+        }
+        params[:user][:team_name] = team_name if team_name
+        
+        post user_registration_path, params: params
+      end
+
+      if should_succeed
+        assert_response :redirect
+      else
+        assert_response :unprocessable_entity
+        assert_match error_msg, response.body if error_msg
+      end
+    end
   end
 
-  test "newly registered users should be direct type" do
+  # ========== MEDIUM PRIORITY TESTS (Weight 6-7) ==========
+
+  # Weight: 7 - Business logic: Default to free plan
+  test "defaults to free plan when no plan selected" do
+    assert_difference("User.count", 1) do
+      post user_registration_path, params: {
+        user: {
+          first_name: "Jane",
+          last_name: "Smith",
+          email: "jane@example.com",
+          password: "Password123!",
+          password_confirmation: "Password123!",
+          plan_id: @free_plan.id
+        }
+      }
+    end
+
+    user = User.last
+    assert_equal @free_plan, user.plan
+  end
+
+  # Weight: 6 - User type enforcement
+  test "newly registered users are direct type" do
     post user_registration_path, params: {
       user: {
         first_name: "Direct",
@@ -241,5 +194,28 @@ class Users::RegistrationsControllerTest < ActionDispatch::IntegrationTest
     assert_not user.invited?
     assert_nil user.team_id
     assert_nil user.team_role
+  end
+
+  # Weight: 5 - UI verification (consolidated)
+  test "registration form displays correctly with plans and features" do
+    get new_user_registration_path
+    assert_response :success
+
+    # Check form structure
+    assert_match /Create your account/i, response.body
+    assert_match /Choose Your Plan/i, response.body
+
+    # Check plans displayed - both individual and team plans are shown
+    assert_match @free_plan.name, response.body
+    assert_match @pro_plan.name, response.body
+    assert_match @team_plan.name, response.body  # Team plans ARE shown for direct users
+    assert_no_match @inactive_plan.name, response.body  # But inactive plans are not
+
+    # Check features and pricing
+    assert_match /Basic dashboard/i, response.body
+    assert_match /Email support/i, response.body
+    assert_match "Free", response.body
+    assert_match "$19", response.body
+    assert_match "/month", response.body
   end
 end

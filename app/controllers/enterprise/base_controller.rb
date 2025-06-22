@@ -16,7 +16,13 @@ class Enterprise::BaseController < ApplicationController
   end
 
   def set_enterprise_group
-    @enterprise_group = current_user.enterprise_group
+    # Use cached lookup when slug is provided
+    if params[:enterprise_group_slug]
+      @enterprise_group = EnterpriseGroup.find_by_slug!(params[:enterprise_group_slug])
+    else
+      @enterprise_group = current_user.enterprise_group
+    end
+
     unless @enterprise_group
       flash[:alert] = "No enterprise group found."
       redirect_to root_path

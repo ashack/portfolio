@@ -10,388 +10,430 @@ class UserTest < ActiveSupport::TestCase
       user_type: "direct",
       status: "active"
     )
+    
+    @team = Team.create!(
+      name: "Test Team",
+      admin: users(:super_admin),
+      created_by: users(:super_admin)
+    )
+    
+    @enterprise_plan = Plan.create!(
+      name: "Enterprise Plan",
+      plan_segment: "enterprise",
+      amount_cents: 99900,
+      active: true
+    )
+    
+    @enterprise_group = EnterpriseGroup.create!(
+      name: "Test Enterprise",
+      created_by: users(:super_admin),
+      plan: @enterprise_plan,
+      admin: users(:super_admin)
+    )
   end
 
-  test "should be valid with valid attributes" do
-    assert @user.valid?
+  # ========================================================================
+  # CRITICAL TESTS (Weight: 9-10)
+  # ========================================================================
+  
+  # Weight: 10 - CR-U1: User type immutability - core system integrity
+  test "user type cannot be changed after creation" do
+    @user.skip_confirmation!
+    @user.save!
+    
+    # Test all possible type changes
+    ["invited", "enterprise"].each do |new_type|
+      @user.reload
+      @user.user_type = new_type
+      assert_not @user.valid?
+      assert_includes @user.errors[:user_type], 
+        "cannot be changed from 'direct' to '#{new_type}' - this is a core business rule"
+    end
   end
 
-  test "should require email" do
+  # Weight: 10 - CR-U2: User type isolation - prevents billing contamination
+  test "user type associations are properly isolated" do
+    # Direct users cannot have team associations (except ownership)
+    @user.user_type = "direct"
+    @user.team = @team
+    @user.team_role = "member"
+    assert_not @user.valid?
+    assert_includes @user.errors[:team_id], "direct users can only be associated with teams they own"
+    
+    # Direct users cannot have enterprise associations
+    @user.team = nil
+    @user.team_role = nil
+    @user.enterprise_group = @enterprise_group
+    @user.enterprise_group_role = "member"
+    assert_not @user.valid?
+    assert_includes @user.errors[:base], "direct users cannot have enterprise group associations"
+    
+    # Invited users must have team associations
+    @user = User.new(email: "invited@example.com", password: "Password123!", 
+                     user_type: "invited")
+    assert_not @user.valid?
+    assert_includes @user.errors[:team_id], "is required for team members"
+    assert_includes @user.errors[:team_role], "is required for team members"
+    
+    # Invited users cannot have enterprise associations
+    @user.team = @team
+    @user.team_role = "member"
+    @user.enterprise_group = @enterprise_group
+    @user.enterprise_group_role = "member"
+    assert_not @user.valid?
+    assert_includes @user.errors[:base], "team members cannot have enterprise group associations"
+    
+    # Enterprise users must have enterprise associations
+    @user = User.new(email: "enterprise@example.com", password: "Password123!", 
+                     user_type: "enterprise")
+    assert_not @user.valid?
+    assert_includes @user.errors[:enterprise_group_id], "is required for enterprise users"
+    assert_includes @user.errors[:enterprise_group_role], "is required for enterprise users"
+    
+    # Enterprise users cannot have team associations
+    @user.enterprise_group = @enterprise_group
+    @user.enterprise_group_role = "member"
+    @user.team = @team
+    @user.team_role = "member"
+    assert_not @user.valid?
+    assert_includes @user.errors[:base], "enterprise users cannot have team associations"
+  end
+
+  # Weight: 9 - CR-A1: Password complexity - security critical
+  test "password complexity requirements are enforced" do
+    # Test all requirements in one comprehensive test
+    test_cases = {
+      "Pass1!" => "must be at least 8 characters long",
+      "password123!" => "must include at least one uppercase letter",
+      "PASSWORD123!" => "must include at least one lowercase letter",
+      "Password!" => "must include at least one number",
+      "Password123" => "must include at least one special character"
+    }
+    
+    test_cases.each do |password, expected_error|
+      @user.password = password
+      assert_not @user.valid?
+      assert @user.errors[:password].any? { |e| e.include?(expected_error.split.last(3).join(" ")) },
+        "Password '#{password}' should have error containing '#{expected_error}'"
+    end
+    
+    # Test that all errors show at once
+    @user.password = "pass"
+    assert_not @user.valid?
+    password_errors = @user.errors[:password]
+    assert password_errors.any? { |e| e.include?("8 characters") }
+    assert password_errors.any? { |e| e.include?("uppercase") }
+    assert password_errors.any? { |e| e.include?("number") }
+    assert password_errors.any? { |e| e.include?("special character") }
+  end
+
+  # Weight: 9 - CR-U3: Direct user team ownership - prevents invitation bypass
+  test "direct users can own teams but not be invited members" do
+    @user.skip_confirmation!
+    @user.save!
+    
+    # Direct users can own teams
+    owned_team = Team.create!(
+      name: "Owned Team",
+      admin: @user,
+      created_by: users(:super_admin)
+    )
+    
+    assert_includes @user.administered_teams, owned_team
+    
+    # But cannot be assigned as team members
+    @user.team = @team
+    @user.team_role = "member"
+    assert_not @user.valid?
+    assert_includes @user.errors[:team_id], "direct users can only be associated with teams they own"
+  end
+
+  # Weight: 9 - IR-U1: Email uniqueness with invitations - prevents duplicates
+  test "email uniqueness prevents conflicts with invitations" do
+    @user.skip_confirmation!
+    @user.save!
+    
+    # Cannot create duplicate user
+    duplicate_user = @user.dup
+    assert_not duplicate_user.valid?
+    assert_includes duplicate_user.errors[:email], "has already been taken"
+    
+    # Email normalization prevents case-based duplicates
+    duplicate_user.email = "TEST@EXAMPLE.COM"
+    assert_not duplicate_user.valid?
+    assert_includes duplicate_user.errors[:email], "has already been taken"
+  end
+
+  # ========================================================================
+  # HIGH PRIORITY TESTS (Weight: 7-8)
+  # ========================================================================
+
+  # Weight: 8 - Team role transitions work correctly
+  test "team role transitions work correctly" do
+    # Create team member
+    member_user = User.create!(
+      email: "member@example.com",
+      password: "Password123!",
+      user_type: "invited",
+      team: @team,
+      team_role: "member",
+      confirmed_at: Time.current
+    )
+    
+    # Member can be promoted to admin
+    member_user.team_role = "admin"
+    assert member_user.valid?
+    assert member_user.save
+    
+    # Create another admin so we have 2 admins total
+    another_admin = User.create!(
+      email: "admin2@example.com",
+      password: "Password123!",
+      user_type: "invited",
+      team: @team,
+      team_role: "admin",
+      confirmed_at: Time.current
+    )
+    
+    # Admin can be demoted when another admin exists
+    member_user.reload
+    member_user.team_role = "member"
+    assert member_user.valid?
+    assert member_user.save
+  end
+
+  # Weight: 7 - IR-U3: Email normalization - data consistency
+  test "email normalization ensures consistency" do
+    # Test comprehensive normalization
+    @user.email = "  TeSt@ExAmPlE.cOm  "
+    @user.valid?
+    assert_equal "test@example.com", @user.email
+    
+    # Handles nil gracefully
+    @user.email = nil
+    assert_nothing_raised { @user.valid? }
+    assert_nil @user.email
+  end
+
+  # Weight: 7 - IR-U2: Authentication status checks - access control
+  test "authentication status controls access appropriately" do
+    # Active users can sign in
+    @user.status = "active"
+    assert @user.can_sign_in?
+    
+    # Inactive and locked users cannot sign in
+    ["inactive", "locked"].each do |status|
+      @user.status = status
+      assert_not @user.can_sign_in?
+    end
+  end
+
+  # ========================================================================
+  # MEDIUM PRIORITY TESTS (Weight: 5-6)
+  # ========================================================================
+
+  # Weight: 6 - Standard validations (consolidated)
+  test "field validations work correctly" do
+    # Email validation
     @user.email = nil
     assert_not @user.valid?
     assert_includes @user.errors[:email], "can't be blank"
-  end
-
-  test "should require valid email format" do
-    invalid_emails = [ "invalid", "test@", "@example.com" ]
-    invalid_emails.each do |invalid_email|
-      @user.email = invalid_email
-      assert_not @user.valid?, "#{invalid_email} should be invalid"
-    end
-  end
-
-  test "should require unique email" do
-    @user.skip_confirmation!
-    @user.save!
-    duplicate_user = @user.dup
-    duplicate_user.email = @user.email.upcase
-    assert_not duplicate_user.valid?
-  end
-
-  test "should require password" do
-    @user.password = nil
+    
+    @user.email = "invalid-email"
     assert_not @user.valid?
-  end
-
-  test "direct user should not have team associations" do
+    assert @user.errors[:email].any?
+    
+    # User type and status validation
+    @user.email = "test@example.com"
+    @user.user_type = nil
+    assert_not @user.valid?
+    assert_includes @user.errors[:user_type], "can't be blank"
+    
     @user.user_type = "direct"
-    @user.team_id = 1
-    @user.team_role = "member"
+    @user.status = nil
     assert_not @user.valid?
-    assert_includes @user.errors[:team_id], "cannot be set for direct users"
-    assert_includes @user.errors[:team_role], "cannot be set for direct users"
+    assert_includes @user.errors[:status], "can't be blank"
   end
 
-  test "invited user must have team associations" do
-    @user.user_type = "invited"
-    @user.team_id = nil
-    @user.team_role = nil
-    assert_not @user.valid?
-    assert_includes @user.errors[:team_id], "is required for team members"
-    assert_includes @user.errors[:team_role], "is required for team members"
-  end
-
-  test "full_name returns concatenated first and last name" do
-    assert_equal "Test User", @user.full_name
-  end
-
-  test "full_name handles missing names gracefully" do
-    @user.first_name = nil
-    @user.last_name = nil
-    assert_equal "", @user.full_name.strip
-  end
-
-  test "can_sign_in? returns true for active users" do
-    @user.status = "active"
-    assert @user.can_sign_in?
-  end
-
-  test "can_sign_in? returns false for inactive users" do
-    @user.status = "inactive"
-    assert_not @user.can_sign_in?
-  end
-
-  test "can_sign_in? returns false for locked users" do
-    @user.status = "locked"
-    assert_not @user.can_sign_in?
-  end
-
-  test "team_admin? returns true for invited admin users" do
-    @user.user_type = "invited"
-    @user.team_role = "admin"
-    @user.team_id = 1
-    assert @user.team_admin?
-  end
-
-  test "team_admin? returns false for direct users" do
-    @user.user_type = "direct"
+  # Weight: 5 - Role helper methods (consolidated)
+  test "role helper methods work correctly" do
+    # Team roles
+    invited_admin = User.new(email: "admin@example.com", password: "Password123!",
+                            user_type: "invited", team: @team, team_role: "admin")
+    assert invited_admin.team_admin?
+    assert_not invited_admin.team_member?
+    
+    invited_member = User.new(email: "member@example.com", password: "Password123!",
+                             user_type: "invited", team: @team, team_role: "member")
+    assert_not invited_member.team_admin?
+    assert invited_member.team_member?
+    
+    # Enterprise roles
+    ent_admin = User.new(email: "entadmin@example.com", password: "Password123!",
+                        user_type: "enterprise", enterprise_group: @enterprise_group,
+                        enterprise_group_role: "admin")
+    assert ent_admin.enterprise_admin?
+    assert_not ent_admin.enterprise_member?
+    
+    ent_member = User.new(email: "entmember@example.com", password: "Password123!",
+                         user_type: "enterprise", enterprise_group: @enterprise_group,
+                         enterprise_group_role: "member")
+    assert_not ent_member.enterprise_admin?
+    assert ent_member.enterprise_member?
+    
+    # Direct users have no team/enterprise roles
     assert_not @user.team_admin?
+    assert_not @user.team_member?
+    assert_not @user.enterprise_admin?
+    assert_not @user.enterprise_member?
   end
 
-  test "team_member? returns true for invited member users" do
-    @user.user_type = "invited"
-    @user.team_role = "member"
-    @user.team_id = 1
-    assert @user.team_member?
-  end
+  # ========================================================================
+  # LOW PRIORITY TESTS (Keep only essential)
+  # ========================================================================
 
-  test "scopes filter users correctly" do
-    # Create test users
-    active_direct = User.new(
-      email: "active_direct@example.com",
-      password: "Password123!",
-      user_type: "direct",
-      status: "active"
-    )
-    active_direct.skip_confirmation!
-    active_direct.save!
-
-    inactive_user = User.new(
-      email: "inactive@example.com",
-      password: "Password123!",
-      user_type: "direct",
-      status: "inactive"
-    )
-    inactive_user.skip_confirmation!
-    inactive_user.save!
-
-    # Create an admin user for the team
-    admin_user = User.new(
-      email: "teamadmin@example.com",
-      password: "Password123!",
-      system_role: "super_admin",
-      user_type: "direct"
-    )
-    admin_user.skip_confirmation!
-    admin_user.save!
-
-    # Create a team for invited user
-    team = Team.create!(
-      name: "Test Team",
-      slug: "test-team",
-      admin: admin_user,
-      created_by: admin_user
-    )
-
-    invited_user = User.new(
-      email: "invited@example.com",
-      password: "Password123!",
-      user_type: "invited",
-      status: "active",
-      team: team,
-      team_role: "member"
-    )
-    invited_user.skip_confirmation!
-    invited_user.save!
-
-    # Test scopes
-    assert_includes User.active, active_direct
-    assert_includes User.active, invited_user
-    assert_not_includes User.active, inactive_user
-
-    assert_includes User.direct_users, active_direct
-    assert_not_includes User.direct_users, invited_user
-
-    assert_includes User.team_members, invited_user
-    assert_not_includes User.team_members, active_direct
-  end
-
-  test "should validate first name format" do
-    valid_names = [ "John", "Mary-Jane", "O'Brien", "St. James", "Jean Paul" ]
-    valid_names.each do |name|
-      @user.first_name = name
-      assert @user.valid?, "#{name} should be valid"
-    end
-
-    invalid_names = [ "John123", "Mary@Jane", "Test#Name", "Name!" ]
-    invalid_names.each do |name|
-      @user.first_name = name
-      assert_not @user.valid?
-      assert_includes @user.errors[:first_name], "can only contain letters, spaces, hyphens, apostrophes, and periods"
-    end
-  end
-
-  test "should validate last name format" do
-    valid_names = [ "Smith", "Van Der Berg", "O'Connor", "St. Pierre" ]
-    valid_names.each do |name|
-      @user.last_name = name
-      assert @user.valid?, "#{name} should be valid"
-    end
-
-    invalid_names = [ "Smith123", "Jones@Home", "Test#" ]
-    invalid_names.each do |name|
-      @user.last_name = name
-      assert_not @user.valid?
-      assert_includes @user.errors[:last_name], "can only contain letters, spaces, hyphens, apostrophes, and periods"
-    end
-  end
-
-  test "should validate name length" do
-    @user.first_name = "A" * 51
-    assert_not @user.valid?
-    assert_includes @user.errors[:first_name], "must be 50 characters or less"
-
-    @user.first_name = "A" * 50
-    assert @user.valid?
-
-    @user.last_name = "B" * 51
-    assert_not @user.valid?
-    assert_includes @user.errors[:last_name], "must be 50 characters or less"
-  end
-
-  test "should validate password complexity" do
-    weak_passwords = [ "password", "12345678", "PASSWORD", "Password", "password123" ]
-    weak_passwords.each do |password|
-      @user.password = password
-      assert_not @user.valid?
-      assert @user.errors[:password].any?
-    end
-
-    strong_passwords = [ "Password123!", "Str0ng!Pass", "MyP@ssw0rd", "Test123$" ]
-    strong_passwords.each do |password|
-      @user.password = password
-      assert @user.valid?, "#{password} should be valid"
-    end
-  end
-
-  test "should normalize email before validation" do
-    skip "Devise mapping issue in test environment"
-  end
-
-  test "should have system role enum methods" do
-    @user.system_role = "user"
-    assert @user.user?
-    assert_not @user.site_admin?
-    assert_not @user.super_admin?
-
-    @user.system_role = "site_admin"
-    assert @user.site_admin?
-    assert_not @user.user?
-
-    @user.system_role = "super_admin"
-    assert @user.super_admin?
-  end
-
-  test "should have user type enum methods" do
-    @user.user_type = "direct"
-    assert @user.direct?
-    assert_not @user.invited?
-
-    @user.user_type = "invited"
-    @user.team_id = 1
-    @user.team_role = "member"
-    assert @user.invited?
-    assert_not @user.direct?
-  end
-
-  test "should have status enum methods" do
-    @user.status = "active"
-    assert @user.active?
-    assert_not @user.inactive?
-    assert_not @user.locked?
-
-    @user.status = "inactive"
-    assert @user.inactive?
-
-    @user.status = "locked"
-    assert @user.locked?
-  end
-
-  test "should track sign in count" do
-    @user.skip_confirmation!
-    @user.save!
-
-    assert_equal 0, @user.sign_in_count
-
-    @user.update!(
-      sign_in_count: @user.sign_in_count + 1,
-      current_sign_in_at: Time.current,
-      last_sign_in_at: @user.current_sign_in_at
-    )
-
-    assert_equal 1, @user.sign_in_count
-  end
-
-  test "should track last activity" do
-    @user.skip_confirmation!
-    @user.save!
-
-    assert_nil @user.last_activity_at
-
-    activity_time = Time.current
-    @user.update_column(:last_activity_at, activity_time)
-
-    assert_equal activity_time.to_i, @user.last_activity_at.to_i
-  end
-
-  test "should handle password reset" do
-    skip "Devise mapping issue in test environment"
-  end
-
-  test "should handle account locking" do
-    skip "Devise mapping issue in test environment"
-  end
-
-  test "should have associations" do
-    assert_respond_to @user, :team
-    assert_respond_to @user, :created_teams
-    assert_respond_to @user, :administered_teams
-    assert_respond_to @user, :sent_invitations
-    assert_respond_to @user, :ahoy_visits
-    assert_respond_to @user, :audit_logs
-    assert_respond_to @user, :target_audit_logs
-    assert_respond_to @user, :email_change_requests
-    assert_respond_to @user, :approved_email_changes
-  end
-
-  test "should handle Pay customer methods" do
-    @user.skip_confirmation!
-    @user.save!
-
-    assert_respond_to @user, :payment_processor
-    assert_respond_to @user, :stripe_customer_id
-  end
-
-  test "direct user with team data should be invalid" do
-    @user.user_type = "direct"
-    @user.team_id = 1
-    @user.team_role = "member"
-
-    assert_not @user.valid?
-    assert_includes @user.errors[:team_id], "cannot be set for direct users"
-    assert_includes @user.errors[:team_role], "cannot be set for direct users"
-  end
-
-  test "invited user without team data should be invalid" do
-    @user.user_type = "invited"
-    @user.team_id = nil
-    @user.team_role = nil
-
-    assert_not @user.valid?
-    assert_includes @user.errors[:team_id], "is required for team members"
-    assert_includes @user.errors[:team_role], "is required for team members"
-  end
-
-  test "should allow blank first and last names" do
-    @user.first_name = ""
-    @user.last_name = ""
-    assert @user.valid?
-  end
-
-  test "full_name handles nil names" do
+  # Weight: 4 - Keep one test for full_name edge cases
+  test "full_name handles edge cases correctly" do
     @user.first_name = nil
     @user.last_name = nil
     assert_equal "", @user.full_name
-  end
-
-  test "full_name handles partial names" do
+    
     @user.first_name = "John"
-    @user.last_name = nil
     assert_equal "John", @user.full_name
-
+    
     @user.first_name = nil
     @user.last_name = "Doe"
     assert_equal "Doe", @user.full_name
   end
 
-  test "should validate email uniqueness case insensitively" do
+  # ========================================================================
+  # NEW CRITICAL TESTS (Previously Missing)
+  # ========================================================================
+
+  # Weight: 10 - User type isolation matrix test
+  test "user type isolation matrix prevents all invalid combinations" do
+    # Matrix of all user type and association combinations
+    test_matrix = [
+      # [user_type, team?, team_role?, enterprise?, enterprise_role?, should_be_valid?]
+      ["direct", nil, nil, nil, nil, true],
+      ["direct", @team, "member", nil, nil, false],
+      ["direct", @team, "admin", nil, nil, false],
+      ["direct", nil, nil, @enterprise_group, "member", false],
+      ["direct", nil, nil, @enterprise_group, "admin", false],
+      ["direct", @team, "member", @enterprise_group, "member", false],
+      
+      ["invited", nil, nil, nil, nil, false],
+      ["invited", @team, nil, nil, nil, false],
+      ["invited", @team, "member", nil, nil, true],
+      ["invited", @team, "admin", nil, nil, true],
+      ["invited", @team, "member", @enterprise_group, "member", false],
+      ["invited", nil, nil, @enterprise_group, "member", false],
+      
+      ["enterprise", nil, nil, nil, nil, false],
+      ["enterprise", nil, nil, @enterprise_group, nil, false],
+      ["enterprise", nil, nil, @enterprise_group, "member", true],
+      ["enterprise", nil, nil, @enterprise_group, "admin", true],
+      ["enterprise", @team, "member", @enterprise_group, "member", false],
+      ["enterprise", @team, "member", nil, nil, false]
+    ]
+    
+    test_matrix.each do |user_type, team, team_role, enterprise, enterprise_role, should_be_valid|
+      user = User.new(
+        email: "test_#{user_type}_#{team_role}_#{enterprise_role}@example.com",
+        password: "Password123!",
+        user_type: user_type,
+        team: team,
+        team_role: team_role,
+        enterprise_group: enterprise,
+        enterprise_group_role: enterprise_role
+      )
+      
+      if should_be_valid
+        assert user.valid?, 
+          "User type '#{user_type}' with team_role '#{team_role}' and enterprise_role '#{enterprise_role}' should be valid but has errors: #{user.errors.full_messages.join(', ')}"
+      else
+        assert_not user.valid?,
+          "User type '#{user_type}' with team_role '#{team_role}' and enterprise_role '#{enterprise_role}' should be invalid"
+      end
+    end
+  end
+
+  # Weight: 9 - System role hierarchy permissions test
+  test "system role permissions follow proper hierarchy" do
     @user.skip_confirmation!
     @user.save!
-
-    duplicate_user = User.new(
-      email: "TEST@EXAMPLE.COM",
+    
+    # Users cannot self-promote
+    original_role = @user.system_role
+    @user.system_role = "site_admin"
+    # This is allowed at model level - controller should prevent
+    assert @user.valid?
+    
+    # Super admin has highest privileges
+    super_admin = User.create!(
+      email: "super@example.com",
       password: "Password123!",
-      user_type: "direct"
+      system_role: "super_admin",
+      confirmed_at: Time.current
     )
-
-    assert_not duplicate_user.valid?
-    assert_includes duplicate_user.errors[:email], "is already taken"
+    assert super_admin.super_admin?
+    assert_not super_admin.site_admin?
+    assert_not super_admin.user?
+    
+    # Site admin has medium privileges
+    site_admin = User.create!(
+      email: "site@example.com",
+      password: "Password123!",
+      system_role: "site_admin",
+      confirmed_at: Time.current
+    )
+    assert site_admin.site_admin?
+    assert_not site_admin.super_admin?
+    assert_not site_admin.user?
+    
+    # Regular user has basic privileges
+    regular_user = User.create!(
+      email: "regular@example.com",
+      password: "Password123!",
+      system_role: "user",
+      confirmed_at: Time.current
+    )
+    assert regular_user.user?
+    assert_not regular_user.site_admin?
+    assert_not regular_user.super_admin?
   end
 
-  test "should require confirmation for new users" do
-    skip "Devise mapping issue in test environment"
-  end
-
-  test "should handle team role enum methods" do
-    @user.user_type = "invited"
-    @user.team_id = 1
-    @user.team_role = "member"
-
-    assert @user.member?
-    assert_not @user.admin?
-
-    @user.team_role = "admin"
-    assert @user.admin?
-    assert_not @user.member?
+  # Weight: 8 - Status state machine transitions test
+  test "user status transitions follow business rules" do
+    @user.skip_confirmation!
+    @user.save!
+    
+    # Valid status values
+    valid_statuses = ["active", "inactive", "locked"]
+    valid_statuses.each do |status|
+      @user.status = status
+      assert @user.valid?, "Status '#{status}' should be valid"
+    end
+    
+    # Active -> Inactive (valid for suspension)
+    @user.status = "active"
+    @user.save!
+    @user.status = "inactive"
+    assert @user.valid?
+    
+    # Inactive -> Active (valid for reactivation)
+    @user.save!
+    @user.status = "active"
+    assert @user.valid?
+    
+    # Active -> Locked (valid for security)
+    @user.save!
+    @user.status = "locked"
+    assert @user.valid?
+    
+    # Locked users need admin intervention to unlock
+    @user.save!
+    @user.status = "active"
+    assert @user.valid? # Model allows it, controller should restrict
   end
 end

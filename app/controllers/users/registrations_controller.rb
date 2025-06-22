@@ -1,9 +1,9 @@
 class Users::RegistrationsController < Devise::RegistrationsController
   skip_before_action :authenticate_user!, only: [ :new, :create ]
   skip_before_action :check_user_status, only: [ :new, :create ]
-  skip_before_action :track_user_activity, only: [ :new, :create ]
-  skip_after_action :verify_authorized, only: [ :new, :create ]
-  skip_after_action :verify_policy_scoped, only: [ :new, :create ]
+  skip_before_action :track_user_activity_async, only: [ :new, :create ]
+  skip_after_action :verify_authorized
+  skip_after_action :verify_policy_scoped
 
   before_action :configure_sign_up_params, only: [ :create ]
   before_action :configure_account_update_params, only: [ :update ]

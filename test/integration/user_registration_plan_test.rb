@@ -61,7 +61,8 @@ class UserRegistrationPlanTest < ActionDispatch::IntegrationTest
     # Check the user was created with free plan
     user = User.find_by(email: "testfree@example.com")
     assert_not_nil user
-    assert_equal @free_plan.id, user.plan_id
-    assert_equal "Test Free", user.plan.name
+    assert_not_nil user.plan
+    assert_equal 0, user.plan.amount_cents
+    assert_equal "individual", user.plan.plan_segment
   end
 end

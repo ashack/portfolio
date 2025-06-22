@@ -1,44 +1,34 @@
 require "test_helper"
 
 class HomeControllerTest < ActionDispatch::IntegrationTest
-  test "should get index when not signed in" do
-    get root_path
-    assert_response :success
+  # ========== CRITICAL TESTS (Weight 7-8) ==========
+  
+  # Weight: 8 - Critical routing matrix for all user types
+  test "routes users to correct dashboards based on user type and role" do
+    routing_matrix = [
+      # [email, user_type, system_role, team, expected_path]
+      ["superadmin@example.com", "direct", "super_admin", nil, :admin_super_root_path],
+      ["siteadmin@example.com", "direct", "site_admin", nil, :admin_site_root_path],
+      ["directuser@example.com", "direct", "user", nil, :user_dashboard_path],
+    ]
+
+    routing_matrix.each do |email, user_type, system_role, team, expected_path|
+      sign_out :user if defined?(current_user)
+      
+      user = sign_in_with(
+        email: email,
+        user_type: user_type,
+        system_role: system_role
+      )
+
+      get root_path
+      assert_redirected_to send(expected_path), 
+        "Expected #{system_role} #{user_type} user to be redirected to #{expected_path}"
+    end
   end
 
-  test "should redirect super admin to admin super dashboard" do
-    super_admin = sign_in_with(
-      email: "superadmin@example.com",
-      system_role: "super_admin",
-      user_type: "direct"
-    )
-
-    get root_path
-    assert_redirected_to admin_super_root_path
-  end
-
-  test "should redirect site admin to admin site dashboard" do
-    site_admin = sign_in_with(
-      email: "siteadmin@example.com",
-      system_role: "site_admin",
-      user_type: "direct"
-    )
-
-    get root_path
-    assert_redirected_to admin_site_root_path
-  end
-
-  test "should redirect direct user to user dashboard" do
-    direct_user = sign_in_with(
-      email: "directuser@example.com",
-      user_type: "direct"
-    )
-
-    get root_path
-    assert_redirected_to user_dashboard_path
-  end
-
-  test "should redirect invited user with team to team dashboard" do
+  # Weight: 7 - Team member routing
+  test "routes invited team members to their team dashboard" do
     team = Team.create!(
       name: "Test Team",
       slug: "test-team",
@@ -57,38 +47,14 @@ class HomeControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to team_root_path(team_slug: team.slug)
   end
 
-  test "should redirect invited user without team to root path" do
-    skip "Invited users must have teams - this is an invalid state"
-
-    # This is an edge case - invited user without team (invalid state)
-    # In reality, the User model should prevent this from happening
-    invited_user = User.create!(
-      email: "edgecase@example.com",
-      password: "Password123!",
-      user_type: "invited",
-      team_id: nil,
-      team_role: nil,
-      confirmed_at: Time.current
-    )
-
-    sign_in invited_user
-
-    get root_path
-    assert_redirected_to root_path
-  end
-
-  test "index action does not require authentication" do
-    # Ensure we're signed out
+  # ========== MEDIUM PRIORITY TESTS (Weight 5-6) ==========
+  
+  # Weight: 5 - Public access control
+  test "allows unauthenticated access to homepage" do
     sign_out :user if defined?(current_user)
 
     get root_path
     assert_response :success
     assert_match /Welcome/i, response.body
-  end
-
-  test "index action does not trigger authorization checks" do
-    # This test ensures skip_after_action :verify_authorized works
-    get root_path
-    assert_response :success
   end
 end

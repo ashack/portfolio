@@ -7,7 +7,8 @@ class Users::BillingController < Users::BaseController
 
   def index
     if payment_processor_available?
-      @charges = current_user.payment_processor.charges.order(created_at: :desc)
+      charges = current_user.payment_processor.charges.order(created_at: :desc)
+      @pagy, @charges = pagy(charges, items: 20)
       @payment_methods = current_user.payment_processor.payment_methods
     else
       @charges = []

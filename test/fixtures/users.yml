@@ -35,3 +35,71 @@ direct_user:
   confirmed_at: <%= Time.current %>
   created_at: <%= 10.days.ago %>
   updated_at: <%= 10.days.ago %>
+
+active_user:
+  email: fixtureactive@example.com
+  encrypted_password: <%= User.new.send(:password_digest, 'Password123!') %>
+  first_name: Active
+  last_name: User
+  system_role: user
+  user_type: direct
+  status: active
+  confirmed_at: <%= Time.current %>
+  created_at: <%= 10.days.ago %>
+  updated_at: <%= 10.days.ago %>
+
+team_member:
+  email: fixtureteammember@example.com
+  encrypted_password: <%= User.new.send(:password_digest, 'Password123!') %>
+  first_name: Team
+  last_name: Member
+  system_role: user
+  user_type: invited
+  status: active
+  team: active_team
+  team_role: member
+  confirmed_at: <%= Time.current %>
+  created_at: <%= 10.days.ago %>
+  updated_at: <%= 10.days.ago %>
+
+team_admin:
+  email: fixtureteamadmin@example.com
+  encrypted_password: <%= User.new.send(:password_digest, 'Password123!') %>
+  first_name: Team
+  last_name: Admin
+  system_role: user
+  user_type: invited
+  status: active
+  team: active_team
+  team_role: admin
+  confirmed_at: <%= Time.current %>
+  created_at: <%= 10.days.ago %>
+  updated_at: <%= 10.days.ago %>
+
+enterprise_admin:
+  email: fixtureenterpriseadmin@example.com
+  encrypted_password: <%= User.new.send(:password_digest, 'Password123!') %>
+  first_name: Enterprise
+  last_name: Admin
+  system_role: user
+  user_type: enterprise
+  status: active
+  enterprise_group: active_enterprise
+  enterprise_group_role: admin
+  confirmed_at: <%= Time.current %>
+  created_at: <%= 10.days.ago %>
+  updated_at: <%= 10.days.ago %>
+
+enterprise_member:
+  email: fixtureenterprisemember@example.com
+  encrypted_password: <%= User.new.send(:password_digest, 'Password123!') %>
+  first_name: Enterprise
+  last_name: Member
+  system_role: user
+  user_type: enterprise
+  status: active
+  enterprise_group: active_enterprise
+  enterprise_group_role: member
+  confirmed_at: <%= Time.current %>
+  created_at: <%= 10.days.ago %>
+  updated_at: <%= 10.days.ago %>

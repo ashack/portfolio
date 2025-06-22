@@ -11,6 +11,7 @@ This large specification file has been reorganized into focused documentation in
 - **[UI Components & Design System](docs/ui_components.md)** - Phosphor icons, Tailwind CSS, responsive design
 - **[Common Pitfalls](docs/pitfalls.md)** - Anti-patterns and prevention strategies
 - **[Testing Guide](docs/testing.md)** - Minitest setup, SimpleCov coverage, best practices
+- **[Performance Optimizations](docs/performance_optimizations.md)** - Caching, background jobs, database indexes
 
 **STATUS**: ✅ Production-ready Rails 8.0.2 SaaS application with comprehensive security, triple-track user system (Direct, Team, Enterprise), professional UI, Phosphor icon system, polymorphic invitation system, and Minitest/SimpleCov testing setup.
 

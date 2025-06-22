@@ -7,7 +7,8 @@ class Teams::Admin::BillingController < Teams::Admin::BaseController
 
   def index
     if payment_processor_available?
-      @charges = @team.payment_processor.charges.order(created_at: :desc) rescue []
+      charges = @team.payment_processor.charges.order(created_at: :desc) rescue Charge.none
+      @pagy, @charges = pagy(charges, items: 20)
       @payment_methods = @team.payment_processor.payment_methods rescue []
       @subscription = @team.payment_processor.subscription rescue nil
     else

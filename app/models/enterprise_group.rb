@@ -1,5 +1,6 @@
 class EnterpriseGroup < ApplicationRecord
   include Pay::Billable
+  include Cacheable
   pay_customer # For enterprise billing
 
   belongs_to :admin, class_name: "User", optional: true
@@ -23,8 +24,25 @@ class EnterpriseGroup < ApplicationRecord
 
   scope :active, -> { where(status: "active") }
 
+  # Cache-friendly lookup by slug
+  def self.find_by_slug!(slug)
+    Rails.cache.fetch([ "enterprise-by-slug", slug ], expires_in: 1.hour) do
+      find_by!(slug: slug)
+    end
+  end
+
+  # Clear cache when enterprise group is updated
+  after_commit :clear_caches
+
+  def clear_caches
+    Rails.cache.delete([ "enterprise-slug", id, updated_at ])
+    Rails.cache.delete([ "enterprise-by-slug", slug ])
+    Rails.cache.delete([ "enterprise-by-slug", slug_previously_was ]) if saved_change_to_slug?
+  end
+
   def to_param
-    slug
+    # Cache the slug to avoid database lookups on every URL generation
+    Rails.cache.fetch([ "enterprise-slug", id, updated_at ]) { slug }
   end
 
   def member_count
