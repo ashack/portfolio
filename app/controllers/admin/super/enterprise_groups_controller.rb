@@ -1,5 +1,6 @@
 class Admin::Super::EnterpriseGroupsController < ApplicationController
   include ActivityTrackable
+  include Paginatable
 
   layout "admin"
   before_action :require_admin!
@@ -8,7 +9,7 @@ class Admin::Super::EnterpriseGroupsController < ApplicationController
   def index
     @enterprise_groups = policy_scope(EnterpriseGroup).includes(:admin, :plan)
                                                       .order(created_at: :desc)
-    @pagy, @enterprise_groups = pagy(@enterprise_groups)
+    @pagy, @enterprise_groups = pagy(@enterprise_groups, items: @items_per_page, page: @page)
   end
 
   def show

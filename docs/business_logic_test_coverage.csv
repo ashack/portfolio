@@ -57,3 +57,20 @@ active scope returns only active users,test/models/user_scopes_and_queries_test.
 count active users by type,test/models/user_scopes_and_queries_test.rb,287,IR-U2,Status management - only active users can sign in,User Type System,7,MEDIUM,covered
 email normalization and validation,test/models/invitation_test.rb,259,IR-U3,Email normalization - lowercase and trimmed,User Type System,6,MEDIUM,covered
 email normalization ensures consistency,test/models/user_test.rb,206,IR-U3,Email normalization - lowercase and trimmed,User Type System,6,MEDIUM,covered
+sets default pagination params,test/controllers/concerns/paginatable_test.rb,58,CR-P1,Default pagination parameters,Pagination System,7,MEDIUM,covered
+accepts page parameter,test/controllers/concerns/paginatable_test.rb,68,CR-P2,Page parameter handling,Pagination System,7,MEDIUM,covered
+accepts per_page parameter from allowed values,test/controllers/concerns/paginatable_test.rb,77,CR-P3,Items per page validation,Pagination System,8,HIGH,covered
+rejects invalid per_page values and uses default,test/controllers/concerns/paginatable_test.rb,88,CR-P3,Items per page validation,Pagination System,8,HIGH,covered
+handles string per_page values,test/controllers/concerns/paginatable_test.rb,99,CR-P3,Items per page validation,Pagination System,8,HIGH,covered
+handles nil per_page value,test/controllers/concerns/paginatable_test.rb,108,CR-P3,Items per page validation,Pagination System,8,HIGH,covered
+pagination returns correct number of records,test/controllers/concerns/paginatable_test.rb,117,CR-P4,Pagination record count accuracy,Pagination System,7,MEDIUM,covered
+pagination handles last page correctly,test/controllers/concerns/paginatable_test.rb,128,CR-P4,Pagination record count accuracy,Pagination System,7,MEDIUM,covered
+valid user preference,test/models/user_preference_test.rb,21,CR-P5,User preference persistence,Pagination System,6,MEDIUM,covered
+requires user,test/models/user_preference_test.rb,30,CR-P5,User preference persistence,Pagination System,6,MEDIUM,covered
+one preference per user,test/models/user_preference_test.rb,39,CR-P5,User preference persistence,Pagination System,6,MEDIUM,covered
+pagination_settings defaults to empty hash,test/models/user_preference_test.rb,54,CR-P5,User preference persistence,Pagination System,6,MEDIUM,covered
+get_items_per_page returns setting for controller,test/models/user_preference_test.rb,60,CR-P6,Per-controller pagination settings,Pagination System,6,MEDIUM,covered
+set_items_per_page updates setting for controller,test/models/user_preference_test.rb,71,CR-P6,Per-controller pagination settings,Pagination System,6,MEDIUM,covered
+set_items_per_page validates allowed values,test/models/user_preference_test.rb,85,CR-P3,Items per page validation,Pagination System,8,HIGH,covered
+clear_pagination_settings removes all settings,test/models/user_preference_test.rb,104,CR-P6,Per-controller pagination settings,Pagination System,6,MEDIUM,covered
+user association,test/models/user_preference_test.rb,117,CR-P5,User preference persistence,Pagination System,6,MEDIUM,covered

@@ -10,8 +10,17 @@
         </p>
       </div>
       
-      <!-- Filter Form -->
-      <%= form_with(url: admin_super_users_path, method: :get, local: true, class: "flex space-x-4") do |form| %>
+      <!-- Search and Filter Form -->
+      <%= form_with(url: admin_super_users_path, method: :get, data: { turbo_frame: "users_table", turbo_action: "advance" }, class: "flex flex-col sm:flex-row gap-4") do |form| %>
+        <!-- Search Field -->
+        <div class="flex-1 max-w-xs">
+          <%= form.text_field :search, 
+              value: params[:search],
+              placeholder: "Search by name or email...",
+              class: "block w-full px-3 py-2 text-sm border border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 rounded-md" %>
+        </div>
+        
+        <!-- Filters -->
         <%= form.select :user_type, 
             options_for_select([
               ['All Users', ''],
@@ -19,7 +28,7 @@
               ['Team Members', 'invited']
             ], params[:user_type]),
             {},
-            { class: "block w-40 pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md" } %>
+            { class: "block w-40 px-3 py-2 text-sm border border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 rounded-md" } %>
         
         <%= form.select :status, 
             options_for_select([
@@ -29,15 +38,28 @@
               ['Locked', 'locked']
             ], params[:status]),
             {},
-            { class: "block w-40 pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md" } %>
+            { class: "block w-40 px-3 py-2 text-sm border border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 rounded-md" } %>
         
         <%= form.submit "Filter", class: "inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700" %>
+        
+        <% if controller.respond_to?(:filters_active?) && controller.filters_active? %>
+          <%= link_to admin_super_users_path, class: "inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50" do %>
+            Clear Filters
+            <span class="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+              <%= controller.active_filter_count %>
+            </span>
+          <% end %>
+        <% end %>
       <% end %>
     </div>
 
     <% if @users.any? %>
-      <div class="overflow-x-auto shadow md:rounded-lg">
-        <table class="min-w-full divide-y divide-gray-300">
+      <%= turbo_frame_tag "users_table", data: { turbo_action: "advance" } do %>
+        <!-- Results Info -->
+        <%= render 'shared/results_info', pagy: @pagy %>
+        
+        <div class="overflow-x-auto shadow md:rounded-lg">
+          <table class="min-w-full divide-y divide-gray-300">
           <thead class="bg-gray-50">
             <tr>
               <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
@@ -122,10 +144,11 @@
         </table>
       </div>
 
-      <!-- Pagination -->
-      <div class="mt-6">
-        <%== pagy_bootstrap_nav(@pagy) if @pagy.pages > 1 %>
-      </div>
+        <!-- Pagination -->
+        <div class="mt-6">
+          <%= render 'shared/pagination', pagy: @pagy, turbo_frame: 'users_table' %>
+        </div>
+      <% end %>
     <% else %>
       <div class="text-center py-12">
         <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">

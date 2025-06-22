@@ -27,6 +27,7 @@ A complete Ruby on Rails 8 SaaS application with triple-track user system suppor
 - **Admin Dashboards**: Separate interfaces for super admin, site admin, and enterprise admin
 - **Security Hardened**: Rack::Attack rate limiting, CSRF protection, session security
 - **Rails 8.0.2 Ready**: Full compatibility with latest Rails and Turbo features
+- **Enhanced Pagination**: Pagy with persistent user preferences, dynamic items per page, and Turbo Frame support
 
 ## Setup Instructions
 
@@ -47,6 +48,7 @@ A complete Ruby on Rails 8 SaaS application with triple-track user system suppor
 - **Analytics**: Ahoy Matey
 - **UI Icons**: Rails Icons (Phosphor icon set)
 - **Tab Navigation**: Reusable tab component for complex navigation
+- **Pagination**: Pagy gem with custom Tailwind styling and user preferences
 - **Testing**: Minitest with SimpleCov (24.14% coverage, 505 passing tests)
 - **Session Store**: Secure cookie store with httponly/secure flags
 
@@ -279,6 +281,7 @@ bundle exec brakeman -A
 - ✅ **RuboCop Compliant** (Rails Omakase standards)
 - ✅ **Test Coverage** with Minitest and SimpleCov
 - ✅ **Phosphor Icons** integrated via Rails Icons gem
+- ✅ **Enhanced Pagination** with persistent preferences and Turbo Frame support
 
 ## Architecture Highlights
 

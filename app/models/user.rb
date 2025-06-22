@@ -58,6 +58,11 @@ class User < ApplicationRecord
   has_many :email_change_requests, dependent: :destroy
   has_many :approved_email_changes, class_name: "EmailChangeRequest", foreign_key: "approved_by_id"
 
+  # User preferences for UI settings
+  # Currently stores pagination preferences per controller
+  # Each user can have different items per page for different sections
+  has_one :user_preference, dependent: :destroy
+
   # System-wide administrative role
   # - user: Standard user, no admin access
   # - site_admin: Customer support, read-only billing

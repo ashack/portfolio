@@ -27,6 +27,9 @@ require "rails/test_help"
 require "minitest/rails"
 require "minitest/reporters"
 
+# Load support files
+Dir[Rails.root.join("test/support/**/*.rb")].each { |f| require f }
+
 # Configure Minitest reporters for better test output
 Minitest::Reporters.use! [
   Minitest::Reporters::DefaultReporter.new(color: true),
@@ -52,6 +55,9 @@ module ActiveSupport
 
     # Include Devise test helpers
     include Devise::Test::IntegrationHelpers
+
+    # Include pagination test helpers
+    include PaginationTestHelper
 
     # Helper method to sign in a user
     def sign_in_as(user)

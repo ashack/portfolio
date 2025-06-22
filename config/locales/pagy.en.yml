@@ -1,0 +1,22 @@
+en:
+  pagy:
+    aria_label:
+      nav: "Pagination Navigation"
+      prev: "Previous page"
+      next: "Next page"
+      first: "First page" 
+      last: "Last page"
+      current: "Current page"
+      page: "Go to page %{page}"
+    
+    item_name:
+      one: "result"
+      other: "results"
+      
+    info:
+      no_items: "No %{item_name} found"
+      single_page: "Displaying <strong>all %{count}</strong> %{item_name}"
+      multiple_pages: "Displaying %{item_name} <strong>%{from}-%{to}</strong> of <strong>%{count}</strong> in total"
+      
+    combo_nav_js: "Page %{page_input} of %{pages}"
+    items_selector_js: "Show %{items_input} %{item_name} per page"

@@ -1,0 +1,18 @@
+<%# Results Info Partial
+    Usage: render 'shared/results_info', pagy: @pagy
+    
+    Parameters:
+    - pagy: The Pagy instance
+%>
+
+<% if pagy && pagy.count > 0 %>
+  <div class="text-sm text-gray-700 mb-3">
+    <% if pagy.pages == 1 %>
+      Displaying <strong>all <%= pagy.count %></strong> <%= pagy.count == 1 ? 'result' : 'results' %>
+    <% else %>
+      Displaying 
+      <strong><%= pagy.from %></strong> - <strong><%= pagy.to %></strong> 
+      of <strong><%= pagy.count %></strong> results
+    <% end %>
+  </div>
+<% end %>

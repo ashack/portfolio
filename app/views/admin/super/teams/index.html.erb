@@ -25,6 +25,9 @@
       </div>
 
       <% if @teams.any? %>
+        <!-- Results Info -->
+        <%= render 'shared/results_info', pagy: @pagy %>
+        
         <div class="overflow-x-auto shadow md:rounded-lg">
           <table class="min-w-full divide-y divide-gray-300">
             <thead class="bg-gray-50">
@@ -115,7 +118,7 @@
 
         <!-- Pagination -->
         <div class="mt-6">
-          <%== pagy_bootstrap_nav(@pagy) if @pagy.pages > 1 %>
+          <%= render 'shared/pagination', pagy: @pagy %>
         </div>
       <% else %>
         <div class="text-center py-12">

@@ -1,5 +1,6 @@
 class Admin::Super::TeamsController < ApplicationController
   include ActivityTrackable
+  include Paginatable
 
   layout "admin"
   before_action :require_admin!
@@ -7,7 +8,7 @@ class Admin::Super::TeamsController < ApplicationController
 
   def index
     @teams = policy_scope(Team).includes(:admin, :created_by, :users).order(created_at: :desc)
-    @pagy, @teams = pagy(@teams)
+    @pagy, @teams = pagy(@teams, items: @items_per_page, page: @page)
   end
 
   def show
