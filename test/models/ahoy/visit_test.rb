@@ -93,6 +93,7 @@ class Ahoy::VisitTest < ActiveSupport::TestCase
     assert_equal "Desktop", @visit.device_type
   end
 
+  # Weight: 3 - Visit duration tracking (analytics feature)
   test "tracks visit duration" do
     skip "ended_at attribute doesn't exist in Ahoy::Visit"
   end

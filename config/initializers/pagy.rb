@@ -38,7 +38,7 @@ Pagy::DEFAULT[:size] = [ 1, 4, 4, 1 ]
 # Mobile (0-539px): Show fewer pages to fit small screens
 # Tablet (540-719px): Show moderate number of pages
 # Desktop (720px+): Show full pagination
-Pagy::DEFAULT[:breakpoints] = { 
+Pagy::DEFAULT[:breakpoints] = {
   0 => [ 1, 2, 2, 1 ],    # Mobile: 1 ... 8 9 [10] 11 12 ... 20
   540 => [ 1, 3, 3, 1 ],  # Tablet: 1 ... 7 8 9 [10] 11 12 13 ... 20
   720 => [ 1, 4, 4, 1 ]   # Desktop: 1 ... 6 7 8 9 [10] 11 12 13 14 ... 20
@@ -48,7 +48,7 @@ Pagy::DEFAULT[:breakpoints] = {
 # When using Pagy in API controllers, these fields will be included
 # in the pagination metadata object
 # Useful for building custom pagination UIs in frontend frameworks
-Pagy::DEFAULT[:metadata] = [ 
+Pagy::DEFAULT[:metadata] = [
   :scaffold_url,  # URL template for generating page links
   :page,          # Current page number
   :prev,          # Previous page number (or nil)

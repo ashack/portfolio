@@ -260,6 +260,7 @@ class AuditLogTest < ActiveSupport::TestCase
     end
   end
 
+  # Weight: 2 - Edge case handling for action categorization
   test "action_category returns Other for unknown actions" do
     # Since we validate actions, we can't test with invalid action
     # This is more of a safety check in the model

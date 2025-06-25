@@ -1,0 +1,67 @@
+# Pay customers for testing billing functionality
+# These fixtures provide test data for the Pay gem integration
+
+# Direct user with individual billing
+direct_user_pay_customer:
+  owner_type: User
+  owner_id: <%= ActiveRecord::FixtureSet.identify(:direct_user) %>
+  processor: stripe
+  processor_id: cus_test_direct_user
+  default: true
+  data:
+    email: direct@example.com
+    name: Direct User
+  created_at: <%= 1.month.ago %>
+  updated_at: <%= 1.month.ago %>
+
+# Team with billing
+starter_team_pay_customer:
+  owner_type: Team
+  owner_id: <%= ActiveRecord::FixtureSet.identify(:starter_team) %>
+  processor: stripe
+  processor_id: cus_test_starter_team
+  default: true
+  data:
+    email: team@example.com
+    name: Starter Team
+  created_at: <%= 2.weeks.ago %>
+  updated_at: <%= 2.weeks.ago %>
+
+# Pro team customer
+pro_team_pay_customer:
+  owner_type: Team
+  owner_id: <%= ActiveRecord::FixtureSet.identify(:pro_team) %>
+  processor: stripe  
+  processor_id: cus_test_pro_team
+  default: true
+  data:
+    email: proteam@example.com
+    name: Pro Team
+  created_at: <%= 1.month.ago %>
+  updated_at: <%= 1.month.ago %>
+
+# Enterprise group customer
+enterprise_group_pay_customer:
+  owner_type: EnterpriseGroup
+  owner_id: <%= ActiveRecord::FixtureSet.identify(:active_enterprise) %>
+  processor: stripe
+  processor_id: cus_test_enterprise
+  default: true
+  data:
+    email: enterprise@example.com
+    name: Active Enterprise
+  created_at: <%= 3.months.ago %>
+  updated_at: <%= 3.months.ago %>
+
+# Direct user who owns a team (has team billing)
+team_owner_pay_customer:
+  owner_type: User
+  owner_id: <%= ActiveRecord::FixtureSet.identify(:team_owner) %>
+  processor: stripe
+  processor_id: cus_test_team_owner
+  default: true
+  data:
+    email: owner@example.com
+    name: Team Owner
+  created_at: <%= 2.months.ago %>
+  updated_at: <%= 2.months.ago %>

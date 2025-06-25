@@ -1,5 +1,7 @@
 # Recent Updates Summary
 
+*Last Updated: December 2025*
+
 ## Overview
 
 This document summarizes the major updates made to the SaaS Rails Starter application, transforming it from a dual-track system to a comprehensive triple-track system with enterprise support.
@@ -214,6 +216,44 @@ The application now supports three distinct user ecosystems:
 - Updated member statistics to use pre-calculated values
 - Removed database queries from view files
 - Improved dashboard performance significantly
+
+## Enterprise Implementation Details (December 2025)
+
+### Site Admin Navigation Fix
+- **Problem**: Site admins were seeing "Create new team" button and getting errors when clicking it
+- **Solution**: Fixed navigation path to use read-only site admin routes instead of super admin routes
+
+### Enterprise Group Creation Architecture
+- **Problem**: "Admin must exist" error when creating enterprise groups (circular dependency)
+- **Solution**: Made admin_id optional in database and implemented invitation-based admin assignment
+- **Benefits**: Clean separation of concerns, no circular dependencies
+
+### Polymorphic Invitation System
+- **Problem**: Enterprise invitations showing as "pending" even after acceptance
+- **Solutions Implemented**:
+  - Updated registration controller to handle both team and enterprise invitations
+  - Fixed existing data with proper invitation_type values
+  - Added logic to set enterprise admin on invitation acceptance
+  - Proper handling of polymorphic associations
+
+### Enterprise Dashboard Implementation
+- **Problem**: Missing Enterprise namespace and controllers
+- **Solution**: Created complete enterprise dashboard structure:
+  - `Enterprise::BaseController` for shared logic
+  - `Enterprise::DashboardController` for main interface
+  - Purple-themed enterprise layout
+  - Member management interfaces
+  - Proper authorization and scoping
+
+### Icon System Compatibility
+- **Problem**: Inconsistent icon helper usage (`rails_icon` vs `icon`)
+- **Solution**: Standardized on `icon` helper throughout application
+- **Impact**: Consistent icon rendering across all views
+
+### Pundit Policy Updates
+- **Problem**: Policy scoping errors in enterprise controllers
+- **Solution**: Proper skip directives for dashboard actions
+- **Result**: Clean authorization flow for enterprise users
 
 ## Conclusion
 

@@ -13,7 +13,7 @@
 # Usage:
 #   class YourIntegrationTest < ActionDispatch::IntegrationTest
 #     include PaginationTestHelper
-#     
+#
 #     test "pagination works correctly" do
 #       create_paginated_records(User, 50)
 #       visit users_path
@@ -40,7 +40,7 @@ module PaginationTestHelper
   # Asserts that the pagination results info is displayed correctly
   # Checks for text like "Showing 1 to 20 of 100 results"
   # @param from [Integer] First item number on current page
-  # @param to [Integer] Last item number on current page  
+  # @param to [Integer] Last item number on current page
   # @param total [Integer] Total number of items
   def assert_pagination_info(from:, to:, total:)
     assert_text "Showing #{from} to #{to} of #{total} results"

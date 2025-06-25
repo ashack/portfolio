@@ -59,6 +59,9 @@ module ActiveSupport
     # Include pagination test helpers
     include PaginationTestHelper
 
+    # Include Pay test helpers
+    include PayTestHelper
+
     # Helper method to sign in a user
     def sign_in_as(user)
       sign_in user

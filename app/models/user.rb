@@ -166,6 +166,9 @@ class User < ApplicationRecord
   # Prevents duplicate accounts with different case
   before_validation :normalize_email
 
+  # Include ValidationHelpers concern for additional validation methods
+  include ValidationHelpers
+
   # ========================================================================
   # SCOPES
   # ========================================================================
@@ -459,17 +462,13 @@ class User < ApplicationRecord
     # Allow system role changes during user creation
     return if new_record?
 
-    # Get the current admin user from thread-local storage if available
-    current_admin = Thread.current[:current_admin_user]
+    # Get the current user ID from validation context
+    context = validation_context_from_thread
+    current_user_id = context[:current_user_id]
 
-    # If we can't determine the current admin, allow the change
-    # (This handles cases like console updates, seeds, etc.)
-    return unless current_admin
-
-    # Prevent admins from changing their own system role
-    if current_admin.id == id
-      errors.add(:system_role, "cannot be changed by yourself")
-      return
+    # Use ValidationHelpers method to prevent self-promotion
+    if current_user_id
+      validate_no_self_promotion(current_user_id, :system_role)
     end
 
     # Validate role transition rules

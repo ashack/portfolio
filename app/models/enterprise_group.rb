@@ -1,5 +1,4 @@
 class EnterpriseGroup < ApplicationRecord
-  include Pay::Billable
   include Cacheable
   pay_customer # For enterprise billing
 

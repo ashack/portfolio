@@ -407,14 +407,17 @@ class AdminActivityLogTest < ActiveSupport::TestCase
     assert report[:recent_activities].present?
   end
 
+  # Weight: 5 - Security pattern detection for admin activities
   test "security_report detects suspicious patterns" do
     skip "Complex test with ActiveRecord relation expectations"
   end
 
+  # Weight: 5 - Rapid activity detection for security monitoring
   test "detect_suspicious_patterns identifies rapid activity" do
     skip "Method expects ActiveRecord relation, not array"
   end
 
+  # Weight: 4 - IP pattern analysis for security monitoring
   test "analyze_ip_patterns returns correct statistics" do
     skip "Method expects ActiveRecord relation, not array"
   end
