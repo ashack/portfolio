@@ -33,7 +33,7 @@ class Teams::ProfileController < Teams::BaseController
 
   def profile_params
     params.require(:user).permit(
-      :first_name, :last_name, :bio, :phone_number, :avatar_url,
+      :first_name, :last_name, :bio, :phone_number, :avatar_url, :avatar,
       :timezone, :locale, :profile_visibility,
       :linkedin_url, :twitter_url, :github_url, :website_url,
       notification_preferences: {}

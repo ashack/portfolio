@@ -32,6 +32,9 @@ class User < ApplicationRecord
   # Association to enterprise group (only for enterprise users)
   belongs_to :enterprise_group, optional: true
 
+  # Active Storage association for avatar
+  has_one_attached :avatar
+
   # Teams created by this user (super admins only)
   has_many :created_teams, class_name: "Team", foreign_key: "created_by_id"
 
@@ -187,6 +190,9 @@ class User < ApplicationRecord
   validates :locale, inclusion: { in: I18n.available_locales.map(&:to_s) },
                     allow_blank: true
 
+  # Avatar validation
+  validate :acceptable_avatar
+
   # ========================================================================
   # CALLBACKS
   # ========================================================================
@@ -275,7 +281,7 @@ class User < ApplicationRecord
     completed_fields += 1 if last_name.present?
     completed_fields += 1 if bio.present?
     completed_fields += 1 if phone_number.present?
-    completed_fields += 1 if avatar_url.present?
+    completed_fields += 1 if avatar.attached? || avatar_url.present?
 
     # Social links (count as one if any present)
     if linkedin_url.present? || twitter_url.present? || github_url.present? || website_url.present?
@@ -312,7 +318,7 @@ class User < ApplicationRecord
     missing << "Last name" unless last_name.present?
     missing << "Bio" unless bio.present?
     missing << "Phone number" unless phone_number.present?
-    missing << "Profile picture" unless avatar_url.present?
+    missing << "Profile picture" unless avatar.attached? || avatar_url.present?
     missing << "Social links" unless has_social_links?
     missing << "Timezone" if timezone == "UTC"
     missing << "Language preference" if locale == "en"
@@ -336,6 +342,15 @@ class User < ApplicationRecord
   # Returns user's timezone as ActiveSupport::TimeZone
   def time_zone
     ActiveSupport::TimeZone[timezone] || ActiveSupport::TimeZone["UTC"]
+  end
+
+  # Returns avatar URL - either from Active Storage or avatar_url field
+  def display_avatar_url
+    if avatar.attached?
+      Rails.application.routes.url_helpers.rails_blob_url(avatar, only_path: true)
+    else
+      avatar_url
+    end
   end
 
   # ========================================================================
@@ -594,6 +609,22 @@ class User < ApplicationRecord
       unless %w[site_admin super_admin].include?(new_role)
         errors.add(:system_role, "user can only be changed to site_admin or super_admin")
       end
+    end
+  end
+
+  # Validates acceptable avatar file
+  def acceptable_avatar
+    return unless avatar.attached?
+
+    # Check file size (max 5MB)
+    if avatar.blob.byte_size > 5.megabytes
+      errors.add(:avatar, "is too large (maximum is 5MB)")
+    end
+
+    # Check file type
+    acceptable_types = ["image/jpeg", "image/jpg", "image/png", "image/gif", "image/webp"]
+    unless acceptable_types.include?(avatar.blob.content_type)
+      errors.add(:avatar, "must be a JPEG, PNG, GIF, or WebP image")
     end
   end
 end

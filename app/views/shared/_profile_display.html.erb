@@ -1,5 +1,16 @@
 <!-- Profile Information -->
 <div class="space-y-6">
+  <!-- Avatar Display -->
+  <% if user.avatar.attached? || user.avatar_url.present? %>
+    <div class="flex justify-center">
+      <% if user.avatar.attached? %>
+        <%= image_tag user.avatar, class: "h-32 w-32 rounded-full object-cover shadow-lg" %>
+      <% elsif user.avatar_url.present? %>
+        <%= image_tag user.avatar_url, class: "h-32 w-32 rounded-full object-cover shadow-lg", onerror: "this.style.display='none'" %>
+      <% end %>
+    </div>
+  <% end %>
+
   <!-- Basic Information -->
   <div>
     <h3 class="text-lg font-medium text-gray-900 mb-4">Basic Information</h3>
@@ -99,6 +110,40 @@
         </dd>
       </div>
     </dl>
+  </div>
+
+  <!-- Notification Preferences -->
+  <div class="border-t border-gray-200 pt-6">
+    <h3 class="text-lg font-medium text-gray-900 mb-4">Notification Preferences</h3>
+    <% if user.notification_preferences.present? && user.notification_preferences.any? %>
+      <dl class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div>
+          <dt class="text-sm font-medium text-gray-500">Email Frequency</dt>
+          <dd class="mt-1 text-sm text-gray-900">
+            <%= case user.notification_preferences["frequency"]
+                when "realtime" then "Real-time"
+                when "daily" then "Daily digest"
+                when "weekly" then "Weekly digest"
+                when "never" then "Never"
+                else "Not set"
+                end %>
+          </dd>
+        </div>
+        <div>
+          <dt class="text-sm font-medium text-gray-500">Active Notifications</dt>
+          <dd class="mt-1 text-sm text-gray-900">
+            <% active_prefs = user.notification_preferences.select { |k, v| v == "1" && k != "frequency" } %>
+            <% if active_prefs.any? %>
+              <%= active_prefs.count %> notification types enabled
+            <% else %>
+              No notifications enabled
+            <% end %>
+          </dd>
+        </div>
+      </dl>
+    <% else %>
+      <p class="text-sm text-gray-400">No notification preferences set</p>
+    <% end %>
   </div>
 
   <!-- Social Links -->
