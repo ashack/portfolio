@@ -1,100 +1,102 @@
 # Rails SaaS Starter - Documentation
 
-Welcome to the comprehensive documentation for the Rails SaaS Starter application. This guide will help you navigate through all available documentation.
+*Last Updated: December 2025*
 
-## 📚 Documentation Overview
+Welcome to the Rails SaaS Starter documentation. This guide helps you navigate all available documentation for this production-ready triple-track SaaS application.
 
-### Core Documentation
+## 🚀 Quick Start
 
-#### [Bug Fixes & Troubleshooting](bug_fixes.md)
-Complete guide to known issues, their solutions, and debugging strategies for Rails 8.0.2 compatibility.
-- Rails 8.0.2 specific issues and solutions
-- Authentication and security fixes
-- Common debugging commands
-- Testing infrastructure issues
+### New Developers
+1. [Architecture Overview](architecture/README.md) - Understand the system design
+2. [Development Guide](development_guide.md) - Set up your environment
+3. [Recent Updates](recent_updates.md) - See what's new
 
-#### [Improvements Guide](improvements.md)
-Comprehensive improvement recommendations for code quality, performance, and maintainability.
-- Model layer refactoring suggestions
-- Controller and service improvements
-- Security enhancements
-- Performance optimizations
+### Common Tasks
+- **Fixing Bugs**: [Bug Fixes & Troubleshooting](bug_fixes.md)
+- **Adding Features**: [Development Guide](development_guide.md) + [Project Status](project_status.md)
+- **Code Review**: [Improvements Guide](improvements.md)
+- **Security Audit**: [Security Guide](security/README.md)
 
-#### [Recent Updates](recent_updates.md)
-Changelog and release notes documenting major architectural changes and new features.
-- Triple-track user system implementation
-- Enterprise features
-- Performance optimizations
-- N+1 query fixes
+## 📚 Core Documentation
 
-#### [Development Guide](development_guide.md)
-Best practices, guidelines, and processes for developing new features.
-- Development workflow
-- Code review checklist
-- Testing strategies
-- Deployment procedures
+### [Bug Fixes & Troubleshooting](bug_fixes.md)
+Solutions for Rails 8.0.2 compatibility issues, authentication problems, and common errors.
 
-#### [Project Status](project_status.md)
-Current project metrics, completed features, and roadmap.
-- Feature completion status
-- Code quality metrics
-- Performance benchmarks
-- Future roadmap
+### [Improvements Guide](improvements.md)
+Comprehensive recommendations for code quality, performance, and maintainability.
 
-### Specialized Documentation
+### [Recent Updates](recent_updates.md)
+Changelog documenting the evolution to triple-track system with enterprise support.
 
-#### [Architecture Overview](architecture/README.md)
-System architecture, database design, and technical decisions.
+### [Development Guide](development_guide.md)
+Development workflow, guidelines, code review process, and deployment procedures.
 
-#### [Security Guide](security/README.md)
-Security best practices, authentication details, and vulnerability prevention.
+### [Project Status](project_status.md)
+Current metrics, feature completion status, pending tasks, and roadmap.
 
-#### [Testing Guide](testing/README.md)
-Testing setup, strategies, and coverage reports.
+## 📖 Specialized Guides
 
-#### [Performance Guide](performance/README.md)
-Performance optimization strategies, caching, and monitoring.
+### System Design
+- [Architecture Overview](architecture/README.md) - System architecture and technical decisions
+- [Database Design](architecture/03-database-design.md) - Schema and relationships
+- [User Architecture](architecture/02-user-architecture.md) - Triple-track user system
 
-#### Business Logic Coverage
-- [Coverage Summary](business_logic_coverage_summary.md)
+### Security
+- [Security Overview](security/README.md) - Security implementation guide
+- [Authentication](security/authentication.md) - Devise configuration
+- [Authorization](security/authorization.md) - Pundit policies
+- [Rate Limiting](security/rack-attack.md) - Rack::Attack configuration
 
-### Reference Documentation
+### Testing
+- [Testing Overview](testing/README.md) - Testing strategy and setup
+- [Test Coverage](testing/02-test-coverage.md) - Coverage reports and metrics
+- [Business Logic Coverage](business_logic_coverage_summary.md) - Business rule test analysis
 
-#### [Consolidation Summary](CONSOLIDATION_SUMMARY.md)
-Details about the December 2025 documentation consolidation effort.
+### Features & Guides
+- [Enterprise Features](guides/enterprise-features.md) - Enterprise organization management
+- [Common Pitfalls](guides/common-pitfalls.md) - Anti-patterns and best practices
+- [Performance Guide](guides/performance-guide.md) - Optimization strategies
+- [Business Logic](guides/business-logic.md) - Core business rules
 
-## 🔍 Quick Links by Topic
+### Reference
+- [UI Components](reference/ui-components.md) - Component library and patterns
+- [Consolidation Summary](CONSOLIDATION_SUMMARY.md) - Documentation reorganization notes
 
-### For New Developers
-1. Start with [Architecture Overview](architecture/README.md)
-2. Review [Development Guide](development_guide.md)
-3. Check [Recent Updates](recent_updates.md) for latest changes
+## 📂 Directory Structure
 
-### For Bug Fixing
-1. Check [Bug Fixes & Troubleshooting](bug_fixes.md)
-2. Review related sections in [Testing Guide](testing/README.md)
-
-### For Feature Development
-1. Review [Project Status](project_status.md) for roadmap
-2. Follow [Development Guide](development_guide.md)
-3. Check [Improvements Guide](improvements.md) for patterns
-
-### For Security Reviews
-1. Start with [Security Guide](security/README.md)
-2. Review security sections in [Improvements Guide](improvements.md)
+```
+docs/
+├── Core Documentation
+│   ├── bug_fixes.md
+│   ├── improvements.md
+│   ├── recent_updates.md
+│   ├── development_guide.md
+│   └── project_status.md
+│
+├── architecture/          # System design docs
+├── security/             # Security guides
+├── testing/              # Testing documentation
+├── guides/               # How-to guides
+├── reference/            # Reference materials
+└── _archive/             # Historical docs
+```
 
 ## 📝 Documentation Standards
 
-- **Naming**: Use lowercase with underscores (e.g., `bug_fixes.md`)
-- **Updates**: Include "Last Updated" date at the top of each document
-- **Cross-references**: Link to related documents where appropriate
-- **Examples**: Include code examples and practical solutions
-- **Organization**: Keep documents focused on a single topic
+- **Naming**: lowercase_with_underscores.md
+- **Dating**: Include "Last Updated" at the top
+- **Linking**: Cross-reference related documents
+- **Focus**: One topic per document
+- **Examples**: Include practical code samples
 
-## 🗂 Archive
+## 🔍 Need Help?
 
-Historical documentation and deprecated guides can be found in the `_archive/` directory. These are preserved for reference but may contain outdated information.
+- **Bug?** → [Bug Fixes](bug_fixes.md)
+- **Feature?** → [Development Guide](development_guide.md)
+- **Security?** → [Security Guide](security/README.md)
+- **Performance?** → [Improvements Guide](improvements.md#performance-optimizations)
+- **Testing?** → [Testing Guide](testing/README.md)
 
 ---
 
-*Last Updated: December 2025*
+For archived documentation, see the `_archive/` directory.
