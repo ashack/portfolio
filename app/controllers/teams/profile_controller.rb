@@ -15,6 +15,8 @@ class Teams::ProfileController < Teams::BaseController
 
   def update
     if @user.update(profile_params)
+      # Calculate profile completion after update
+      @user.calculate_profile_completion
       redirect_to teams_profile_path(team_slug: @team.slug, id: @user), notice: "Profile updated successfully."
     else
       render :edit, status: :unprocessable_entity
@@ -30,6 +32,11 @@ class Teams::ProfileController < Teams::BaseController
   end
 
   def profile_params
-    params.require(:user).permit(:first_name, :last_name)
+    params.require(:user).permit(
+      :first_name, :last_name, :bio, :phone_number, :avatar_url,
+      :timezone, :locale, :profile_visibility,
+      :linkedin_url, :twitter_url, :github_url, :website_url,
+      notification_preferences: {}
+    )
   end
 end

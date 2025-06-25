@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_06_22_141047) do
+ActiveRecord::Schema[8.0].define(version: 2025_06_25_063847) do
   create_table "admin_activity_logs", force: :cascade do |t|
     t.integer "admin_user_id", null: false
     t.string "controller", null: false
@@ -342,6 +342,22 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_22_141047) do
     t.bigint "enterprise_group_id"
     t.integer "enterprise_group_role"
     t.boolean "owns_team", default: false
+    t.string "avatar_url"
+    t.text "bio"
+    t.string "timezone", default: "UTC"
+    t.string "locale", default: "en"
+    t.string "phone_number"
+    t.string "linkedin_url"
+    t.string "twitter_url"
+    t.string "github_url"
+    t.string "website_url"
+    t.json "notification_preferences", default: {}
+    t.integer "profile_visibility", default: 0
+    t.datetime "profile_completed_at"
+    t.integer "profile_completion_percentage", default: 0
+    t.boolean "two_factor_enabled", default: false
+    t.string "two_factor_secret"
+    t.json "two_factor_backup_codes"
     t.index "LOWER(email)", name: "index_users_on_lower_email"
     t.index ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true
     t.index ["email", "status"], name: "index_users_on_email_and_status"
@@ -350,12 +366,14 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_22_141047) do
     t.index ["enterprise_group_id"], name: "index_users_on_enterprise_group_id"
     t.index ["last_activity_at"], name: "index_users_on_last_activity_at"
     t.index ["plan_id"], name: "index_users_on_plan_id"
+    t.index ["profile_visibility"], name: "index_users_on_profile_visibility"
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
     t.index ["status", "last_activity_at"], name: "index_users_on_status_and_activity"
     t.index ["status"], name: "index_users_on_status"
     t.index ["team_id", "status"], name: "index_users_on_team_and_status"
     t.index ["team_id", "team_role"], name: "index_users_on_team_associations"
     t.index ["team_id"], name: "index_users_on_team_id"
+    t.index ["timezone"], name: "index_users_on_timezone"
     t.index ["unlock_token"], name: "index_users_on_unlock_token", unique: true
     t.index ["user_type", "team_id"], name: "index_users_on_user_type_and_team"
   end

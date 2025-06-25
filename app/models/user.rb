@@ -159,6 +159,35 @@ class User < ApplicationRecord
   validate :system_role_change_allowed, if: :system_role_changed?
 
   # ========================================================================
+  # ENHANCED PROFILE FIELD VALIDATIONS
+  # ========================================================================
+
+  # Profile visibility settings
+  enum :profile_visibility, { public_profile: 0, team_only: 1, private_profile: 2 }, prefix: true
+
+  # Phone number validation
+  validates :phone_number, format: { with: /\A[+]?[0-9\s\-().]+\z/, message: "must be a valid phone number" },
+                          length: { maximum: 20 },
+                          allow_blank: true
+
+  # Bio validation
+  validates :bio, length: { maximum: 500, message: "must be 500 characters or less" },
+                 allow_blank: true
+
+  # URL validations
+  validates :linkedin_url, :twitter_url, :github_url, :website_url,
+            format: { with: URI.regexp([ "http", "https" ]), message: "must be a valid URL" },
+            allow_blank: true
+
+  # Timezone validation
+  validates :timezone, inclusion: { in: ActiveSupport::TimeZone.all.map(&:name) },
+                      allow_blank: true
+
+  # Locale validation
+  validates :locale, inclusion: { in: I18n.available_locales.map(&:to_s) },
+                    allow_blank: true
+
+  # ========================================================================
   # CALLBACKS
   # ========================================================================
 
@@ -230,6 +259,83 @@ class User < ApplicationRecord
   # Only direct users who don't already own a team can create one
   def can_create_team?
     direct? && !owns_team?
+  end
+
+  # ========================================================================
+  # PROFILE METHODS
+  # ========================================================================
+
+  # Calculates profile completion percentage
+  def calculate_profile_completion
+    total_fields = 10
+    completed_fields = 0
+
+    # Basic fields
+    completed_fields += 1 if first_name.present?
+    completed_fields += 1 if last_name.present?
+    completed_fields += 1 if bio.present?
+    completed_fields += 1 if phone_number.present?
+    completed_fields += 1 if avatar_url.present?
+
+    # Social links (count as one if any present)
+    if linkedin_url.present? || twitter_url.present? || github_url.present? || website_url.present?
+      completed_fields += 1
+    end
+
+    # Preferences
+    completed_fields += 1 if timezone != "UTC"
+    completed_fields += 1 if locale != "en"
+    completed_fields += 1 if notification_preferences.present? && notification_preferences.any?
+    completed_fields += 1 if two_factor_enabled?
+
+    percentage = (completed_fields.to_f / total_fields * 100).round
+
+    # Update the database
+    update_columns(
+      profile_completion_percentage: percentage,
+      profile_completed_at: percentage == 100 ? Time.current : nil
+    )
+
+    percentage
+  end
+
+  # Returns true if profile is complete
+  def profile_complete?
+    profile_completion_percentage == 100
+  end
+
+  # Returns a hash of missing profile fields
+  def missing_profile_fields
+    missing = []
+
+    missing << "First name" unless first_name.present?
+    missing << "Last name" unless last_name.present?
+    missing << "Bio" unless bio.present?
+    missing << "Phone number" unless phone_number.present?
+    missing << "Profile picture" unless avatar_url.present?
+    missing << "Social links" unless has_social_links?
+    missing << "Timezone" if timezone == "UTC"
+    missing << "Language preference" if locale == "en"
+    missing << "Notification preferences" unless notification_preferences.present? && notification_preferences.any?
+    missing << "Two-factor authentication" unless two_factor_enabled?
+
+    missing
+  end
+
+  # Check if user has any social links
+  def has_social_links?
+    linkedin_url.present? || twitter_url.present? || github_url.present? || website_url.present?
+  end
+
+  # Returns formatted phone number
+  def formatted_phone_number
+    return nil unless phone_number.present?
+    phone_number # Could add formatting logic here
+  end
+
+  # Returns user's timezone as ActiveSupport::TimeZone
+  def time_zone
+    ActiveSupport::TimeZone[timezone] || ActiveSupport::TimeZone["UTC"]
   end
 
   # ========================================================================

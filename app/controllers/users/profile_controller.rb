@@ -15,6 +15,8 @@ class Users::ProfileController < Users::BaseController
 
   def update
     if @user.update(profile_params)
+      # Calculate profile completion after update
+      @user.calculate_profile_completion
       redirect_to users_profile_path(@user), notice: "Profile updated successfully."
     else
       render :edit, status: :unprocessable_entity
@@ -31,7 +33,12 @@ class Users::ProfileController < Users::BaseController
 
   def profile_params
     # Remove email from permitted params to prevent direct email changes
-    permitted_params = params.require(:user).permit(:first_name, :last_name)
+    permitted_params = params.require(:user).permit(
+      :first_name, :last_name, :bio, :phone_number, :avatar_url,
+      :timezone, :locale, :profile_visibility,
+      :linkedin_url, :twitter_url, :github_url, :website_url,
+      notification_preferences: {}
+    )
 
     # Show warning if user tries to change email
     if params[:user][:email].present? && params[:user][:email] != current_user.email
