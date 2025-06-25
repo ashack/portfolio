@@ -50,4 +50,22 @@ Rails.application.configure do
 
   # Raise error when a before_action's only/except options reference missing actions.
   config.action_controller.raise_on_missing_callback_actions = true
+
+  # Pay gem test configuration
+  # Use test Stripe keys and disable webhook verification
+  config.after_initialize do
+    Pay.setup do |pay_config|
+      # Test environment specific settings
+      pay_config.business_name = "Test SaaS App"
+      pay_config.business_address = "123 Test St, Test City, TS 12345"
+      pay_config.support_email = "test@example.com"
+
+      # Disable routes in test environment to avoid conflicts
+      pay_config.automount_routes = false
+
+      # Use test Stripe keys (these are Stripe's official test keys)
+      # You can also set these via environment variables if preferred
+      Stripe.api_key = "sk_test_4eC39HqLyjWDarjtT1zdp7dc"
+    end
+  end
 end

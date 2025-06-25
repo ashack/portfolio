@@ -52,8 +52,14 @@ class Invitation < ApplicationRecord
   # Core rule to prevent duplicate accounts
   validate :email_not_in_users_table
 
+  # Prevent duplicate pending invitations for same email and team
+  validate :no_duplicate_pending_invitations
+
   # CR-I2: Cannot accept expired invitations
   validate :not_expired, on: :accept
+
+  # Ensure invitation type matches invitable type
+  validate :invitation_type_matches_invitable
 
   # ========================================================================
   # CALLBACKS
@@ -151,8 +157,8 @@ class Invitation < ApplicationRecord
       end
 
       # Special handling for enterprise admin invitations
-      # Sets the user as the enterprise group admin
-      if enterprise_invitation? && admin?
+      # Sets the user as the enterprise group admin only if there isn't one
+      if enterprise_invitation? && admin? && invitable.admin.nil?
         invitable.update!(admin: user)
       end
 
@@ -217,5 +223,33 @@ class Invitation < ApplicationRecord
   # Security best practice to limit invitation lifetime
   def set_expiration
     self.expires_at = 7.days.from_now
+  end
+
+  # Validates that invitation type matches the invitable type
+  def invitation_type_matches_invitable
+    return unless invitable.present?
+
+    case invitation_type
+    when "team"
+      unless invitable.is_a?(Team)
+        errors.add(:invitation_type, "does not match invitable type")
+      end
+    when "enterprise"
+      unless invitable.is_a?(EnterpriseGroup)
+        errors.add(:invitation_type, "does not match invitable type")
+      end
+    end
+  end
+
+  # Prevent duplicate pending invitations for same email and team
+  def no_duplicate_pending_invitations
+    return unless email.present? && team_id.present?
+
+    existing = Invitation.pending.where(email: email.downcase, team_id: team_id)
+    existing = existing.where.not(id: id) if persisted?
+
+    if existing.exists?
+      errors.add(:email, "conflicts with pending team invitation for #{team.name}")
+    end
   end
 end

@@ -2,7 +2,7 @@
 
 # PagyHelper provides custom Tailwind-styled pagination navigation
 # Overrides default Pagy styling to match our design system
-# 
+#
 # Features:
 # - Responsive design (mobile vs desktop layouts)
 # - Accessible navigation with ARIA labels

@@ -2,10 +2,10 @@
 
 # UserPreference model stores user-specific preferences
 # Currently used for pagination settings per controller
-# 
+#
 # Each user can have one UserPreference record
 # Pagination settings are stored as JSON with controller names as keys
-# 
+#
 # Example pagination_settings structure:
 #   {
 #     "users" => 50,        # Show 50 users per page

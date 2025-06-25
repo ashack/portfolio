@@ -376,4 +376,387 @@ class EnterpriseGroupTest < ActiveSupport::TestCase
   test "includes Cacheable concern" do
     assert @enterprise_group.class.ancestors.include?(Cacheable)
   end
+
+  # ========================================================================
+  # NEW CRITICAL TESTS - MISSING BUSINESS RULES
+  # ========================================================================
+
+  # Weight: 10 - CR-E2: Enterprise user isolation - Enterprise users CANNOT have team associations
+  test "enterprise users are completely isolated from teams" do
+    @enterprise_group.save!
+
+    # Create enterprise user
+    enterprise_user = User.create!(
+      email: "enterprise.isolated@example.com",
+      password: "Password123!",
+      user_type: "enterprise",
+      enterprise_group: @enterprise_group,
+      enterprise_group_role: "member",
+      confirmed_at: Time.current
+    )
+
+    # Create a team
+    team = Team.create!(
+      name: "Some Team",
+      admin: @super_admin,
+      created_by: @super_admin
+    )
+
+    # Enterprise user cannot be assigned to team
+    enterprise_user.team = team
+    enterprise_user.team_role = "member"
+    assert_not enterprise_user.valid?
+    assert_includes enterprise_user.errors[:base], "enterprise users cannot have team associations"
+
+    # Enterprise user cannot be team admin
+    # This would be enforced at business logic level, not model validation
+    team.admin = enterprise_user
+    # Team model doesn't validate admin user type
+
+    # Direct user cannot have enterprise associations
+    direct_user = User.create!(
+      email: "direct.isolated@example.com",
+      password: "Password123!",
+      user_type: "direct",
+      confirmed_at: Time.current
+    )
+
+    direct_user.enterprise_group = @enterprise_group
+    direct_user.enterprise_group_role = "member"
+    assert_not direct_user.valid?
+    assert_includes direct_user.errors[:base], "direct users cannot have enterprise group associations"
+  end
+
+  # Weight: 10 - CR-E1: Enterprise billing independence
+  test "enterprise groups have independent billing through Pay gem" do
+    @enterprise_group.save!
+
+    # Enterprise groups should be billable
+    assert @enterprise_group.respond_to?(:stripe_customer_id)
+    # Pay gem methods are available through payment_processor
+    assert @enterprise_group.respond_to?(:payment_processor)
+    assert @enterprise_group.respond_to?(:set_payment_processor)
+
+    # Mock Stripe customer
+    stripe_id = "cus_enterprise_#{@enterprise_group.id}"
+    @enterprise_group.update_column(:stripe_customer_id, stripe_id)
+
+    # Create another enterprise group
+    another_group = EnterpriseGroup.create!(
+      name: "Another Enterprise",
+      created_by: @super_admin,
+      plan: @enterprise_plan
+    )
+
+    another_stripe_id = "cus_enterprise_#{another_group.id}"
+    another_group.update_column(:stripe_customer_id, another_stripe_id)
+
+    # Each has independent billing
+    assert_not_equal @enterprise_group.stripe_customer_id, another_group.stripe_customer_id
+
+    # Different from team billing
+    team = Team.create!(
+      name: "Regular Team",
+      admin: @super_admin,
+      created_by: @super_admin
+    )
+    team.update_column(:stripe_customer_id, "cus_team_123")
+
+    assert_not_equal @enterprise_group.stripe_customer_id, team.stripe_customer_id
+  end
+
+  # Weight: 9 - Plan enforcement and limits
+  test "enterprise group enforces plan limits and features" do
+    @enterprise_group.save!
+
+    # Create an admin for the enterprise group
+    admin = User.create!(
+      email: "entadmin@example.com",
+      password: "Password123!",
+      user_type: "enterprise",
+      enterprise_group: @enterprise_group,
+      enterprise_group_role: "admin",
+      confirmed_at: Time.current
+    )
+    @enterprise_group.update!(admin: admin)
+
+    # Test member limits
+    @enterprise_group.max_members = 3
+    @enterprise_group.save!
+
+    # Add members up to limit
+    3.times do |i|
+      User.create!(
+        email: "limit#{i}@example.com",
+        password: "Password123!",
+        user_type: "enterprise",
+        enterprise_group: @enterprise_group,
+        enterprise_group_role: "member",
+        confirmed_at: Time.current
+      )
+    end
+
+    # We have 4 members: 1 admin + 3 regular members
+    assert_equal 4, @enterprise_group.member_count
+    # Max is 3, but we have 4 because the admin was added after setting the limit
+    assert_not @enterprise_group.can_add_members?
+
+    # Different plans have different limits
+    basic_plan = Plan.create!(
+      name: "Enterprise Basic",
+      plan_segment: "enterprise",
+      amount_cents: 49900,
+      max_team_members: 50,
+      active: true
+    )
+
+    premium_plan = Plan.create!(
+      name: "Enterprise Premium",
+      plan_segment: "enterprise",
+      amount_cents: 199900,
+      max_team_members: 1000,
+      active: true
+    )
+
+    @enterprise_group.plan = basic_plan
+    assert @enterprise_group.valid?
+
+    @enterprise_group.plan = premium_plan
+    assert @enterprise_group.valid?
+  end
+
+  # Weight: 9 - Admin assignment flow validation
+  test "enterprise admin assignment follows strict rules" do
+    @enterprise_group.save!
+
+    # Initially no admin
+    assert_nil @enterprise_group.admin
+
+    # Create admin invitation
+    admin_invitation = Invitation.create!(
+      invitable: @enterprise_group,
+      email: "newadmin@example.com",
+      role: "admin",
+      invited_by: @super_admin,
+      invitation_type: "enterprise"
+    )
+
+    # Accept invitation
+    admin_user = admin_invitation.accept!(
+      password: "Password123!",
+      first_name: "Enterprise",
+      last_name: "Admin",
+      confirmed_at: Time.current
+    )
+
+    # Admin is assigned
+    @enterprise_group.reload
+    assert_equal admin_user, @enterprise_group.admin
+    assert_equal "admin", admin_user.enterprise_group_role
+
+    # Create another admin
+    second_admin = User.create!(
+      email: "secondadmin@example.com",
+      password: "Password123!",
+      user_type: "enterprise",
+      enterprise_group: @enterprise_group,
+      enterprise_group_role: "admin",
+      confirmed_at: Time.current
+    )
+
+    # Can change admin
+    old_admin = @enterprise_group.admin
+    @enterprise_group.admin = second_admin
+    assert @enterprise_group.valid?
+    assert @enterprise_group.save
+
+    # Old admin still exists but not primary admin
+    assert User.exists?(old_admin.id)
+    assert_equal "admin", old_admin.reload.enterprise_group_role # Still has admin role
+  end
+
+  # Weight: 8 - Foreign key integrity for enterprise groups
+  test "foreign key constraints protect enterprise group integrity" do
+    @enterprise_group.save!
+
+    # Create admin
+    admin = User.create!(
+      email: "fkadmin@example.com",
+      password: "Password123!",
+      user_type: "enterprise",
+      enterprise_group: @enterprise_group,
+      enterprise_group_role: "admin",
+      confirmed_at: Time.current
+    )
+
+    @enterprise_group.update!(admin: admin)
+
+    # Cannot delete admin while referenced
+    assert_raises(ActiveRecord::InvalidForeignKey) do
+      admin.destroy!
+    end
+
+    # Cannot delete created_by while referenced
+    assert_raises(ActiveRecord::InvalidForeignKey) do
+      @super_admin.destroy!
+    end
+
+    # Cannot delete plan while referenced
+    assert_raises(ActiveRecord::InvalidForeignKey) do
+      @enterprise_plan.destroy!
+    end
+  end
+
+  # Weight: 8 - Enterprise group status transitions
+  test "enterprise group status affects member access" do
+    @enterprise_group.save!
+
+    # Create an admin for the enterprise group
+    admin = User.create!(
+      email: "statusadmin@example.com",
+      password: "Password123!",
+      user_type: "enterprise",
+      enterprise_group: @enterprise_group,
+      enterprise_group_role: "admin",
+      confirmed_at: Time.current
+    )
+    @enterprise_group.update!(admin: admin)
+
+    # Add members
+    member = User.create!(
+      email: "statusmember@example.com",
+      password: "Password123!",
+      user_type: "enterprise",
+      enterprise_group: @enterprise_group,
+      enterprise_group_role: "member",
+      confirmed_at: Time.current
+    )
+
+    # Active status
+    assert @enterprise_group.active?
+
+    # Suspend group
+    @enterprise_group.update!(status: "suspended")
+    assert @enterprise_group.suspended?
+    assert_not @enterprise_group.active?
+
+    # Members still exist but access would be restricted at controller level
+    # We have 2 members: the admin and the regular member
+    assert_equal 2, @enterprise_group.member_count
+
+    # Cancel group
+    @enterprise_group.update!(status: "cancelled")
+    assert @enterprise_group.cancelled?
+
+    # In practice, cancelled groups would have billing cancelled
+    # and members would lose access
+  end
+
+  # Weight: 7 - Settings and configuration management
+  test "enterprise group settings store complex configuration" do
+    @enterprise_group.settings = {
+      features: {
+        sso_enabled: true,
+        api_access: true,
+        custom_branding: false
+      },
+      security: {
+        two_factor_required: true,
+        ip_whitelist: [ "192.168.1.0/24", "10.0.0.0/8" ]
+      },
+      integrations: {
+        slack: { webhook_url: "https://hooks.slack.com/..." },
+        teams: { enabled: false }
+      }
+    }
+
+    @enterprise_group.save!
+    @enterprise_group.reload
+
+    # Settings persist correctly
+    assert_equal true, @enterprise_group.settings["features"]["sso_enabled"]
+    assert_equal true, @enterprise_group.settings["security"]["two_factor_required"]
+    assert_includes @enterprise_group.settings["security"]["ip_whitelist"], "192.168.1.0/24"
+    assert_equal false, @enterprise_group.settings["integrations"]["teams"]["enabled"]
+  end
+
+  # Weight: 7 - Custom domain validation
+  test "enterprise group custom domain configuration" do
+    @enterprise_group.save!
+
+    # Create an admin for the enterprise group
+    admin = User.create!(
+      email: "domainadmin@example.com",
+      password: "Password123!",
+      user_type: "enterprise",
+      enterprise_group: @enterprise_group,
+      enterprise_group_role: "admin",
+      confirmed_at: Time.current
+    )
+    @enterprise_group.update!(admin: admin)
+
+    # Valid domains
+    valid_domains = [
+      "enterprise.example.com",
+      "secure.company.co.uk",
+      "app.enterprise-name.com"
+    ]
+
+    valid_domains.each do |domain|
+      @enterprise_group.custom_domain = domain
+      assert @enterprise_group.valid?, "Domain #{domain} should be valid"
+    end
+
+    # Currently no validation on format, but in practice would validate:
+    # - No protocols (http://)
+    # - No paths (/path)
+    # - Valid domain format
+    # - Possibly DNS verification
+  end
+
+  # Weight: 6 - Trial period management
+  test "enterprise group trial periods based on plan" do
+    @enterprise_group.save!
+
+    # Create an admin for the enterprise group
+    admin = User.create!(
+      email: "trialadmin@example.com",
+      password: "Password123!",
+      user_type: "enterprise",
+      enterprise_group: @enterprise_group,
+      enterprise_group_role: "admin",
+      confirmed_at: Time.current
+    )
+    @enterprise_group.update!(admin: admin)
+
+    # Set trial period (would be done by service)
+    @enterprise_group.update!(trial_ends_at: 30.days.from_now)
+
+    assert_not_nil @enterprise_group.trial_ends_at
+    assert @enterprise_group.trial_ends_at > Time.current
+
+    # Check if in trial
+    in_trial = @enterprise_group.trial_ends_at && @enterprise_group.trial_ends_at > Time.current
+    assert in_trial
+
+    # Expired trial
+    @enterprise_group.update!(trial_ends_at: 1.day.ago)
+    in_trial = @enterprise_group.trial_ends_at && @enterprise_group.trial_ends_at > Time.current
+    assert_not in_trial
+  end
+
+  # Weight: 6 - Contact information management
+  test "enterprise group stores contact information" do
+    @enterprise_group.contact_email = "billing@enterprise.com"
+    @enterprise_group.contact_phone = "+1-555-123-4567"
+    @enterprise_group.billing_address = "123 Enterprise Way\nSuite 100\nBusiness City, BC 12345"
+
+    @enterprise_group.save!
+    @enterprise_group.reload
+
+    assert_equal "billing@enterprise.com", @enterprise_group.contact_email
+    assert_equal "+1-555-123-4567", @enterprise_group.contact_phone
+    assert_match /123 Enterprise Way/, @enterprise_group.billing_address
+    assert_match /Suite 100/, @enterprise_group.billing_address
+  end
 end

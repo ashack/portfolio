@@ -1481,3 +1481,4 @@ bundle exec rails test -v        # Verbose output
 - NEVER proactively create documentation files (*.md) or README files. Only create documentation files if explicitly requested by the User
 - Always run linting after making changes
 - Write tests for new functionality
+- Try to update the files if existing rather than creating new files to avoid duplicacy. This is especially useful for docs and test files

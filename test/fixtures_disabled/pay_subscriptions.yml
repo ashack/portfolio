@@ -1,0 +1,67 @@
+# Pay subscriptions for testing billing scenarios
+# These fixtures provide test subscription data for the Pay gem integration
+
+# Active individual subscription
+direct_user_subscription:
+  customer_id: <%= ActiveRecord::FixtureSet.identify(:direct_user_pay_customer) %>
+  name: Individual Pro
+  processor_id: sub_test_direct_user
+  processor_plan: price_individual_pro
+  quantity: 1
+  status: active
+  trial_ends_at: null
+  ends_at: null
+  created_at: <%= 1.month.ago %>
+  updated_at: <%= 1.month.ago %>
+
+# Starter team subscription (in trial)
+starter_team_trial_subscription:
+  customer_id: <%= ActiveRecord::FixtureSet.identify(:starter_team_pay_customer) %>
+  name: Team Starter
+  processor_id: sub_test_starter_trial
+  processor_plan: price_team_starter
+  quantity: 1
+  status: trialing
+  trial_ends_at: <%= 7.days.from_now %>
+  ends_at: null
+  created_at: <%= 7.days.ago %>
+  updated_at: <%= 7.days.ago %>
+
+# Active pro team subscription
+pro_team_subscription:
+  customer_id: <%= ActiveRecord::FixtureSet.identify(:pro_team_pay_customer) %>
+  name: Team Pro
+  processor_id: sub_test_pro_team
+  processor_plan: price_team_pro
+  quantity: 1
+  status: active
+  trial_ends_at: <%= 1.month.ago %>
+  ends_at: null
+  created_at: <%= 1.month.ago %>
+  updated_at: <%= 1.week.ago %>
+
+# Enterprise subscription
+enterprise_subscription:
+  customer_id: <%= ActiveRecord::FixtureSet.identify(:enterprise_group_pay_customer) %>
+  name: Enterprise Plan
+  processor_id: sub_test_enterprise
+  processor_plan: price_enterprise
+  quantity: 1
+  status: active
+  trial_ends_at: null
+  ends_at: null
+  created_at: <%= 3.months.ago %>
+  updated_at: <%= 1.day.ago %>
+
+# Cancelled subscription (for testing)
+cancelled_subscription:
+  customer_id: <%= ActiveRecord::FixtureSet.identify(:team_owner_pay_customer) %>
+  name: Team Pro
+  processor_id: sub_test_cancelled
+  processor_plan: price_team_pro
+  quantity: 1
+  status: canceled
+  trial_ends_at: <%= 2.months.ago %>
+  ends_at: <%= 1.week.from_now %>
+  created_at: <%= 2.months.ago %>
+  updated_at: <%= 1.week.ago %>

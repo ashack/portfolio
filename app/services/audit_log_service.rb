@@ -56,6 +56,19 @@ class AuditLogService
     )
   end
 
+  def self.log_user_change(admin_user:, target_user:, changes:, request: nil)
+    log(
+      admin_user: admin_user,
+      target_user: target_user,
+      action: "user_change",
+      details: {
+        changes: changes,
+        timestamp: Time.current
+      },
+      request: request
+    )
+  end
+
   def self.log_password_reset(admin_user:, target_user:, request: nil)
     log(
       admin_user: admin_user,

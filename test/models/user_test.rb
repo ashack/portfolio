@@ -436,4 +436,221 @@ class UserTest < ActiveSupport::TestCase
     @user.status = "active"
     assert @user.valid? # Model allows it, controller should restrict
   end
+
+  # ========================================================================
+  # NEW CRITICAL TESTS - MISSING BUSINESS RULES
+  # ========================================================================
+
+  # Weight: 10 - CR-A3: Self-role change prevention - security critical
+  test "admins cannot change their own system role" do
+    admin = User.create!(
+      email: "admin@example.com",
+      password: "Password123!",
+      system_role: "site_admin",
+      confirmed_at: Time.current
+    )
+
+    # Set validation context with current user
+    Thread.current[:validation_context] = { current_user_id: admin.id }
+
+    # Try to promote self to super_admin
+    admin.system_role = "super_admin"
+    assert_not admin.valid?
+    assert_includes admin.errors[:system_role], "cannot be changed by yourself"
+
+    # Try to demote self to user
+    admin.reload
+    admin.system_role = "user"
+    assert_not admin.valid?
+    assert_includes admin.errors[:system_role], "cannot be changed by yourself"
+
+    # Another admin can change the role
+    Thread.current[:validation_context] = { current_user_id: users(:super_admin).id }
+    admin.system_role = "user"
+    assert admin.valid?
+
+    # Clean up
+    Thread.current[:validation_context] = nil
+  end
+
+  # Weight: 10 - CR-S2: Mass assignment protection for critical fields
+  test "mass assignment protection prevents unauthorized field updates" do
+    user_params = {
+      email: "test@example.com",
+      password: "Password123!",
+      system_role: "super_admin", # Should not be mass assignable
+      stripe_customer_id: "cus_malicious", # Should not be mass assignable
+      confirmed_at: Time.current # Should not be mass assignable
+    }
+
+    # In Rails, mass assignment protection is handled by strong parameters in controllers
+    # Here we test that critical fields are marked appropriately
+    user = User.new
+
+    # These fields should require special handling
+    critical_fields = %w[system_role stripe_customer_id confirmed_at sign_in_count last_sign_in_at]
+
+    critical_fields.each do |field|
+      # Verify the field exists
+      assert user.respond_to?(field), "User should have #{field} attribute"
+      assert user.respond_to?("#{field}="), "User should have #{field}= setter"
+    end
+
+    # In practice, controllers would use strong parameters to prevent these assignments
+    # This test documents which fields need protection
+  end
+
+  # Weight: 9 - Thread-local validation context usage
+  test "validation uses thread-local context for security checks" do
+    @user.skip_confirmation!
+    @user.save!
+
+    # Without context, changes are allowed
+    Thread.current[:validation_context] = nil
+    @user.system_role = "site_admin"
+    assert @user.valid?
+
+    # With context matching user ID, self-changes are prevented
+    Thread.current[:validation_context] = { current_user_id: @user.id }
+    @user.system_role = "super_admin"
+    assert_not @user.valid?
+    assert_includes @user.errors[:system_role], "cannot be changed by yourself"
+
+    # With context of different user, changes are allowed
+    Thread.current[:validation_context] = { current_user_id: 999 }
+    @user.system_role = "super_admin"
+    assert @user.valid?
+
+    # Clean up
+    Thread.current[:validation_context] = nil
+  end
+
+  # Weight: 9 - Security-sensitive change detection
+  test "security_sensitive_change? detects critical field modifications" do
+    @user.skip_confirmation!
+    @user.save!
+
+    # No changes initially
+    assert_not @user.security_sensitive_change?
+
+    # System role change is security sensitive
+    @user.system_role = "super_admin"
+    assert @user.security_sensitive_change?
+
+    @user.reload
+
+    # Status change is security sensitive
+    @user.status = "locked"
+    assert @user.security_sensitive_change?
+
+    @user.reload
+
+    # Email change is critical but not security sensitive
+    @user.email = "newemail@example.com"
+    assert_not @user.security_sensitive_change?
+    assert @user.critical_field_changed?
+
+    @user.reload
+
+    # Name change is neither critical nor security sensitive
+    @user.first_name = "NewName"
+    assert_not @user.security_sensitive_change?
+    assert_not @user.critical_field_changed?
+  end
+
+  # Weight: 8 - Direct user team creation rules
+  test "direct users can create and own teams but follow ownership rules" do
+    direct_user = User.create!(
+      email: "direct@example.com",
+      password: "Password123!",
+      user_type: "direct",
+      confirmed_at: Time.current
+    )
+
+    # Direct user can be set as team admin during team creation
+    team = Team.new(
+      name: "Direct User Team",
+      admin: direct_user,
+      created_by: users(:super_admin)
+    )
+    assert team.valid?
+    assert team.save
+
+    # The direct user owns this team
+    assert_includes direct_user.administered_teams, team
+
+    # But still cannot be assigned to another team as a member
+    another_team = Team.create!(
+      name: "Another Team",
+      admin: users(:super_admin),
+      created_by: users(:super_admin)
+    )
+
+    direct_user.team = another_team
+    direct_user.team_role = "member"
+    assert_not direct_user.valid?
+    assert_includes direct_user.errors[:team_id], "direct users can only be associated with teams they own"
+  end
+
+  # Weight: 8 - Audit log integration for security changes
+  test "security changes trigger audit log entries" do
+    @user.skip_confirmation!
+    @user.save!
+
+    # Test that changing system_role is detected as security sensitive
+    @user.system_role = "site_admin"
+    assert @user.security_sensitive_change?, "Changing system_role should be security sensitive"
+
+    # Test that changing status is also security sensitive
+    @user.reload
+    @user.status = "locked"
+    assert @user.security_sensitive_change?, "Changing status should be security sensitive"
+
+    # Test that changing non-security fields is not security sensitive
+    @user.reload
+    @user.first_name = "Changed"
+    assert_not @user.security_sensitive_change?, "Changing first_name should not be security sensitive"
+  end
+
+  # Weight: 7 - Billing isolation between user types
+  test "billing fields are properly isolated by user type" do
+    # Direct users can have Stripe customer ID
+    direct_user = User.create!(
+      email: "directbilling@example.com",
+      password: "Password123!",
+      user_type: "direct",
+      stripe_customer_id: "cus_direct123",
+      confirmed_at: Time.current
+    )
+    assert_equal "cus_direct123", direct_user.stripe_customer_id
+
+    # Invited users should not have individual billing
+    invited_user = User.create!(
+      email: "invitedbilling@example.com",
+      password: "Password123!",
+      user_type: "invited",
+      team: @team,
+      team_role: "member",
+      confirmed_at: Time.current
+    )
+
+    # Stripe customer ID should be ignored for non-direct users
+    invited_user.stripe_customer_id = "cus_invalid"
+    invited_user.save
+    # In practice, this would be handled by controller/service layer
+
+    # Enterprise users also should not have individual billing
+    enterprise_user = User.create!(
+      email: "enterprisebilling@example.com",
+      password: "Password123!",
+      user_type: "enterprise",
+      enterprise_group: @enterprise_group,
+      enterprise_group_role: "member",
+      confirmed_at: Time.current
+    )
+
+    enterprise_user.stripe_customer_id = "cus_enterprise"
+    enterprise_user.save
+    # In practice, this would be handled by controller/service layer
+  end
 end

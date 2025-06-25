@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 # Paginatable concern provides comprehensive pagination functionality to controllers
-# 
+#
 # Features:
 # - Automatic pagination parameter handling (page, per_page)
 # - User preference persistence per controller
@@ -13,7 +13,7 @@
 # Usage:
 #   class UsersController < ApplicationController
 #     include Paginatable
-#     
+#
 #     def index
 #       @pagy, @users = pagy(User.all, items: @items_per_page)
 #     end
@@ -28,14 +28,14 @@ module Paginatable
   # Allowed values for items per page dropdown
   # These values are enforced both in UI and backend validation
   ALLOWED_PER_PAGE_VALUES = [ 10, 20, 50, 100 ].freeze
-  
+
   # Default number of items per page when no preference is set
   DEFAULT_PER_PAGE = 20
 
   included do
     # Set pagination parameters before each action
     before_action :set_pagination_params
-    
+
     # Make these methods available in views
     # pagination_url_for: Generates URLs with preserved filters and pagination
     # pagy_url_for: Wrapper for Pagy's URL generation
