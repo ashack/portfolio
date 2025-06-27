@@ -120,10 +120,31 @@ class Users::ProfileControllerTest < ActionDispatch::IntegrationTest
     }
     
     assert_redirected_to users_profile_path(@direct_user)
+    assert_equal "Email changes must be requested through the email change request system for security reasons.", flash[:alert]
     
     # Email should not change
     @direct_user.reload
     assert_equal "direct@example.com", @direct_user.email
+  end
+  
+  test "email change protection removes email from params" do
+    original_email = @direct_user.email
+    
+    patch users_profile_path(@direct_user), params: {
+      user: {
+        first_name: "Updated",
+        email: "hacker@example.com",
+        unconfirmed_email: "hacker@example.com"
+      }
+    }
+    
+    assert_redirected_to users_profile_path(@direct_user)
+    assert_equal "Profile updated successfully.", flash[:notice]
+    assert_equal "Email changes must be requested through the email change request system for security reasons.", flash[:alert]
+    
+    @direct_user.reload
+    assert_equal original_email, @direct_user.email
+    assert_equal "Updated", @direct_user.first_name
   end
 
   test "should redirect if accessing another user's profile" do

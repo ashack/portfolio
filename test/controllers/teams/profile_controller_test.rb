@@ -133,4 +133,42 @@ class Teams::ProfileControllerTest < ActionDispatch::IntegrationTest
     @team_member.reload
     assert @team_member.profile_completion_percentage > 0
   end
+
+  test "should not allow email changes through profile update" do
+    original_email = @team_member.email
+    
+    patch teams_profile_path(team_slug: @team.slug, id: @team_member), params: {
+      user: {
+        first_name: "Updated",
+        email: "newemail@example.com"
+      }
+    }
+    
+    assert_redirected_to teams_profile_path(team_slug: @team.slug, id: @team_member)
+    assert_equal "Profile updated successfully.", flash[:notice]
+    assert_equal "Email changes must be requested through the email change request system for security reasons.", flash[:alert]
+    
+    @team_member.reload
+    assert_equal original_email, @team_member.email
+    assert_equal "Updated", @team_member.first_name
+  end
+
+  test "email change protection removes email and unconfirmed_email from params" do
+    original_email = @team_member.email
+    
+    patch teams_profile_path(team_slug: @team.slug, id: @team_member), params: {
+      user: {
+        bio: "Updated bio",
+        email: "attacker@example.com",
+        unconfirmed_email: "attacker@example.com"
+      }
+    }
+    
+    assert_redirected_to teams_profile_path(team_slug: @team.slug, id: @team_member)
+    
+    @team_member.reload
+    assert_equal original_email, @team_member.email
+    assert_nil @team_member.unconfirmed_email
+    assert_equal "Updated bio", @team_member.bio
+  end
 end

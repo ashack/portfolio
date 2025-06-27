@@ -1,20 +1,78 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = [ "menu" ]
-
+  static targets = ["menu", "button"]
+  
   connect() {
-    this.menuTarget.classList.add("hidden")
-  }
-
-  toggle(event) {
-    event.stopPropagation()
-    this.menuTarget.classList.toggle("hidden")
-  }
-
-  hide(event) {
-    if (!this.element.contains(event.target)) {
+    this.open = false
+    this.handleEscape = this.handleEscape.bind(this)
+    this.handleClickOutside = this.handleClickOutside.bind(this)
+    
+    // Ensure menu is hidden on connect
+    if (this.hasMenuTarget) {
       this.menuTarget.classList.add("hidden")
     }
+  }
+  
+  disconnect() {
+    this.removeEventListeners()
+  }
+  
+  toggle(event) {
+    event.stopPropagation()
+    this.open ? this.hide() : this.show()
+  }
+  
+  show() {
+    if (this.open || !this.hasMenuTarget) return
+    
+    this.open = true
+    this.menuTarget.classList.remove("hidden")
+    
+    if (this.hasButtonTarget) {
+      this.buttonTarget.setAttribute("aria-expanded", "true")
+    }
+    
+    // Add event listeners
+    document.addEventListener("keydown", this.handleEscape)
+    document.addEventListener("click", this.handleClickOutside)
+    
+    // Focus first menu item for accessibility
+    requestAnimationFrame(() => {
+      const firstLink = this.menuTarget.querySelector("a, button")
+      if (firstLink) firstLink.focus()
+    })
+  }
+  
+  hide() {
+    if (!this.open || !this.hasMenuTarget) return
+    
+    this.open = false
+    this.menuTarget.classList.add("hidden")
+    
+    if (this.hasButtonTarget) {
+      this.buttonTarget.setAttribute("aria-expanded", "false")
+      // Return focus to button
+      this.buttonTarget.focus()
+    }
+    
+    this.removeEventListeners()
+  }
+  
+  handleEscape(event) {
+    if (event.key === "Escape") {
+      this.hide()
+    }
+  }
+  
+  handleClickOutside(event) {
+    if (!this.element.contains(event.target)) {
+      this.hide()
+    }
+  }
+  
+  removeEventListeners() {
+    document.removeEventListener("keydown", this.handleEscape)
+    document.removeEventListener("click", this.handleClickOutside)
   }
 }

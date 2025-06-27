@@ -47,13 +47,13 @@
           <!-- Email (kept separate from partial) -->
           <div class="mb-6">
             <%= form.label :email, class: "block text-sm font-medium text-gray-700" %>
-            <div class="mt-1 flex rounded-md shadow-sm">
+            <div class="mt-1 flex rounded-md shadow-sm input-group">
               <%= form.email_field :email, 
                   readonly: true,
                   class: "flex-1 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-l-md bg-gray-50",
                   placeholder: "Enter your email address" %>
               <%= link_to "Request Change", new_email_change_request_path, 
-                  class: "inline-flex items-center px-3 py-2 border border-l-0 border-gray-300 rounded-r-md bg-gray-50 text-gray-500 text-sm hover:bg-gray-100" %>
+                  class: "inline-flex items-center px-3 py-2 border border-gray-300 rounded-r-md bg-gray-50 text-gray-500 text-sm hover:bg-gray-100" %>
             </div>
             <p class="mt-1 text-xs text-gray-500">
               Email changes require admin approval for security reasons. 
@@ -62,7 +62,7 @@
           </div>
 
           <!-- Include shared profile form fields -->
-          <%= render "shared/profile_form_fields", form: form, user: @user, primary_color: "indigo" %>
+          <%= render "shared/profile_form_fields_v2", form: form, user: @user, primary_color: "indigo" %>
 
           <!-- Account Information (Read-only) -->
           <div class="border-t border-gray-200 pt-6">

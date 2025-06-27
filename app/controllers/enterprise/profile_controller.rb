@@ -1,4 +1,6 @@
 class Enterprise::ProfileController < ApplicationController
+  include EmailChangeProtection
+  
   before_action :authenticate_user!
   before_action :require_enterprise_user!
   before_action :set_enterprise_group
@@ -34,6 +36,7 @@ class Enterprise::ProfileController < ApplicationController
   end
 
   def user_params
+    # EmailChangeProtection concern will handle email change attempts
     params.require(:user).permit(
       :first_name, :last_name, :bio, :phone_number, :avatar_url, :avatar,
       :timezone, :locale, :profile_visibility,

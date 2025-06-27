@@ -1,0 +1,180 @@
+<!-- Enhanced User Avatar Dropdown Menu -->
+<div class="ml-3 relative" data-controller="dropdown">
+  <div>
+    <button type="button"
+            data-action="click->dropdown#toggle click@window->dropdown#hide" 
+            data-dropdown-target="button"
+            class="flex items-center max-w-xs bg-white text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 p-1 hover:bg-gray-50 transition-all duration-200 group" 
+            id="user-menu-button"
+            aria-expanded="false"
+            aria-haspopup="true">
+      <% if current_user.avatar.attached? %>
+        <%= image_tag current_user.avatar.variant(resize_to_fill: [32, 32]), 
+            class: "h-8 w-8 rounded-full", 
+            alt: current_user.full_name %>
+      <% else %>
+        <div class="h-8 w-8 rounded-full bg-indigo-600 flex items-center justify-center">
+          <span class="text-white font-medium text-sm"><%= current_user.initials %></span>
+        </div>
+      <% end %>
+      <span class="ml-2 text-gray-700 hidden sm:block"><%= current_user.first_name || "User" %></span>
+      <%= icon("caret-down", class: "h-4 w-4 ml-1 text-gray-400 group-hover:text-gray-600 transition-colors") %>
+    </button>
+  </div>
+
+  <!-- Dropdown Panel -->
+  <div data-dropdown-target="menu" 
+       class="hidden origin-top-right absolute right-0 mt-2 w-80 rounded-lg shadow-lg bg-white ring-1 ring-black ring-opacity-5 divide-y divide-gray-100 z-50"
+       role="menu"
+       aria-orientation="vertical"
+       aria-labelledby="user-menu-button">
+    
+    <!-- User Info Section -->
+    <div class="px-4 py-3">
+      <div class="flex items-center">
+        <% if current_user.avatar.attached? %>
+          <%= image_tag current_user.avatar.variant(resize_to_fill: [40, 40]), 
+              class: "h-10 w-10 rounded-full", 
+              alt: current_user.full_name %>
+        <% else %>
+          <div class="h-10 w-10 rounded-full bg-indigo-600 flex items-center justify-center">
+            <span class="text-white font-medium"><%= current_user.initials %></span>
+          </div>
+        <% end %>
+        <div class="ml-3 flex-1">
+          <p class="text-sm font-medium text-gray-900"><%= current_user.full_name.presence || "Welcome" %></p>
+          <p class="text-xs text-gray-500 truncate"><%= current_user.email %></p>
+          <div class="mt-1">
+            <% if current_user.direct? %>
+              <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">
+                <%= icon("user", class: "h-3 w-3 mr-1") %>
+                Individual
+              </span>
+            <% elsif current_user.invited? %>
+              <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">
+                <%= icon("users", class: "h-3 w-3 mr-1") %>
+                Team: <%= current_user.team.name %>
+              </span>
+            <% elsif current_user.enterprise? %>
+              <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-purple-100 text-purple-800">
+                <%= icon("buildings", class: "h-3 w-3 mr-1") %>
+                Enterprise: <%= current_user.enterprise_group.name %>
+              </span>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="py-1" role="none">
+      <% if current_user.direct? %>
+        <%= link_to users_profile_path(current_user), 
+            class: "group flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors",
+            role: "menuitem" do %>
+          <%= icon("user-circle", class: "mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500") %>
+          View Profile
+          <span class="ml-auto text-xs text-gray-400 hidden sm:inline">⌘P</span>
+        <% end %>
+        
+        <%= link_to edit_users_profile_path(current_user), 
+            class: "group flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors",
+            role: "menuitem" do %>
+          <%= icon("pencil", class: "mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500") %>
+          Edit Profile
+        <% end %>
+        
+        <%= link_to users_settings_path, 
+            class: "group flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors",
+            role: "menuitem" do %>
+          <%= icon("gear", class: "mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500") %>
+          Account Settings
+          <span class="ml-auto text-xs text-gray-400 hidden sm:inline">⌘,</span>
+        <% end %>
+      <% elsif current_user.invited? && current_user.team %>
+        <%= link_to teams_profile_path(team_slug: current_user.team.slug, id: current_user), 
+            class: "group flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors",
+            role: "menuitem" do %>
+          <%= icon("user-circle", class: "mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500") %>
+          View Profile
+          <span class="ml-auto text-xs text-gray-400 hidden sm:inline">⌘P</span>
+        <% end %>
+        
+        <%= link_to edit_teams_profile_path(team_slug: current_user.team.slug, id: current_user), 
+            class: "group flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors",
+            role: "menuitem" do %>
+          <%= icon("pencil", class: "mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500") %>
+          Edit Profile
+        <% end %>
+      <% elsif current_user.enterprise? && current_user.enterprise_group %>
+        <%= link_to enterprise_profile_path(current_user.enterprise_group.slug), 
+            class: "group flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors",
+            role: "menuitem" do %>
+          <%= icon("user-circle", class: "mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500") %>
+          View Profile
+          <span class="ml-auto text-xs text-gray-400 hidden sm:inline">⌘P</span>
+        <% end %>
+        
+        <%= link_to edit_enterprise_profile_path(current_user.enterprise_group.slug), 
+            class: "group flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors",
+            role: "menuitem" do %>
+          <%= icon("pencil", class: "mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500") %>
+          Edit Profile
+        <% end %>
+      <% end %>
+    </div>
+
+    <!-- Additional Options -->
+    <div class="py-1" role="none">
+      <a href="#" 
+         class="group flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
+         role="menuitem"
+         data-controller="help-widget"
+         data-action="click->help-widget#show">
+        <%= icon("lifebuoy", class: "mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500") %>
+        Help & Support
+        <span class="ml-auto text-xs text-gray-400 hidden sm:inline">⌘?</span>
+      </a>
+      
+      <a href="#" 
+         class="group flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
+         role="menuitem">
+        <%= icon("keyboard", class: "mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500") %>
+        Keyboard Shortcuts
+      </a>
+      
+      <% if current_user.profile_completion_percentage < 100 %>
+        <div class="px-4 py-2">
+          <div class="text-xs text-gray-500 mb-1">Profile Completion</div>
+          <div class="w-full bg-gray-200 rounded-full h-2">
+            <div class="bg-indigo-600 h-2 rounded-full transition-all duration-500" 
+                 style="width: <%= current_user.profile_completion_percentage %>%"></div>
+          </div>
+          <div class="text-xs text-gray-600 mt-1">
+            <%= current_user.profile_completion_percentage %>% complete
+            <% if current_user.direct? %>
+              • <%= link_to "Complete now", edit_users_profile_path(current_user), class: "text-indigo-600 hover:text-indigo-500" %>
+            <% elsif current_user.invited? && current_user.team %>
+              • <%= link_to "Complete now", edit_teams_profile_path(team_slug: current_user.team.slug, id: current_user), class: "text-blue-600 hover:text-blue-500" %>
+            <% elsif current_user.enterprise? && current_user.enterprise_group %>
+              • <%= link_to "Complete now", edit_enterprise_profile_path(current_user.enterprise_group.slug), class: "text-purple-600 hover:text-purple-500" %>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+
+    <!-- Sign Out -->
+    <div class="py-1" role="none">
+      <%= button_to destroy_user_session_path, 
+          method: :delete,
+          data: { turbo_method: :delete },
+          class: "group flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors",
+          role: "menuitem" do %>
+        <%= icon("sign-out", class: "mr-3 h-5 w-5 text-red-400 group-hover:text-red-500") %>
+        Sign Out
+        <span class="ml-auto text-xs text-red-400 hidden sm:inline">⌘Q</span>
+      <% end %>
+    </div>
+  </div>
+</div>

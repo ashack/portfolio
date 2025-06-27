@@ -1,0 +1,17 @@
+{
+  "name": "saas_ror_starter",
+  "version": "1.0.0",
+  "description": "A complete Ruby on Rails 8 SaaS application with triple-track user system supporting individual users, team-based collaboration, and enterprise organizations.",
+  "main": "tailwind.config.js",
+  "directories": {
+    "doc": "docs",
+    "lib": "lib",
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

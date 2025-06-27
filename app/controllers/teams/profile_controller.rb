@@ -1,4 +1,6 @@
 class Teams::ProfileController < Teams::BaseController
+  include EmailChangeProtection
+  
   # Skip Pundit verification since profile shows user's own data
   skip_after_action :verify_policy_scoped
   skip_after_action :verify_authorized
@@ -32,6 +34,7 @@ class Teams::ProfileController < Teams::BaseController
   end
 
   def profile_params
+    # EmailChangeProtection concern will handle email change attempts
     params.require(:user).permit(
       :first_name, :last_name, :bio, :phone_number, :avatar_url, :avatar,
       :timezone, :locale, :profile_visibility,

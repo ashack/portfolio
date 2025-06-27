@@ -200,6 +200,10 @@ class User < ApplicationRecord
   # Normalize email to lowercase for consistency
   # Prevents duplicate accounts with different case
   before_validation :normalize_email
+  
+  # SECURITY: Prevent unauthorized email changes
+  # Email changes must go through the EmailChangeRequest system
+  before_save :prevent_unauthorized_email_change, if: :email_changed?
 
   # Include ValidationHelpers concern for additional validation methods
   include ValidationHelpers
@@ -230,6 +234,20 @@ class User < ApplicationRecord
   # Returns the user's full name, handling nil values gracefully
   def full_name
     "#{first_name} #{last_name}".strip
+  end
+
+  # Returns the user's initials for avatar display
+  def initials
+    name_parts = []
+    name_parts << first_name[0] if first_name.present?
+    name_parts << last_name[0] if last_name.present?
+
+    # Fall back to email if no name is set
+    if name_parts.empty? && email.present?
+      name_parts << email[0].upcase
+    end
+
+    name_parts.join.upcase
   end
 
   # Determines if user can sign in based on status
@@ -415,6 +433,47 @@ class User < ApplicationRecord
   # Called before validation to ensure consistency
   def normalize_email
     self.email = email&.downcase&.strip
+  end
+  
+  # SECURITY: Prevent unauthorized email changes
+  # Email changes must go through the EmailChangeRequest system with admin approval
+  def prevent_unauthorized_email_change
+    # Skip validation for new records (registration)
+    return if new_record?
+    
+    # Skip if the change is being made by the EmailChangeRequest system
+    # This is identified by checking if the change is happening within a transaction
+    # that includes an EmailChangeRequest approval
+    return if Thread.current[:email_change_authorized]
+    
+    # Allow super admins to change emails directly (for emergency situations)
+    return if Thread.current[:current_admin]&.super_admin?
+    
+    # If we get here, it's an unauthorized email change attempt
+    errors.add(:email, "cannot be changed directly. Please use the email change request system.")
+    
+    # Log the attempt for security auditing
+    Rails.logger.warn "[SECURITY] Unauthorized email change attempt for user #{id} from #{email_was} to #{email}"
+    
+    # Create audit log for security tracking
+    AuditLogService.log_security_event(
+      admin_user: self, # User attempting the change
+      target_user: self, # Same user since it's self-modification
+      event_type: "email_change_attempt_blocked_model",
+      details: {
+        attempted_email: email,
+        current_email: email_was,
+        model: "User",
+        blocked_reason: "Model-level protection triggered"
+      },
+      request: nil # No request context in model
+    )
+    
+    # Revert the email change
+    self.email = email_was
+    
+    # Throw abort to prevent the save
+    throw(:abort)
   end
 
   # CR-A1: Enforces strong password requirements
@@ -622,7 +681,7 @@ class User < ApplicationRecord
     end
 
     # Check file type
-    acceptable_types = ["image/jpeg", "image/jpg", "image/png", "image/gif", "image/webp"]
+    acceptable_types = [ "image/jpeg", "image/jpg", "image/png", "image/gif", "image/webp" ]
     unless acceptable_types.include?(avatar.blob.content_type)
       errors.add(:avatar, "must be a JPEG, PNG, GIF, or WebP image")
     end

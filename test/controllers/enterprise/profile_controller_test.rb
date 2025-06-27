@@ -149,4 +149,51 @@ class Enterprise::ProfileControllerTest < ActionDispatch::IntegrationTest
     assert_response :unprocessable_entity
     assert_select "h3", "Please fix the following errors:"
   end
+
+  test "should not allow email changes through profile update" do
+    original_email = @enterprise_user.email
+    
+    patch enterprise_profile_path(@enterprise_group.slug), params: {
+      user: {
+        first_name: "Updated",
+        email: "newemail@example.com"
+      }
+    }
+    
+    assert_redirected_to enterprise_profile_path(@enterprise_group.slug)
+    assert_equal "Profile updated successfully.", flash[:notice]
+    assert_equal "Email changes must be requested through the email change request system for security reasons.", flash[:alert]
+    
+    @enterprise_user.reload
+    assert_equal original_email, @enterprise_user.email
+    assert_equal "Updated", @enterprise_user.first_name
+  end
+
+  test "email change protection removes sensitive fields from params" do
+    original_email = @enterprise_user.email
+    
+    patch enterprise_profile_path(@enterprise_group.slug), params: {
+      user: {
+        bio: "Updated enterprise bio",
+        email: "attacker@example.com",
+        unconfirmed_email: "attacker@example.com"
+      }
+    }
+    
+    assert_redirected_to enterprise_profile_path(@enterprise_group.slug)
+    
+    @enterprise_user.reload
+    assert_equal original_email, @enterprise_user.email
+    assert_nil @enterprise_user.unconfirmed_email
+    assert_equal "Updated enterprise bio", @enterprise_user.bio
+  end
+  
+  test "should show email field as read-only in edit form" do
+    get edit_enterprise_profile_path(@enterprise_group.slug)
+    assert_response :success
+    
+    # Check that email field is read-only
+    assert_select "input[type='email'][readonly]"
+    assert_select "a", text: "Request Change"
+  end
 end

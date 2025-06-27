@@ -1,4 +1,6 @@
 class Users::ProfileController < Users::BaseController
+  include EmailChangeProtection
+  
   # Skip Pundit verification since profile shows user's own data
   skip_after_action :verify_policy_scoped
   skip_after_action :verify_authorized
@@ -32,19 +34,12 @@ class Users::ProfileController < Users::BaseController
   end
 
   def profile_params
-    # Remove email from permitted params to prevent direct email changes
-    permitted_params = params.require(:user).permit(
+    # EmailChangeProtection concern will handle email change attempts
+    params.require(:user).permit(
       :first_name, :last_name, :bio, :phone_number, :avatar_url, :avatar,
       :timezone, :locale, :profile_visibility,
       :linkedin_url, :twitter_url, :github_url, :website_url,
       notification_preferences: {}
     )
-
-    # Show warning if user tries to change email
-    if params[:user][:email].present? && params[:user][:email] != current_user.email
-      flash.now[:alert] = "Email changes must be requested through the email change request system for security reasons."
-    end
-
-    permitted_params
   end
 end

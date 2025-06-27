@@ -88,6 +88,23 @@ class ApplicationController < ActionController::Base
     devise_controller? || params[:controller] =~ /(^pages$)|(^home$)|(^redirect$)/
   end
 
+  # Layout selection based on user type and context
+  def layout_by_resource
+    if devise_controller?
+      "application"
+    elsif current_user&.super_admin? || current_user&.site_admin?
+      "admin"
+    elsif current_user&.invited? && current_user.team
+      "team"
+    elsif current_user&.enterprise? && current_user.enterprise_group
+      "enterprise"
+    elsif current_user&.direct?
+      "user"
+    else
+      "application"
+    end
+  end
+
   # Helper for Pagy to generate URLs with preserved parameters
   def pagy_url_for(pagy, page, absolute: false)
     params = if respond_to?(:filter_params, true)

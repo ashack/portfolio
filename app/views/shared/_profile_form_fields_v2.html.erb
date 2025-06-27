@@ -1,0 +1,222 @@
+<% 
+  # Define color classes based on primary color
+  ring_class = case primary_color
+    when "indigo" then "focus:ring-indigo-500"
+    when "purple" then "focus:ring-purple-500"
+    when "blue" then "focus:ring-blue-500"
+    else "focus:ring-indigo-500"
+  end
+  
+  border_class = case primary_color
+    when "indigo" then "focus:border-indigo-500"
+    when "purple" then "focus:border-purple-500" 
+    when "blue" then "focus:border-blue-500"
+    else "focus:border-indigo-500"
+  end
+  
+  file_bg_class = case primary_color
+    when "indigo" then "file:bg-indigo-50"
+    when "purple" then "file:bg-purple-50"
+    when "blue" then "file:bg-blue-50"
+    else "file:bg-indigo-50"
+  end
+  
+  file_text_class = case primary_color
+    when "indigo" then "file:text-indigo-700"
+    when "purple" then "file:text-purple-700"
+    when "blue" then "file:text-blue-700"
+    else "file:text-indigo-700"
+  end
+  
+  file_hover_class = case primary_color
+    when "indigo" then "hover:file:bg-indigo-100"
+    when "purple" then "hover:file:bg-purple-100"
+    when "blue" then "hover:file:bg-blue-100"
+    else "hover:file:bg-indigo-100"
+  end
+%>
+
+<div class="space-y-6">
+  <!-- Basic Information -->
+  <div class="border-b border-gray-200 pb-6">
+    <h3 class="text-lg font-medium text-gray-900 mb-4">Basic Information</h3>
+    <div class="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
+      <!-- First Name -->
+      <div class="sm:col-span-3">
+        <%= form.label :first_name, class: "block text-sm font-medium text-gray-700" %>
+        <div class="mt-1">
+          <%= form.text_field :first_name, 
+              class: "shadow-sm #{ring_class} #{border_class} block w-full sm:text-sm border-gray-300 rounded-md",
+              placeholder: "Enter your first name" %>
+        </div>
+      </div>
+
+      <!-- Last Name -->
+      <div class="sm:col-span-3">
+        <%= form.label :last_name, class: "block text-sm font-medium text-gray-700" %>
+        <div class="mt-1">
+          <%= form.text_field :last_name, 
+              class: "shadow-sm #{ring_class} #{border_class} block w-full sm:text-sm border-gray-300 rounded-md",
+              placeholder: "Enter your last name" %>
+        </div>
+      </div>
+
+      <!-- Phone Number -->
+      <div class="sm:col-span-3">
+        <%= form.label :phone_number, class: "block text-sm font-medium text-gray-700" %>
+        <div class="mt-1">
+          <%= form.telephone_field :phone_number, 
+              class: "shadow-sm #{ring_class} #{border_class} block w-full sm:text-sm border-gray-300 rounded-md",
+              placeholder: "+1 (555) 123-4567" %>
+        </div>
+      </div>
+
+      <!-- Bio -->
+      <div class="sm:col-span-6">
+        <%= form.label :bio, class: "block text-sm font-medium text-gray-700" %>
+        <div class="mt-1">
+          <%= form.text_area :bio, 
+              rows: 4,
+              class: "shadow-sm #{ring_class} #{border_class} block w-full sm:text-sm border border-gray-300 rounded-md",
+              placeholder: "Tell us about yourself..." %>
+        </div>
+        <p class="mt-1 text-sm text-gray-500">Maximum 500 characters</p>
+      </div>
+
+      <!-- Avatar Upload -->
+      <div class="sm:col-span-6">
+        <%= form.label :avatar, "Profile Picture", class: "block text-sm font-medium text-gray-700" %>
+        <div class="mt-1 space-y-4">
+          <!-- Current Avatar Display -->
+          <% if user.avatar.attached? || user.avatar_url.present? %>
+            <div class="flex items-center space-x-4">
+              <% if user.avatar.attached? %>
+                <%= image_tag user.avatar, class: "h-20 w-20 rounded-full object-cover" %>
+              <% elsif user.avatar_url.present? %>
+                <%= image_tag user.avatar_url, class: "h-20 w-20 rounded-full object-cover", onerror: "this.style.display='none'" %>
+              <% end %>
+              <span class="text-sm text-gray-500">Current profile picture</span>
+            </div>
+          <% end %>
+          
+          <!-- File Upload -->
+          <div>
+            <%= form.file_field :avatar, 
+                class: "block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold #{file_bg_class} #{file_text_class} #{file_hover_class}",
+                accept: "image/jpeg,image/jpg,image/png,image/gif,image/webp" %>
+            <p class="mt-1 text-xs text-gray-500">Upload a new picture (JPEG, PNG, GIF, or WebP, max 5MB)</p>
+          </div>
+          
+          <!-- OR Divider -->
+          <div class="relative">
+            <div class="absolute inset-0 flex items-center">
+              <div class="w-full border-t border-gray-300"></div>
+            </div>
+            <div class="relative flex justify-center text-sm">
+              <span class="px-2 bg-white text-gray-500">OR</span>
+            </div>
+          </div>
+          
+          <!-- Avatar URL -->
+          <div>
+            <%= form.text_field :avatar_url, 
+                class: "shadow-sm #{ring_class} #{border_class} block w-full sm:text-sm border-gray-300 rounded-md",
+                placeholder: "https://example.com/avatar.jpg" %>
+            <p class="mt-1 text-xs text-gray-500">Enter a URL to your profile picture</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Preferences -->
+  <div class="border-b border-gray-200 pb-6">
+    <h3 class="text-lg font-medium text-gray-900 mb-4">Preferences</h3>
+    <div class="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
+      <!-- Timezone -->
+      <div class="sm:col-span-3">
+        <%= form.label :timezone, class: "block text-sm font-medium text-gray-700" %>
+        <div class="mt-1">
+          <%= form.select :timezone, 
+              options_for_select(ActiveSupport::TimeZone.all.map { |tz| [tz.to_s, tz.name] }, user.timezone),
+              {},
+              class: "mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none #{ring_class} #{border_class} sm:text-sm rounded-md" %>
+        </div>
+      </div>
+
+      <!-- Locale -->
+      <div class="sm:col-span-3">
+        <%= form.label :locale, "Language", class: "block text-sm font-medium text-gray-700" %>
+        <div class="mt-1">
+          <%= form.select :locale, 
+              options_for_select([["English", "en"], ["Spanish", "es"], ["French", "fr"], ["German", "de"]], user.locale),
+              {},
+              class: "mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none #{ring_class} #{border_class} sm:text-sm rounded-md" %>
+        </div>
+      </div>
+
+      <!-- Profile Visibility -->
+      <div class="sm:col-span-6">
+        <%= form.label :profile_visibility, class: "block text-sm font-medium text-gray-700" %>
+        <div class="mt-1">
+          <%= form.select :profile_visibility, 
+              options_for_select([["Public", "public_profile"], ["Team Only", "team_only"], ["Private", "private_profile"]], user.profile_visibility),
+              {},
+              class: "mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none #{ring_class} #{border_class} sm:text-sm rounded-md" %>
+        </div>
+        <p class="mt-1 text-sm text-gray-500">Control who can see your profile information</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Social Links -->
+  <div class="border-b border-gray-200 pb-6">
+    <h3 class="text-lg font-medium text-gray-900 mb-4">Social Links</h3>
+    <div class="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
+      <!-- LinkedIn -->
+      <div class="sm:col-span-3">
+        <%= form.label :linkedin_url, "LinkedIn", class: "block text-sm font-medium text-gray-700" %>
+        <div class="mt-1">
+          <%= form.text_field :linkedin_url, 
+              class: "shadow-sm #{ring_class} #{border_class} block w-full sm:text-sm border-gray-300 rounded-md",
+              placeholder: "https://linkedin.com/in/yourprofile" %>
+        </div>
+      </div>
+
+      <!-- Twitter -->
+      <div class="sm:col-span-3">
+        <%= form.label :twitter_url, "Twitter/X", class: "block text-sm font-medium text-gray-700" %>
+        <div class="mt-1">
+          <%= form.text_field :twitter_url, 
+              class: "shadow-sm #{ring_class} #{border_class} block w-full sm:text-sm border-gray-300 rounded-md",
+              placeholder: "https://twitter.com/yourhandle" %>
+        </div>
+      </div>
+
+      <!-- GitHub -->
+      <div class="sm:col-span-3">
+        <%= form.label :github_url, "GitHub", class: "block text-sm font-medium text-gray-700" %>
+        <div class="mt-1">
+          <%= form.text_field :github_url, 
+              class: "shadow-sm #{ring_class} #{border_class} block w-full sm:text-sm border-gray-300 rounded-md",
+              placeholder: "https://github.com/yourusername" %>
+        </div>
+      </div>
+
+      <!-- Website -->
+      <div class="sm:col-span-3">
+        <%= form.label :website_url, "Personal Website", class: "block text-sm font-medium text-gray-700" %>
+        <div class="mt-1">
+          <%= form.text_field :website_url, 
+              class: "shadow-sm #{ring_class} #{border_class} block w-full sm:text-sm border-gray-300 rounded-md",
+              placeholder: "https://yourwebsite.com" %>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Notification Preferences -->
+  <div class="border-b border-gray-200 pb-6">
+    <%= render "shared/notification_preferences_v2", form: form, user: user, primary_color: primary_color %>
+  </div>
+</div>
