@@ -1,0 +1,136 @@
+<!-- Notification Preferences -->
+<div class="space-y-4">
+  <h3 class="text-lg font-medium text-gray-900">Notification Preferences</h3>
+  <p class="text-sm text-gray-500">Choose which notifications you'd like to receive.</p>
+  
+  <div class="space-y-4">
+    <!-- Email Notifications -->
+    <div class="border rounded-lg p-4">
+      <h4 class="text-base font-medium text-gray-900 mb-3">Email Notifications</h4>
+      <div class="space-y-3">
+        <div class="flex items-start">
+          <div class="flex items-center h-5">
+            <%= check_box_tag "user[notification_preferences][email_marketing]", 
+                "1", 
+                user.notification_preferences&.dig("email_marketing") == "1",
+                class: "focus:ring-#{primary_color}-500 h-4 w-4 text-#{primary_color}-600 border-gray-300 rounded" %>
+          </div>
+          <div class="ml-3 text-sm">
+            <%= label_tag "user[notification_preferences][email_marketing]", "Marketing emails", class: "font-medium text-gray-700" %>
+            <p class="text-gray-500">Receive updates about new features and promotions</p>
+          </div>
+        </div>
+        
+        <div class="flex items-start">
+          <div class="flex items-center h-5">
+            <%= check_box_tag "user[notification_preferences][email_security]", 
+                "1", 
+                user.notification_preferences&.dig("email_security") == "1",
+                class: "focus:ring-#{primary_color}-500 h-4 w-4 text-#{primary_color}-600 border-gray-300 rounded" %>
+          </div>
+          <div class="ml-3 text-sm">
+            <%= label_tag "user[notification_preferences][email_security]", "Security alerts", class: "font-medium text-gray-700" %>
+            <p class="text-gray-500">Get notified about important security updates</p>
+          </div>
+        </div>
+        
+        <div class="flex items-start">
+          <div class="flex items-center h-5">
+            <%= check_box_tag "user[notification_preferences][email_updates]", 
+                "1", 
+                user.notification_preferences&.dig("email_updates") == "1",
+                class: "focus:ring-#{primary_color}-500 h-4 w-4 text-#{primary_color}-600 border-gray-300 rounded" %>
+          </div>
+          <div class="ml-3 text-sm">
+            <%= label_tag "user[notification_preferences][email_updates]", "Product updates", class: "font-medium text-gray-700" %>
+            <p class="text-gray-500">Stay informed about product changes and improvements</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Activity Notifications -->
+    <div class="border rounded-lg p-4">
+      <h4 class="text-base font-medium text-gray-900 mb-3">Activity Notifications</h4>
+      <div class="space-y-3">
+        <div class="flex items-start">
+          <div class="flex items-center h-5">
+            <%= check_box_tag "user[notification_preferences][activity_team]", 
+                "1", 
+                user.notification_preferences&.dig("activity_team") == "1",
+                class: "focus:ring-#{primary_color}-500 h-4 w-4 text-#{primary_color}-600 border-gray-300 rounded" %>
+          </div>
+          <div class="ml-3 text-sm">
+            <%= label_tag "user[notification_preferences][activity_team]", "Team activity", class: "font-medium text-gray-700" %>
+            <p class="text-gray-500">Notifications about team member actions</p>
+          </div>
+        </div>
+        
+        <div class="flex items-start">
+          <div class="flex items-center h-5">
+            <%= check_box_tag "user[notification_preferences][activity_mentions]", 
+                "1", 
+                user.notification_preferences&.dig("activity_mentions") == "1",
+                class: "focus:ring-#{primary_color}-500 h-4 w-4 text-#{primary_color}-600 border-gray-300 rounded" %>
+          </div>
+          <div class="ml-3 text-sm">
+            <%= label_tag "user[notification_preferences][activity_mentions]", "Mentions", class: "font-medium text-gray-700" %>
+            <p class="text-gray-500">Get notified when someone mentions you</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Billing Notifications -->
+    <% if user.direct? || user.team_admin? || user.enterprise_admin? %>
+      <div class="border rounded-lg p-4">
+        <h4 class="text-base font-medium text-gray-900 mb-3">Billing Notifications</h4>
+        <div class="space-y-3">
+          <div class="flex items-start">
+            <div class="flex items-center h-5">
+              <%= check_box_tag "user[notification_preferences][billing_invoices]", 
+                  "1", 
+                  user.notification_preferences&.dig("billing_invoices") == "1",
+                  class: "focus:ring-#{primary_color}-500 h-4 w-4 text-#{primary_color}-600 border-gray-300 rounded" %>
+            </div>
+            <div class="ml-3 text-sm">
+              <%= label_tag "user[notification_preferences][billing_invoices]", "Invoice notifications", class: "font-medium text-gray-700" %>
+              <p class="text-gray-500">Receive invoices and payment confirmations</p>
+            </div>
+          </div>
+          
+          <div class="flex items-start">
+            <div class="flex items-center h-5">
+              <%= check_box_tag "user[notification_preferences][billing_alerts]", 
+                  "1", 
+                  user.notification_preferences&.dig("billing_alerts") == "1",
+                  class: "focus:ring-#{primary_color}-500 h-4 w-4 text-#{primary_color}-600 border-gray-300 rounded" %>
+            </div>
+            <div class="ml-3 text-sm">
+              <%= label_tag "user[notification_preferences][billing_alerts]", "Payment alerts", class: "font-medium text-gray-700" %>
+              <p class="text-gray-500">Get notified about failed payments or expiring cards</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    <% end %>
+    
+    <!-- Notification Frequency -->
+    <div class="border rounded-lg p-4">
+      <h4 class="text-base font-medium text-gray-900 mb-3">Notification Frequency</h4>
+      <div class="space-y-3">
+        <div class="flex items-center">
+          <%= label_tag "user[notification_preferences][frequency]", "Email digest frequency", class: "block text-sm font-medium text-gray-700 mr-3" %>
+          <%= select_tag "user[notification_preferences][frequency]", 
+              options_for_select([
+                ["Real-time", "realtime"],
+                ["Daily digest", "daily"],
+                ["Weekly digest", "weekly"],
+                ["Never", "never"]
+              ], user.notification_preferences&.dig("frequency") || "daily"),
+              class: "mt-1 block pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-#{primary_color}-500 focus:border-#{primary_color}-500 sm:text-sm rounded-md" %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

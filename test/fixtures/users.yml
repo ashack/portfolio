@@ -35,6 +35,9 @@ direct_user:
   confirmed_at: <%= Time.current %>
   created_at: <%= 10.days.ago %>
   updated_at: <%= 10.days.ago %>
+  timezone: UTC
+  locale: en
+  profile_visibility: public_profile
 
 active_user:
   email: fixtureactive@example.com

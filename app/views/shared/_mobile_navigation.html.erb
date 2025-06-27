@@ -1,0 +1,203 @@
+<!-- Mobile Navigation Drawer -->
+<div class="lg:hidden" data-controller="mobile-menu">
+  <!-- Hamburger Button -->
+  <button type="button"
+          data-action="click->mobile-menu#toggle" 
+          class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500"
+          aria-controls="mobile-menu"
+          aria-expanded="false">
+    <span class="sr-only">Open main menu</span>
+    <!-- Hamburger icon -->
+    <svg data-mobile-menu-target="openIcon" class="block h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+    </svg>
+    <!-- Close icon -->
+    <svg data-mobile-menu-target="closeIcon" class="hidden h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+    </svg>
+  </button>
+  
+  <!-- Mobile Menu Panel -->
+  <div data-mobile-menu-target="panel" class="hidden fixed inset-0 z-50 lg:hidden">
+    <!-- Background overlay -->
+    <div class="fixed inset-0 bg-black bg-opacity-25" 
+         data-action="click->mobile-menu#close"
+         aria-hidden="true"></div>
+    
+    <!-- Menu drawer -->
+    <div class="fixed inset-y-0 left-0 w-full max-w-xs bg-white shadow-xl">
+      <div class="h-full flex flex-col">
+        <!-- User Info Header -->
+        <div class="bg-gradient-to-r from-indigo-600 to-indigo-700 px-4 py-6">
+          <div class="flex items-center justify-between mb-4">
+            <div class="flex items-center">
+              <% if current_user.avatar.attached? %>
+                <%= image_tag current_user.avatar.variant(resize_to_fill: [48, 48]), 
+                    class: "h-12 w-12 rounded-full border-2 border-white shadow-md", 
+                    alt: current_user.full_name %>
+              <% else %>
+                <div class="h-12 w-12 rounded-full bg-white shadow-md flex items-center justify-center">
+                  <span class="text-indigo-600 font-bold text-lg"><%= current_user.initials %></span>
+                </div>
+              <% end %>
+              <button type="button"
+                      data-action="click->mobile-menu#close"
+                      class="ml-auto p-2 rounded-md text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-white">
+                <span class="sr-only">Close menu</span>
+                <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+              </button>
+            </div>
+          </div>
+          <div>
+            <p class="text-white font-semibold text-lg"><%= current_user.full_name.presence || "Welcome" %></p>
+            <p class="text-indigo-200 text-sm truncate"><%= current_user.email %></p>
+            <div class="mt-2">
+              <% if current_user.direct? %>
+                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-indigo-800 bg-opacity-75 text-indigo-100">
+                  Individual Account
+                </span>
+              <% elsif current_user.invited? && current_user.team %>
+                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-indigo-800 bg-opacity-75 text-indigo-100">
+                  <%= current_user.team.name %>
+                </span>
+              <% elsif current_user.enterprise? && current_user.enterprise_group %>
+                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-indigo-800 bg-opacity-75 text-indigo-100">
+                  <%= current_user.enterprise_group.name %>
+                </span>
+              <% end %>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Navigation Items -->
+        <nav class="flex-1 px-2 py-4 space-y-1 overflow-y-auto">
+          <% if current_user.direct? %>
+            <%= link_to root_path, 
+                class: "group flex items-center px-3 py-2 text-base font-medium rounded-md transition-colors #{current_page?(root_path) ? 'bg-gray-100 text-gray-900' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'}" do %>
+              <%= icon("house", class: "mr-3 h-5 w-5 flex-shrink-0") %>
+              Dashboard
+            <% end %>
+            
+            <%= link_to users_profile_path(current_user), 
+                class: "group flex items-center px-3 py-2 text-base font-medium rounded-md transition-colors #{current_page?(users_profile_path(current_user)) ? 'bg-gray-100 text-gray-900' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'}" do %>
+              <%= icon("user", class: "mr-3 h-5 w-5 flex-shrink-0") %>
+              My Profile
+              <% if current_user.profile_completion_percentage < 100 %>
+                <span class="ml-auto inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                  <%= current_user.profile_completion_percentage %>%
+                </span>
+              <% end %>
+            <% end %>
+            
+            <%= link_to users_settings_path, 
+                class: "group flex items-center px-3 py-2 text-base font-medium rounded-md transition-colors #{current_page?(users_settings_path) ? 'bg-gray-100 text-gray-900' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'}" do %>
+              <%= icon("gear", class: "mr-3 h-5 w-5 flex-shrink-0") %>
+              Settings
+            <% end %>
+            
+            <% if current_user.respond_to?(:payment_processor) && current_user.payment_processor.present? %>
+              <%= link_to users_billing_index_path, 
+                  class: "group flex items-center px-3 py-2 text-base font-medium rounded-md transition-colors #{current_page?(users_billing_index_path) ? 'bg-gray-100 text-gray-900' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'}" do %>
+                <%= icon("credit-card", class: "mr-3 h-5 w-5 flex-shrink-0") %>
+                Billing & Subscription
+              <% end %>
+            <% end %>
+            
+          <% elsif current_user.invited? && current_user.team %>
+            <%= link_to team_root_path(team_slug: current_user.team.slug), 
+                class: "group flex items-center px-3 py-2 text-base font-medium rounded-md transition-colors #{current_page?(team_root_path(team_slug: current_user.team.slug)) ? 'bg-gray-100 text-gray-900' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'}" do %>
+              <%= icon("house", class: "mr-3 h-5 w-5 flex-shrink-0") %>
+              Team Dashboard
+            <% end %>
+            
+            <%= link_to teams_profile_path(team_slug: current_user.team.slug, id: current_user), 
+                class: "group flex items-center px-3 py-2 text-base font-medium rounded-md transition-colors #{current_page?(teams_profile_path(team_slug: current_user.team.slug, id: current_user)) ? 'bg-gray-100 text-gray-900' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'}" do %>
+              <%= icon("user", class: "mr-3 h-5 w-5 flex-shrink-0") %>
+              My Profile
+              <% if current_user.profile_completion_percentage < 100 %>
+                <span class="ml-auto inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                  <%= current_user.profile_completion_percentage %>%
+                </span>
+              <% end %>
+            <% end %>
+            
+            <% if current_user.team_admin? %>
+              <%= link_to team_admin_root_path(team_slug: current_user.team.slug), 
+                  class: "group flex items-center px-3 py-2 text-base font-medium rounded-md transition-colors #{request.path.include?('/admin') ? 'bg-gray-100 text-gray-900' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'}" do %>
+                <%= icon("shield-check", class: "mr-3 h-5 w-5 flex-shrink-0") %>
+                Team Admin
+                <span class="ml-auto inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                  Admin
+                </span>
+              <% end %>
+            <% end %>
+            
+          <% elsif current_user.enterprise? && current_user.enterprise_group %>
+            <%= link_to enterprise_root_path(current_user.enterprise_group.slug), 
+                class: "group flex items-center px-3 py-2 text-base font-medium rounded-md transition-colors #{current_page?(enterprise_root_path(current_user.enterprise_group.slug)) ? 'bg-gray-100 text-gray-900' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'}" do %>
+              <%= icon("house", class: "mr-3 h-5 w-5 flex-shrink-0") %>
+              Organization Dashboard
+            <% end %>
+            
+            <%= link_to enterprise_profile_path(current_user.enterprise_group.slug), 
+                class: "group flex items-center px-3 py-2 text-base font-medium rounded-md transition-colors #{current_page?(enterprise_profile_path(current_user.enterprise_group.slug)) ? 'bg-gray-100 text-gray-900' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'}" do %>
+              <%= icon("user", class: "mr-3 h-5 w-5 flex-shrink-0") %>
+              My Profile
+              <% if current_user.profile_completion_percentage < 100 %>
+                <span class="ml-auto inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                  <%= current_user.profile_completion_percentage %>%
+                </span>
+              <% end %>
+            <% end %>
+            
+            <% if current_user.enterprise_group_role == 'admin' %>
+              <%= link_to enterprise_admin_root_path(enterprise_slug: current_user.enterprise_group.slug), 
+                  class: "group flex items-center px-3 py-2 text-base font-medium rounded-md transition-colors #{request.path.include?('/admin') ? 'bg-gray-100 text-gray-900' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'}" do %>
+                <%= icon("shield-check", class: "mr-3 h-5 w-5 flex-shrink-0") %>
+                Organization Admin
+                <span class="ml-auto inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                  Admin
+                </span>
+              <% end %>
+            <% end %>
+          <% end %>
+          
+          <!-- Universal Links -->
+          <div class="border-t border-gray-200 mt-4 pt-4">
+            <a href="#" 
+               class="group flex items-center px-3 py-2 text-base font-medium rounded-md text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors"
+               data-controller="help-widget"
+               data-action="click->help-widget#show">
+              <%= icon("lifebuoy", class: "mr-3 h-5 w-5 flex-shrink-0") %>
+              Help & Support
+            </a>
+            
+            <a href="#" 
+               class="group flex items-center px-3 py-2 text-base font-medium rounded-md text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors">
+              <%= icon("bell", class: "mr-3 h-5 w-5 flex-shrink-0") %>
+              Notifications
+              <% if false # Replace with actual unread count %>
+                <span class="ml-auto inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                  3
+                </span>
+              <% end %>
+            </a>
+          </div>
+        </nav>
+        
+        <!-- Sign Out Button -->
+        <div class="border-t border-gray-200 p-4">
+          <%= button_to destroy_user_session_path, 
+              method: :delete,
+              data: { turbo_method: :delete },
+              class: "group flex items-center justify-center w-full px-4 py-2 text-base font-medium rounded-md text-red-600 bg-red-50 hover:bg-red-100 transition-colors" do %>
+            <%= icon("sign-out", class: "mr-3 h-5 w-5 flex-shrink-0") %>
+            Sign Out
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -32,6 +32,9 @@ class User < ApplicationRecord
   # Association to enterprise group (only for enterprise users)
   belongs_to :enterprise_group, optional: true
 
+  # Active Storage association for avatar
+  has_one_attached :avatar
+
   # Teams created by this user (super admins only)
   has_many :created_teams, class_name: "Team", foreign_key: "created_by_id"
 
@@ -159,12 +162,48 @@ class User < ApplicationRecord
   validate :system_role_change_allowed, if: :system_role_changed?
 
   # ========================================================================
+  # ENHANCED PROFILE FIELD VALIDATIONS
+  # ========================================================================
+
+  # Profile visibility settings
+  enum :profile_visibility, { public_profile: 0, team_only: 1, private_profile: 2 }, prefix: true
+
+  # Phone number validation
+  validates :phone_number, format: { with: /\A[+]?[0-9\s\-().]+\z/, message: "must be a valid phone number" },
+                          length: { maximum: 20 },
+                          allow_blank: true
+
+  # Bio validation
+  validates :bio, length: { maximum: 500, message: "must be 500 characters or less" },
+                 allow_blank: true
+
+  # URL validations
+  validates :linkedin_url, :twitter_url, :github_url, :website_url,
+            format: { with: URI.regexp([ "http", "https" ]), message: "must be a valid URL" },
+            allow_blank: true
+
+  # Timezone validation
+  validates :timezone, inclusion: { in: ActiveSupport::TimeZone.all.map(&:name) },
+                      allow_blank: true
+
+  # Locale validation
+  validates :locale, inclusion: { in: I18n.available_locales.map(&:to_s) },
+                    allow_blank: true
+
+  # Avatar validation
+  validate :acceptable_avatar
+
+  # ========================================================================
   # CALLBACKS
   # ========================================================================
 
   # Normalize email to lowercase for consistency
   # Prevents duplicate accounts with different case
   before_validation :normalize_email
+  
+  # SECURITY: Prevent unauthorized email changes
+  # Email changes must go through the EmailChangeRequest system
+  before_save :prevent_unauthorized_email_change, if: :email_changed?
 
   # Include ValidationHelpers concern for additional validation methods
   include ValidationHelpers
@@ -195,6 +234,20 @@ class User < ApplicationRecord
   # Returns the user's full name, handling nil values gracefully
   def full_name
     "#{first_name} #{last_name}".strip
+  end
+
+  # Returns the user's initials for avatar display
+  def initials
+    name_parts = []
+    name_parts << first_name[0] if first_name.present?
+    name_parts << last_name[0] if last_name.present?
+
+    # Fall back to email if no name is set
+    if name_parts.empty? && email.present?
+      name_parts << email[0].upcase
+    end
+
+    name_parts.join.upcase
   end
 
   # Determines if user can sign in based on status
@@ -230,6 +283,92 @@ class User < ApplicationRecord
   # Only direct users who don't already own a team can create one
   def can_create_team?
     direct? && !owns_team?
+  end
+
+  # ========================================================================
+  # PROFILE METHODS
+  # ========================================================================
+
+  # Calculates profile completion percentage
+  def calculate_profile_completion
+    total_fields = 10
+    completed_fields = 0
+
+    # Basic fields
+    completed_fields += 1 if first_name.present?
+    completed_fields += 1 if last_name.present?
+    completed_fields += 1 if bio.present?
+    completed_fields += 1 if phone_number.present?
+    completed_fields += 1 if avatar.attached? || avatar_url.present?
+
+    # Social links (count as one if any present)
+    if linkedin_url.present? || twitter_url.present? || github_url.present? || website_url.present?
+      completed_fields += 1
+    end
+
+    # Preferences
+    completed_fields += 1 if timezone != "UTC"
+    completed_fields += 1 if locale != "en"
+    completed_fields += 1 if notification_preferences.present? && notification_preferences.any?
+    completed_fields += 1 if two_factor_enabled?
+
+    percentage = (completed_fields.to_f / total_fields * 100).round
+
+    # Update the database
+    update_columns(
+      profile_completion_percentage: percentage,
+      profile_completed_at: percentage == 100 ? Time.current : nil
+    )
+
+    percentage
+  end
+
+  # Returns true if profile is complete
+  def profile_complete?
+    profile_completion_percentage == 100
+  end
+
+  # Returns a hash of missing profile fields
+  def missing_profile_fields
+    missing = []
+
+    missing << "First name" unless first_name.present?
+    missing << "Last name" unless last_name.present?
+    missing << "Bio" unless bio.present?
+    missing << "Phone number" unless phone_number.present?
+    missing << "Profile picture" unless avatar.attached? || avatar_url.present?
+    missing << "Social links" unless has_social_links?
+    missing << "Timezone" if timezone == "UTC"
+    missing << "Language preference" if locale == "en"
+    missing << "Notification preferences" unless notification_preferences.present? && notification_preferences.any?
+    missing << "Two-factor authentication" unless two_factor_enabled?
+
+    missing
+  end
+
+  # Check if user has any social links
+  def has_social_links?
+    linkedin_url.present? || twitter_url.present? || github_url.present? || website_url.present?
+  end
+
+  # Returns formatted phone number
+  def formatted_phone_number
+    return nil unless phone_number.present?
+    phone_number # Could add formatting logic here
+  end
+
+  # Returns user's timezone as ActiveSupport::TimeZone
+  def time_zone
+    ActiveSupport::TimeZone[timezone] || ActiveSupport::TimeZone["UTC"]
+  end
+
+  # Returns avatar URL - either from Active Storage or avatar_url field
+  def display_avatar_url
+    if avatar.attached?
+      Rails.application.routes.url_helpers.rails_blob_url(avatar, only_path: true)
+    else
+      avatar_url
+    end
   end
 
   # ========================================================================
@@ -294,6 +433,47 @@ class User < ApplicationRecord
   # Called before validation to ensure consistency
   def normalize_email
     self.email = email&.downcase&.strip
+  end
+  
+  # SECURITY: Prevent unauthorized email changes
+  # Email changes must go through the EmailChangeRequest system with admin approval
+  def prevent_unauthorized_email_change
+    # Skip validation for new records (registration)
+    return if new_record?
+    
+    # Skip if the change is being made by the EmailChangeRequest system
+    # This is identified by checking if the change is happening within a transaction
+    # that includes an EmailChangeRequest approval
+    return if Thread.current[:email_change_authorized]
+    
+    # Allow super admins to change emails directly (for emergency situations)
+    return if Thread.current[:current_admin]&.super_admin?
+    
+    # If we get here, it's an unauthorized email change attempt
+    errors.add(:email, "cannot be changed directly. Please use the email change request system.")
+    
+    # Log the attempt for security auditing
+    Rails.logger.warn "[SECURITY] Unauthorized email change attempt for user #{id} from #{email_was} to #{email}"
+    
+    # Create audit log for security tracking
+    AuditLogService.log_security_event(
+      admin_user: self, # User attempting the change
+      target_user: self, # Same user since it's self-modification
+      event_type: "email_change_attempt_blocked_model",
+      details: {
+        attempted_email: email,
+        current_email: email_was,
+        model: "User",
+        blocked_reason: "Model-level protection triggered"
+      },
+      request: nil # No request context in model
+    )
+    
+    # Revert the email change
+    self.email = email_was
+    
+    # Throw abort to prevent the save
+    throw(:abort)
   end
 
   # CR-A1: Enforces strong password requirements
@@ -488,6 +668,22 @@ class User < ApplicationRecord
       unless %w[site_admin super_admin].include?(new_role)
         errors.add(:system_role, "user can only be changed to site_admin or super_admin")
       end
+    end
+  end
+
+  # Validates acceptable avatar file
+  def acceptable_avatar
+    return unless avatar.attached?
+
+    # Check file size (max 5MB)
+    if avatar.blob.byte_size > 5.megabytes
+      errors.add(:avatar, "is too large (maximum is 5MB)")
+    end
+
+    # Check file type
+    acceptable_types = [ "image/jpeg", "image/jpg", "image/png", "image/gif", "image/webp" ]
+    unless acceptable_types.include?(avatar.blob.content_type)
+      errors.add(:avatar, "must be a JPEG, PNG, GIF, or WebP image")
     end
   end
 end

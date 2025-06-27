@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Test Form - Tailwind CSS 4.x</title>
+  <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
+</head>
+<body class="p-8 bg-gray-50">
+  <div class="max-w-4xl mx-auto">
+    <h1 class="text-3xl font-bold text-gray-900 mb-8">Tailwind CSS 4.x Form Styling Test</h1>
+    
+    <div class="bg-white shadow rounded-lg p-6">
+      <h2 class="text-xl font-semibold text-gray-800 mb-6">Form Elements</h2>
+      
+      <div class="space-y-6">
+        <!-- Text Input -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Text Input</label>
+          <input type="text" placeholder="Enter some text" class="w-full">
+        </div>
+        
+        <!-- Email Input -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Email Input</label>
+          <input type="email" placeholder="you@example.com" class="w-full">
+        </div>
+        
+        <!-- Password Input -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Password Input</label>
+          <input type="password" placeholder="••••••••" class="w-full">
+        </div>
+        
+        <!-- Select -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Select Menu</label>
+          <select class="w-full">
+            <option>Choose an option</option>
+            <option>Option 1</option>
+            <option>Option 2</option>
+            <option>Option 3</option>
+          </select>
+        </div>
+        
+        <!-- Textarea -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Textarea</label>
+          <textarea rows="3" placeholder="Enter your message..." class="w-full"></textarea>
+        </div>
+        
+        <!-- Date Input -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Date Input</label>
+          <input type="date" class="w-full">
+        </div>
+        
+        <!-- Number Input -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Number Input</label>
+          <input type="number" placeholder="123" class="w-full">
+        </div>
+        
+        <!-- Checkboxes -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Checkboxes</label>
+          <div class="space-y-2">
+            <label class="flex items-center">
+              <input type="checkbox" class="mr-2">
+              <span class="text-sm text-gray-700">Option 1</span>
+            </label>
+            <label class="flex items-center">
+              <input type="checkbox" checked class="mr-2">
+              <span class="text-sm text-gray-700">Option 2 (checked)</span>
+            </label>
+          </div>
+        </div>
+        
+        <!-- Radio Buttons -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Radio Buttons</label>
+          <div class="space-y-2">
+            <label class="flex items-center">
+              <input type="radio" name="radio-test" class="mr-2">
+              <span class="text-sm text-gray-700">Option A</span>
+            </label>
+            <label class="flex items-center">
+              <input type="radio" name="radio-test" checked class="mr-2">
+              <span class="text-sm text-gray-700">Option B (selected)</span>
+            </label>
+          </div>
+        </div>
+        
+        <!-- File Input -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">File Input (Default Indigo)</label>
+          <input type="file" class="w-full">
+        </div>
+        
+        <!-- File Input Blue Theme -->
+        <div class="file-input-blue">
+          <label class="block text-sm font-medium text-gray-700 mb-1">File Input (Blue Theme)</label>
+          <input type="file" class="w-full">
+        </div>
+        
+        <!-- File Input Purple Theme -->
+        <div class="file-input-purple">
+          <label class="block text-sm font-medium text-gray-700 mb-1">File Input (Purple Theme)</label>
+          <input type="file" class="w-full">
+        </div>
+      </div>
+    </div>
+    
+    <!-- Rails Form Helper Test -->
+    <div class="bg-white shadow rounded-lg p-6 mt-8">
+      <h2 class="text-xl font-semibold text-gray-800 mb-6">Rails Form Helpers</h2>
+      
+      <%= form_with url: "#", local: true do |form| %>
+        <div class="space-y-6">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Rails Text Field</label>
+            <%= form.text_field :name, placeholder: "Enter name", class: "w-full" %>
+          </div>
+          
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Rails Select</label>
+            <%= form.select :option, options_for_select([["Choose one", ""], ["Option 1", "1"], ["Option 2", "2"], ["Option 3", "3"]]), {}, class: "w-full" %>
+          </div>
+          
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Rails Text Area</label>
+            <%= form.text_area :description, rows: 3, placeholder: "Enter description", class: "w-full" %>
+          </div>
+          
+          <div>
+            <%= form.submit "Submit Form", class: "bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 transition-colors cursor-pointer" %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+    
+    <div class="mt-8 text-sm text-gray-600">
+      <p>This page tests Tailwind CSS 4.x form styling with the custom styles added to application.css</p>
+      <p class="mt-2">CSS file location: <code class="bg-gray-100 px-2 py-1 rounded">/app/assets/tailwind/application.css</code></p>
+    </div>
+  </div>
+</body>
+</html>

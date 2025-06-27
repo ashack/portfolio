@@ -1,0 +1,112 @@
+<!-- Persistent User Navigation Bar for Non-Admin Users -->
+<% unless current_user.super_admin? || current_user.site_admin? %>
+  <div class="bg-gray-50 border-b border-gray-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-10">
+        <!-- Quick Access Menu -->
+        <nav class="flex space-x-4" aria-label="User navigation">
+          <% if current_user.direct? %>
+            <%= link_to users_profile_path(current_user), 
+                class: "text-sm font-medium transition-colors duration-200 flex items-center #{current_page?(users_profile_path(current_user)) ? 'text-indigo-600' : 'text-gray-600 hover:text-gray-900'}" do %>
+              <%= icon("user", class: "h-4 w-4 mr-1") %>
+              <span>My Profile</span>
+            <% end %>
+            
+            <%= link_to users_settings_path, 
+                class: "text-sm font-medium transition-colors duration-200 flex items-center #{current_page?(users_settings_path) ? 'text-indigo-600' : 'text-gray-600 hover:text-gray-900'}" do %>
+              <%= icon("gear", class: "h-4 w-4 mr-1") %>
+              <span>Settings</span>
+            <% end %>
+            
+            <% if current_user.respond_to?(:payment_processor) && current_user.payment_processor.present? %>
+              <%= link_to users_billing_index_path, 
+                  class: "text-sm font-medium transition-colors duration-200 flex items-center #{current_page?(users_billing_index_path) ? 'text-indigo-600' : 'text-gray-600 hover:text-gray-900'}" do %>
+                <%= icon("credit-card", class: "h-4 w-4 mr-1") %>
+                <span>Billing</span>
+              <% end %>
+            <% end %>
+          <% elsif current_user.invited? && current_user.team %>
+            <%= link_to teams_profile_path(team_slug: current_user.team.slug, id: current_user), 
+                class: "text-sm font-medium transition-colors duration-200 flex items-center #{current_page?(teams_profile_path(team_slug: current_user.team.slug, id: current_user)) ? 'text-blue-600' : 'text-gray-600 hover:text-gray-900'}" do %>
+              <%= icon("user", class: "h-4 w-4 mr-1") %>
+              <span>My Profile</span>
+            <% end %>
+            
+            <% if current_user.team_admin? %>
+              <%= link_to team_admin_root_path(team_slug: current_user.team.slug), 
+                  class: "text-sm font-medium transition-colors duration-200 flex items-center #{request.path.include?('/admin') ? 'text-blue-600' : 'text-gray-600 hover:text-gray-900'}" do %>
+                <%= icon("shield-check", class: "h-4 w-4 mr-1") %>
+                <span>Team Admin</span>
+              <% end %>
+            <% end %>
+          <% elsif current_user.enterprise? && current_user.enterprise_group %>
+            <%= link_to enterprise_profile_path(current_user.enterprise_group.slug), 
+                class: "text-sm font-medium transition-colors duration-200 flex items-center #{current_page?(enterprise_profile_path(current_user.enterprise_group.slug)) ? 'text-purple-600' : 'text-gray-600 hover:text-gray-900'}" do %>
+              <%= icon("user", class: "h-4 w-4 mr-1") %>
+              <span>My Profile</span>
+            <% end %>
+            
+            <% if current_user.enterprise_group_role == 'admin' %>
+              <%= link_to enterprise_admin_root_path(enterprise_slug: current_user.enterprise_group.slug), 
+                  class: "text-sm font-medium transition-colors duration-200 flex items-center #{request.path.include?('/admin') ? 'text-purple-600' : 'text-gray-600 hover:text-gray-900'}" do %>
+                <%= icon("shield-check", class: "h-4 w-4 mr-1") %>
+                <span>Organization Admin</span>
+              <% end %>
+            <% end %>
+          <% end %>
+          
+          <!-- Universal Help Link -->
+          <a href="#" 
+             class="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors duration-200 flex items-center"
+             data-controller="help-widget"
+             data-action="click->help-widget#show">
+            <%= icon("question", class: "h-4 w-4 mr-1") %>
+            <span>Help</span>
+          </a>
+        </nav>
+        
+        <!-- Profile Completion Indicator -->
+        <div class="flex items-center space-x-3">
+          <% if current_user.profile_completion_percentage < 100 %>
+            <div class="flex items-center text-sm">
+              <span class="text-gray-500 mr-2 hidden sm:inline">Profile:</span>
+              <div class="relative">
+                <div class="w-24 bg-gray-200 rounded-full h-2">
+                  <div class="bg-gradient-to-r from-indigo-500 to-indigo-600 h-2 rounded-full transition-all duration-500" 
+                       style="width: <%= current_user.profile_completion_percentage %>%"></div>
+                </div>
+                <span class="absolute -top-1 -right-8 text-xs text-gray-600 font-medium">
+                  <%= current_user.profile_completion_percentage %>%
+                </span>
+              </div>
+            </div>
+            
+            <% if current_user.profile_completion_percentage < 50 %>
+              <%= link_to edit_profile_path_for(current_user), 
+                  class: "text-xs text-indigo-600 hover:text-indigo-500 font-medium" do %>
+                Complete Profile →
+              <% end %>
+            <% end %>
+          <% else %>
+            <div class="flex items-center text-sm text-green-600">
+              <%= icon("check-circle", class: "h-4 w-4 mr-1") %>
+              <span class="hidden sm:inline">Profile Complete</span>
+            </div>
+          <% end %>
+          
+          <!-- Last Activity Indicator -->
+          <div class="text-xs text-gray-500 hidden lg:block">
+            <% if current_user.last_activity_at && current_user.last_activity_at > 1.hour.ago %>
+              <span class="inline-flex items-center">
+                <span class="h-2 w-2 bg-green-400 rounded-full mr-1"></span>
+                Active
+              </span>
+            <% else %>
+              Last seen <%= time_ago_in_words(current_user.last_sign_in_at || current_user.created_at) %> ago
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+<% end %>

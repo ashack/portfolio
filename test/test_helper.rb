@@ -70,18 +70,23 @@ module ActiveSupport
     # Helper method to create and sign in a user with specific attributes
     def sign_in_with(attributes = {})
       user = User.create!(
-        email: attributes[:email] || "test@example.com",
-        password: attributes[:password] || "Password123!",
-        first_name: attributes[:first_name] || "Test",
-        last_name: attributes[:last_name] || "User",
-        system_role: attributes[:system_role] || "user",
-        user_type: attributes[:user_type] || "direct",
-        status: attributes[:status] || "active",
-        confirmed_at: Time.current,
-        team: attributes[:team],
-        team_role: attributes[:team_role],
-        enterprise_group: attributes[:enterprise_group],
-        enterprise_group_role: attributes[:enterprise_group_role]
+        {
+          email: attributes[:email] || "test@example.com",
+          password: attributes[:password] || "Password123!",
+          first_name: attributes[:first_name] || "Test",
+          last_name: attributes[:last_name] || "User",
+          system_role: attributes[:system_role] || "user",
+          user_type: attributes[:user_type] || "direct",
+          status: attributes[:status] || "active",
+          confirmed_at: Time.current,
+          team: attributes[:team],
+          team_role: attributes[:team_role],
+          enterprise_group: attributes[:enterprise_group],
+          enterprise_group_role: attributes[:enterprise_group_role],
+          timezone: attributes[:timezone] || "UTC",
+          locale: attributes[:locale] || "en",
+          profile_visibility: attributes[:profile_visibility] || 0
+        }.merge(attributes.except(:email, :password, :first_name, :last_name, :system_role, :user_type, :status, :team, :team_role, :enterprise_group, :enterprise_group_role, :timezone, :locale, :profile_visibility))
       )
       sign_in user
       user

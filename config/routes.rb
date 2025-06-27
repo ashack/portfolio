@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+  # Test route for form styling
+  get "/test_form", to: proc { |env| [200, { "Content-Type" => "text/html" }, [ApplicationController.render(template: "test_form", layout: false)]] }
   # CSP violation reports endpoint
   post "/csp_violation_reports", to: "csp_reports#create"
 
@@ -107,7 +109,7 @@ Rails.application.routes.draw do
       resource :subscription, only: [ :show, :edit, :update, :destroy ]
       resources :plan_migrations, only: [ :new, :create ]
       resources :profile, only: [ :show, :edit, :update ]
-      resources :settings, only: [ :index, :update ]
+      resource :settings, only: [ :show, :update ]
     end
   end
 

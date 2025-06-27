@@ -36,25 +36,62 @@
     <% end %>
     
     <% if user_signed_in? %>
+      <!-- Main Navigation -->
       <nav class="bg-white shadow">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div class="flex justify-between h-16">
+            <!-- Logo and Primary Navigation -->
             <div class="flex">
+              <!-- Mobile menu button -->
+              <%= render "shared/mobile_navigation" %>
+              
+              <!-- Logo -->
               <div class="flex-shrink-0 flex items-center">
-                <h1 class="text-xl font-bold">SaaS App</h1>
+                <%= link_to root_path, class: "flex items-center" do %>
+                  <h1 class="text-xl font-bold text-gray-900">SaaS App</h1>
+                <% end %>
+              </div>
+              
+              <!-- Desktop Navigation Links -->
+              <div class="hidden lg:ml-6 lg:flex lg:space-x-8">
+                <% if current_user.direct? %>
+                  <%= link_to "Dashboard", root_path, 
+                      class: "inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium #{current_page?(root_path) ? 'border-indigo-500 text-gray-900' : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'}" %>
+                <% elsif current_user.invited? && current_user.team %>
+                  <%= link_to "Team Dashboard", team_root_path(team_slug: current_user.team.slug), 
+                      class: "inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium #{current_page?(team_root_path(team_slug: current_user.team.slug)) ? 'border-blue-500 text-gray-900' : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'}" %>
+                <% elsif current_user.enterprise? && current_user.enterprise_group %>
+                  <%= link_to "Organization", enterprise_root_path(current_user.enterprise_group.slug), 
+                      class: "inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium #{current_page?(enterprise_root_path(current_user.enterprise_group.slug)) ? 'border-purple-500 text-gray-900' : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'}" %>
+                <% end %>
               </div>
             </div>
-            <div class="flex items-center">
-              <span class="text-gray-700 mr-4"><%= current_user.email %></span>
-              <%= link_to "Sign Out", destroy_user_session_path, data: { "turbo-method": :delete }, class: "text-gray-500 hover:text-gray-700" %>
+            
+            <!-- Right side navigation -->
+            <div class="hidden lg:ml-6 lg:flex lg:items-center lg:space-x-4">
+              <!-- Notification Center -->
+              <%= render "shared/notification_center" %>
+              
+              <!-- User Avatar Menu -->
+              <%= render "shared/user_avatar_menu" %>
             </div>
           </div>
         </div>
       </nav>
+      
+      <!-- User Navigation Bar (only for non-sidebar layouts) -->
+      <% unless %w[admin team enterprise user].include?(controller.send(:layout_by_resource)) %>
+        <%= render "shared/user_navigation" %>
+      <% end %>
     <% end %>
     
     <main class="<%= user_signed_in? ? 'max-w-7xl mx-auto py-6 sm:px-6 lg:px-8' : 'container mx-auto px-5' %>">
       <%= yield %>
     </main>
+    
+    <% if user_signed_in? %>
+      <!-- Help Widget -->
+      <%= render "shared/help_widget" %>
+    <% end %>
   </body>
 </html>

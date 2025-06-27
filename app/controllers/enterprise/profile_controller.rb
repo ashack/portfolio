@@ -1,25 +1,25 @@
-class Users::ProfileController < Users::BaseController
+class Enterprise::ProfileController < ApplicationController
   include EmailChangeProtection
   
-  # Skip Pundit verification since profile shows user's own data
-  skip_after_action :verify_policy_scoped
+  before_action :authenticate_user!
+  before_action :require_enterprise_user!
+  before_action :set_enterprise_group
   skip_after_action :verify_authorized
 
-  before_action :set_user
-
   def show
-    # Show user profile (read-only view)
+    @user = current_user
   end
 
   def edit
-    # Edit user profile form
+    @user = current_user
   end
 
   def update
-    if @user.update(profile_params)
+    @user = current_user
+    if @user.update(user_params)
       # Calculate profile completion after update
       @user.calculate_profile_completion
-      redirect_to users_profile_path(@user), notice: "Profile updated successfully."
+      redirect_to enterprise_profile_path(@enterprise_group.slug), notice: "Profile updated successfully."
     else
       render :edit, status: :unprocessable_entity
     end
@@ -27,13 +27,15 @@ class Users::ProfileController < Users::BaseController
 
   private
 
-  def set_user
-    @user = current_user
-    # Ensure user can only access their own profile
-    redirect_to root_path, alert: "Access denied." if params[:id] && params[:id].to_i != current_user.id
+  def require_enterprise_user!
+    redirect_to root_path, alert: "Access denied." unless current_user.enterprise?
   end
 
-  def profile_params
+  def set_enterprise_group
+    @enterprise_group = current_user.enterprise_group
+  end
+
+  def user_params
     # EmailChangeProtection concern will handle email change attempts
     params.require(:user).permit(
       :first_name, :last_name, :bio, :phone_number, :avatar_url, :avatar,

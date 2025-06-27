@@ -83,13 +83,20 @@
                 </div>
 
                 <div class="sm:col-span-6">
-                  <%= form.label :email, class: "block text-sm font-medium text-gray-700" %>
-                  <div class="mt-1">
-                    <%= form.email_field :email, 
-                        class: "shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md",
-                        placeholder: "Enter your email address" %>
+                  <label class="block text-sm font-medium text-gray-700">Email Address</label>
+                  <div class="mt-1 flex rounded-md shadow-sm input-group">
+                    <input type="email" 
+                        value="<%= @user.email %>" 
+                        readonly
+                        class="flex-1 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-l-md bg-gray-50"
+                        placeholder="Your email address" />
+                    <%= link_to "Request Change", new_email_change_request_path, 
+                        class: "inline-flex items-center px-3 py-2 border border-gray-300 rounded-r-md bg-gray-50 text-gray-500 text-sm hover:bg-gray-100" %>
                   </div>
-                  <p class="mt-1 text-xs text-gray-500">This is your login email address. Changing it will require email verification.</p>
+                  <p class="mt-1 text-xs text-gray-500">
+                    Email changes require approval for security reasons. 
+                    <%= link_to "View your requests", email_change_requests_path, class: "text-indigo-600 hover:text-indigo-500" %>
+                  </p>
                 </div>
               </div>
             </div>

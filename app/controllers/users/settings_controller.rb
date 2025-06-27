@@ -1,9 +1,10 @@
 class Users::SettingsController < Users::BaseController
+  include EmailChangeProtection
+  
   # Skip Pundit verification since settings shows user's own data
-  skip_after_action :verify_policy_scoped, only: :index
   skip_after_action :verify_authorized
 
-  def index
+  def show
     @user = current_user
   end
 
@@ -13,13 +14,15 @@ class Users::SettingsController < Users::BaseController
     if @user.update(settings_params)
       redirect_to users_settings_path, notice: "Settings updated successfully."
     else
-      render :index, status: :unprocessable_entity
+      render :show, status: :unprocessable_entity
     end
   end
 
   private
 
   def settings_params
-    params.require(:user).permit(:email, :first_name, :last_name)
+    # SECURITY: Email changes must go through the EmailChangeRequest system
+    # Never permit direct email updates to prevent unauthorized account takeover
+    params.require(:user).permit(:first_name, :last_name)
   end
 end
