@@ -107,7 +107,7 @@
           Edit Profile
         <% end %>
       <% elsif current_user.enterprise? && current_user.enterprise_group %>
-        <%= link_to enterprise_profile_path(current_user.enterprise_group.slug), 
+        <%= link_to profile_path(enterprise_group_slug: current_user.enterprise_group.slug, id: current_user), 
             class: "group flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors",
             role: "menuitem" do %>
           <%= icon("user-circle", class: "mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500") %>
@@ -115,7 +115,7 @@
           <span class="ml-auto text-xs text-gray-400 hidden sm:inline">⌘P</span>
         <% end %>
         
-        <%= link_to edit_enterprise_profile_path(current_user.enterprise_group.slug), 
+        <%= link_to edit_profile_path(enterprise_group_slug: current_user.enterprise_group.slug, id: current_user), 
             class: "group flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors",
             role: "menuitem" do %>
           <%= icon("pencil", class: "mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500") %>

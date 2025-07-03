@@ -12,8 +12,6 @@
       </p>
     </div>
     <div class="mt-4 flex md:ml-4 md:mt-0 space-x-3">
-      <%= link_to "Back to Users", admin_site_users_path, 
-          class: "inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50" %>
       
       <% if @user.status == "active" %>
         <%= link_to "Impersonate", impersonate_admin_site_user_path(@user),

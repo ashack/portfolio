@@ -78,11 +78,6 @@
           </div>
         </div>
       </nav>
-      
-      <!-- User Navigation Bar (only for non-sidebar layouts) -->
-      <% unless %w[admin team enterprise user].include?(controller.send(:layout_by_resource)) %>
-        <%= render "shared/user_navigation" %>
-      <% end %>
     <% end %>
     
     <main class="<%= user_signed_in? ? 'max-w-7xl mx-auto py-6 sm:px-6 lg:px-8' : 'container mx-auto px-5' %>">
