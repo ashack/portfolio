@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html class="h-full bg-white">
   <head>
     <title><%= @enterprise_group&.name || 'Enterprise' %> - SaaS App</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -18,133 +18,265 @@
     <%= javascript_importmap_tags %>
   </head>
 
-  <body class="bg-gray-50">
-    <!-- Simple Top Navigation -->
-    <%= render "shared/simple_top_navigation" %>
-    
-    <div class="flex h-screen pt-16">
-      <!-- Sidebar -->
-      <div class="bg-purple-900 text-white w-64 flex flex-col fixed inset-y-0 left-0 transform -translate-x-full md:relative md:translate-x-0 transition duration-200 ease-in-out" id="sidebar">
-        <!-- App Header -->
-        <div class="flex h-16 shrink-0 items-center px-6">
-          <span class="text-xl font-semibold text-white">SaaS App</span>
-        </div>
+  <body class="h-full">
+    <div>
+      <!-- Off-canvas menu for mobile -->
+      <div class="relative z-50 lg:hidden" role="dialog" aria-modal="true" data-controller="sidebar" data-sidebar-open-class="fixed" data-sidebar-closed-class="hidden" data-sidebar-target="mobileMenu">
+        <!-- Backdrop -->
+        <div class="fixed inset-0 bg-gray-900/80 transition-opacity ease-linear duration-300" 
+             data-sidebar-target="backdrop"
+             data-action="click->sidebar#close"
+             data-transition-enter="transition-opacity ease-linear duration-300"
+             data-transition-enter-from="opacity-0"
+             data-transition-enter-to="opacity-100"
+             data-transition-leave="transition-opacity ease-linear duration-300"
+             data-transition-leave-from="opacity-100"
+             data-transition-leave-to="opacity-0"></div>
 
-        <!-- Navigation -->
-        <nav class="flex flex-1 flex-col px-6 pb-4">
-          <ul role="list" class="flex flex-1 flex-col gap-y-7">
-            <li>
-              <ul role="list" class="-mx-2 space-y-1">
-                <%= link_to enterprise_root_path(@enterprise_group.slug), class: "#{current_page?(enterprise_root_path(@enterprise_group.slug)) ? 'bg-purple-800 text-white' : 'text-purple-200 hover:bg-purple-800 hover:text-white'} group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6" do %>
-                  <%= icon "house", class: "h-6 w-6 shrink-0" %>
-                  Dashboard
-                <% end %>
-          
-                <%= link_to profile_path(enterprise_group_slug: @enterprise_group.slug, id: current_user), class: "#{request.path.include?('/profile') ? 'bg-purple-800 text-white' : 'text-purple-200 hover:bg-purple-800 hover:text-white'} group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6" do %>
-                  <%= icon "user", class: "h-6 w-6 shrink-0" %>
-                  My Profile
-                <% end %>
-              </ul>
-            </li>
-          
-            <% if current_user.enterprise_group_role == 'admin' %>
-              <li>
-                <div class="text-xs font-semibold leading-6 text-purple-300">Administration</div>
-                <ul role="list" class="-mx-2 mt-2 space-y-1">
-              
-                  <%= link_to enterprise_admin_root_path(enterprise_slug: @enterprise_group.slug), class: "#{request.path.include?('/admin') && current_page?(enterprise_admin_root_path(enterprise_slug: @enterprise_group.slug)) ? 'bg-purple-800 text-white' : 'text-purple-200 hover:bg-purple-800 hover:text-white'} group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6" do %>
-                    <%= icon "shield-check", class: "h-6 w-6 shrink-0" %>
-                    Admin Dashboard
+        <div class="fixed inset-0 flex">
+          <!-- Mobile sidebar -->
+          <div class="relative mr-16 flex w-full max-w-xs flex-1 transition ease-in-out duration-300 transform"
+               data-sidebar-target="mobilePanel"
+               data-transition-enter="transition ease-in-out duration-300 transform"
+               data-transition-enter-from="-translate-x-full"
+               data-transition-enter-to="translate-x-0"
+               data-transition-leave="transition ease-in-out duration-300 transform"
+               data-transition-leave-from="translate-x-0"
+               data-transition-leave-to="-translate-x-full">
+            
+            <!-- Close button -->
+            <div class="absolute top-0 left-full flex w-16 justify-center pt-5">
+              <button type="button" class="-m-2.5 p-2.5" data-action="click->sidebar#close">
+                <span class="sr-only">Close sidebar</span>
+                <%= icon "x", class: "size-6 text-white" %>
+              </button>
+            </div>
+
+            <!-- Sidebar component -->
+            <div class="flex grow flex-col gap-y-5 overflow-y-auto bg-white px-6 pb-4">
+              <div class="flex h-16 shrink-0 items-center">
+                <span class="flex size-8 shrink-0 items-center justify-center rounded-lg border border-purple-200 bg-white text-xs font-medium text-purple-600">
+                  <%= @enterprise_group.name.first.upcase %>
+                </span>
+                <span class="ml-3 text-lg font-semibold text-gray-900"><%= @enterprise_group.name %></span>
+              </div>
+              <nav class="flex flex-1 flex-col">
+                <ul role="list" class="flex flex-1 flex-col gap-y-7">
+                  <li>
+                    <ul role="list" class="-mx-2 space-y-1">
+                      <li>
+                        <%= link_to enterprise_root_path(@enterprise_group.slug), class: "group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold #{current_page?(enterprise_root_path(@enterprise_group.slug)) ? 'bg-purple-50 text-purple-600' : 'text-gray-700 hover:text-purple-600 hover:bg-purple-50'}" do %>
+                          <%= icon "house", class: "size-6 shrink-0 #{current_page?(enterprise_root_path(@enterprise_group.slug)) ? 'text-purple-600' : 'text-gray-400 group-hover:text-purple-600'}" %>
+                          Dashboard
+                        <% end %>
+                      </li>
+                      <li>
+                        <%= link_to profile_path(enterprise_group_slug: @enterprise_group.slug, id: current_user), class: "group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold #{request.path.include?('/profile') ? 'bg-purple-50 text-purple-600' : 'text-gray-700 hover:text-purple-600 hover:bg-purple-50'}" do %>
+                          <%= icon "user", class: "size-6 shrink-0 #{request.path.include?('/profile') ? 'text-purple-600' : 'text-gray-400 group-hover:text-purple-600'}" %>
+                          My Profile
+                        <% end %>
+                      </li>
+                    </ul>
+                  </li>
+                  
+                  <% if current_user.enterprise_group_role == 'admin' %>
+                    <li>
+                      <div class="text-xs/6 font-semibold text-gray-400">Administration</div>
+                      <ul role="list" class="-mx-2 mt-2 space-y-1">
+                        <li>
+                          <%= link_to enterprise_admin_root_path(enterprise_slug: @enterprise_group.slug), class: "group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold #{request.path.include?('/admin') && current_page?(enterprise_admin_root_path(enterprise_slug: @enterprise_group.slug)) ? 'bg-purple-50 text-purple-600' : 'text-gray-700 hover:text-purple-600 hover:bg-purple-50'}" do %>
+                            <%= icon "shield-check", class: "size-6 shrink-0 #{request.path.include?('/admin') && current_page?(enterprise_admin_root_path(enterprise_slug: @enterprise_group.slug)) ? 'text-purple-600' : 'text-gray-400 group-hover:text-purple-600'}" %>
+                            Admin Dashboard
+                          <% end %>
+                        </li>
+                        <li>
+                          <%= link_to enterprise_admin_members_path(enterprise_slug: @enterprise_group.slug), class: "group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold #{request.path.include?('/members') ? 'bg-purple-50 text-purple-600' : 'text-gray-700 hover:text-purple-600 hover:bg-purple-50'}" do %>
+                            <%= icon "users", class: "size-6 shrink-0 #{request.path.include?('/members') ? 'text-purple-600' : 'text-gray-400 group-hover:text-purple-600'}" %>
+                            Members
+                          <% end %>
+                        </li>
+                        <li>
+                          <%= link_to enterprise_admin_billing_index_path(enterprise_slug: @enterprise_group.slug), class: "group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold #{request.path.include?('/billing') ? 'bg-purple-50 text-purple-600' : 'text-gray-700 hover:text-purple-600 hover:bg-purple-50'}" do %>
+                            <%= icon "credit-card", class: "size-6 shrink-0 #{request.path.include?('/billing') ? 'text-purple-600' : 'text-gray-400 group-hover:text-purple-600'}" %>
+                            Billing
+                          <% end %>
+                        </li>
+                        <li>
+                          <%= link_to enterprise_admin_settings_path(enterprise_slug: @enterprise_group.slug), class: "group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold #{request.path.include?('/settings') ? 'bg-purple-50 text-purple-600' : 'text-gray-700 hover:text-purple-600 hover:bg-purple-50'}" do %>
+                            <%= icon "gear", class: "size-6 shrink-0 #{request.path.include?('/settings') ? 'text-purple-600' : 'text-gray-400 group-hover:text-purple-600'}" %>
+                            Settings
+                          <% end %>
+                        </li>
+                      </ul>
+                    </li>
                   <% end %>
-              
-                  <%= link_to enterprise_admin_members_path(enterprise_slug: @enterprise_group.slug), class: "#{request.path.include?('/members') ? 'bg-purple-800 text-white' : 'text-purple-200 hover:bg-purple-800 hover:text-white'} group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6" do %>
-                    <%= icon "users", class: "h-6 w-6 shrink-0" %>
-                    Members
-                  <% end %>
-              
-                  <%= link_to enterprise_admin_billing_index_path(enterprise_slug: @enterprise_group.slug), class: "#{request.path.include?('/billing') ? 'bg-purple-800 text-white' : 'text-purple-200 hover:bg-purple-800 hover:text-white'} group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6" do %>
-                    <%= icon "credit-card", class: "h-6 w-6 shrink-0" %>
-                    Billing
-                  <% end %>
-              
-                  <%= link_to enterprise_admin_settings_path(enterprise_slug: @enterprise_group.slug), class: "#{request.path.include?('/settings') ? 'bg-purple-800 text-white' : 'text-purple-200 hover:bg-purple-800 hover:text-white'} group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6" do %>
-                    <%= icon "gear", class: "h-6 w-6 shrink-0" %>
-                    Settings
-                  <% end %>
+                  
+                  <li>
+                    <div class="text-xs/6 font-semibold text-gray-400">Support</div>
+                    <ul role="list" class="-mx-2 mt-2 space-y-1">
+                      <li>
+                        <a href="#" class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 hover:text-purple-600 hover:bg-purple-50">
+                          <%= icon "book-open", class: "size-6 shrink-0 text-gray-400 group-hover:text-purple-600" %>
+                          Documentation
+                        </a>
+                      </li>
+                      <li>
+                        <a href="#" class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 hover:text-purple-600 hover:bg-purple-50" data-controller="help-widget" data-action="click->help-widget#show">
+                          <%= icon "lifebuoy", class: "size-6 shrink-0 text-gray-400 group-hover:text-purple-600" %>
+                          Help Center
+                        </a>
+                      </li>
+                    </ul>
+                  </li>
+                  
+                  <li class="mt-auto">
+                    <%= link_to enterprise_admin_settings_path(enterprise_slug: @enterprise_group.slug), class: "group -mx-2 flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 hover:bg-purple-50 hover:text-purple-600" do %>
+                      <%= icon "gear", class: "size-6 shrink-0 text-gray-400 group-hover:text-purple-600" %>
+                      Settings
+                    <% end %>
+                  </li>
                 </ul>
-              </li>
-            <% end %>
-          
-            <li>
-              <div class="text-xs font-semibold leading-6 text-purple-300">Support</div>
-              <ul role="list" class="-mx-2 mt-2 space-y-1">
-                <li>
-                  <a href="#" class="text-purple-200 hover:bg-purple-800 hover:text-white group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6">
-                    <%= icon "book-open", class: "h-6 w-6 shrink-0" %>
-                    Documentation
-                  </a>
-                </li>
-                <li>
-                  <a href="#" class="text-purple-200 hover:bg-purple-800 hover:text-white group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6" data-controller="help-widget" data-action="click->help-widget#show">
-                    <%= icon "lifebuoy", class: "h-6 w-6 shrink-0" %>
-                    Help Center
-                  </a>
-                </li>
-              </ul>
-            </li>
-          </ul>
-        </nav>
+              </nav>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <!-- Main Content -->
-      <div class="flex-1 flex flex-col overflow-hidden">
-        <!-- Mobile menu button -->
-        <div class="md:hidden fixed top-16 left-0 z-40">
-          <button data-controller="sidebar" data-action="click->sidebar#toggle" class="m-2 p-2 rounded-md bg-purple-900 text-purple-200 hover:text-white hover:bg-purple-800 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white">
-            <span class="sr-only">Open sidebar</span>
-            <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-            </svg>
-          </button>
+      <!-- Static sidebar for desktop -->
+      <div class="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-72 lg:flex-col">
+        <!-- Sidebar component -->
+        <div class="flex grow flex-col gap-y-5 overflow-y-auto border-r border-gray-200 bg-white px-6 pb-4">
+          <div class="flex h-16 shrink-0 items-center">
+            <span class="flex size-8 shrink-0 items-center justify-center rounded-lg border border-purple-200 bg-white text-xs font-medium text-purple-600">
+              <%= @enterprise_group.name.first.upcase %>
+            </span>
+            <span class="ml-3 text-lg font-semibold text-gray-900"><%= @enterprise_group.name %></span>
+          </div>
+          <nav class="flex flex-1 flex-col">
+            <ul role="list" class="flex flex-1 flex-col gap-y-7">
+              <li>
+                <ul role="list" class="-mx-2 space-y-1">
+                  <li>
+                    <%= link_to enterprise_root_path(@enterprise_group.slug), class: "group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold #{current_page?(enterprise_root_path(@enterprise_group.slug)) ? 'bg-purple-50 text-purple-600' : 'text-gray-700 hover:text-purple-600 hover:bg-purple-50'}" do %>
+                      <%= icon "house", class: "size-6 shrink-0 #{current_page?(enterprise_root_path(@enterprise_group.slug)) ? 'text-purple-600' : 'text-gray-400 group-hover:text-purple-600'}" %>
+                      Dashboard
+                    <% end %>
+                  </li>
+                  <li>
+                    <%= link_to profile_path(enterprise_group_slug: @enterprise_group.slug, id: current_user), class: "group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold #{request.path.include?('/profile') ? 'bg-purple-50 text-purple-600' : 'text-gray-700 hover:text-purple-600 hover:bg-purple-50'}" do %>
+                      <%= icon "user", class: "size-6 shrink-0 #{request.path.include?('/profile') ? 'text-purple-600' : 'text-gray-400 group-hover:text-purple-600'}" %>
+                      My Profile
+                    <% end %>
+                  </li>
+                </ul>
+              </li>
+              
+              <% if current_user.enterprise_group_role == 'admin' %>
+                <li>
+                  <div class="text-xs/6 font-semibold text-gray-400">Administration</div>
+                  <ul role="list" class="-mx-2 mt-2 space-y-1">
+                    <li>
+                      <%= link_to enterprise_admin_root_path(enterprise_slug: @enterprise_group.slug), class: "group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold #{request.path.include?('/admin') && current_page?(enterprise_admin_root_path(enterprise_slug: @enterprise_group.slug)) ? 'bg-purple-50 text-purple-600' : 'text-gray-700 hover:text-purple-600 hover:bg-purple-50'}" do %>
+                        <%= icon "shield-check", class: "size-6 shrink-0 #{request.path.include?('/admin') && current_page?(enterprise_admin_root_path(enterprise_slug: @enterprise_group.slug)) ? 'text-purple-600' : 'text-gray-400 group-hover:text-purple-600'}" %>
+                        Admin Dashboard
+                      <% end %>
+                    </li>
+                    <li>
+                      <%= link_to enterprise_admin_members_path(enterprise_slug: @enterprise_group.slug), class: "group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold #{request.path.include?('/members') ? 'bg-purple-50 text-purple-600' : 'text-gray-700 hover:text-purple-600 hover:bg-purple-50'}" do %>
+                        <%= icon "users", class: "size-6 shrink-0 #{request.path.include?('/members') ? 'text-purple-600' : 'text-gray-400 group-hover:text-purple-600'}" %>
+                        Members
+                      <% end %>
+                    </li>
+                    <li>
+                      <%= link_to enterprise_admin_billing_index_path(enterprise_slug: @enterprise_group.slug), class: "group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold #{request.path.include?('/billing') ? 'bg-purple-50 text-purple-600' : 'text-gray-700 hover:text-purple-600 hover:bg-purple-50'}" do %>
+                        <%= icon "credit-card", class: "size-6 shrink-0 #{request.path.include?('/billing') ? 'text-purple-600' : 'text-gray-400 group-hover:text-purple-600'}" %>
+                        Billing
+                      <% end %>
+                    </li>
+                    <li>
+                      <%= link_to enterprise_admin_settings_path(enterprise_slug: @enterprise_group.slug), class: "group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold #{request.path.include?('/settings') ? 'bg-purple-50 text-purple-600' : 'text-gray-700 hover:text-purple-600 hover:bg-purple-50'}" do %>
+                        <%= icon "gear", class: "size-6 shrink-0 #{request.path.include?('/settings') ? 'text-purple-600' : 'text-gray-400 group-hover:text-purple-600'}" %>
+                        Settings
+                      <% end %>
+                    </li>
+                  </ul>
+                </li>
+              <% end %>
+              
+              <li>
+                <div class="text-xs/6 font-semibold text-gray-400">Support</div>
+                <ul role="list" class="-mx-2 mt-2 space-y-1">
+                  <li>
+                    <a href="#" class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 hover:text-purple-600 hover:bg-purple-50">
+                      <%= icon "book-open", class: "size-6 shrink-0 text-gray-400 group-hover:text-purple-600" %>
+                      Documentation
+                    </a>
+                  </li>
+                  <li>
+                    <a href="#" class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 hover:text-purple-600 hover:bg-purple-50" data-controller="help-widget" data-action="click->help-widget#show">
+                      <%= icon "lifebuoy", class: "size-6 shrink-0 text-gray-400 group-hover:text-purple-600" %>
+                      Help Center
+                    </a>
+                  </li>
+                </ul>
+              </li>
+              
+              <li class="mt-auto">
+                <%= link_to enterprise_admin_settings_path(enterprise_slug: @enterprise_group.slug), class: "group -mx-2 flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 hover:bg-purple-50 hover:text-purple-600" do %>
+                  <%= icon "gear", class: "size-6 shrink-0 text-gray-400 group-hover:text-purple-600" %>
+                  Settings
+                <% end %>
+              </li>
+            </ul>
+          </nav>
         </div>
-        
-        <!-- Flash Messages -->
-        <% if flash[:notice].present? %>
-          <div class="mx-4 mt-4">
-            <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert">
-              <span class="block sm:inline"><%= flash[:notice] %></span>
-            </div>
-          </div>
-        <% end %>
-        
-        <% if flash[:alert].present? %>
-          <div class="mx-4 mt-4">
-            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
-              <span class="block sm:inline"><%= flash[:alert] %></span>
-            </div>
-          </div>
-        <% end %>
+      </div>
 
-        <!-- Page Header -->
-        <header class="bg-white shadow-sm border-b border-gray-200">
-          <div class="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between">
-              <h1 class="text-2xl font-bold text-gray-900">
-                <%= content_for?(:page_title) ? yield(:page_title) : "Enterprise Dashboard" %>
-              </h1>
-              <div class="flex items-center space-x-4">
-                <!-- Quick Actions -->
-                <div class="hidden lg:flex items-center space-x-2">
-                  <%= yield :header_actions %>
-                </div>
+      <div class="lg:pl-72">
+        <div class="sticky top-0 z-40 lg:mx-auto lg:max-w-7xl lg:px-8">
+          <div class="flex h-16 items-center gap-x-4 border-b border-gray-200 bg-white px-4 shadow-xs sm:gap-x-6 sm:px-6 lg:px-0 lg:shadow-none">
+            <button type="button" class="-m-2.5 p-2.5 text-gray-700 lg:hidden" data-controller="sidebar" data-action="click->sidebar#toggle">
+              <span class="sr-only">Open sidebar</span>
+              <%= icon "list", class: "size-6" %>
+            </button>
+
+            <!-- Separator -->
+            <div class="h-6 w-px bg-gray-200 lg:hidden" aria-hidden="true"></div>
+
+            <div class="flex flex-1 gap-x-4 self-stretch lg:gap-x-6 justify-end">
+              <div class="flex items-center gap-x-4 lg:gap-x-6">
+                <!-- Notification Center -->
+                <%= render "shared/notification_center" %>
+
+                <!-- Separator -->
+                <div class="hidden lg:block lg:h-6 lg:w-px lg:bg-gray-200" aria-hidden="true"></div>
+
+                <!-- Profile dropdown -->
+                <%= render "shared/user_avatar_menu" %>
               </div>
             </div>
           </div>
-        </header>
+        </div>
 
-        <!-- Page Content -->
-        <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-50">
-          <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+        <!-- Flash Messages -->
+        <% if flash[:notice].present? || flash[:alert].present? %>
+          <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <% if flash[:notice].present? %>
+              <div class="mt-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert">
+                <span class="block sm:inline"><%= flash[:notice] %></span>
+              </div>
+            <% end %>
+            
+            <% if flash[:alert].present? %>
+              <div class="mt-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+                <span class="block sm:inline"><%= flash[:alert] %></span>
+              </div>
+            <% end %>
+          </div>
+        <% end %>
+
+        <main class="py-0">
+          <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <%= yield %>
           </div>
         </main>
