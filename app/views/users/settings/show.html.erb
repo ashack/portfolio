@@ -15,25 +15,44 @@
     </div>
 
     <!-- Settings Tabs -->
-    <div class="bg-white shadow rounded-lg">
+    <div class="bg-white shadow rounded-lg" data-controller="tabs" data-tabs-default-tab-value="general">
       <div class="border-b border-gray-200">
         <nav class="-mb-px flex" aria-label="Tabs">
-          <button type="button" class="border-transparent text-indigo-600 border-b-2 border-indigo-500 py-4 px-6 text-center border-b-2 font-medium text-sm">
+          <button type="button" 
+                  data-action="click->tabs#select" 
+                  data-tabs-target="tab"
+                  data-tabs-tab-param="general"
+                  class="border-transparent text-indigo-600 border-b-2 border-indigo-500 py-4 px-6 text-center border-b-2 font-medium text-sm">
             General
           </button>
-          <button type="button" class="border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 py-4 px-6 text-center border-b-2 font-medium text-sm">
+          <button type="button" 
+                  data-action="click->tabs#select" 
+                  data-tabs-target="tab"
+                  data-tabs-tab-param="security"
+                  class="border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 py-4 px-6 text-center border-b-2 font-medium text-sm">
             Security
           </button>
-          <button type="button" class="border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 py-4 px-6 text-center border-b-2 font-medium text-sm">
+          <button type="button" 
+                  data-action="click->tabs#select" 
+                  data-tabs-target="tab"
+                  data-tabs-tab-param="preferences"
+                  class="border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 py-4 px-6 text-center border-b-2 font-medium text-sm">
             Preferences
+          </button>
+          <button type="button" 
+                  data-action="click->tabs#select" 
+                  data-tabs-target="tab"
+                  data-tabs-tab-param="notifications"
+                  class="border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 py-4 px-6 text-center border-b-2 font-medium text-sm">
+            Notifications
           </button>
         </nav>
       </div>
 
       <div class="px-4 py-5 sm:p-6">
-        <!-- General Settings -->
-        <div id="general-settings">
-          <%= form_with(model: @user, url: users_settings_path, method: :patch, local: true, class: "space-y-8") do |form| %>
+        <%= form_with(model: @user, url: users_settings_path, method: :patch, local: true, class: "space-y-8") do |form| %>
+          <!-- General Settings Panel -->
+          <div data-tabs-target="panel" data-tabs-panel-param="general" id="general-settings">
             <% if @user.errors.any? %>
               <div class="rounded-md bg-red-50 p-4">
                 <div class="flex">
@@ -92,9 +111,12 @@
                 </div>
               </div>
             </div>
+          </div>
 
+          <!-- Security Panel -->
+          <div data-tabs-target="panel" data-tabs-panel-param="security" class="hidden" id="security-settings">
             <!-- Account Security -->
-            <div class="border-t border-gray-200 pt-8">
+            <div>
               <h3 class="text-lg font-medium text-gray-900 mb-4">Account Security</h3>
               <div class="space-y-4">
                 <div class="flex items-center justify-between py-4 border border-gray-200 rounded-lg px-4">
@@ -143,8 +165,74 @@
                 </div>
               </div>
             </div>
+          </div>
 
-            <!-- Activity Information -->
+          <!-- Preferences Panel -->
+          <div data-tabs-target="panel" data-tabs-panel-param="preferences" class="hidden" id="preferences-settings">
+            <!-- Preferences content would go here -->
+            <h3 class="text-lg font-medium text-gray-900 mb-4">Preferences</h3>
+            <p class="text-gray-500">Preference settings will be displayed here.</p>
+          </div>
+
+          <!-- Notifications Panel -->
+          <div data-tabs-target="panel" data-tabs-panel-param="notifications" class="hidden" id="notifications">
+            <div>
+              <h3 class="text-lg font-medium text-gray-900 mb-4">Notification Preferences</h3>
+              <div class="space-y-4">
+                <div class="flex items-start">
+                  <div class="flex items-center h-5">
+                    <%= form.check_box :email_notifications, class: "focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded" %>
+                  </div>
+                  <div class="ml-3 text-sm">
+                    <%= form.label :email_notifications, "Email notifications", class: "font-medium text-gray-700" %>
+                    <p class="text-gray-500">Receive email notifications for important updates and activities.</p>
+                  </div>
+                </div>
+                
+                <div class="flex items-start">
+                  <div class="flex items-center h-5">
+                    <%= form.check_box :marketing_emails, class: "focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded" %>
+                  </div>
+                  <div class="ml-3 text-sm">
+                    <%= form.label :marketing_emails, "Marketing emails", class: "font-medium text-gray-700" %>
+                    <p class="text-gray-500">Receive emails about new features, tips, and special offers.</p>
+                  </div>
+                </div>
+                
+                <div class="flex items-start">
+                  <div class="flex items-center h-5">
+                    <%= form.check_box :browser_notifications, class: "focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded" %>
+                  </div>
+                  <div class="ml-3 text-sm">
+                    <%= form.label :browser_notifications, "Browser notifications", class: "font-medium text-gray-700" %>
+                    <p class="text-gray-500">Receive in-browser push notifications for real-time updates.</p>
+                  </div>
+                </div>
+                
+                <div class="mt-6">
+                  <h4 class="text-sm font-medium text-gray-900 mb-3">Notification Frequency</h4>
+                  <div class="space-y-2">
+                    <label class="inline-flex items-center">
+                      <%= form.radio_button :notification_frequency, "instant", class: "focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300" %>
+                      <span class="ml-2 text-sm text-gray-700">Instant</span>
+                    </label>
+                    <br>
+                    <label class="inline-flex items-center">
+                      <%= form.radio_button :notification_frequency, "daily", class: "focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300" %>
+                      <span class="ml-2 text-sm text-gray-700">Daily digest</span>
+                    </label>
+                    <br>
+                    <label class="inline-flex items-center">
+                      <%= form.radio_button :notification_frequency, "weekly", class: "focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300" %>
+                      <span class="ml-2 text-sm text-gray-700">Weekly digest</span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Activity Information - Keep in General tab -->
             <div class="border-t border-gray-200 pt-8">
               <h3 class="text-lg font-medium text-gray-900 mb-4">Activity Information</h3>
               <dl class="grid grid-cols-1 gap-4 sm:grid-cols-2">

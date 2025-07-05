@@ -541,7 +541,12 @@ class AdminActivityLogTest < ActiveSupport::TestCase
 
     assert_includes AdminActivityLog.this_month, today_log
     assert_includes AdminActivityLog.this_month, yesterday_log
-    assert_includes AdminActivityLog.this_month, last_week_log
+    # Only include last_week_log if it's actually in the current month
+    if last_week_log.timestamp.month == Time.current.month
+      assert_includes AdminActivityLog.this_month, last_week_log
+    else
+      assert_not_includes AdminActivityLog.this_month, last_week_log
+    end
     assert_not_includes AdminActivityLog.this_month, last_month_log
 
     # Verify recent ordering

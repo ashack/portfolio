@@ -3,9 +3,9 @@ Rails.application.routes.draw do
   authenticate :user, ->(user) { user.admin? } do
     mount Blazer::Engine, at: "blazer"
   end
-  
+
   # Test route for form styling
-  get "/test_form", to: proc { |env| [200, { "Content-Type" => "text/html" }, [ApplicationController.render(template: "test_form", layout: false)]] }
+  get "/test_form", to: proc { |env| [ 200, { "Content-Type" => "text/html" }, [ ApplicationController.render(template: "test_form", layout: false) ] ] }
   # CSP violation reports endpoint
   post "/csp_violation_reports", to: "csp_reports#create"
 

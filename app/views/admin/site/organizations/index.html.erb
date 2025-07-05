@@ -70,7 +70,7 @@
       <!-- Pagination -->
       <% if @pagy_teams && @pagy_teams.pages > 1 %>
         <div class="px-4 py-3 border-t border-gray-200">
-          <%== pagy_bootstrap_nav(@pagy_teams) %>
+          <%== pagy_tailwind_nav(@pagy_teams) %>
         </div>
       <% end %>
     <% else %>
@@ -140,7 +140,7 @@
       <!-- Pagination -->
       <% if @pagy_enterprise && @pagy_enterprise.pages > 1 %>
         <div class="px-4 py-3 border-t border-gray-200">
-          <%== pagy_bootstrap_nav(@pagy_enterprise) %>
+          <%== pagy_tailwind_nav(@pagy_enterprise) %>
         </div>
       <% end %>
     <% else %>

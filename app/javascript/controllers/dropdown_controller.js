@@ -21,6 +21,12 @@ export default class extends Controller {
   toggle(event) {
     event.stopPropagation()
     this.open ? this.hide() : this.show()
+    
+    // Remove focus from button after mouse click to prevent focus ring
+    // But keep focus for keyboard navigation (Enter/Space key)
+    if (this.hasButtonTarget && event.type === 'click' && event.detail > 0) {
+      this.buttonTarget.blur()
+    }
   }
   
   show() {
@@ -52,8 +58,6 @@ export default class extends Controller {
     
     if (this.hasButtonTarget) {
       this.buttonTarget.setAttribute("aria-expanded", "false")
-      // Return focus to button
-      this.buttonTarget.focus()
     }
     
     this.removeEventListeners()

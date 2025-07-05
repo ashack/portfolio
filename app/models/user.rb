@@ -200,7 +200,7 @@ class User < ApplicationRecord
   # Normalize email to lowercase for consistency
   # Prevents duplicate accounts with different case
   before_validation :normalize_email
-  
+
   # SECURITY: Prevent unauthorized email changes
   # Email changes must go through the EmailChangeRequest system
   before_save :prevent_unauthorized_email_change, if: :email_changed?
@@ -434,27 +434,30 @@ class User < ApplicationRecord
   def normalize_email
     self.email = email&.downcase&.strip
   end
-  
+
   # SECURITY: Prevent unauthorized email changes
   # Email changes must go through the EmailChangeRequest system with admin approval
   def prevent_unauthorized_email_change
     # Skip validation for new records (registration)
     return if new_record?
-    
+
     # Skip if the change is being made by the EmailChangeRequest system
     # This is identified by checking if the change is happening within a transaction
     # that includes an EmailChangeRequest approval
     return if Thread.current[:email_change_authorized]
-    
-    # Allow super admins to change emails directly (for emergency situations)
+
+    # Allow super admins to change their own emails directly (for emergency situations)
+    return if super_admin?
+
+    # Also check Thread.current for admin actions
     return if Thread.current[:current_admin]&.super_admin?
-    
+
     # If we get here, it's an unauthorized email change attempt
     errors.add(:email, "cannot be changed directly. Please use the email change request system.")
-    
+
     # Log the attempt for security auditing
     Rails.logger.warn "[SECURITY] Unauthorized email change attempt for user #{id} from #{email_was} to #{email}"
-    
+
     # Create audit log for security tracking
     AuditLogService.log_security_event(
       admin_user: self, # User attempting the change
@@ -468,10 +471,10 @@ class User < ApplicationRecord
       },
       request: nil # No request context in model
     )
-    
+
     # Revert the email change
     self.email = email_was
-    
+
     # Throw abort to prevent the save
     throw(:abort)
   end
@@ -684,6 +687,65 @@ class User < ApplicationRecord
     acceptable_types = [ "image/jpeg", "image/jpg", "image/png", "image/gif", "image/webp" ]
     unless acceptable_types.include?(avatar.blob.content_type)
       errors.add(:avatar, "must be a JPEG, PNG, GIF, or WebP image")
+    end
+  end
+
+  # ========================================================================
+  # SUBSCRIPTION METHODS
+  # ========================================================================
+
+  # Override Pay gem's subscribed? method to always return true for admins
+  def subscribed?
+    # Super admins and site admins always have access
+    return true if super_admin? || site_admin?
+
+    # For regular users, use Pay gem's subscription check
+    return false unless respond_to?(:payment_processor) && payment_processor.present?
+
+    # Check if they have an active subscription
+    payment_processor.subscriptions.active.any?
+  end
+
+  # Check if user has an active subscription (alias for clarity)
+  def has_active_subscription?
+    subscribed?
+  end
+
+  # Check if user requires a subscription
+  def subscription_required?
+    # Admins don't need subscriptions
+    return false if super_admin? || site_admin?
+
+    # Only direct users need subscriptions
+    # Invited team members use their team's subscription
+    # Enterprise users use their enterprise group's subscription
+    direct?
+  end
+
+  # Get the current subscription (if any)
+  def current_subscription
+    return nil unless respond_to?(:payment_processor) && payment_processor.present?
+    payment_processor.subscriptions.active.first
+  end
+
+  # Check if user can access premium features
+  def can_access_premium_features?
+    # Admins always have access
+    return true if super_admin? || site_admin?
+
+    # Check based on user type
+    case user_type
+    when "direct"
+      # Direct users need their own subscription
+      subscribed?
+    when "invited"
+      # Team members use their team's subscription
+      team&.subscribed? || false
+    when "enterprise"
+      # Enterprise users use their enterprise group's subscription
+      enterprise_group&.subscribed? || false
+    else
+      false
     end
   end
 end

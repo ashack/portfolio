@@ -563,12 +563,87 @@ PARALLEL_WORKERS=1 bundle exec rails test
 3. AdminActivityLog, Ahoy::Visit, and Ahoy::Event model tests
 4. Enhanced User model tests
 
+### Issue 12: JavaScript Module Loading (SOLVED)
+
+**Problem**: Controllers returning 404 errors for JavaScript files
+
+**Root Cause**: Relative imports (`"./application"`) incompatible with importmaps
+
+**Solution**: Changed to bare module specifiers
+```javascript
+// Before (broken)
+import { application } from "./application"
+
+// After (working)
+import { application } from "controllers/application"
+```
+
+### Issue 13: Pagination Helper Errors (SOLVED)
+
+**Problem**: `undefined method 'pagy_bootstrap_nav'`
+
+**Root Cause**: Bootstrap extra not loaded, custom Tailwind helper available
+
+**Solution**: Replace all instances
+```erb
+<!-- Before -->
+<%== pagy_bootstrap_nav(@pagy) %>
+
+<!-- After -->
+<%== pagy_tailwind_nav(@pagy) %>
+```
+
+### Issue 14: Missing Route Errors (SOLVED)
+
+**Problem**: `undefined local variable or method 'admin_site_teams_path'`
+
+**Root Cause**: Site admins only have organizations index, not teams
+
+**Solution**: Updated navigation links
+```erb
+<!-- Before -->
+<%= link_to admin_site_teams_path %>
+
+<!-- After -->
+<%= link_to admin_site_organizations_path %>
+```
+
+### Issue 15: Notification Panel Click Behavior (SOLVED)
+
+**Problem**: Notification dropdown closing when clicking inside
+
+**Root Cause**: Global window click handler on button
+
+**Solution**: Removed window handler, proper click outside detection
+```erb
+<!-- Before -->
+data-action="click->notifications#toggle click@window->notifications#hide"
+
+<!-- After -->
+data-action="click->notifications#toggle"
+```
+
+### Issue 16: Focus Ring Persistence (SOLVED)
+
+**Problem**: Focus rings remaining visible after mouse clicks
+
+**Root Cause**: Using `:focus` instead of `:focus-visible`
+
+**Solution**: Updated to focus-visible and added blur on mouse clicks
+```javascript
+// In dropdown_controller.js
+if (this.hasButtonTarget && event.type === 'click' && event.detail > 0) {
+  this.buttonTarget.blur()
+}
+```
+
 ---
 
-**Status**: All critical bugs resolved. Application is stable and production-ready with Rails 8.0.2. Test suite is passing with significantly improved coverage.
+**Status**: All critical bugs resolved. Application is stable and production-ready with Rails 8.0.2. Test suite is passing with significantly improved coverage. UI/UX has been modernized with Tailwind UI components.
 
 ---
 
-*Last Updated: December 2025*
+*Last Updated: January 2025*
 
 For enterprise implementation details, see [Recent Updates](recent_updates.md#enterprise-features-implementation).
+For UI/UX improvements, see [Recent Updates](recent_updates.md#uiux-improvements-january-2025).

@@ -19,9 +19,9 @@
   </head>
 
   <body class="h-full">
-    <div>
+    <div data-controller="sidebar">
       <!-- Off-canvas menu for mobile -->
-      <div class="relative z-50 lg:hidden" role="dialog" aria-modal="true" data-controller="sidebar" data-sidebar-open-class="fixed" data-sidebar-closed-class="hidden" data-sidebar-target="mobileMenu">
+      <div class="relative z-50 lg:hidden" role="dialog" aria-modal="true" data-sidebar-target="mobileMenu">
         <!-- Backdrop -->
         <div class="fixed inset-0 bg-gray-900/80 transition-opacity ease-linear duration-300" 
              data-sidebar-target="backdrop"
@@ -69,37 +69,6 @@
                           Dashboard
                         <% end %>
                       </li>
-                      <li>
-                        <%= link_to users_profile_path(current_user), class: "group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold #{request.path.include?('/profile') && !request.path.include?('/edit') ? 'bg-gray-50 text-indigo-600' : 'text-gray-700 hover:text-indigo-600 hover:bg-gray-50'}" do %>
-                          <%= icon "user", class: "size-6 shrink-0 #{request.path.include?('/profile') && !request.path.include?('/edit') ? 'text-indigo-600' : 'text-gray-400 group-hover:text-indigo-600'}" %>
-                          My Profile
-                          <% if current_user.profile_completion_percentage < 100 %>
-                            <span class="ml-auto inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-                              <%= current_user.profile_completion_percentage %>%
-                            </span>
-                          <% end %>
-                        <% end %>
-                      </li>
-                      <% if current_user.respond_to?(:payment_processor) && current_user.payment_processor&.present? %>
-                        <li>
-                          <%= link_to users_billing_index_path, class: "group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold #{request.path.include?('/billing') ? 'bg-gray-50 text-indigo-600' : 'text-gray-700 hover:text-indigo-600 hover:bg-gray-50'}" do %>
-                            <%= icon "credit-card", class: "size-6 shrink-0 #{request.path.include?('/billing') ? 'text-indigo-600' : 'text-gray-400 group-hover:text-indigo-600'}" %>
-                            Billing
-                          <% end %>
-                        </li>
-                      <% end %>
-                      <li>
-                        <%= link_to users_subscription_path, class: "group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold #{request.path.include?('/subscription') ? 'bg-gray-50 text-indigo-600' : 'text-gray-700 hover:text-indigo-600 hover:bg-gray-50'}" do %>
-                          <%= icon "currency-dollar", class: "size-6 shrink-0 #{request.path.include?('/subscription') ? 'text-indigo-600' : 'text-gray-400 group-hover:text-indigo-600'}" %>
-                          Subscription
-                        <% end %>
-                      </li>
-                      <li>
-                        <%= link_to users_settings_path, class: "group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold #{current_page?(users_settings_path) ? 'bg-gray-50 text-indigo-600' : 'text-gray-700 hover:text-indigo-600 hover:bg-gray-50'}" do %>
-                          <%= icon "gear", class: "size-6 shrink-0 #{current_page?(users_settings_path) ? 'text-indigo-600' : 'text-gray-400 group-hover:text-indigo-600'}" %>
-                          Settings
-                        <% end %>
-                      </li>
                     </ul>
                   </li>
                   <li>
@@ -118,12 +87,6 @@
                         </a>
                       </li>
                     </ul>
-                  </li>
-                  <li class="mt-auto">
-                    <%= link_to users_settings_path, class: "group -mx-2 flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 hover:bg-gray-50 hover:text-indigo-600" do %>
-                      <%= icon "gear", class: "size-6 shrink-0 text-gray-400 group-hover:text-indigo-600" %>
-                      Settings
-                    <% end %>
                   </li>
                 </ul>
               </nav>
@@ -151,37 +114,6 @@
                       Dashboard
                     <% end %>
                   </li>
-                  <li>
-                    <%= link_to users_profile_path(current_user), class: "group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold #{request.path.include?('/profile') && !request.path.include?('/edit') ? 'bg-gray-50 text-indigo-600' : 'text-gray-700 hover:text-indigo-600 hover:bg-gray-50'}" do %>
-                      <%= icon "user", class: "size-6 shrink-0 #{request.path.include?('/profile') && !request.path.include?('/edit') ? 'text-indigo-600' : 'text-gray-400 group-hover:text-indigo-600'}" %>
-                      My Profile
-                      <% if current_user.profile_completion_percentage < 100 %>
-                        <span class="ml-auto inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-                          <%= current_user.profile_completion_percentage %>%
-                        </span>
-                      <% end %>
-                    <% end %>
-                  </li>
-                  <% if current_user.respond_to?(:payment_processor) && current_user.payment_processor&.present? %>
-                    <li>
-                      <%= link_to users_billing_index_path, class: "group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold #{request.path.include?('/billing') ? 'bg-gray-50 text-indigo-600' : 'text-gray-700 hover:text-indigo-600 hover:bg-gray-50'}" do %>
-                        <%= icon "credit-card", class: "size-6 shrink-0 #{request.path.include?('/billing') ? 'text-indigo-600' : 'text-gray-400 group-hover:text-indigo-600'}" %>
-                        Billing
-                      <% end %>
-                    </li>
-                  <% end %>
-                  <li>
-                    <%= link_to users_subscription_path, class: "group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold #{request.path.include?('/subscription') ? 'bg-gray-50 text-indigo-600' : 'text-gray-700 hover:text-indigo-600 hover:bg-gray-50'}" do %>
-                      <%= icon "currency-dollar", class: "size-6 shrink-0 #{request.path.include?('/subscription') ? 'text-indigo-600' : 'text-gray-400 group-hover:text-indigo-600'}" %>
-                      Subscription
-                    <% end %>
-                  </li>
-                  <li>
-                    <%= link_to users_settings_path, class: "group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold #{current_page?(users_settings_path) ? 'bg-gray-50 text-indigo-600' : 'text-gray-700 hover:text-indigo-600 hover:bg-gray-50'}" do %>
-                      <%= icon "gear", class: "size-6 shrink-0 #{current_page?(users_settings_path) ? 'text-indigo-600' : 'text-gray-400 group-hover:text-indigo-600'}" %>
-                      Settings
-                    <% end %>
-                  </li>
                 </ul>
               </li>
               <li>
@@ -201,12 +133,6 @@
                   </li>
                 </ul>
               </li>
-              <li class="mt-auto">
-                <%= link_to users_settings_path, class: "group -mx-2 flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 hover:bg-gray-50 hover:text-indigo-600" do %>
-                  <%= icon "gear", class: "size-6 shrink-0 text-gray-400 group-hover:text-indigo-600" %>
-                  Settings
-                <% end %>
-              </li>
             </ul>
           </nav>
         </div>
@@ -215,7 +141,7 @@
       <div class="lg:pl-72">
         <div class="sticky top-0 z-40 lg:mx-auto lg:max-w-7xl lg:px-8">
           <div class="flex h-16 items-center gap-x-4 border-b border-gray-200 bg-white px-4 shadow-xs sm:gap-x-6 sm:px-6 lg:px-0 lg:shadow-none">
-            <button type="button" class="-m-2.5 p-2.5 text-gray-700 lg:hidden" data-controller="sidebar" data-action="click->sidebar#toggle">
+            <button type="button" class="-m-2.5 p-2.5 text-gray-700 lg:hidden" data-action="click->sidebar#toggle">
               <span class="sr-only">Open sidebar</span>
               <%= icon "list", class: "size-6" %>
             </button>

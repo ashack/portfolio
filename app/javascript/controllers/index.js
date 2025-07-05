@@ -2,40 +2,40 @@
 // Run that command whenever you add a new controller or create them with
 // ./bin/rails generate stimulus controllerName
 
-import { application } from "./application"
+import { application } from "controllers/application"
 
-import ConfirmationModalController from "./confirmation_modal_controller"
+import ConfirmationModalController from "controllers/confirmation_modal_controller"
 application.register("confirmation-modal", ConfirmationModalController)
 
-import CsrfController from "./csrf_controller"
+import CsrfController from "controllers/csrf_controller"
 application.register("csrf", CsrfController)
 
-import DropdownController from "./dropdown_controller"
+import DropdownController from "controllers/dropdown_controller"
 application.register("dropdown", DropdownController)
 
-import HelloController from "./hello_controller"
+import HelloController from "controllers/hello_controller"
 application.register("hello", HelloController)
 
-import HelpWidgetController from "./help_widget_controller"
+import HelpWidgetController from "controllers/help_widget_controller"
 application.register("help-widget", HelpWidgetController)
 
-import MobileMenuController from "./mobile_menu_controller"
+import MobileMenuController from "controllers/mobile_menu_controller"
 application.register("mobile-menu", MobileMenuController)
 
-import NotificationsController from "./notifications_controller"
+import NotificationsController from "controllers/notifications_controller"
 application.register("notifications", NotificationsController)
 
-import PaginationController from "./pagination_controller"
+import PaginationController from "controllers/pagination_controller"
 application.register("pagination", PaginationController)
 
-import PlanSelectionController from "./plan_selection_controller"
+import PlanSelectionController from "controllers/plan_selection_controller"
 application.register("plan-selection", PlanSelectionController)
 
-import SidebarController from "./sidebar_controller"
+import SidebarController from "controllers/sidebar_controller"
 application.register("sidebar", SidebarController)
 
-import TabsController from "./tabs_controller"
+import TabsController from "controllers/tabs_controller"
 application.register("tabs", TabsController)
 
-import UserFormController from "./user_form_controller"
+import UserFormController from "controllers/user_form_controller"
 application.register("user-form", UserFormController)

@@ -19,9 +19,9 @@
   </head>
 
   <body class="h-full">
-    <div>
+    <div data-controller="sidebar">
       <!-- Off-canvas menu for mobile -->
-      <div class="relative z-50 lg:hidden" role="dialog" aria-modal="true" data-controller="sidebar" data-sidebar-open-class="fixed" data-sidebar-closed-class="hidden" data-sidebar-target="mobileMenu">
+      <div class="relative z-50 lg:hidden" role="dialog" aria-modal="true" data-sidebar-target="mobileMenu">
         <!-- Backdrop -->
         <div class="fixed inset-0 bg-gray-900/80 transition-opacity ease-linear duration-300" 
              data-sidebar-target="backdrop"
@@ -65,8 +65,8 @@
                   <li>
                     <ul role="list" class="-mx-2 space-y-1">
                       <li>
-                        <%= link_to enterprise_root_path(@enterprise_group.slug), class: "group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold #{current_page?(enterprise_root_path(@enterprise_group.slug)) ? 'bg-purple-50 text-purple-600' : 'text-gray-700 hover:text-purple-600 hover:bg-purple-50'}" do %>
-                          <%= icon "house", class: "size-6 shrink-0 #{current_page?(enterprise_root_path(@enterprise_group.slug)) ? 'text-purple-600' : 'text-gray-400 group-hover:text-purple-600'}" %>
+                        <%= link_to enterprise_dashboard_path(enterprise_group_slug: @enterprise_group.slug), class: "group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold #{current_page?(enterprise_dashboard_path(enterprise_group_slug: @enterprise_group.slug)) ? 'bg-purple-50 text-purple-600' : 'text-gray-700 hover:text-purple-600 hover:bg-purple-50'}" do %>
+                          <%= icon "house", class: "size-6 shrink-0 #{current_page?(enterprise_dashboard_path(enterprise_group_slug: @enterprise_group.slug)) ? 'text-purple-600' : 'text-gray-400 group-hover:text-purple-600'}" %>
                           Dashboard
                         <% end %>
                       </li>
@@ -129,12 +129,6 @@
                     </ul>
                   </li>
                   
-                  <li class="mt-auto">
-                    <%= link_to enterprise_admin_settings_path(enterprise_slug: @enterprise_group.slug), class: "group -mx-2 flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 hover:bg-purple-50 hover:text-purple-600" do %>
-                      <%= icon "gear", class: "size-6 shrink-0 text-gray-400 group-hover:text-purple-600" %>
-                      Settings
-                    <% end %>
-                  </li>
                 </ul>
               </nav>
             </div>
@@ -221,12 +215,6 @@
                 </ul>
               </li>
               
-              <li class="mt-auto">
-                <%= link_to enterprise_admin_settings_path(enterprise_slug: @enterprise_group.slug), class: "group -mx-2 flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 hover:bg-purple-50 hover:text-purple-600" do %>
-                  <%= icon "gear", class: "size-6 shrink-0 text-gray-400 group-hover:text-purple-600" %>
-                  Settings
-                <% end %>
-              </li>
             </ul>
           </nav>
         </div>
@@ -235,7 +223,7 @@
       <div class="lg:pl-72">
         <div class="sticky top-0 z-40 lg:mx-auto lg:max-w-7xl lg:px-8">
           <div class="flex h-16 items-center gap-x-4 border-b border-gray-200 bg-white px-4 shadow-xs sm:gap-x-6 sm:px-6 lg:px-0 lg:shadow-none">
-            <button type="button" class="-m-2.5 p-2.5 text-gray-700 lg:hidden" data-controller="sidebar" data-action="click->sidebar#toggle">
+            <button type="button" class="-m-2.5 p-2.5 text-gray-700 lg:hidden" data-action="click->sidebar#toggle">
               <span class="sr-only">Open sidebar</span>
               <%= icon "list", class: "size-6" %>
             </button>

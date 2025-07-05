@@ -1,10 +1,10 @@
 <!-- Notification Center -->
-<div class="relative" data-controller="notifications">
+<div class="relative" data-controller="notifications" data-settings-path="<%= current_user.direct? ? users_settings_path : (current_user.invited? && current_user.team_role == 'admin' ? team_admin_settings_path(team_slug: current_user.team.slug) : '#') %>">
   <!-- Notification Bell Button -->
   <button type="button"
-          data-action="click->notifications#toggle click@window->notifications#hide" 
+          data-action="click->notifications#toggle" 
           data-notifications-target="button"
-          class="relative p-2 text-gray-400 hover:text-gray-500 hover:bg-gray-100 rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-200"
+          class="relative p-2 text-gray-400 hover:text-gray-500 hover:bg-gray-100 rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-indigo-500 transition-all duration-200"
           aria-label="View notifications"
           aria-expanded="false">
     <%= icon("bell", class: "h-6 w-6") %>

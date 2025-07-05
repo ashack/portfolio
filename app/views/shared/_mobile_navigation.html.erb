@@ -135,14 +135,14 @@
             <% end %>
             
           <% elsif current_user.enterprise? && current_user.enterprise_group %>
-            <%= link_to enterprise_root_path(current_user.enterprise_group.slug), 
-                class: "group flex items-center px-3 py-2 text-base font-medium rounded-md transition-colors #{current_page?(enterprise_root_path(current_user.enterprise_group.slug)) ? 'bg-gray-100 text-gray-900' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'}" do %>
+            <%= link_to enterprise_dashboard_path(enterprise_group_slug: current_user.enterprise_group.slug), 
+                class: "group flex items-center px-3 py-2 text-base font-medium rounded-md transition-colors #{current_page?(enterprise_dashboard_path(enterprise_group_slug: current_user.enterprise_group.slug)) ? 'bg-gray-100 text-gray-900' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'}" do %>
               <%= icon("house", class: "mr-3 h-5 w-5 flex-shrink-0") %>
               Organization Dashboard
             <% end %>
             
-            <%= link_to enterprise_profile_path(current_user.enterprise_group.slug), 
-                class: "group flex items-center px-3 py-2 text-base font-medium rounded-md transition-colors #{current_page?(enterprise_profile_path(current_user.enterprise_group.slug)) ? 'bg-gray-100 text-gray-900' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'}" do %>
+            <%= link_to profile_path(enterprise_group_slug: current_user.enterprise_group.slug, id: current_user), 
+                class: "group flex items-center px-3 py-2 text-base font-medium rounded-md transition-colors #{current_page?(profile_path(enterprise_group_slug: current_user.enterprise_group.slug, id: current_user)) ? 'bg-gray-100 text-gray-900' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'}" do %>
               <%= icon("user", class: "mr-3 h-5 w-5 flex-shrink-0") %>
               My Profile
               <% if current_user.profile_completion_percentage < 100 %>
@@ -153,10 +153,10 @@
             <% end %>
             
             <% if current_user.enterprise_group_role == 'admin' %>
-              <%= link_to enterprise_admin_root_path(enterprise_slug: current_user.enterprise_group.slug), 
-                  class: "group flex items-center px-3 py-2 text-base font-medium rounded-md transition-colors #{request.path.include?('/admin') ? 'bg-gray-100 text-gray-900' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'}" do %>
-                <%= icon("shield-check", class: "mr-3 h-5 w-5 flex-shrink-0") %>
-                Organization Admin
+              <%= link_to members_path(enterprise_group_slug: current_user.enterprise_group.slug), 
+                  class: "group flex items-center px-3 py-2 text-base font-medium rounded-md transition-colors #{current_page?(members_path(enterprise_group_slug: current_user.enterprise_group.slug)) ? 'bg-gray-100 text-gray-900' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'}" do %>
+                <%= icon("users", class: "mr-3 h-5 w-5 flex-shrink-0") %>
+                Manage Members
                 <span class="ml-auto inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
                   Admin
                 </span>

@@ -53,7 +53,7 @@ class EmailChangeRequest < ApplicationRecord
     ApplicationRecord.transaction do
       # Update the user's email
       old_email = user.email
-      
+
       # Set authorization flag to bypass email change protection
       Thread.current[:email_change_authorized] = true
       begin

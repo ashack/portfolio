@@ -1,6 +1,6 @@
 class Enterprise::ProfileController < ApplicationController
   include EmailChangeProtection
-  
+
   before_action :authenticate_user!
   before_action :require_enterprise_user!
   before_action :set_enterprise_group
@@ -19,7 +19,7 @@ class Enterprise::ProfileController < ApplicationController
     if @user.update(user_params)
       # Calculate profile completion after update
       @user.calculate_profile_completion
-      redirect_to enterprise_profile_path(@enterprise_group.slug), notice: "Profile updated successfully."
+      redirect_to profile_path(enterprise_group_slug: @enterprise_group.slug, id: @user), notice: "Profile updated successfully."
     else
       render :edit, status: :unprocessable_entity
     end

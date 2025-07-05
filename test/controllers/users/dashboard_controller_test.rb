@@ -47,7 +47,8 @@ class Users::DashboardControllerTest < ActionDispatch::IntegrationTest
     mock_processor = Minitest::Mock.new
     mock_subscription = Struct.new(:status, :current_period_end).new("active", 30.days.from_now)
     mock_processor.expect :subscription, mock_subscription
-    mock_processor.expect :present?, true
+    # Allow multiple calls to present? since the view might check it multiple times
+    10.times { mock_processor.expect :present?, true }
 
     @direct_user.stub :payment_processor, mock_processor do
       get user_dashboard_path
