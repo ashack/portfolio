@@ -114,7 +114,7 @@
       <!-- Pagination -->
       <% if defined?(@pagy) && @pagy.pages > 1 %>
         <div class="mt-6">
-          <%== pagy_nav(@pagy) %>
+          <%== pagy_tailwind_nav(@pagy) %>
         </div>
       <% end %>
     <% else %>

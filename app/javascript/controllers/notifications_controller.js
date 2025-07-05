@@ -18,6 +18,12 @@ export default class extends Controller {
   toggle(event) {
     event.stopPropagation()
     this.open ? this.hide() : this.show()
+    
+    // Remove focus from button after mouse click to prevent focus ring
+    // But keep focus for keyboard navigation (Enter/Space key)
+    if (this.hasButtonTarget && event.type === 'click' && event.detail > 0) {
+      this.buttonTarget.blur()
+    }
   }
   
   show() {
@@ -84,8 +90,15 @@ export default class extends Controller {
   }
   
   showSettings() {
-    // Navigate to notification settings
-    window.location.href = '/settings/notifications'
+    // Navigate to settings with notifications section
+    // The URL is passed as a data attribute based on user type
+    const settingsPath = this.element.dataset.settingsPath
+    
+    if (settingsPath && settingsPath !== '#') {
+      window.location.href = `${settingsPath}#notifications`
+    } else {
+      console.warn('Settings path not available for this user type')
+    }
   }
   
   filterAll() {
@@ -197,6 +210,7 @@ export default class extends Controller {
   }
   
   handleClickOutside(event) {
+    // Don't hide if clicking inside the notification panel or button
     if (!this.element.contains(event.target)) {
       this.hide()
     }

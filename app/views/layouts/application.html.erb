@@ -61,8 +61,8 @@
                   <%= link_to "Team Dashboard", team_root_path(team_slug: current_user.team.slug), 
                       class: "inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium #{current_page?(team_root_path(team_slug: current_user.team.slug)) ? 'border-blue-500 text-gray-900' : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'}" %>
                 <% elsif current_user.enterprise? && current_user.enterprise_group %>
-                  <%= link_to "Organization", enterprise_root_path(current_user.enterprise_group.slug), 
-                      class: "inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium #{current_page?(enterprise_root_path(current_user.enterprise_group.slug)) ? 'border-purple-500 text-gray-900' : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'}" %>
+                  <%= link_to "Organization", enterprise_dashboard_path(enterprise_group_slug: current_user.enterprise_group.slug), 
+                      class: "inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium #{current_page?(enterprise_dashboard_path(enterprise_group_slug: current_user.enterprise_group.slug)) ? 'border-purple-500 text-gray-900' : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'}" %>
                 <% end %>
               </div>
             </div>
@@ -78,11 +78,6 @@
           </div>
         </div>
       </nav>
-      
-      <!-- User Navigation Bar (only for non-sidebar layouts) -->
-      <% unless %w[admin team enterprise user].include?(controller.send(:layout_by_resource)) %>
-        <%= render "shared/user_navigation" %>
-      <% end %>
     <% end %>
     
     <main class="<%= user_signed_in? ? 'max-w-7xl mx-auto py-6 sm:px-6 lg:px-8' : 'container mx-auto px-5' %>">

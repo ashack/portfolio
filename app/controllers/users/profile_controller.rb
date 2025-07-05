@@ -1,11 +1,14 @@
 class Users::ProfileController < Users::BaseController
   include EmailChangeProtection
-  
+
   # Skip Pundit verification since profile shows user's own data
   skip_after_action :verify_policy_scoped
   skip_after_action :verify_authorized
 
   before_action :set_user
+
+  # Use admin layout for admin users
+  layout :determine_layout
 
   def show
     # Show user profile (read-only view)
@@ -35,11 +38,24 @@ class Users::ProfileController < Users::BaseController
 
   def profile_params
     # EmailChangeProtection concern will handle email change attempts
-    params.require(:user).permit(
+    permitted_attributes = [
       :first_name, :last_name, :bio, :phone_number, :avatar_url, :avatar,
       :timezone, :locale, :profile_visibility,
       :linkedin_url, :twitter_url, :github_url, :website_url,
       notification_preferences: {}
-    )
+    ]
+
+    # Allow super admins to change their email directly
+    permitted_attributes << :email if current_user&.super_admin?
+
+    params.require(:user).permit(permitted_attributes)
+  end
+
+  def determine_layout
+    if current_user&.super_admin? || current_user&.site_admin?
+      "admin"
+    else
+      "user"
+    end
   end
 end

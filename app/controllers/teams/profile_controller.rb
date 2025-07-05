@@ -1,6 +1,6 @@
 class Teams::ProfileController < Teams::BaseController
   include EmailChangeProtection
-  
+
   # Skip Pundit verification since profile shows user's own data
   skip_after_action :verify_policy_scoped
   skip_after_action :verify_authorized

@@ -1,0 +1,27 @@
+<!-- Simple Top Navigation Bar (Logo + User Menu) -->
+<header class="bg-white shadow-sm border-b border-gray-200 fixed top-0 left-0 right-0 z-40">
+  <div class="px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center justify-between h-16">
+      <!-- Left side - Logo only -->
+      <div class="flex items-center">
+        <div class="flex-shrink-0">
+          <%= link_to root_path, class: "flex items-center" do %>
+            <span class="text-xl font-bold text-gray-900">SaaS App</span>
+          <% end %>
+        </div>
+      </div>
+
+      <!-- Right side - User menu and notifications -->
+      <div class="flex items-center space-x-4">
+        <!-- Notification Center -->
+        <%= render "shared/notification_center" %>
+        
+        <!-- User Avatar Menu -->
+        <%= render "shared/user_avatar_menu" %>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- Spacer to account for fixed header -->
+<div class="h-16"></div>

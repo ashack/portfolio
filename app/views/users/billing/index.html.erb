@@ -10,14 +10,6 @@
             <h1 class="text-2xl font-bold text-gray-900">Billing & Subscriptions</h1>
             <p class="mt-1 text-sm text-gray-500">Manage your subscription, payment methods, and billing history.</p>
           </div>
-          <div>
-            <%= link_to root_path, class: "inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50" do %>
-              <svg class="-ml-1 mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
-              </svg>
-              Back to Dashboard
-            <% end %>
-          </div>
         </div>
       </div>
     </div>
@@ -170,7 +162,7 @@
             <!-- Pagination -->
             <% if @pagy && @pagy.pages > 1 %>
               <div class="mt-4 pt-3 border-t border-gray-200">
-                <%== pagy_bootstrap_nav(@pagy) %>
+                <%== pagy_tailwind_nav(@pagy) %>
               </div>
             <% end %>
           <% else %>

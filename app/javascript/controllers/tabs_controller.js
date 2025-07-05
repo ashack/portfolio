@@ -9,6 +9,13 @@ export default class extends Controller {
   }
 
   connect() {
+    // Check URL hash first
+    const hash = window.location.hash.substring(1)
+    if (hash && this.hasTabWithParam(hash)) {
+      this.showTab(hash)
+      return
+    }
+    
     // Show default tab or remembered tab
     if (this.rememberSelectedValue) {
       const remembered = this.getRememberedTab()
@@ -60,6 +67,9 @@ export default class extends Controller {
       const isActive = panel.dataset.tabsPanelParam === tabId
       panel.classList.toggle("hidden", !isActive)
     })
+    
+    // Update URL hash without scrolling
+    history.replaceState(null, null, `#${tabId}`)
   }
 
   getRememberedTab() {
@@ -70,5 +80,9 @@ export default class extends Controller {
   rememberTab(tabId) {
     const key = `tabs_${this.element.dataset.tabsIdParam || window.location.pathname}`
     localStorage.setItem(key, tabId)
+  }
+  
+  hasTabWithParam(param) {
+    return this.tabTargets.some(tab => tab.dataset.tabsTabParam === param)
   }
 }

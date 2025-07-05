@@ -1,6 +1,6 @@
 # Rails SaaS Starter - Improvement Recommendations
 
-*Last Updated: December 2025*
+*Last Updated: January 2025*
 
 ## Executive Summary
 
@@ -275,6 +275,16 @@ end
 ```
 
 ## View Layer Improvements
+
+**UPDATE**: Major UI/UX improvements have been implemented in January 2025, including:
+- ✅ Tailwind UI light theme sidebar across all layouts
+- ✅ Simplified navigation with dropdown menus
+- ✅ Proper focus management with focus-visible
+- ✅ Fixed JavaScript module loading for importmaps
+- ✅ Enhanced settings page with notification preferences
+- ✅ Consistent pagination styling
+
+For details, see [UI/UX Improvements Guide](ui_ux_improvements.md)
 
 ### 1. Use ViewComponents for Reusability
 

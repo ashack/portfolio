@@ -1,6 +1,6 @@
 # Rails SaaS Starter - Documentation
 
-*Last Updated: December 2025*
+*Last Updated: January 2025*
 
 Welcome to the Rails SaaS Starter documentation. This guide helps you navigate all available documentation for this production-ready triple-track SaaS application.
 
@@ -60,6 +60,8 @@ Current metrics, feature completion status, pending tasks, and roadmap.
 
 ### Reference
 - [UI Components](reference/ui-components.md) - Component library and patterns
+- [UI/UX Improvements](ui_ux_improvements.md) - Modern UI implementation guide
+- [Tab Navigation](tab_navigation.md) - Tab component documentation
 - [Consolidation Summary](CONSOLIDATION_SUMMARY.md) - Documentation reorganization notes
 
 ## 📂 Directory Structure
@@ -71,7 +73,8 @@ docs/
 │   ├── improvements.md
 │   ├── recent_updates.md
 │   ├── development_guide.md
-│   └── project_status.md
+│   ├── project_status.md
+│   └── ui_ux_improvements.md
 │
 ├── architecture/          # System design docs
 ├── security/             # Security guides

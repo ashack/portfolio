@@ -1,0 +1,128 @@
+<!-- Top Navigation Bar -->
+<header class="bg-white shadow-sm border-b border-gray-200" data-controller="mobile-menu">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center justify-between h-16">
+      <!-- Left side - Logo and primary navigation -->
+      <div class="flex items-center">
+        <!-- Mobile menu button -->
+        <button type="button" 
+                class="md:hidden inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500"
+                data-action="click->mobile-menu#toggle"
+                aria-controls="mobile-menu"
+                aria-expanded="false">
+          <span class="sr-only">Open main menu</span>
+          <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" data-mobile-menu-target="openIcon">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+          </svg>
+          <svg class="hidden h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" data-mobile-menu-target="closeIcon">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+        
+        <!-- Logo -->
+        <div class="flex-shrink-0 ml-4 md:ml-0">
+          <%= link_to root_path, class: "flex items-center" do %>
+            <span class="text-xl font-bold text-gray-900">SaaS App</span>
+          <% end %>
+        </div>
+        
+        <!-- Primary Navigation -->
+        <nav class="hidden md:ml-6 md:flex md:space-x-4">
+          <% if current_user.direct? %>
+            <%= link_to root_path, class: "#{current_page?(root_path) ? 'text-gray-900 bg-gray-100' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'} px-3 py-2 rounded-md text-sm font-medium" do %>
+              Dashboard
+            <% end %>
+            <% if current_user.respond_to?(:payment_processor) && current_user.payment_processor.present? %>
+              <%= link_to users_billing_index_path, class: "#{request.path.include?('/billing') ? 'text-gray-900 bg-gray-100' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'} px-3 py-2 rounded-md text-sm font-medium" do %>
+                Billing
+              <% end %>
+            <% end %>
+            <%= link_to users_subscription_path, class: "#{request.path.include?('/subscription') ? 'text-gray-900 bg-gray-100' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'} px-3 py-2 rounded-md text-sm font-medium" do %>
+              Subscription
+            <% end %>
+          <% elsif current_user.invited? && current_user.team %>
+            <%= link_to team_root_path(team_slug: current_user.team.slug), class: "#{current_page?(team_root_path(team_slug: current_user.team.slug)) ? 'text-gray-900 bg-gray-100' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'} px-3 py-2 rounded-md text-sm font-medium" do %>
+              Team Dashboard
+            <% end %>
+            <% if current_user.team_admin? %>
+              <%= link_to team_admin_root_path(team_slug: current_user.team.slug), class: "#{request.path.include?('/admin') ? 'text-gray-900 bg-gray-100' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'} px-3 py-2 rounded-md text-sm font-medium" do %>
+                Team Admin
+              <% end %>
+            <% end %>
+          <% elsif current_user.enterprise? && current_user.enterprise_group %>
+            <%= link_to enterprise_root_path(current_user.enterprise_group.slug), class: "#{current_page?(enterprise_root_path(current_user.enterprise_group.slug)) ? 'text-gray-900 bg-gray-100' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'} px-3 py-2 rounded-md text-sm font-medium" do %>
+              Organization
+            <% end %>
+            <% if current_user.enterprise_group_role == 'admin' %>
+              <%= link_to enterprise_admin_root_path(enterprise_slug: current_user.enterprise_group.slug), class: "#{request.path.include?('/admin') ? 'text-gray-900 bg-gray-100' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'} px-3 py-2 rounded-md text-sm font-medium" do %>
+                Admin
+              <% end %>
+            <% end %>
+          <% elsif current_user.super_admin? %>
+            <%= link_to admin_super_root_path, class: "#{request.path.include?('/admin/super') ? 'text-gray-900 bg-gray-100' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'} px-3 py-2 rounded-md text-sm font-medium" do %>
+              Super Admin
+            <% end %>
+          <% elsif current_user.site_admin? %>
+            <%= link_to admin_site_root_path, class: "#{request.path.include?('/admin/site') ? 'text-gray-900 bg-gray-100' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'} px-3 py-2 rounded-md text-sm font-medium" do %>
+              Site Admin
+            <% end %>
+          <% end %>
+        </nav>
+      </div>
+
+      <!-- Right side - User menu and notifications -->
+      <div class="flex items-center space-x-4">
+        <!-- Notification Center -->
+        <%= render "shared/notification_center" %>
+        
+        <!-- User Avatar Menu -->
+        <%= render "shared/user_avatar_menu" %>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- Mobile Navigation Menu -->
+<div class="md:hidden hidden" data-mobile-menu-target="panel">
+  <div class="px-2 pt-2 pb-3 space-y-1 bg-white border-b border-gray-200">
+    <% if current_user.direct? %>
+      <%= link_to root_path, class: "#{current_page?(root_path) ? 'bg-gray-100 text-gray-900' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'} block px-3 py-2 rounded-md text-base font-medium" do %>
+        Dashboard
+      <% end %>
+      <% if current_user.respond_to?(:payment_processor) && current_user.payment_processor.present? %>
+        <%= link_to users_billing_index_path, class: "#{request.path.include?('/billing') ? 'bg-gray-100 text-gray-900' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'} block px-3 py-2 rounded-md text-base font-medium" do %>
+          Billing
+        <% end %>
+      <% end %>
+      <%= link_to users_subscription_path, class: "#{request.path.include?('/subscription') ? 'bg-gray-100 text-gray-900' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'} block px-3 py-2 rounded-md text-base font-medium" do %>
+        Subscription
+      <% end %>
+    <% elsif current_user.invited? && current_user.team %>
+      <%= link_to team_root_path(team_slug: current_user.team.slug), class: "#{current_page?(team_root_path(team_slug: current_user.team.slug)) ? 'bg-gray-100 text-gray-900' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'} block px-3 py-2 rounded-md text-base font-medium" do %>
+        Team Dashboard
+      <% end %>
+      <% if current_user.team_admin? %>
+        <%= link_to team_admin_root_path(team_slug: current_user.team.slug), class: "#{request.path.include?('/admin') ? 'bg-gray-100 text-gray-900' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'} block px-3 py-2 rounded-md text-base font-medium" do %>
+          Team Admin
+        <% end %>
+      <% end %>
+    <% elsif current_user.enterprise? && current_user.enterprise_group %>
+      <%= link_to enterprise_root_path(current_user.enterprise_group.slug), class: "#{current_page?(enterprise_root_path(current_user.enterprise_group.slug)) ? 'bg-gray-100 text-gray-900' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'} block px-3 py-2 rounded-md text-base font-medium" do %>
+        Organization
+      <% end %>
+      <% if current_user.enterprise_group_role == 'admin' %>
+        <%= link_to enterprise_admin_root_path(enterprise_slug: current_user.enterprise_group.slug), class: "#{request.path.include?('/admin') ? 'bg-gray-100 text-gray-900' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'} block px-3 py-2 rounded-md text-base font-medium" do %>
+          Admin
+        <% end %>
+      <% end %>
+    <% elsif current_user.super_admin? %>
+      <%= link_to admin_super_root_path, class: "#{request.path.include?('/admin/super') ? 'bg-gray-100 text-gray-900' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'} block px-3 py-2 rounded-md text-base font-medium" do %>
+        Super Admin
+      <% end %>
+    <% elsif current_user.site_admin? %>
+      <%= link_to admin_site_root_path, class: "#{request.path.include?('/admin/site') ? 'bg-gray-100 text-gray-900' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'} block px-3 py-2 rounded-md text-base font-medium" do %>
+        Site Admin
+      <% end %>
+    <% end %>
+  </div>
+</div>
