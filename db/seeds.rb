@@ -494,194 +494,10 @@ if Rails.env.development?
   puts "\nNote: Team admins are invited users and can only access their team's features."
   puts "==================================\n"
 
-  # Create many additional users for pagination testing
-  puts "\n=== Creating Additional Users for Pagination Testing ==="
-
-  # Create 50 direct users with various statuses
-  puts "Creating 50 direct users..."
-  50.times do |i|
-    User.create!(
-      email: "direct_user_#{i + 1}@example.com",
-      password: 'Password123!',
-      password_confirmation: 'Password123!',
-      first_name: Faker::Name.first_name,
-      last_name: Faker::Name.last_name,
-      system_role: 'user',
-      user_type: 'direct',
-      status: [ 'active', 'active', 'active', 'inactive' ].sample, # 75% active, 25% inactive
-      plan: [ free_plan, pro_plan, premium_plan ].sample,
-      confirmed_at: Time.current - rand(1..365).days,
-      last_activity_at: Time.current - rand(1..30).days,
-      created_at: Time.current - rand(1..365).days
-    )
-  end
-  puts "Created 50 direct users"
-
-  # Create 5 more teams with members for pagination
-  puts "\nCreating 5 additional teams..."
-  5.times do |i|
-    team_number = i + 4 # Starting from team 4
-
-    # Create team
-    team = Team.create!(
-      name: "#{Faker::Company.name} #{team_number}",
-      slug: "team-#{team_number}-#{SecureRandom.hex(4)}",
-      admin: super_admin, # Temporary admin
-      created_by: super_admin,
-      status: [ 'active', 'active', 'active', 'suspended' ].sample,
-      plan: [ 'starter', 'pro', 'enterprise' ].sample,
-      created_at: Time.current - rand(1..365).days
-    )
-
-    # Create team admin
-    team_admin = User.create!(
-      email: "admin#{team_number}@team#{team_number}.com",
-      password: 'Password123!',
-      password_confirmation: 'Password123!',
-      first_name: Faker::Name.first_name,
-      last_name: Faker::Name.last_name,
-      system_role: 'user',
-      user_type: 'invited',
-      team: team,
-      team_role: 'admin',
-      status: 'active',
-      confirmed_at: Time.current,
-      last_activity_at: Time.current - rand(1..7).days,
-      created_at: team.created_at
-    )
-
-    team.update!(admin: team_admin)
-
-    # Create team members (3-8 members per team)
-    member_count = rand(3..8)
-    member_count.times do |j|
-      User.create!(
-        email: "member#{j + 1}_team#{team_number}@example.com",
-        password: 'Password123!',
-        password_confirmation: 'Password123!',
-        first_name: Faker::Name.first_name,
-        last_name: Faker::Name.last_name,
-        system_role: 'user',
-        user_type: 'invited',
-        team: team,
-        team_role: 'member',
-        status: [ 'active', 'active', 'active', 'inactive' ].sample,
-        confirmed_at: Time.current,
-        last_activity_at: Time.current - rand(1..30).days,
-        created_at: team.created_at + rand(1..30).days
-      )
-    end
-
-    puts "Created team: #{team.name} with #{member_count} members"
-  end
-
-  # Create 3 enterprise groups with members
-  puts "\nCreating 3 enterprise groups..."
-  3.times do |i|
-    enterprise_number = i + 1
-
-    enterprise_plan = Plan.find_by(plan_segment: 'enterprise', active: true)
-
-    # Create enterprise group
-    enterprise_group = EnterpriseGroup.create!(
-      name: "#{Faker::Company.name} Enterprise #{enterprise_number}",
-      slug: "enterprise-#{enterprise_number}-#{SecureRandom.hex(4)}",
-      created_by: super_admin,
-      plan: enterprise_plan,
-      status: [ 'active', 'active', 'suspended' ].sample,
-      max_members: 100,
-      created_at: Time.current - rand(1..365).days
-    )
-
-    # Create enterprise admin
-    enterprise_admin = User.create!(
-      email: "admin@enterprise#{enterprise_number}.com",
-      password: 'Password123!',
-      password_confirmation: 'Password123!',
-      first_name: Faker::Name.first_name,
-      last_name: Faker::Name.last_name,
-      system_role: 'user',
-      user_type: 'enterprise',
-      enterprise_group: enterprise_group,
-      enterprise_group_role: 'admin',
-      status: 'active',
-      confirmed_at: Time.current,
-      last_activity_at: Time.current - rand(1..7).days,
-      created_at: enterprise_group.created_at
-    )
-
-    enterprise_group.update!(admin: enterprise_admin)
-
-    # Create enterprise members (10-20 members per group)
-    member_count = rand(10..20)
-    member_count.times do |j|
-      User.create!(
-        email: "emp#{j + 1}_enterprise#{enterprise_number}@example.com",
-        password: 'Password123!',
-        password_confirmation: 'Password123!',
-        first_name: Faker::Name.first_name,
-        last_name: Faker::Name.last_name,
-        system_role: 'user',
-        user_type: 'enterprise',
-        enterprise_group: enterprise_group,
-        enterprise_group_role: 'member',
-        status: [ 'active', 'active', 'active', 'inactive' ].sample,
-        confirmed_at: Time.current,
-        last_activity_at: Time.current - rand(1..30).days,
-        created_at: enterprise_group.created_at + rand(1..30).days
-      )
-    end
-
-    puts "Created enterprise group: #{enterprise_group.name} with #{member_count} members"
-  end
-
-  # Create pending invitations for testing pagination
-  puts "\nCreating pending invitations..."
-
-  # Team invitations
-  Team.active.limit(3).each do |team|
-    5.times do |i|
-      Invitation.create!(
-        team: team,
-        invitable: team,
-        invitation_type: 'team',
-        email: "pending_invite_#{i + 1}_#{team.slug}@example.com",
-        role: [ 'member', 'member', 'admin' ].sample,
-        token: SecureRandom.urlsafe_base64(32),
-        invited_by: team.admin,
-        expires_at: 7.days.from_now,
-        created_at: Time.current - rand(1..5).days
-      )
-    end
-  end
-  puts "Created team invitations"
-
-  # Enterprise invitations
-  EnterpriseGroup.active.limit(2).each do |enterprise|
-    3.times do |i|
-      Invitation.create!(
-        invitable: enterprise,
-        invitation_type: 'enterprise',
-        email: "pending_enterprise_#{i + 1}_#{enterprise.slug}@example.com",
-        role: [ 'member', 'member', 'admin' ].sample,
-        token: SecureRandom.urlsafe_base64(32),
-        invited_by: enterprise.admin,
-        expires_at: 7.days.from_now,
-        created_at: Time.current - rand(1..5).days
-      )
-    end
-  end
-  puts "Created enterprise invitations"
-
-  puts "\n=== Pagination Test Data Created ==="
-  puts "Total Users: #{User.count}"
-  puts "- Direct Users: #{User.direct.count}"
-  puts "- Team Members: #{User.invited.count}"
-  puts "- Enterprise Users: #{User.enterprise.count}"
-  puts "Total Teams: #{Team.count}"
-  puts "Total Enterprise Groups: #{EnterpriseGroup.count}"
-  puts "Total Pending Invitations: #{Invitation.pending.count}"
-  puts "==================================\n"
+  # TEMPORARILY COMMENTED OUT - Pagination test data causing duplicate emails
+  # # Create many additional users for pagination testing
+  # puts "\n=== Creating Additional Users for Pagination Testing ==="
+  # ... (commented out for now)
 
   puts "\n=== Plans Summary ==="
   puts "Individual Plans: #{Plan.where(plan_segment: 'individual', active: true).count} active"
@@ -691,6 +507,118 @@ if Rails.env.development?
   puts "Total Plans: #{Plan.count}"
   puts "==================================\n"
 
+  # Create test notifications inline instead of loading separate file
+  puts "\n=== Creating Test Notifications ==="
+  
+  # Clear existing notifications for a clean slate
+  puts "Clearing existing notifications..."
+  Noticed::Notification.destroy_all
+  Noticed::Event.destroy_all
+
+  # Find different types of users
+  super_admin = User.find_by(system_role: "super_admin")
+  site_admin = User.find_by(system_role: "site_admin")
+  direct_users = User.direct.active.limit(3)
+  team_admins = User.invited.where(team_role: "admin").limit(2)
+  team_members = User.invited.where(team_role: "member").limit(3)
+
+  # Create notifications for different user types
+  all_users = [ super_admin, site_admin, direct_users, team_admins, team_members ].flatten.compact
+
+  if all_users.any?
+    all_users.each_with_index do |user, index|
+      next unless user
+      
+      # Mix of read and unread notifications
+      days_ago = rand(0..30)
+      
+      # 1. Status change notification
+      notification = UserStatusNotifier.with(
+        user: user,
+        old_status: "inactive",
+        new_status: "active",
+        changed_by: super_admin || User.first
+      ).deliver(user)
+      
+      if days_ago > 7
+        user.notifications.last&.mark_as_read!
+      end
+      
+      # 2. Login notification
+      locations = [ "New York, NY", "London, UK", "Tokyo, Japan", "Sydney, Australia", "Berlin, Germany" ]
+      ip_addresses = [ "192.168.1.1", "10.0.0.1", "172.16.0.1", "203.0.113.0", "198.51.100.0" ]
+      
+      LoginNotifier.with(
+        ip_address: ip_addresses.sample,
+        user_agent: "Mozilla/5.0 (#{[ 'Macintosh', 'Windows', 'Linux' ].sample})",
+        location: locations.sample
+      ).deliver(user)
+      
+      # 3. Security alerts (critical - always unread)
+      if index % 3 == 0
+        SecurityAlertNotifier.with(
+          alert_type: [ "suspicious_login", "password_reset_attempt", "failed_login_attempts" ].sample,
+          ip_address: "185.#{rand(1..255)}.#{rand(1..255)}.#{rand(1..255)}",
+          location: "Unknown Location",
+          details: "Multiple failed login attempts detected from this IP address"
+        ).deliver(user)
+      end
+      
+      # 4. Team-specific notifications
+      if user.invited? && user.team
+        TeamMemberNotifier.with(
+          team: user.team,
+          member: user,
+          action: [ "added", "removed", "role_changed" ].sample,
+          performed_by: user.team.admin
+        ).deliver(user)
+        
+        # Mark some as read
+        if rand > 0.5
+          user.notifications.last&.mark_as_read!
+        end
+      end
+      
+      # 5. Account updates
+      AccountUpdateNotifier.with(
+        changes: {
+          first_name: [ "Old First", user.first_name ],
+          last_name: [ "Old Last", user.last_name ]
+        }
+      ).deliver(user)
+      
+      # 6. Admin actions (for some users)
+      if index % 4 == 0
+        AdminActionNotifier.with(
+          action: [ "password_reset", "account_unlocked", "email_verified" ].sample,
+          admin: super_admin || site_admin || User.first,
+          details: { note: "Action performed by administrator", ip_address: "10.0.0.1" }
+        ).deliver(user)
+      end
+    end
+    
+    # Create some system announcements
+    3.times do |i|
+      SystemAnnouncementNotifier.with(
+        title: "System Update #{i + 1}",
+        message: "New features coming #{(i + 1).days.from_now.strftime('%B %d, %Y')}",
+        priority: [ "low", "medium", "high" ].sample,
+        announcement_type: [ "maintenance", "feature", "general" ].sample
+      ).deliver(User.active.limit(5))
+    end
+    
+    puts "\n=== Notification Summary ==="
+    puts "Total notification events: #{Noticed::Event.count}"
+    puts "Total notifications: #{Noticed::Notification.count}"
+    puts "Unread notifications: #{Noticed::Notification.unread.count}"
+    puts "Read notifications: #{Noticed::Notification.read.count}"
+  else
+    puts "No active users found for notifications."
+  end
+
 end
+
+# Load notification categories
+require_relative "seeds/notification_categories"
 
 puts "\nSeeding complete!"

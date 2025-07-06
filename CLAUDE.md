@@ -1452,6 +1452,18 @@ end
 - Proper icon helper usage (`icon` not `rails_icon`)
 - Pundit policy scoping for enterprise controllers
 
+### 6. Notification System (Noticed Gem Integration)
+- Integrated Noticed gem 2.7.1 for comprehensive notification system
+- Database tables: `noticed_events` and `noticed_notifications`
+- Polymorphic recipient support for flexible notification delivery
+- Enhanced `notification_preferences` JSON structure with defaults:
+  - Email notifications (status changes, role changes, invitations, security alerts)
+  - In-app notifications (same categories as email)
+  - Real-time settings (enabled/disabled, sound preferences)
+- Performance indexes on read_at, seen_at, and recipient queries
+- User model associations for notifications as recipient
+- Foundation ready for multi-channel delivery (email, in-app, ActionCable)
+
 ### Test Coverage
 
 SimpleCov is configured to track both line and branch coverage. Current coverage is ~24% with a target of 90%+.

@@ -1,0 +1,192 @@
+<div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+  <!-- Header -->
+  <div class="mb-8">
+    <h1 class="text-3xl font-bold text-gray-900">Send Notification</h1>
+    <p class="mt-2 text-sm text-gray-600">Create and send notifications to users</p>
+  </div>
+
+  <%= form_with model: @notification, url: admin_super_notifications_path, local: true do |f| %>
+    <div class="bg-white shadow sm:rounded-lg">
+      <div class="px-4 py-5 sm:p-6 space-y-6">
+        
+        <!-- Notification Type -->
+        <div>
+          <%= f.label :notification_type, class: "block text-sm font-medium text-gray-700" %>
+          <%= f.select :notification_type, 
+              options_for_select([
+                ['System Announcement', 'system_announcement'],
+                ['Admin Action', 'admin_action'],
+                ['Custom Notification', 'custom']
+              ], @notification.notification_type),
+              { prompt: 'Select notification type' },
+              class: "mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md",
+              data: { notification_type_select: true } %>
+          <% if @notification.errors[:notification_type].any? %>
+            <p class="mt-2 text-sm text-red-600"><%= @notification.errors[:notification_type].first %></p>
+          <% end %>
+        </div>
+
+        <!-- Title (for announcements) -->
+        <div data-notification-field="title" style="display: none;">
+          <%= f.label :title, class: "block text-sm font-medium text-gray-700" %>
+          <%= f.text_field :title, 
+              class: "mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm",
+              placeholder: "e.g., Scheduled Maintenance" %>
+          <% if @notification.errors[:title].any? %>
+            <p class="mt-2 text-sm text-red-600"><%= @notification.errors[:title].first %></p>
+          <% end %>
+        </div>
+
+        <!-- Message -->
+        <div>
+          <%= f.label :message, class: "block text-sm font-medium text-gray-700" %>
+          <%= f.text_area :message, 
+              rows: 4,
+              class: "mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm",
+              placeholder: "Enter your notification message..." %>
+          <% if @notification.errors[:message].any? %>
+            <p class="mt-2 text-sm text-red-600"><%= @notification.errors[:message].first %></p>
+          <% end %>
+        </div>
+
+        <!-- Priority -->
+        <div>
+          <%= f.label :priority, class: "block text-sm font-medium text-gray-700" %>
+          <%= f.select :priority, 
+              options_for_select([
+                ['Low', 'low'],
+                ['Medium', 'medium'],
+                ['High', 'high'],
+                ['Critical', 'critical']
+              ], @notification.priority),
+              {},
+              class: "mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md" %>
+        </div>
+
+        <!-- Announcement Type (for system announcements) -->
+        <div data-notification-field="announcement_type" style="display: none;">
+          <%= f.label :announcement_type, "Category", class: "block text-sm font-medium text-gray-700" %>
+          <%= f.select :announcement_type, 
+              options_for_select([
+                ['General', 'general'],
+                ['Feature Update', 'feature'],
+                ['Maintenance', 'maintenance'],
+                ['Security', 'security']
+              ], @notification.announcement_type),
+              {},
+              class: "mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md" %>
+        </div>
+
+        <!-- Admin Action (for admin actions) -->
+        <div data-notification-field="action" style="display: none;">
+          <%= f.label :action, "Action Type", class: "block text-sm font-medium text-gray-700" %>
+          <%= f.select :action, 
+              options_for_select([
+                ['Password Reset', 'password_reset'],
+                ['Account Unlocked', 'account_unlocked'],
+                ['Email Verified', 'email_verified'],
+                ['Profile Updated', 'profile_updated']
+              ], @notification.action),
+              { prompt: 'Select action type' },
+              class: "mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md" %>
+        </div>
+
+        <!-- Recipient Selection -->
+        <div>
+          <%= f.label :recipient_type, "Send to", class: "block text-sm font-medium text-gray-700" %>
+          <%= f.select :recipient_type, 
+              options_for_select([
+                ['All Active Users', 'all_users'],
+                ['All Admins (Super & Site)', 'all_admins'],
+                ['All Team Admins', 'all_team_admins'],
+                ['Specific Users', 'specific_user'],
+                ['Specific Team', 'specific_team']
+              ], @notification.recipient_type),
+              { prompt: 'Select recipients' },
+              class: "mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md",
+              data: { recipient_type_select: true } %>
+          <% if @notification.errors[:recipient_type].any? %>
+            <p class="mt-2 text-sm text-red-600"><%= @notification.errors[:recipient_type].first %></p>
+          <% end %>
+        </div>
+
+        <!-- Specific User Selection -->
+        <div data-recipient-field="specific_user" style="display: none;">
+          <%= f.label :recipient_ids, "Select Users", class: "block text-sm font-medium text-gray-700" %>
+          <%= f.select :recipient_ids, 
+              options_for_select(@recipient_options[:users], @notification.recipient_ids),
+              { prompt: 'Select users...' },
+              { multiple: true, 
+                class: "mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md",
+                size: 10 } %>
+          <p class="mt-1 text-xs text-gray-500">Hold Ctrl/Cmd to select multiple users</p>
+        </div>
+
+        <!-- Specific Team Selection -->
+        <div data-recipient-field="specific_team" style="display: none;">
+          <%= f.label :team_id, "Select Team", class: "block text-sm font-medium text-gray-700" %>
+          <%= f.select :team_id, 
+              options_for_select(@recipient_options[:teams], @notification.team_id),
+              { prompt: 'Select a team...' },
+              class: "mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md" %>
+        </div>
+      </div>
+
+      <div class="px-4 py-3 bg-gray-50 text-right sm:px-6">
+        <%= link_to "Cancel", admin_super_notifications_path, 
+            class: "inline-flex justify-center py-2 px-4 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" %>
+        <%= f.submit "Send Notification", 
+            class: "ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" %>
+      </div>
+    </div>
+  <% end %>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Handle notification type changes
+  const typeSelect = document.querySelector('[data-notification-type-select]');
+  if (typeSelect) {
+    typeSelect.addEventListener('change', function() {
+      // Hide all conditional fields
+      document.querySelectorAll('[data-notification-field]').forEach(field => {
+        field.style.display = 'none';
+      });
+      
+      // Show relevant fields
+      switch(this.value) {
+        case 'system_announcement':
+          document.querySelector('[data-notification-field="title"]').style.display = 'block';
+          document.querySelector('[data-notification-field="announcement_type"]').style.display = 'block';
+          break;
+        case 'admin_action':
+          document.querySelector('[data-notification-field="action"]').style.display = 'block';
+          break;
+      }
+    });
+    
+    // Trigger change on load
+    typeSelect.dispatchEvent(new Event('change'));
+  }
+  
+  // Handle recipient type changes
+  const recipientSelect = document.querySelector('[data-recipient-type-select]');
+  if (recipientSelect) {
+    recipientSelect.addEventListener('change', function() {
+      // Hide all recipient fields
+      document.querySelectorAll('[data-recipient-field]').forEach(field => {
+        field.style.display = 'none';
+      });
+      
+      // Show relevant field
+      const field = document.querySelector(`[data-recipient-field="${this.value}"]`);
+      if (field) {
+        field.style.display = 'block';
+      }
+    });
+    
+    // Trigger change on load
+    recipientSelect.dispatchEvent(new Event('change'));
+  }
+});
+</script>

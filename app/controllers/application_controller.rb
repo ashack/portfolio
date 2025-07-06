@@ -85,7 +85,9 @@ class ApplicationController < ActionController::Base
   end
 
   def skip_pundit?
-    devise_controller? || params[:controller] =~ /(^pages$)|(^home$)|(^redirect$)/
+    devise_controller? || 
+    params[:controller] =~ /(^pages$)|(^home$)|(^redirect$)/ ||
+    params[:controller] =~ /^admin\/super\//
   end
 
   # Layout selection based on user type and context

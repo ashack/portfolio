@@ -1,0 +1,209 @@
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+  <!-- Header -->
+  <div class="mb-8">
+    <div class="flex items-center mb-4">
+      <%= link_to enterprise_admin_notification_categories_path(enterprise_slug: current_enterprise_group.slug), 
+          class: "text-gray-500 hover:text-gray-700" do %>
+        <%= icon("arrow-left", class: "h-5 w-5") %>
+      <% end %>
+      <h1 class="ml-4 text-3xl font-bold text-gray-900">Edit Notification Category</h1>
+    </div>
+    <p class="text-sm text-gray-600">Update notification category settings</p>
+  </div>
+
+  <!-- Form -->
+  <div class="bg-white shadow sm:rounded-lg">
+    <div class="px-4 py-5 sm:p-6">
+      <%= form_with(model: @notification_category, 
+                    url: enterprise_admin_notification_category_path(enterprise_slug: current_enterprise_group.slug, id: @notification_category), 
+                    local: true) do |form| %>
+        <% if @notification_category.errors.any? %>
+          <div class="mb-6 bg-red-50 border border-red-200 rounded-md p-4">
+            <div class="flex">
+              <div class="flex-shrink-0">
+                <%= icon("warning", class: "h-5 w-5 text-red-400") %>
+              </div>
+              <div class="ml-3">
+                <h3 class="text-sm font-medium text-red-800">
+                  There were <%= pluralize(@notification_category.errors.count, "error") %> with your submission
+                </h3>
+                <div class="mt-2 text-sm text-red-700">
+                  <ul class="list-disc pl-5 space-y-1">
+                    <% @notification_category.errors.full_messages.each do |message| %>
+                      <li><%= message %></li>
+                    <% end %>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        <% end %>
+
+        <div class="space-y-6">
+          <!-- Basic Information -->
+          <div>
+            <h3 class="text-lg font-medium text-gray-900 mb-4">Basic Information</h3>
+            
+            <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+              <div>
+                <%= form.label :name, class: "block text-sm font-medium text-gray-700" %>
+                <%= form.text_field :name, 
+                    class: "mt-1 focus:ring-purple-500 focus:border-purple-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" %>
+                <p class="mt-1 text-xs text-gray-500">User-friendly name for this category</p>
+              </div>
+
+              <div>
+                <%= form.label :key, class: "block text-sm font-medium text-gray-700" %>
+                <div class="mt-1 relative">
+                  <%= form.text_field :key, 
+                      readonly: true,
+                      class: "bg-gray-50 focus:ring-purple-500 focus:border-purple-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md cursor-not-allowed" %>
+                  <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                    <%= icon("lock", class: "h-5 w-5 text-gray-400") %>
+                  </div>
+                </div>
+                <p class="mt-1 text-xs text-gray-500">Key cannot be changed after creation</p>
+              </div>
+            </div>
+
+            <div class="mt-6">
+              <%= form.label :description, class: "block text-sm font-medium text-gray-700" %>
+              <%= form.text_area :description, 
+                  rows: 3,
+                  class: "mt-1 focus:ring-purple-500 focus:border-purple-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" %>
+            </div>
+          </div>
+
+          <!-- Visual Settings -->
+          <div>
+            <h3 class="text-lg font-medium text-gray-900 mb-4">Visual Settings</h3>
+            
+            <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+              <div>
+                <%= form.label :icon, class: "block text-sm font-medium text-gray-700" %>
+                <%= form.text_field :icon, 
+                    class: "mt-1 focus:ring-purple-500 focus:border-purple-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" %>
+                <p class="mt-1 text-xs text-gray-500">Phosphor icon name</p>
+              </div>
+
+              <div>
+                <%= form.label :color, class: "block text-sm font-medium text-gray-700" %>
+                <%= form.select :color, 
+                    options_for_select([
+                      ['Blue', 'blue'],
+                      ['Green', 'green'],
+                      ['Yellow', 'yellow'],
+                      ['Red', 'red'],
+                      ['Purple', 'purple'],
+                      ['Gray', 'gray']
+                    ], @notification_category.color),
+                    {},
+                    class: "mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm rounded-md" %>
+              </div>
+            </div>
+          </div>
+
+          <!-- Behavior Settings -->
+          <div>
+            <h3 class="text-lg font-medium text-gray-900 mb-4">Behavior Settings</h3>
+            
+            <div class="space-y-4">
+              <div class="relative flex items-start">
+                <div class="flex items-center h-5">
+                  <%= form.check_box :active, 
+                      class: "focus:ring-purple-500 h-4 w-4 text-purple-600 border-gray-300 rounded" %>
+                </div>
+                <div class="ml-3 text-sm">
+                  <%= form.label :active, class: "font-medium text-gray-700" %>
+                  <p class="text-gray-500">Enable this notification category</p>
+                </div>
+              </div>
+
+              <div class="relative flex items-start">
+                <div class="flex items-center h-5">
+                  <%= form.check_box :allow_user_disable, 
+                      class: "focus:ring-purple-500 h-4 w-4 text-purple-600 border-gray-300 rounded" %>
+                </div>
+                <div class="ml-3 text-sm">
+                  <%= form.label :allow_user_disable, "Allow users to disable", class: "font-medium text-gray-700" %>
+                  <p class="text-gray-500">Organization members can opt out of this notification type</p>
+                </div>
+              </div>
+
+              <div class="relative flex items-start">
+                <div class="flex items-center h-5">
+                  <%= form.check_box :send_email, 
+                      class: "focus:ring-purple-500 h-4 w-4 text-purple-600 border-gray-300 rounded" %>
+                </div>
+                <div class="ml-3 text-sm">
+                  <%= form.label :send_email, "Send email notifications", class: "font-medium text-gray-700" %>
+                  <p class="text-gray-500">Send notifications via email in addition to in-app</p>
+                </div>
+              </div>
+
+              <div>
+                <%= form.label :default_priority, class: "block text-sm font-medium text-gray-700" %>
+                <%= form.select :default_priority, 
+                    options_for_select([
+                      ['Low', 'low'],
+                      ['Normal', 'normal'],
+                      ['High', 'high'],
+                      ['Urgent', 'urgent']
+                    ], @notification_category.default_priority),
+                    {},
+                    class: "mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm rounded-md" %>
+              </div>
+            </div>
+          </div>
+
+          <!-- Email Template (Optional) -->
+          <div>
+            <h3 class="text-lg font-medium text-gray-900 mb-4">Email Template (Optional)</h3>
+            
+            <div>
+              <%= form.label :email_template, class: "block text-sm font-medium text-gray-700" %>
+              <%= form.text_field :email_template, 
+                  class: "mt-1 focus:ring-purple-500 focus:border-purple-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md",
+                  placeholder: "e.g., compliance_update" %>
+              <p class="mt-1 text-xs text-gray-500">Custom email template name for this notification type</p>
+            </div>
+          </div>
+
+          <!-- Metadata -->
+          <div>
+            <h3 class="text-lg font-medium text-gray-900 mb-4">Metadata</h3>
+            
+            <div class="bg-gray-50 rounded-lg p-4 space-y-2">
+              <div class="flex items-center justify-between text-sm">
+                <span class="text-gray-600">Created by:</span>
+                <span class="font-medium text-gray-900">
+                  <%= @notification_category.created_by.full_name %>
+                </span>
+              </div>
+              <div class="flex items-center justify-between text-sm">
+                <span class="text-gray-600">Created at:</span>
+                <span class="font-medium text-gray-900">
+                  <%= @notification_category.created_at.strftime("%B %d, %Y at %I:%M %p") %>
+                </span>
+              </div>
+              <div class="flex items-center justify-between text-sm">
+                <span class="text-gray-600">Last updated:</span>
+                <span class="font-medium text-gray-900">
+                  <%= @notification_category.updated_at.strftime("%B %d, %Y at %I:%M %p") %>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Form Actions -->
+        <div class="mt-8 flex justify-end space-x-3">
+          <%= link_to "Cancel", enterprise_admin_notification_categories_path(enterprise_slug: current_enterprise_group.slug), 
+              class: "inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500" %>
+          <%= form.submit "Update Category", 
+              class: "inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

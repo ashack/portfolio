@@ -1,0 +1,144 @@
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+  <!-- Header -->
+  <div class="mb-8">
+    <nav class="flex mb-4" aria-label="Breadcrumb">
+      <ol class="flex items-center space-x-4">
+        <li>
+          <div>
+            <%= link_to admin_super_notifications_path, class: "text-gray-400 hover:text-gray-500" do %>
+              <%= icon("bell", class: "h-5 w-5") %>
+              <span class="sr-only">Notifications</span>
+            <% end %>
+          </div>
+        </li>
+        <li>
+          <div class="flex items-center">
+            <%= icon("caret-right", class: "h-5 w-5 text-gray-400") %>
+            <span class="ml-4 text-sm font-medium text-gray-500">Notification Details</span>
+          </div>
+        </li>
+      </ol>
+    </nav>
+    <h1 class="text-3xl font-bold text-gray-900">Notification Details</h1>
+  </div>
+
+  <!-- Notification Event Details -->
+  <div class="bg-white shadow overflow-hidden sm:rounded-lg mb-8">
+    <div class="px-4 py-5 sm:px-6">
+      <h3 class="text-lg leading-6 font-medium text-gray-900">
+        <%= @notification_event.type.gsub('Notifier', '') %>
+      </h3>
+      <p class="mt-1 max-w-2xl text-sm text-gray-500">
+        Sent <%= @notification_event.created_at.strftime("%B %d, %Y at %I:%M %p") %>
+      </p>
+    </div>
+    <div class="border-t border-gray-200">
+      <dl>
+        <% if @notification_event.params[:title].present? %>
+          <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+            <dt class="text-sm font-medium text-gray-500">Title</dt>
+            <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+              <%= @notification_event.params[:title] %>
+            </dd>
+          </div>
+        <% end %>
+        
+        <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+          <dt class="text-sm font-medium text-gray-500">Message</dt>
+          <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+            <%= @notification_event.params[:message] || "No message content" %>
+          </dd>
+        </div>
+        
+        <% if @notification_event.params[:priority].present? %>
+          <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+            <dt class="text-sm font-medium text-gray-500">Priority</dt>
+            <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium <%= priority_badge_class(@notification_event.params[:priority]) %>">
+                <%= @notification_event.params[:priority].capitalize %>
+              </span>
+            </dd>
+          </div>
+        <% end %>
+        
+        <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+          <dt class="text-sm font-medium text-gray-500">Total Recipients</dt>
+          <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+            <%= @notification_event.notifications_count %>
+          </dd>
+        </div>
+        
+        <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+          <dt class="text-sm font-medium text-gray-500">Read Status</dt>
+          <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+            <% read_count = @notification_event.notifications.read.count %>
+            <% unread_count = @notification_event.notifications.unread.count %>
+            <div class="flex items-center space-x-4">
+              <span class="text-green-600"><%= read_count %> read</span>
+              <span class="text-gray-600"><%= unread_count %> unread</span>
+            </div>
+          </dd>
+        </div>
+      </dl>
+    </div>
+  </div>
+
+  <!-- Recipients List -->
+  <div class="bg-white shadow overflow-hidden sm:rounded-lg">
+    <div class="px-4 py-5 sm:px-6">
+      <h3 class="text-lg leading-6 font-medium text-gray-900">Recipients</h3>
+    </div>
+    <div class="border-t border-gray-200">
+      <ul class="divide-y divide-gray-200">
+        <% @notifications.each do |notification| %>
+          <li class="px-4 py-4 sm:px-6">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center">
+                <div class="flex-shrink-0">
+                  <% if notification.recipient.avatar.present? %>
+                    <%= image_tag notification.recipient.avatar, class: "h-10 w-10 rounded-full" %>
+                  <% else %>
+                    <div class="h-10 w-10 rounded-full bg-gray-300 flex items-center justify-center">
+                      <%= icon("user", class: "h-6 w-6 text-gray-600") %>
+                    </div>
+                  <% end %>
+                </div>
+                <div class="ml-4">
+                  <div class="text-sm font-medium text-gray-900">
+                    <%= notification.recipient.full_name.presence || notification.recipient.email %>
+                  </div>
+                  <div class="text-sm text-gray-500">
+                    <%= notification.recipient.email %>
+                  </div>
+                </div>
+              </div>
+              <div class="flex items-center space-x-4">
+                <% if notification.read? %>
+                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                    Read <%= time_ago_in_words(notification.read_at) %> ago
+                  </span>
+                <% else %>
+                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                    Unread
+                  </span>
+                <% end %>
+                <% if notification.seen_at.present? %>
+                  <span class="text-xs text-gray-500">
+                    Seen <%= time_ago_in_words(notification.seen_at) %> ago
+                  </span>
+                <% end %>
+              </div>
+            </div>
+          </li>
+        <% end %>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Pagination -->
+  <% if @pagy.pages > 1 %>
+    <div class="mt-6">
+      <%== pagy_nav(@pagy) %>
+    </div>
+  <% end %>
+</div>

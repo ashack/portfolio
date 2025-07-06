@@ -29,6 +29,9 @@ class Team < ApplicationRecord
 
   # Team invitations - automatically cleaned up when team is deleted
   has_many :invitations, dependent: :destroy
+  
+  # Notification categories specific to this team
+  has_many :notification_categories, dependent: :destroy
 
   # Subscription plan level
   # - starter: Basic features, 5 members max

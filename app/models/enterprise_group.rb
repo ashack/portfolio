@@ -7,6 +7,7 @@ class EnterpriseGroup < ApplicationRecord
   belongs_to :plan
   has_many :users, dependent: :restrict_with_error
   has_many :invitations, as: :invitable, dependent: :destroy
+  has_many :notification_categories, dependent: :destroy
 
   enum :status, { active: 0, suspended: 1, cancelled: 2 }
 

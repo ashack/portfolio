@@ -1,4 +1,5 @@
 class UserNotificationService
+  # Main method to notify critical changes using Noticed gem
   def self.notify_critical_changes(user, changes, admin_user = nil)
     return if changes.empty?
 
@@ -14,54 +15,102 @@ class UserNotificationService
     end
   end
 
+  # Email change notification - uses both EmailChangeSecurityNotifier and direct mailer
   def self.notify_email_change(user, old_email, new_email, admin_user = nil)
     begin
-      UserMailer.email_changed(user, old_email).deliver_later
+      # Security notification to old email (using notifier)
+      EmailChangeSecurityNotifier.with(
+        user: user,
+        old_email: old_email,
+        new_email: new_email,
+        changed_at: Time.current
+      ).deliver(user)
+
+      # Keep existing mailer for now for backward compatibility
+      UserMailer.email_changed(user, old_email).deliver_later if user.persisted?
+
       log_notification("email_changed", user, admin_user, { old_email: old_email, new_email: new_email })
     rescue => e
       Rails.logger.error "Failed to send email change notification: #{e.message}"
     end
   end
 
+  # Role change notification using RoleChangeNotifier
   def self.notify_role_change(user, old_role, new_role, admin_user = nil)
     begin
-      UserMailer.role_changed(user, old_role, new_role).deliver_later
+      RoleChangeNotifier.with(
+        user: user,
+        old_role: old_role,
+        new_role: new_role,
+        changed_by: admin_user
+      ).deliver(user)
+
       log_notification("role_changed", user, admin_user, { old_role: old_role, new_role: new_role })
     rescue => e
       Rails.logger.error "Failed to send role change notification: #{e.message}"
     end
   end
 
+  # Status change notification using UserStatusNotifier
   def self.notify_status_change(user, old_status, new_status, admin_user = nil)
     begin
-      UserMailer.status_changed(user, old_status, new_status).deliver_later
+      UserStatusNotifier.with(
+        user: user,
+        old_status: old_status,
+        new_status: new_status,
+        changed_by: admin_user
+      ).deliver(user)
+
       log_notification("status_changed", user, admin_user, { old_status: old_status, new_status: new_status })
     rescue => e
       Rails.logger.error "Failed to send status change notification: #{e.message}"
     end
   end
 
-  def self.notify_password_reset(user, admin_user = nil)
+  # Password reset notification using AdminActionNotifier
+  def self.notify_password_reset(user, admin_user = nil, temporary_password = nil)
     begin
-      # Password reset notifications are handled by the PasswordResetService
+      if admin_user && temporary_password
+        AdminActionNotifier.with(
+          user: user,
+          admin: admin_user,
+          action: "password_reset",
+          details: {
+            temporary_password: temporary_password,
+            expires_at: 24.hours.from_now
+          }
+        ).deliver(user)
+      end
+
       log_notification("password_reset_initiated", user, admin_user)
     rescue => e
-      Rails.logger.error "Failed to log password reset notification: #{e.message}"
+      Rails.logger.error "Failed to send password reset notification: #{e.message}"
     end
   end
 
+  # Account confirmed notification using AccountConfirmedNotifier
   def self.notify_account_confirmed(user, admin_user = nil)
     begin
-      UserMailer.account_confirmed(user).deliver_later
+      AccountConfirmedNotifier.with(
+        user: user,
+        confirmed_at: user.confirmed_at || Time.current
+      ).deliver(user)
+
       log_notification("account_confirmed", user, admin_user)
     rescue => e
       Rails.logger.error "Failed to send account confirmation notification: #{e.message}"
     end
   end
 
-  def self.notify_account_unlocked(user, admin_user = nil)
+  # Account unlocked notification using AccountUnlockedNotifier
+  def self.notify_account_unlocked(user, admin_user = nil, reason = nil)
     begin
-      UserMailer.account_unlocked(user).deliver_later
+      AccountUnlockedNotifier.with(
+        user: user,
+        unlocked_by: admin_user,
+        reason: reason
+      ).deliver(user)
+
       log_notification("account_unlocked", user, admin_user)
     rescue => e
       Rails.logger.error "Failed to send account unlock notification: #{e.message}"

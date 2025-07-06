@@ -11,6 +11,32 @@ Rails.application.routes.draw do
 
   # Email Change Requests
   resources :email_change_requests, only: [ :index, :new, :create, :show ], param: :token
+
+  # Notifications
+  resources :notifications, only: [ :index ] do
+    member do
+      patch :mark_as_read
+      delete :destroy
+    end
+    collection do
+      patch :mark_all_as_read
+      delete :destroy_all
+    end
+  end
+
+  # API endpoints
+  namespace :api do
+    resources :notifications, only: [ :index ] do
+      member do
+        patch :mark_as_read
+      end
+      collection do
+        get :unread_count
+        patch :mark_all_as_read
+      end
+    end
+  end
+
   devise_for :users, controllers: {
     registrations: "users/registrations",
     sessions: "users/sessions"
@@ -69,6 +95,8 @@ Rails.application.routes.draw do
       resources :settings, only: [ :index, :update ]
       resources :analytics, only: [ :index ]
       resources :plans
+      resources :notifications, only: [ :index, :new, :create, :show ]
+      resources :notification_categories
       resources :enterprise_groups do
         resources :invitations, controller: "enterprise_group_invitations", only: [ :index ] do
           member do
@@ -150,6 +178,7 @@ Rails.application.routes.draw do
       resources :subscription, controller: "teams/admin/subscription", as: :team_admin_subscription, only: [ :show, :edit, :update, :destroy ]
       resources :settings, controller: "teams/admin/settings", as: :team_admin_settings, only: [ :index, :update ]
       resources :analytics, controller: "teams/admin/analytics", as: :team_admin_analytics, only: [ :index ]
+      resources :notification_categories, controller: "teams/admin/notification_categories", as: :team_admin_notification_categories
 
       resources :email_change_requests, controller: "teams/admin/email_change_requests", as: :team_admin_email_change_requests, only: [ :index, :show, :new, :create ], param: :token do
         member do
@@ -186,6 +215,11 @@ Rails.application.routes.draw do
       end
     end
     resource :settings, controller: "enterprise/settings", only: [ :show, :update ]
+    
+    # Enterprise admin routes
+    scope "/admin" do
+      resources :notification_categories, controller: "enterprise/admin/notification_categories", as: :enterprise_admin_notification_categories
+    end
   end
 
   # Redirect after sign in based on user type

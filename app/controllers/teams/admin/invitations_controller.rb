@@ -22,7 +22,11 @@ class Teams::Admin::InvitationsController < Teams::Admin::BaseController
     authorize @invitation
 
     if @invitation.save
-      InvitationMailer.team_invitation(@invitation).deliver_later
+      TeamInvitationNotifier.with(
+        invitation: @invitation,
+        team: @team,
+        invited_by: current_user
+      ).deliver(@invitation)
       redirect_to team_admin_invitations_path(team_slug: @team.slug), notice: "Invitation was successfully sent."
     else
       render :new
@@ -33,7 +37,11 @@ class Teams::Admin::InvitationsController < Teams::Admin::BaseController
     authorize @invitation
 
     if !@invitation.accepted? && !@invitation.expired?
-      InvitationMailer.team_invitation(@invitation).deliver_later
+      TeamInvitationNotifier.with(
+        invitation: @invitation,
+        team: @team,
+        invited_by: @invitation.invited_by
+      ).deliver(@invitation)
       redirect_to team_admin_invitations_path(team_slug: @team.slug), notice: "Invitation was resent."
     else
       redirect_to team_admin_invitations_path(team_slug: @team.slug), alert: "Cannot resend this invitation."

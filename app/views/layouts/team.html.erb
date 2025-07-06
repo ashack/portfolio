@@ -113,6 +113,12 @@
                             Team Settings
                           <% end %>
                         </li>
+                        <li>
+                          <%= link_to team_admin_notification_categories_path(team_slug: @team.slug), class: "group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold #{request.path.include?('/admin/notification_categories') ? 'bg-gray-50 text-indigo-600' : 'text-gray-700 hover:text-indigo-600 hover:bg-gray-50'}" do %>
+                            <%= icon "list-bullets", class: "size-6 shrink-0 #{request.path.include?('/admin/notification_categories') ? 'text-indigo-600' : 'text-gray-400 group-hover:text-indigo-600'}" %>
+                            Notification Categories
+                          <% end %>
+                        </li>
                       </ul>
                     </li>
                   <% end %>
@@ -203,6 +209,12 @@
                       <%= link_to team_admin_settings_path(team_slug: @team.slug), class: "group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold #{request.path.include?('/admin/settings') ? 'bg-gray-50 text-indigo-600' : 'text-gray-700 hover:text-indigo-600 hover:bg-gray-50'}" do %>
                         <%= icon "gear", class: "size-6 shrink-0 #{request.path.include?('/admin/settings') ? 'text-indigo-600' : 'text-gray-400 group-hover:text-indigo-600'}" %>
                         Team Settings
+                      <% end %>
+                    </li>
+                    <li>
+                      <%= link_to team_admin_notification_categories_path(team_slug: @team.slug), class: "group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold #{request.path.include?('/admin/notification_categories') ? 'bg-gray-50 text-indigo-600' : 'text-gray-700 hover:text-indigo-600 hover:bg-gray-50'}" do %>
+                        <%= icon "list-bullets", class: "size-6 shrink-0 #{request.path.include?('/admin/notification_categories') ? 'text-indigo-600' : 'text-gray-400 group-hover:text-indigo-600'}" %>
+                        Notification Categories
                       <% end %>
                     </li>
                   </ul>

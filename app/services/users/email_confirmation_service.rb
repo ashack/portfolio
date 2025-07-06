@@ -14,8 +14,8 @@ class Users::EmailConfirmationService
       @target_user.confirm
 
       if @target_user.confirmed?
-        # Send notification email
-        UserMailer.account_confirmed(@target_user).deliver_later
+        # Send notification using the notifier
+        UserNotificationService.notify_account_confirmed(@target_user, @admin_user)
 
         # Log the admin action
         log_email_confirmation

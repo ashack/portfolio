@@ -1,0 +1,75 @@
+<div id="<%= dom_id(notification) %>" 
+     class="relative hover:bg-gray-50 transition-colors <%= 'bg-blue-50' unless notification.read? %>"
+     data-notification-id="<%= notification.id %>"
+     data-notification-unread="<%= !notification.read? %>">
+  <div class="px-6 py-4">
+    <div class="flex items-start">
+      <!-- Icon -->
+      <div class="flex-shrink-0">
+        <div class="h-10 w-10 rounded-full <%= notification_icon_bg_class(notification) %> flex items-center justify-center">
+          <%= icon(notification.icon || "bell", class: "h-5 w-5 #{notification_icon_color_class(notification)}") %>
+        </div>
+      </div>
+      
+      <!-- Content -->
+      <div class="ml-4 flex-1">
+        <div class="flex items-start justify-between">
+          <div class="flex-1">
+            <p class="text-sm <%= notification.read? ? 'text-gray-900' : 'text-gray-900 font-medium' %>">
+              <%= notification.message || "New notification" %>
+            </p>
+            
+            <% if notification.respond_to?(:details) && notification.details.present? %>
+              <div class="mt-2 text-sm text-gray-600">
+                <% notification.details.each do |key, value| %>
+                  <% next if key.to_s.end_with?('_at') || key.to_s == 'changed_by' %>
+                  <p><span class="font-medium"><%= key.to_s.humanize %>:</span> <%= value %></p>
+                <% end %>
+              </div>
+            <% end %>
+            
+            <div class="mt-2 flex items-center space-x-4 text-xs text-gray-500">
+              <span><%= time_ago_in_words(notification.created_at) %> ago</span>
+              
+              <% if notification.url.present? %>
+                <%= link_to "View", notification.url, 
+                    class: "text-indigo-600 hover:text-indigo-500 font-medium" %>
+              <% end %>
+            </div>
+          </div>
+          
+          <!-- Actions -->
+          <div class="ml-4 flex items-center space-x-2">
+            <% unless notification.read? %>
+              <%= button_to mark_as_read_notification_path(notification),
+                  method: :patch,
+                  class: "text-gray-400 hover:text-gray-500",
+                  title: "Mark as read",
+                  data: { turbo_method: :patch } do %>
+                <%= icon("check", class: "h-4 w-4") %>
+              <% end %>
+            <% end %>
+            
+            <%= button_to notification_path(notification),
+                method: :delete,
+                class: "text-gray-400 hover:text-gray-500",
+                title: "Delete notification",
+                data: { 
+                  turbo_method: :delete,
+                  turbo_confirm: "Are you sure?" 
+                } do %>
+              <%= icon("x", class: "h-4 w-4") %>
+            <% end %>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Unread indicator -->
+      <% unless notification.read? %>
+        <div class="ml-3 flex-shrink-0">
+          <span class="block h-2 w-2 rounded-full bg-blue-600"></span>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
