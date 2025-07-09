@@ -66,6 +66,10 @@ class User < ApplicationRecord
   # Each user can have different items per page for different sections
   has_one :user_preference, dependent: :destroy
 
+  # Notifications (via Noticed gem)
+  has_many :notifications, as: :recipient, dependent: :destroy, class_name: "Noticed::Notification"
+  has_many :notification_events, dependent: :destroy, class_name: "Noticed::Event"
+
   # System-wide administrative role
   # - user: Standard user, no admin access
   # - site_admin: Customer support, read-only billing

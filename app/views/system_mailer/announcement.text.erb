@@ -1,0 +1,21 @@
+<%= @title.upcase %>
+<%= "=" * @title.length %>
+
+Hello <%= @user.first_name %>,
+
+<%= @message %>
+
+<% if @announcement_type == "maintenance" %>
+IMPORTANT: Please save any work before the maintenance window begins. Services may be temporarily unavailable during this time.
+<% elsif @announcement_type == "feature" %>
+NEW FEATURE! We're excited to share this update with you. Check out what's new in your dashboard.
+<% end %>
+
+Visit Dashboard: <%= root_url %>
+
+--
+You're receiving this email because you're subscribed to system announcements.
+Manage your notification preferences: <%= users_settings_url(anchor: "notifications") %>
+
+This is a system announcement sent to all active users.
+© <%= Date.current.year %> <%= Rails.application.config.application_name %>. All rights reserved.

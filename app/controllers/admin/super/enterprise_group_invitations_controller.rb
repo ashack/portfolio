@@ -20,12 +20,12 @@ class Admin::Super::EnterpriseGroupInvitationsController < ApplicationController
       # Reset expiration to 7 days from now
       @invitation.update!(expires_at: 7.days.from_now)
 
-      # Resend the invitation email
-      if Rails.env.development?
-        EnterpriseGroupMailer.admin_invitation(@invitation, @enterprise_group).deliver_now
-      else
-        EnterpriseGroupMailer.admin_invitation(@invitation, @enterprise_group).deliver_later
-      end
+      # Resend the invitation using notifier
+      EnterpriseInvitationNotifier.with(
+        invitation: @invitation,
+        enterprise_group: @enterprise_group,
+        invited_by: @invitation.invited_by
+      ).deliver(@invitation)
 
       redirect_to admin_super_enterprise_group_path(@enterprise_group),
                   notice: "Invitation was resent to #{@invitation.email}."

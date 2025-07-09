@@ -1,0 +1,347 @@
+<%
+  # Define color classes based on primary color
+  ring_class = case primary_color
+    when "indigo" then "focus:ring-indigo-500"
+    when "purple" then "focus:ring-purple-500"
+    when "blue" then "focus:ring-blue-500"
+    else "focus:ring-indigo-500"
+  end
+  
+  text_class = case primary_color
+    when "indigo" then "text-indigo-600"
+    when "purple" then "text-purple-600"
+    when "blue" then "text-blue-600"
+    else "text-indigo-600"
+  end
+  
+  border_class = case primary_color
+    when "indigo" then "focus:border-indigo-500"
+    when "purple" then "focus:border-purple-500"
+    when "blue" then "focus:border-blue-500"
+    else "focus:border-indigo-500"
+  end
+%>
+
+<!-- Notification Preferences -->
+<div class="space-y-6">
+  <div>
+    <h3 class="text-lg font-medium text-gray-900">Notification Preferences</h3>
+    <p class="mt-1 text-sm text-gray-500">
+      Choose how you want to be notified about different activities. Some security notifications cannot be disabled.
+    </p>
+  </div>
+  
+  <div class="space-y-6">
+    <!-- Account & Security Notifications -->
+    <div class="bg-white border border-gray-200 rounded-lg shadow-sm">
+      <div class="px-4 py-5 sm:p-6">
+        <h4 class="text-base font-medium text-gray-900 mb-4">Account & Security</h4>
+        
+        <div class="space-y-4">
+          <!-- Status Changes -->
+          <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div>
+              <div class="flex items-start">
+                <div class="flex items-center h-5">
+                  <%= check_box_tag "user[notification_preferences][email][status_changes]", 
+                      "1", 
+                      user.notification_preferences&.dig("email", "status_changes") != false,
+                      class: "#{ring_class} h-4 w-4 #{text_class} border-gray-300 rounded" %>
+                </div>
+                <div class="ml-3 text-sm">
+                  <%= label_tag "user[notification_preferences][email][status_changes]", "Status changes (Email)", class: "font-medium text-gray-700" %>
+                  <p class="text-gray-500 text-xs">Account activated, suspended, or locked</p>
+                </div>
+              </div>
+            </div>
+            
+            <div>
+              <div class="flex items-start">
+                <div class="flex items-center h-5">
+                  <%= check_box_tag "user[notification_preferences][in_app][status_changes]", 
+                      "1", 
+                      user.notification_preferences&.dig("in_app", "status_changes") != false,
+                      class: "#{ring_class} h-4 w-4 #{text_class} border-gray-300 rounded" %>
+                </div>
+                <div class="ml-3 text-sm">
+                  <%= label_tag "user[notification_preferences][in_app][status_changes]", "Status changes (In-app)", class: "font-medium text-gray-700" %>
+                  <p class="text-gray-500 text-xs">See in notification center</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Security Alerts (Cannot be disabled) -->
+          <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 p-3 bg-red-50 rounded-md">
+            <div>
+              <div class="flex items-start">
+                <div class="flex items-center h-5">
+                  <%= check_box_tag "user[notification_preferences][email][security_alerts]", 
+                      "1", 
+                      true,
+                      disabled: true,
+                      checked: true,
+                      class: "h-4 w-4 text-red-600 border-gray-300 rounded cursor-not-allowed opacity-60" %>
+                </div>
+                <div class="ml-3 text-sm">
+                  <%= label_tag "user[notification_preferences][email][security_alerts]", "Security alerts (Email)", class: "font-medium text-red-700" %>
+                  <p class="text-red-600 text-xs">Login attempts, password changes (always on)</p>
+                </div>
+              </div>
+            </div>
+            
+            <div>
+              <div class="flex items-start">
+                <div class="flex items-center h-5">
+                  <%= check_box_tag "user[notification_preferences][in_app][security_alerts]", 
+                      "1", 
+                      true,
+                      disabled: true,
+                      checked: true,
+                      class: "h-4 w-4 text-red-600 border-gray-300 rounded cursor-not-allowed opacity-60" %>
+                </div>
+                <div class="ml-3 text-sm">
+                  <%= label_tag "user[notification_preferences][in_app][security_alerts]", "Security alerts (In-app)", class: "font-medium text-red-700" %>
+                  <p class="text-red-600 text-xs">Critical security notifications</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Role Changes -->
+          <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div>
+              <div class="flex items-start">
+                <div class="flex items-center h-5">
+                  <%= check_box_tag "user[notification_preferences][email][role_changes]", 
+                      "1", 
+                      user.notification_preferences&.dig("email", "role_changes") != false,
+                      class: "#{ring_class} h-4 w-4 #{text_class} border-gray-300 rounded" %>
+                </div>
+                <div class="ml-3 text-sm">
+                  <%= label_tag "user[notification_preferences][email][role_changes]", "Role changes (Email)", class: "font-medium text-gray-700" %>
+                  <p class="text-gray-500 text-xs">When your permissions change</p>
+                </div>
+              </div>
+            </div>
+            
+            <div>
+              <div class="flex items-start">
+                <div class="flex items-center h-5">
+                  <%= check_box_tag "user[notification_preferences][in_app][role_changes]", 
+                      "1", 
+                      user.notification_preferences&.dig("in_app", "role_changes") != false,
+                      class: "#{ring_class} h-4 w-4 #{text_class} border-gray-300 rounded" %>
+                </div>
+                <div class="ml-3 text-sm">
+                  <%= label_tag "user[notification_preferences][in_app][role_changes]", "Role changes (In-app)", class: "font-medium text-gray-700" %>
+                  <p class="text-gray-500 text-xs">Instant notifications</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Team Notifications (if applicable) -->
+    <% if user.invited? || user.direct? %>
+      <div class="bg-white border border-gray-200 rounded-lg shadow-sm">
+        <div class="px-4 py-5 sm:p-6">
+          <h4 class="text-base font-medium text-gray-900 mb-4">Team Activity</h4>
+          
+          <div class="space-y-4">
+            <!-- Team Member Changes -->
+            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <div>
+                <div class="flex items-start">
+                  <div class="flex items-center h-5">
+                    <%= check_box_tag "user[notification_preferences][email][team_members]", 
+                        "1", 
+                        user.notification_preferences&.dig("email", "team_members") != false,
+                        class: "#{ring_class} h-4 w-4 #{text_class} border-gray-300 rounded" %>
+                  </div>
+                  <div class="ml-3 text-sm">
+                    <%= label_tag "user[notification_preferences][email][team_members]", "Member updates (Email)", class: "font-medium text-gray-700" %>
+                    <p class="text-gray-500 text-xs">New members, role changes</p>
+                  </div>
+                </div>
+              </div>
+              
+              <div>
+                <div class="flex items-start">
+                  <div class="flex items-center h-5">
+                    <%= check_box_tag "user[notification_preferences][in_app][team_members]", 
+                        "1", 
+                        user.notification_preferences&.dig("in_app", "team_members") != false,
+                        class: "#{ring_class} h-4 w-4 #{text_class} border-gray-300 rounded" %>
+                  </div>
+                  <div class="ml-3 text-sm">
+                    <%= label_tag "user[notification_preferences][in_app][team_members]", "Member updates (In-app)", class: "font-medium text-gray-700" %>
+                    <p class="text-gray-500 text-xs">Team roster changes</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Team Invitations -->
+            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <div>
+                <div class="flex items-start">
+                  <div class="flex items-center h-5">
+                    <%= check_box_tag "user[notification_preferences][email][invitations]", 
+                        "1", 
+                        user.notification_preferences&.dig("email", "invitations") != false,
+                        class: "#{ring_class} h-4 w-4 #{text_class} border-gray-300 rounded" %>
+                  </div>
+                  <div class="ml-3 text-sm">
+                    <%= label_tag "user[notification_preferences][email][invitations]", "Invitations (Email)", class: "font-medium text-gray-700" %>
+                    <p class="text-gray-500 text-xs">Team or enterprise invites</p>
+                  </div>
+                </div>
+              </div>
+              
+              <div>
+                <div class="flex items-start">
+                  <div class="flex items-center h-5">
+                    <%= check_box_tag "user[notification_preferences][in_app][invitations]", 
+                        "1", 
+                        user.notification_preferences&.dig("in_app", "invitations") != false,
+                        class: "#{ring_class} h-4 w-4 #{text_class} border-gray-300 rounded" %>
+                  </div>
+                  <div class="ml-3 text-sm">
+                    <%= label_tag "user[notification_preferences][in_app][invitations]", "Invitations (In-app)", class: "font-medium text-gray-700" %>
+                    <p class="text-gray-500 text-xs">Pending invitations</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    <% end %>
+    
+    <!-- Administrative Actions -->
+    <div class="bg-white border border-gray-200 rounded-lg shadow-sm">
+      <div class="px-4 py-5 sm:p-6">
+        <h4 class="text-base font-medium text-gray-900 mb-4">Administrative Actions</h4>
+        
+        <div class="space-y-4">
+          <!-- Admin Actions -->
+          <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div>
+              <div class="flex items-start">
+                <div class="flex items-center h-5">
+                  <%= check_box_tag "user[notification_preferences][email][admin_actions]", 
+                      "1", 
+                      user.notification_preferences&.dig("email", "admin_actions") != false,
+                      class: "#{ring_class} h-4 w-4 #{text_class} border-gray-300 rounded" %>
+                </div>
+                <div class="ml-3 text-sm">
+                  <%= label_tag "user[notification_preferences][email][admin_actions]", "Admin actions (Email)", class: "font-medium text-gray-700" %>
+                  <p class="text-gray-500 text-xs">Password resets, account modifications</p>
+                </div>
+              </div>
+            </div>
+            
+            <div>
+              <div class="flex items-start">
+                <div class="flex items-center h-5">
+                  <%= check_box_tag "user[notification_preferences][in_app][admin_actions]", 
+                      "1", 
+                      user.notification_preferences&.dig("in_app", "admin_actions") != false,
+                      class: "#{ring_class} h-4 w-4 #{text_class} border-gray-300 rounded" %>
+                </div>
+                <div class="ml-3 text-sm">
+                  <%= label_tag "user[notification_preferences][in_app][admin_actions]", "Admin actions (In-app)", class: "font-medium text-gray-700" %>
+                  <p class="text-gray-500 text-xs">Actions taken by administrators</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Account Updates -->
+          <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div>
+              <div class="flex items-start">
+                <div class="flex items-center h-5">
+                  <%= check_box_tag "user[notification_preferences][email][account_updates]", 
+                      "1", 
+                      user.notification_preferences&.dig("email", "account_updates") != false,
+                      class: "#{ring_class} h-4 w-4 #{text_class} border-gray-300 rounded" %>
+                </div>
+                <div class="ml-3 text-sm">
+                  <%= label_tag "user[notification_preferences][email][account_updates]", "Account updates (Email)", class: "font-medium text-gray-700" %>
+                  <p class="text-gray-500 text-xs">Profile changes, email confirmations</p>
+                </div>
+              </div>
+            </div>
+            
+            <div>
+              <div class="flex items-start">
+                <div class="flex items-center h-5">
+                  <%= check_box_tag "user[notification_preferences][in_app][account_updates]", 
+                      "1", 
+                      user.notification_preferences&.dig("in_app", "account_updates") != false,
+                      class: "#{ring_class} h-4 w-4 #{text_class} border-gray-300 rounded" %>
+                </div>
+                <div class="ml-3 text-sm">
+                  <%= label_tag "user[notification_preferences][in_app][account_updates]", "Account updates (In-app)", class: "font-medium text-gray-700" %>
+                  <p class="text-gray-500 text-xs">Confirmation of changes</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- General Preferences -->
+    <div class="bg-white border border-gray-200 rounded-lg shadow-sm">
+      <div class="px-4 py-5 sm:p-6">
+        <h4 class="text-base font-medium text-gray-900 mb-4">General Preferences</h4>
+        
+        <div class="space-y-4">
+          <!-- Email Digest Frequency -->
+          <div>
+            <label for="user_notification_preferences_digest_frequency" class="block text-sm font-medium text-gray-700">
+              Email Digest Frequency
+            </label>
+            <select name="user[notification_preferences][digest][frequency]" 
+                    id="user_notification_preferences_digest_frequency"
+                    class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none #{ring_class} #{border_class} sm:text-sm rounded-md">
+              <option value="realtime" <%= 'selected' if user.notification_preferences&.dig("digest", "frequency") == "realtime" %>>
+                Real-time (as they happen)
+              </option>
+              <option value="daily" <%= 'selected' if user.notification_preferences&.dig("digest", "frequency") == "daily" || user.notification_preferences&.dig("digest", "frequency").nil? %>>
+                Daily digest
+              </option>
+              <option value="weekly" <%= 'selected' if user.notification_preferences&.dig("digest", "frequency") == "weekly" %>>
+                Weekly digest
+              </option>
+              <option value="never" <%= 'selected' if user.notification_preferences&.dig("digest", "frequency") == "never" %>>
+                Never (use notification center only)
+              </option>
+            </select>
+          </div>
+          
+          <!-- Marketing Communications -->
+          <div class="pt-4 border-t border-gray-200">
+            <div class="flex items-start">
+              <div class="flex items-center h-5">
+                <%= check_box_tag "user[notification_preferences][marketing][enabled]", 
+                    "1", 
+                    user.notification_preferences&.dig("marketing", "enabled") != false,
+                    class: "#{ring_class} h-4 w-4 #{text_class} border-gray-300 rounded" %>
+              </div>
+              <div class="ml-3 text-sm">
+                <%= label_tag "user[notification_preferences][marketing][enabled]", "Marketing communications", class: "font-medium text-gray-700" %>
+                <p class="text-gray-500">Receive updates about new features, tips, and special offers</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

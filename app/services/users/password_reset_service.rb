@@ -20,6 +20,9 @@ class Users::PasswordResetService
         # Send password reset email
         UserMailer.reset_password_instructions(@target_user, raw_token).deliver_now
 
+        # Send notification about admin action
+        UserNotificationService.notify_password_reset(@target_user, @admin_user)
+
         # Log the admin action
         log_password_reset
 

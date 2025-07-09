@@ -84,8 +84,20 @@ class EmailChangeRequest < ApplicationRecord
         }
       )
 
-      # Send notification emails
-      EmailChangeMailer.approved_notification(self).deliver_later
+      # Send security notification to old email
+      EmailChangeSecurityNotifier.with(
+        user: user,
+        old_email: old_email,
+        new_email: new_email,
+        changed_at: Time.current
+      ).deliver(user)
+
+      # Send approval notification
+      EmailChangeRequestNotifier.with(
+        email_change_request: self,
+        action: "approved",
+        admin: admin_user
+      ).deliver(user)
 
       true
     end
@@ -119,8 +131,12 @@ class EmailChangeRequest < ApplicationRecord
         }
       )
 
-      # Send notification
-      EmailChangeMailer.rejected_notification(self).deliver_later
+      # Send rejection notification
+      EmailChangeRequestNotifier.with(
+        email_change_request: self,
+        action: "rejected",
+        admin: admin_user
+      ).deliver(user)
 
       true
     end
@@ -179,6 +195,9 @@ class EmailChangeRequest < ApplicationRecord
   end
 
   def send_request_notification
-    EmailChangeMailer.request_submitted(self).deliver_later
+    EmailChangeRequestNotifier.with(
+      email_change_request: self,
+      action: "submitted"
+    ).deliver(user)
   end
 end

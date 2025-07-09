@@ -1,0 +1,71 @@
+<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+  <div style="background-color: <%= announcement_color %>; color: white; padding: 20px; text-align: center;">
+    <h1 style="margin: 0; font-size: 24px;"><%= priority_emoji %> <%= @title %></h1>
+  </div>
+  
+  <div style="padding: 30px; background-color: #f9fafb;">
+    <p style="font-size: 16px; color: #111827; margin-bottom: 20px;">
+      Hello <%= @user.first_name %>,
+    </p>
+    
+    <div style="background-color: white; border-radius: 8px; padding: 20px; margin-bottom: 20px; border: 1px solid #e5e7eb;">
+      <p style="color: #374151; font-size: 16px; line-height: 1.6; margin: 0;">
+        <%= simple_format(@message) %>
+      </p>
+    </div>
+    
+    <% if @announcement_type == "maintenance" %>
+      <div style="background-color: #fef3c7; border: 1px solid #f59e0b; border-radius: 8px; padding: 15px; margin-bottom: 20px;">
+        <p style="color: #92400e; margin: 0; font-size: 14px;">
+          <strong>Important:</strong> Please save any work before the maintenance window begins. Services may be temporarily unavailable during this time.
+        </p>
+      </div>
+    <% elsif @announcement_type == "feature" %>
+      <div style="background-color: #dbeafe; border: 1px solid #3b82f6; border-radius: 8px; padding: 15px; margin-bottom: 20px;">
+        <p style="color: #1e3a8a; margin: 0; font-size: 14px;">
+          <strong>New Feature!</strong> We're excited to share this update with you. Check out what's new in your dashboard.
+        </p>
+      </div>
+    <% end %>
+    
+    <div style="text-align: center; margin-top: 30px;">
+      <%= link_to "Visit Dashboard", 
+          root_url,
+          style: "display: inline-block; background-color: #4f46e5; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold;" %>
+    </div>
+    
+    <p style="color: #6b7280; font-size: 14px; margin-top: 30px;">
+      You're receiving this email because you're subscribed to system announcements. 
+      <%= link_to "Manage your notification preferences", users_settings_url(anchor: "notifications"), style: "color: #4f46e5;" %>.
+    </p>
+  </div>
+  
+  <div style="background-color: #e5e7eb; padding: 20px; text-align: center; font-size: 12px; color: #6b7280;">
+    <p style="margin: 5px 0;">
+      This is a system announcement sent to all active users.
+    </p>
+    <p style="margin: 5px 0;">
+      © <%= Date.current.year %> <%= Rails.application.config.application_name %>. All rights reserved.
+    </p>
+  </div>
+</div>
+
+<%
+  def announcement_color
+    case @priority
+    when "critical" then "#dc2626"
+    when "high" then "#f59e0b"
+    when "medium" then "#3b82f6"
+    else "#6b7280"
+    end
+  end
+
+  def priority_emoji
+    case @priority
+    when "critical" then "🚨"
+    when "high" then "⚠️"
+    when "medium" then "📢"
+    else "ℹ️"
+    end
+  end
+%>

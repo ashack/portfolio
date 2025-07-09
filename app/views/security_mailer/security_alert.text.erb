@@ -1,0 +1,34 @@
+SECURITY ALERT
+==============
+
+Hello <%= @user.first_name %>,
+
+We detected the following security event on your account:
+
+<%= @alert_type&.humanize %>
+--------------------------
+Location: <%= @location %>
+IP Address: <%= @ip_address %>
+Time: <%= @timestamp.strftime("%B %d, %Y at %I:%M %p %Z") %>
+
+<% if @details.present? %>
+Details:
+<%= @details %>
+<% end %>
+
+Was this you?
+-------------
+If you recognize this activity, you can safely ignore this email. However, if you don't recognize this activity, we strongly recommend you:
+
+1. Change your password immediately
+2. Review your recent account activity
+3. Enable two-factor authentication if available
+4. Contact our support team if you need assistance
+
+Review Account Security: <%= users_settings_url(anchor: "security-settings") %>
+
+This is a security notification that cannot be disabled. We take your account security seriously.
+
+--
+This email was sent to <%= @user.email %> because of a security event on your account.
+© <%= Date.current.year %> <%= Rails.application.config.application_name %>. All rights reserved.

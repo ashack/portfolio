@@ -89,6 +89,18 @@
                           <% end %>
                         </li>
                         <li>
+                          <%= link_to admin_super_notifications_path, class: "group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold #{request.path.include?('/admin/super/notifications') && !request.path.include?('notification_categories') ? 'bg-gray-50 text-indigo-600' : 'text-gray-700 hover:text-indigo-600 hover:bg-gray-50'}" do %>
+                            <%= icon "bell", class: "size-6 shrink-0 #{request.path.include?('/admin/super/notifications') && !request.path.include?('notification_categories') ? 'text-indigo-600' : 'text-gray-400 group-hover:text-indigo-600'}" %>
+                            Notifications
+                          <% end %>
+                        </li>
+                        <li>
+                          <%= link_to admin_super_notification_categories_path, class: "group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold #{request.path.include?('/admin/super/notification_categories') ? 'bg-gray-50 text-indigo-600' : 'text-gray-700 hover:text-indigo-600 hover:bg-gray-50'}" do %>
+                            <%= icon "list-bullets", class: "size-6 shrink-0 #{request.path.include?('/admin/super/notification_categories') ? 'text-indigo-600' : 'text-gray-400 group-hover:text-indigo-600'}" %>
+                            Notification Categories
+                          <% end %>
+                        </li>
+                        <li>
                           <%= link_to admin_super_settings_path, class: "group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold #{current_page?(admin_super_settings_path) ? 'bg-gray-50 text-indigo-600' : 'text-gray-700 hover:text-indigo-600 hover:bg-gray-50'}" do %>
                             <%= icon "gear", class: "size-6 shrink-0 #{current_page?(admin_super_settings_path) ? 'text-indigo-600' : 'text-gray-400 group-hover:text-indigo-600'}" %>
                             Settings
@@ -182,6 +194,18 @@
                       <%= link_to admin_super_users_path, class: "group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold #{request.path.include?('/admin/super/users') ? 'bg-gray-50 text-indigo-600' : 'text-gray-700 hover:text-indigo-600 hover:bg-gray-50'}" do %>
                         <%= icon "users", class: "size-6 shrink-0 #{request.path.include?('/admin/super/users') ? 'text-indigo-600' : 'text-gray-400 group-hover:text-indigo-600'}" %>
                         Users
+                      <% end %>
+                    </li>
+                    <li>
+                      <%= link_to admin_super_notifications_path, class: "group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold #{request.path.include?('/admin/super/notifications') && !request.path.include?('notification_categories') ? 'bg-gray-50 text-indigo-600' : 'text-gray-700 hover:text-indigo-600 hover:bg-gray-50'}" do %>
+                        <%= icon "bell", class: "size-6 shrink-0 #{request.path.include?('/admin/super/notifications') && !request.path.include?('notification_categories') ? 'text-indigo-600' : 'text-gray-400 group-hover:text-indigo-600'}" %>
+                        Notifications
+                      <% end %>
+                    </li>
+                    <li>
+                      <%= link_to admin_super_notification_categories_path, class: "group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold #{request.path.include?('/admin/super/notification_categories') ? 'bg-gray-50 text-indigo-600' : 'text-gray-700 hover:text-indigo-600 hover:bg-gray-50'}" do %>
+                        <%= icon "list-bullets", class: "size-6 shrink-0 #{request.path.include?('/admin/super/notification_categories') ? 'text-indigo-600' : 'text-gray-400 group-hover:text-indigo-600'}" %>
+                        Notification Categories
                       <% end %>
                     </li>
                     <li>

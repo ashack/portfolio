@@ -84,27 +84,27 @@
                       <div class="text-xs/6 font-semibold text-gray-400">Administration</div>
                       <ul role="list" class="-mx-2 mt-2 space-y-1">
                         <li>
-                          <%= link_to enterprise_admin_root_path(enterprise_slug: @enterprise_group.slug), class: "group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold #{request.path.include?('/admin') && current_page?(enterprise_admin_root_path(enterprise_slug: @enterprise_group.slug)) ? 'bg-purple-50 text-purple-600' : 'text-gray-700 hover:text-purple-600 hover:bg-purple-50'}" do %>
-                            <%= icon "shield-check", class: "size-6 shrink-0 #{request.path.include?('/admin') && current_page?(enterprise_admin_root_path(enterprise_slug: @enterprise_group.slug)) ? 'text-purple-600' : 'text-gray-400 group-hover:text-purple-600'}" %>
-                            Admin Dashboard
-                          <% end %>
-                        </li>
-                        <li>
-                          <%= link_to enterprise_admin_members_path(enterprise_slug: @enterprise_group.slug), class: "group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold #{request.path.include?('/members') ? 'bg-purple-50 text-purple-600' : 'text-gray-700 hover:text-purple-600 hover:bg-purple-50'}" do %>
+                          <%= link_to members_path(enterprise_group_slug: @enterprise_group.slug), class: "group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold #{request.path.include?('/members') ? 'bg-purple-50 text-purple-600' : 'text-gray-700 hover:text-purple-600 hover:bg-purple-50'}" do %>
                             <%= icon "users", class: "size-6 shrink-0 #{request.path.include?('/members') ? 'text-purple-600' : 'text-gray-400 group-hover:text-purple-600'}" %>
                             Members
                           <% end %>
                         </li>
                         <li>
-                          <%= link_to enterprise_admin_billing_index_path(enterprise_slug: @enterprise_group.slug), class: "group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold #{request.path.include?('/billing') ? 'bg-purple-50 text-purple-600' : 'text-gray-700 hover:text-purple-600 hover:bg-purple-50'}" do %>
+                          <%= link_to billing_index_path(enterprise_group_slug: @enterprise_group.slug), class: "group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold #{request.path.include?('/billing') ? 'bg-purple-50 text-purple-600' : 'text-gray-700 hover:text-purple-600 hover:bg-purple-50'}" do %>
                             <%= icon "credit-card", class: "size-6 shrink-0 #{request.path.include?('/billing') ? 'text-purple-600' : 'text-gray-400 group-hover:text-purple-600'}" %>
                             Billing
                           <% end %>
                         </li>
                         <li>
-                          <%= link_to enterprise_admin_settings_path(enterprise_slug: @enterprise_group.slug), class: "group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold #{request.path.include?('/settings') ? 'bg-purple-50 text-purple-600' : 'text-gray-700 hover:text-purple-600 hover:bg-purple-50'}" do %>
+                          <%= link_to settings_path(enterprise_group_slug: @enterprise_group.slug), class: "group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold #{request.path.include?('/settings') ? 'bg-purple-50 text-purple-600' : 'text-gray-700 hover:text-purple-600 hover:bg-purple-50'}" do %>
                             <%= icon "gear", class: "size-6 shrink-0 #{request.path.include?('/settings') ? 'text-purple-600' : 'text-gray-400 group-hover:text-purple-600'}" %>
                             Settings
+                          <% end %>
+                        </li>
+                        <li>
+                          <%= link_to enterprise_admin_notification_categories_path(enterprise_slug: @enterprise_group.slug), class: "group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold #{request.path.include?('/notification_categories') ? 'bg-purple-50 text-purple-600' : 'text-gray-700 hover:text-purple-600 hover:bg-purple-50'}" do %>
+                            <%= icon "list-bullets", class: "size-6 shrink-0 #{request.path.include?('/notification_categories') ? 'text-purple-600' : 'text-gray-400 group-hover:text-purple-600'}" %>
+                            Notification Categories
                           <% end %>
                         </li>
                       </ul>
@@ -170,27 +170,27 @@
                   <div class="text-xs/6 font-semibold text-gray-400">Administration</div>
                   <ul role="list" class="-mx-2 mt-2 space-y-1">
                     <li>
-                      <%= link_to enterprise_admin_root_path(enterprise_slug: @enterprise_group.slug), class: "group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold #{request.path.include?('/admin') && current_page?(enterprise_admin_root_path(enterprise_slug: @enterprise_group.slug)) ? 'bg-purple-50 text-purple-600' : 'text-gray-700 hover:text-purple-600 hover:bg-purple-50'}" do %>
-                        <%= icon "shield-check", class: "size-6 shrink-0 #{request.path.include?('/admin') && current_page?(enterprise_admin_root_path(enterprise_slug: @enterprise_group.slug)) ? 'text-purple-600' : 'text-gray-400 group-hover:text-purple-600'}" %>
-                        Admin Dashboard
-                      <% end %>
-                    </li>
-                    <li>
-                      <%= link_to enterprise_admin_members_path(enterprise_slug: @enterprise_group.slug), class: "group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold #{request.path.include?('/members') ? 'bg-purple-50 text-purple-600' : 'text-gray-700 hover:text-purple-600 hover:bg-purple-50'}" do %>
+                      <%= link_to members_path(enterprise_group_slug: @enterprise_group.slug), class: "group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold #{request.path.include?('/members') ? 'bg-purple-50 text-purple-600' : 'text-gray-700 hover:text-purple-600 hover:bg-purple-50'}" do %>
                         <%= icon "users", class: "size-6 shrink-0 #{request.path.include?('/members') ? 'text-purple-600' : 'text-gray-400 group-hover:text-purple-600'}" %>
                         Members
                       <% end %>
                     </li>
                     <li>
-                      <%= link_to enterprise_admin_billing_index_path(enterprise_slug: @enterprise_group.slug), class: "group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold #{request.path.include?('/billing') ? 'bg-purple-50 text-purple-600' : 'text-gray-700 hover:text-purple-600 hover:bg-purple-50'}" do %>
+                      <%= link_to billing_index_path(enterprise_group_slug: @enterprise_group.slug), class: "group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold #{request.path.include?('/billing') ? 'bg-purple-50 text-purple-600' : 'text-gray-700 hover:text-purple-600 hover:bg-purple-50'}" do %>
                         <%= icon "credit-card", class: "size-6 shrink-0 #{request.path.include?('/billing') ? 'text-purple-600' : 'text-gray-400 group-hover:text-purple-600'}" %>
                         Billing
                       <% end %>
                     </li>
                     <li>
-                      <%= link_to enterprise_admin_settings_path(enterprise_slug: @enterprise_group.slug), class: "group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold #{request.path.include?('/settings') ? 'bg-purple-50 text-purple-600' : 'text-gray-700 hover:text-purple-600 hover:bg-purple-50'}" do %>
+                      <%= link_to settings_path(enterprise_group_slug: @enterprise_group.slug), class: "group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold #{request.path.include?('/settings') ? 'bg-purple-50 text-purple-600' : 'text-gray-700 hover:text-purple-600 hover:bg-purple-50'}" do %>
                         <%= icon "gear", class: "size-6 shrink-0 #{request.path.include?('/settings') ? 'text-purple-600' : 'text-gray-400 group-hover:text-purple-600'}" %>
                         Settings
+                      <% end %>
+                    </li>
+                    <li>
+                      <%= link_to enterprise_admin_notification_categories_path(enterprise_slug: @enterprise_group.slug), class: "group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold #{request.path.include?('/notification_categories') ? 'bg-purple-50 text-purple-600' : 'text-gray-700 hover:text-purple-600 hover:bg-purple-50'}" do %>
+                        <%= icon "list-bullets", class: "size-6 shrink-0 #{request.path.include?('/notification_categories') ? 'text-purple-600' : 'text-gray-400 group-hover:text-purple-600'}" %>
+                        Notification Categories
                       <% end %>
                     </li>
                   </ul>

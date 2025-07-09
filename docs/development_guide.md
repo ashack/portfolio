@@ -1,6 +1,6 @@
 # Rails SaaS Starter - Development Guide
 
-*Last Updated: December 2025*
+*Last Updated: January 2025*
 
 This guide covers development workflows, best practices, deployment procedures, and success criteria for the Rails SaaS Starter application.
 

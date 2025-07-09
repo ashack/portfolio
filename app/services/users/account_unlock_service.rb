@@ -16,8 +16,8 @@ class Users::AccountUnlockService
       # Also ensure failed_attempts is reset to 0
       @target_user.update_column(:failed_attempts, 0) if @target_user.failed_attempts > 0
 
-      # Send notification email
-      UserMailer.account_unlocked(@target_user).deliver_later
+      # Send notification using the notifier
+      UserNotificationService.notify_account_unlocked(@target_user, @admin_user, "Account security review completed")
 
       # Log the admin action
       log_account_unlock

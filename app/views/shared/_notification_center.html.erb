@@ -8,10 +8,9 @@
           aria-label="View notifications"
           aria-expanded="false">
     <%= icon("bell", class: "h-6 w-6") %>
-    <% unread_count = current_user.notification_preferences&.dig("unread_count") || 0 %>
-    <% if unread_count > 0 %>
+    <% if has_unread_notifications? %>
       <span class="absolute top-0 right-0 block h-2.5 w-2.5 rounded-full bg-red-500 ring-2 ring-white animate-pulse"></span>
-      <span class="sr-only"><%= unread_count %> unread notifications</span>
+      <span class="sr-only"><%= unread_notifications_count %> unread notifications</span>
     <% end %>
   </button>
   
@@ -50,9 +49,9 @@
                 data-notifications-target="unreadTab"
                 class="px-3 py-1.5 text-sm font-medium rounded-md text-gray-500 hover:text-gray-700 hover:bg-gray-50">
           Unread
-          <% if unread_count > 0 %>
+          <% if has_unread_notifications? %>
             <span class="ml-1 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
-              <%= unread_count %>
+              <%= unread_notifications_count %>
             </span>
           <% end %>
         </button>
@@ -78,99 +77,18 @@
         </div>
       </div>
       
-      <!-- Sample Notifications (replace with dynamic content) -->
-      <div data-notifications-target="content">
-        <!-- Unread Notification -->
-        <div class="relative hover:bg-gray-50 transition-colors" data-notification-id="1" data-notification-unread="true">
-          <div class="px-4 py-3">
-            <div class="flex items-start">
-              <div class="flex-shrink-0">
-                <div class="h-10 w-10 rounded-full bg-indigo-100 flex items-center justify-center">
-                  <%= icon("user-plus", class: "h-5 w-5 text-indigo-600") %>
-                </div>
-              </div>
-              <div class="ml-3 flex-1">
-                <p class="text-sm text-gray-900">
-                  <span class="font-medium">Sarah Johnson</span> joined your team
-                </p>
-                <p class="text-xs text-gray-500 mt-1">2 minutes ago</p>
-              </div>
-              <div class="ml-3 flex-shrink-0">
-                <span class="block h-2 w-2 rounded-full bg-blue-600"></span>
-              </div>
-            </div>
+      <!-- Dynamic Notifications -->
+      <div data-notifications-target="content" class="hidden">
+        <% recent_notifications = current_user.notifications.includes(:event).order(created_at: :desc).limit(10) %>
+        <% if recent_notifications.any? %>
+          <% recent_notifications.each do |notification| %>
+            <%= render "notifications/dropdown_notification", notification: notification %>
+          <% end %>
+        <% else %>
+          <div class="px-4 py-8 text-center">
+            <p class="text-sm text-gray-500">No notifications yet</p>
           </div>
-        </div>
-        
-        <!-- Profile Update Notification -->
-        <div class="relative hover:bg-gray-50 transition-colors" data-notification-id="2">
-          <div class="px-4 py-3">
-            <div class="flex items-start">
-              <div class="flex-shrink-0">
-                <div class="h-10 w-10 rounded-full bg-green-100 flex items-center justify-center">
-                  <%= icon("check-circle", class: "h-5 w-5 text-green-600") %>
-                </div>
-              </div>
-              <div class="ml-3 flex-1">
-                <p class="text-sm text-gray-900">
-                  Your profile has been updated successfully
-                </p>
-                <p class="text-xs text-gray-500 mt-1">1 hour ago</p>
-              </div>
-            </div>
-          </div>
-        </div>
-        
-        <!-- Mention Notification -->
-        <div class="relative hover:bg-gray-50 transition-colors" data-notification-id="3">
-          <div class="px-4 py-3">
-            <div class="flex items-start">
-              <div class="flex-shrink-0">
-                <% if false # Replace with actual user avatar check %>
-                  <img class="h-10 w-10 rounded-full" src="#" alt="User">
-                <% else %>
-                  <div class="h-10 w-10 rounded-full bg-gray-300 flex items-center justify-center">
-                    <span class="text-gray-600 font-medium text-sm">JD</span>
-                  </div>
-                <% end %>
-              </div>
-              <div class="ml-3 flex-1">
-                <p class="text-sm text-gray-900">
-                  <span class="font-medium">John Doe</span> mentioned you in a comment
-                </p>
-                <p class="text-xs text-gray-500 mt-1">3 hours ago</p>
-                <div class="mt-2 text-sm text-gray-600 bg-gray-100 rounded p-2">
-                  "@<%= current_user.first_name %> what do you think about this approach?"
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        
-        <!-- System Notification -->
-        <div class="relative hover:bg-gray-50 transition-colors" data-notification-id="4">
-          <div class="px-4 py-3">
-            <div class="flex items-start">
-              <div class="flex-shrink-0">
-                <div class="h-10 w-10 rounded-full bg-yellow-100 flex items-center justify-center">
-                  <%= icon("warning", class: "h-5 w-5 text-yellow-600") %>
-                </div>
-              </div>
-              <div class="ml-3 flex-1">
-                <p class="text-sm text-gray-900">
-                  Your subscription will renew in 3 days
-                </p>
-                <p class="text-xs text-gray-500 mt-1">Yesterday at 9:42 AM</p>
-                <div class="mt-2">
-                  <% if current_user.direct? %>
-                    <%= link_to "Manage Subscription", users_billing_index_path, 
-                        class: "text-sm text-indigo-600 hover:text-indigo-500 font-medium" %>
-                  <% end %>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+        <% end %>
       </div>
       
       <!-- Empty State -->
@@ -185,11 +103,11 @@
     
     <!-- Footer -->
     <div class="p-4 border-t border-gray-200 bg-gray-50 rounded-b-lg">
-      <a href="#" 
-         class="text-sm font-medium text-indigo-600 hover:text-indigo-500 flex items-center justify-center">
+      <%= link_to notifications_path, 
+         class: "text-sm font-medium text-indigo-600 hover:text-indigo-500 flex items-center justify-center" do %>
         View all notifications
         <%= icon("arrow-right", class: "ml-1 h-4 w-4") %>
-      </a>
+      <% end %>
     </div>
   </div>
 </div>

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_06_25_065429) do
+ActiveRecord::Schema[8.0].define(version: 2025_07_06_045935) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -198,6 +198,60 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_25_065429) do
     t.index ["token"], name: "index_invitations_on_token", unique: true
   end
 
+  create_table "noticed_events", force: :cascade do |t|
+    t.string "type"
+    t.string "record_type"
+    t.bigint "record_id"
+    t.json "params"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "notifications_count"
+    t.index ["record_type", "record_id"], name: "index_noticed_events_on_record"
+  end
+
+  create_table "noticed_notifications", force: :cascade do |t|
+    t.string "type"
+    t.bigint "event_id", null: false
+    t.string "recipient_type", null: false
+    t.bigint "recipient_id", null: false
+    t.datetime "read_at", precision: nil
+    t.datetime "seen_at", precision: nil
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["event_id"], name: "index_noticed_notifications_on_event_id"
+    t.index ["read_at"], name: "index_noticed_notifications_on_read_at"
+    t.index ["recipient_type", "recipient_id", "read_at"], name: "index_notifications_on_recipient_and_read_at"
+    t.index ["recipient_type", "recipient_id"], name: "index_noticed_notifications_on_recipient"
+    t.index ["seen_at"], name: "index_noticed_notifications_on_seen_at"
+  end
+
+  create_table "notification_categories", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "key", null: false
+    t.text "description"
+    t.string "icon", default: "bell"
+    t.string "color", default: "gray"
+    t.string "scope", null: false
+    t.integer "created_by_id", null: false
+    t.integer "team_id"
+    t.integer "enterprise_group_id"
+    t.boolean "active", default: true
+    t.boolean "allow_user_disable", default: true
+    t.string "default_priority", default: "medium"
+    t.boolean "send_email", default: true
+    t.string "email_template"
+    t.json "delivery_settings", default: {}
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["created_by_id"], name: "index_notification_categories_on_created_by_id"
+    t.index ["enterprise_group_id", "active"], name: "idx_on_enterprise_group_id_active_f206f20a63"
+    t.index ["enterprise_group_id"], name: "index_notification_categories_on_enterprise_group_id"
+    t.index ["key"], name: "index_notification_categories_on_key", unique: true
+    t.index ["scope", "active"], name: "index_notification_categories_on_scope_and_active"
+    t.index ["team_id", "active"], name: "index_notification_categories_on_team_id_and_active"
+    t.index ["team_id"], name: "index_notification_categories_on_team_id"
+  end
+
   create_table "pay_charges", force: :cascade do |t|
     t.bigint "customer_id", null: false
     t.bigint "subscription_id"
@@ -379,7 +433,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_25_065429) do
     t.string "twitter_url"
     t.string "github_url"
     t.string "website_url"
-    t.json "notification_preferences", default: {}
+    t.json "notification_preferences", default: {"email"=>{"status_changes"=>true, "security_alerts"=>true, "role_changes"=>true, "team_members"=>true, "invitations"=>true, "admin_actions"=>true, "account_updates"=>true}, "in_app"=>{"status_changes"=>true, "security_alerts"=>true, "role_changes"=>true, "team_members"=>true, "invitations"=>true, "admin_actions"=>true, "account_updates"=>true}, "digest"=>{"frequency"=>"daily"}, "marketing"=>{"enabled"=>true}}
     t.integer "profile_visibility", default: 0
     t.datetime "profile_completed_at"
     t.integer "profile_completion_percentage", default: 0
@@ -418,6 +472,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_25_065429) do
   add_foreign_key "enterprise_groups", "users", column: "created_by_id"
   add_foreign_key "invitations", "teams"
   add_foreign_key "invitations", "users", column: "invited_by_id"
+  add_foreign_key "notification_categories", "enterprise_groups"
+  add_foreign_key "notification_categories", "teams"
+  add_foreign_key "notification_categories", "users", column: "created_by_id"
   add_foreign_key "pay_charges", "pay_customers", column: "customer_id"
   add_foreign_key "pay_charges", "pay_subscriptions", column: "subscription_id"
   add_foreign_key "pay_payment_methods", "pay_customers", column: "customer_id"

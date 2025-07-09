@@ -36,6 +36,9 @@ gem "ahoy_matey"
 gem "blazer"
 gem "rails_charts"
 
+# Notifications
+gem "noticed", "~> 2.0"
+
 # Performance & Storage
 gem "activerecord-session_store"
 

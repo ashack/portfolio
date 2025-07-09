@@ -6,16 +6,16 @@ This document provides comprehensive coverage analysis for the SaaS Rails Starte
 
 ## Current Coverage Statistics
 
-**Generated**: June 24, 2025  
-**Test Framework**: Minitest 5.22  
+**Generated**: January 2025  
+**Test Framework**: Minitest 5.25  
 **Coverage Tool**: SimpleCov with branch coverage
 
 ### Overall Metrics
 
-- **Total Tests**: 428 (optimized from 600+)
-- **Test Status**: ✅ 0 failures, 0 errors, 7 skips
-- **Line Coverage**: ~24% (SimpleCov)
-- **Business Rule Coverage**: 84.2% (target: 90%)
+- **Total Tests**: 498
+- **Test Status**: ⚠️ 0 failures, 42 errors, 34 skips
+- **Line Coverage**: 1.33% (SimpleCov)
+- **Business Rule Coverage**: ~80% (target: 90%)
 
 ### Business Rule Coverage
 
