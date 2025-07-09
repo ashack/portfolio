@@ -101,6 +101,12 @@
                           <% end %>
                         </li>
                         <li>
+                          <%= link_to admin_super_announcements_path, class: "group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold #{request.path.include?('/admin/super/announcements') ? 'bg-gray-50 text-indigo-600' : 'text-gray-700 hover:text-indigo-600 hover:bg-gray-50'}" do %>
+                            <%= icon "megaphone", class: "size-6 shrink-0 #{request.path.include?('/admin/super/announcements') ? 'text-indigo-600' : 'text-gray-400 group-hover:text-indigo-600'}" %>
+                            Announcements
+                          <% end %>
+                        </li>
+                        <li>
                           <%= link_to admin_super_settings_path, class: "group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold #{current_page?(admin_super_settings_path) ? 'bg-gray-50 text-indigo-600' : 'text-gray-700 hover:text-indigo-600 hover:bg-gray-50'}" do %>
                             <%= icon "gear", class: "size-6 shrink-0 #{current_page?(admin_super_settings_path) ? 'text-indigo-600' : 'text-gray-400 group-hover:text-indigo-600'}" %>
                             Settings
@@ -209,6 +215,12 @@
                       <% end %>
                     </li>
                     <li>
+                      <%= link_to admin_super_announcements_path, class: "group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold #{request.path.include?('/admin/super/announcements') ? 'bg-gray-50 text-indigo-600' : 'text-gray-700 hover:text-indigo-600 hover:bg-gray-50'}" do %>
+                        <%= icon "megaphone", class: "size-6 shrink-0 #{request.path.include?('/admin/super/announcements') ? 'text-indigo-600' : 'text-gray-400 group-hover:text-indigo-600'}" %>
+                        Announcements
+                      <% end %>
+                    </li>
+                    <li>
                       <%= link_to admin_super_settings_path, class: "group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold #{current_page?(admin_super_settings_path) ? 'bg-gray-50 text-indigo-600' : 'text-gray-700 hover:text-indigo-600 hover:bg-gray-50'}" do %>
                         <%= icon "gear", class: "size-6 shrink-0 #{current_page?(admin_super_settings_path) ? 'text-indigo-600' : 'text-gray-400 group-hover:text-indigo-600'}" %>
                         Settings
@@ -289,6 +301,8 @@
             </div>
           </div>
         </div>
+
+        <%= render 'shared/site_announcement' %>
 
         <!-- Flash Messages -->
         <% if flash[:notice].present? || flash[:alert].present? %>

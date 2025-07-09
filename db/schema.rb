@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_07_06_045935) do
+ActiveRecord::Schema[8.0].define(version: 2025_07_09_192448) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -103,6 +103,24 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_06_045935) do
     t.index ["user_id"], name: "index_ahoy_visits_on_user_id"
     t.index ["visit_token"], name: "index_ahoy_visits_on_visit_token", unique: true
     t.index ["visitor_token", "started_at"], name: "index_ahoy_visits_on_visitor_token_and_started_at"
+  end
+
+  create_table "announcements", force: :cascade do |t|
+    t.string "title", null: false
+    t.text "message", null: false
+    t.string "style", default: "info", null: false
+    t.boolean "dismissible", default: true, null: false
+    t.datetime "starts_at", null: false
+    t.datetime "ends_at"
+    t.boolean "published", default: false, null: false
+    t.integer "created_by_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["created_by_id"], name: "index_announcements_on_created_by_id"
+    t.index ["ends_at"], name: "index_announcements_on_ends_at"
+    t.index ["published", "starts_at", "ends_at"], name: "index_announcements_on_active_status"
+    t.index ["published"], name: "index_announcements_on_published"
+    t.index ["starts_at"], name: "index_announcements_on_starts_at"
   end
 
   create_table "audit_logs", force: :cascade do |t|
@@ -463,6 +481,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_06_045935) do
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "admin_activity_logs", "users", column: "admin_user_id"
+  add_foreign_key "announcements", "users", column: "created_by_id"
   add_foreign_key "audit_logs", "users"
   add_foreign_key "audit_logs", "users", column: "target_user_id"
   add_foreign_key "email_change_requests", "users"

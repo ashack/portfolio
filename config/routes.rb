@@ -97,6 +97,7 @@ Rails.application.routes.draw do
       resources :plans
       resources :notifications, only: [ :index, :new, :create, :show ]
       resources :notification_categories
+      resources :announcements
       resources :enterprise_groups do
         resources :invitations, controller: "enterprise_group_invitations", only: [ :index ] do
           member do
