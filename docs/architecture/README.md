@@ -2,6 +2,8 @@
 
 Welcome to the comprehensive architecture documentation for the SaaS Rails Starter Kit. This guide provides detailed technical information about the system design, implementation patterns, and architectural decisions.
 
+> **Note**: For general documentation and getting started, see the [Main Documentation Hub](../README.md). This guide focuses specifically on architectural details.
+
 ## 📚 Documentation Structure
 
 ### Core Architecture
@@ -19,6 +21,26 @@ Welcome to the comprehensive architecture documentation for the SaaS Rails Start
   - [User Flow Diagrams](diagrams/user-flows.md)
   - [Database ERD](diagrams/database-erd.md)
 
+### Enterprise Architecture
+- **Polymorphic Invitations**: Flexible system supporting both teams and enterprise groups
+- **Purple-Themed UI**: Distinct visual identity for enterprise dashboards
+- **Separate Namespace**: Complete `Enterprise::` namespace with dedicated controllers
+- **Advanced Security**: Enterprise-specific rate limiting and audit logging
+- **No Circular Dependencies**: Admin assignment via invitation flow
+
+### Performance Architecture
+- **Background Job Processing**: Asynchronous activity tracking with Redis caching
+- **Query Optimization**: Eliminated N+1 queries with eager loading and query objects
+- **Caching Strategy**: Model-level and fragment caching with automatic invalidation
+- **Database Indexes**: 15+ optimized indexes for common query patterns
+- **Pre-calculated Statistics**: Reduced database queries in views
+
+### Database Architecture Updates
+- **New Tables**: `enterprise_groups` for organization management
+- **Polymorphic Support**: Updated `invitations` table with `invitable_type` and `invitable_id`
+- **Enhanced Constraints**: User type constraints now include enterprise users
+- **Notification System**: `noticed_events` and `noticed_notifications` tables
+
 ## 🏗️ System Architecture at a Glance
 
 ### Technology Stack
@@ -31,14 +53,19 @@ Welcome to the comprehensive architecture documentation for the SaaS Rails Start
 - **Background Jobs**: Solid Queue
 - **Caching**: Solid Cache with Redis
 - **Analytics**: Ahoy Matey
+- **Security**: Rack::Attack rate limiting
+- **Notifications**: Noticed gem integration
 - **Deployment**: Kamal, Docker
 
 ### Key Architectural Patterns
 - **MVC with Service Objects**: Clean separation of concerns
 - **Policy-Based Authorization**: Fine-grained access control
-- **Multi-Tenant Design**: Logical separation by teams
+- **Multi-Tenant Design**: Logical separation by teams and enterprise groups
 - **Event-Driven Processing**: Background job architecture
 - **RESTful Resources**: Consistent API design
+- **Polymorphic Associations**: Flexible invitation system
+- **Query Objects**: Complex database query optimization
+- **ViewComponents**: Reusable UI components
 
 ### Triple-Track User System
 ```
@@ -47,22 +74,23 @@ Welcome to the comprehensive architecture documentation for the SaaS Rails Start
 3. Enterprise Users → Organization-wide access, custom plans
 ```
 
-## 🔗 Related Documentation
+### Current Application State (January 2025)
+- **Test Coverage**: 1.33% line coverage (Critical - needs immediate attention)
+- **Code Quality**: 253 RuboCop offenses
+- **Security**: 1 minor Brakeman warning
+- **Performance**: Excellent (<100ms response times, 0 N+1 queries)
+- **Documentation**: Fully updated and consolidated
 
-### Security & Compliance
-- **[Security Guide](../security/)** - Authentication, authorization, and security best practices
+## 🔗 Architecture-Specific Resources
+
+### Related Architecture Docs
 - **[Business Logic](../guides/business-logic.md)** - Critical business rules and constraints
-
-### Development Guides
-- **[Testing Architecture](../guides/testing-guide.md)** - Test strategy and implementation
-- **[Performance Guide](../guides/performance-guide.md)** - Optimization strategies
-- **[Deployment Guide](../guides/deployment-guide.md)** - Production deployment
+- **[Performance Guide](../guides/performance-guide.md)** - Optimization strategies  
 - **[Common Pitfalls](../guides/common-pitfalls.md)** - Anti-patterns to avoid
 
-### Reference Documentation
-- **[UI Components](../reference/ui-components.md)** - Component library reference
-- **[Database Reference](../reference/database-reference.md)** - Schema details
-- **[Configuration](../reference/configuration.md)** - Environment setup
+### Key References
+- **[Recent Updates](../RECENT_UPDATES.md)** - Architectural changes changelog
+- **[Main Documentation Hub](../README.md)** - Complete documentation index
 
 ## 🚀 Quick Start for Developers
 
@@ -98,14 +126,54 @@ Welcome to the comprehensive architecture documentation for the SaaS Rails Start
 ### 4. Maintainability
 - Consistent coding patterns
 - Comprehensive documentation
-- Extensive test coverage
+- Test coverage target: 90% (currently at 1.33%)
 
 ## 🔄 Recent Updates
 
-- **June 2025**: Enterprise features implementation
-- **June 2025**: Polymorphic invitation system
-- **June 2025**: Enhanced security with Rack::Attack
-- **June 2025**: Rails 8.0.2 compatibility updates
+### January 2025
+- **Documentation Consolidation**: Updated all docs, fixed metrics, removed duplicates
+- **UI/UX Improvements**: Tailwind UI sidebar, navigation simplification, admin privileges
+- **Enterprise Implementation**: Fixed circular dependencies, polymorphic invitations
+- **Current State**: 1.33% test coverage, 253 RuboCop offenses, 1 Brakeman warning
+
+### December 2024
+- **Performance Optimizations**: Background job processing, caching strategy, database indexes
+- **N+1 Query Elimination**: Query objects, eager loading, pre-calculated statistics
+
+### Earlier 2024
+- **Enterprise Features**: Complete enterprise organization management
+- **Polymorphic Invitations**: Support for teams and enterprise groups
+- **Security Enhancements**: Rack::Attack configuration, enterprise-specific policies
+- **Tab Navigation**: Reusable ViewComponent for consistent interfaces
+
+## 🎨 UI/UX Architecture
+
+### Tailwind UI Integration
+- **Light Theme Sidebar**: Modern, consistent navigation across all user types
+- **Simplified Navigation**: User-specific items in avatar dropdown
+- **Focus Management**: Keyboard-only focus indicators with `focus-visible`
+- **Tab Components**: Reusable ViewComponent for complex interfaces
+
+### Admin Enhancements
+- **Subscription Bypass**: Super/site admins don't need paid subscriptions
+- **Direct Email Changes**: Super admins can update email without confirmation
+- **Enhanced Settings**: Comprehensive notification preferences with frequency options
+
+## 🔧 Key Implementation Details
+
+### Fixed Issues
+- **Site Admin Navigation**: Corrected routes to prevent unauthorized team creation
+- **Enterprise Creation**: Resolved circular dependency with invitation-based admin assignment
+- **Icon System**: Standardized on `icon` helper (not `rails_icon`)
+- **Pagination**: Updated to use `pagy_tailwind_nav` for Tailwind compatibility
+- **JavaScript Modules**: Fixed importmap compatibility issues
+
+### Best Practices Implemented
+- **Separation of Concerns**: Enterprise controllers in dedicated namespace
+- **Reusable Components**: ViewComponents for UI consistency
+- **Polymorphic Patterns**: Flexible invitation system design
+- **Audit Logging**: Comprehensive tracking of admin actions
+- **Rate Limiting**: Separate limits for different user actions
 
 ## 📝 Contributing to Documentation
 
@@ -116,8 +184,15 @@ When updating architecture documentation:
 4. Include code examples where helpful
 5. Review for accuracy and completeness
 
+### Priority Areas for Improvement
+1. **Test Coverage**: Critical need to increase from 1.33% to 90%
+2. **Code Quality**: Address 253 RuboCop offenses
+3. **Security**: Resolve remaining Brakeman warning
+4. **Documentation**: Continue expanding architecture guides
+
 ---
 
-**Last Updated**: June 2025
+**Last Updated**: January 2025
 **Maintained By**: Development Team
 **Questions?**: See [CLAUDE.md](../../CLAUDE.md) for project specifications
+**Navigation**: Return to [Main Documentation](../README.md)

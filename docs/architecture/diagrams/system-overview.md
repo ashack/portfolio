@@ -41,6 +41,7 @@ graph TB
         Email["Email Service<br/>(SMTP/SendGrid)"]
         Monitor["Monitoring<br/>(Sentry/Skylight)"]
         Analytics["Analytics<br/>(Ahoy/Custom)"]
+        Noticed["Notifications<br/>(Noticed Gem)"]
     end
     
     Web --> CF
@@ -146,6 +147,56 @@ sequenceDiagram
     end
 ```
 
+## Triple-Track User System Architecture
+
+```mermaid
+graph TB
+    subgraph "User Registration"
+        Public["Public Registration"]
+        Invite["Invitation Link"]
+        Enterprise["Enterprise Invite"]
+    end
+    
+    subgraph "User Types"
+        Direct["Direct Users<br/>(Personal Billing)"]
+        Invited["Invited Users<br/>(Team Members)"]
+        EntUser["Enterprise Users<br/>(Organization)"]
+    end
+    
+    subgraph "Access Patterns"
+        IndDash["Individual Dashboard<br/>(/dashboard)"]
+        TeamDash["Team Dashboard<br/>(/teams/slug)"]
+        EntDash["Enterprise Dashboard<br/>(/enterprise/slug)"]
+    end
+    
+    subgraph "Billing"
+        PersonalBill["Personal Stripe<br/>Subscription"]
+        TeamBill["Team Stripe<br/>Subscription"]
+        EntBill["Enterprise<br/>Custom Billing"]
+    end
+    
+    Public --> Direct
+    Invite --> Invited
+    Enterprise --> EntUser
+    
+    Direct --> IndDash
+    Direct --> PersonalBill
+    Direct -.->|Can Create| TeamDash
+    
+    Invited --> TeamDash
+    TeamDash --> TeamBill
+    
+    EntUser --> EntDash
+    EntDash --> EntBill
+    
+    style Direct fill:#e3f2fd,stroke:#1976d2
+    style Invited fill:#f3e5f5,stroke:#7b1fa2
+    style EntUser fill:#e1bee7,stroke:#4a148c
+    style PersonalBill fill:#c8e6c9,stroke:#2e7d32
+    style TeamBill fill:#fff9c4,stroke:#f9a825
+    style EntBill fill:#d1c4e9,stroke:#5e35b1
+```
+
 ## Component Communication
 
 ```mermaid
@@ -157,6 +208,8 @@ graph LR
         Policy["Policies<br/>(Authorization)"]
         Job["Background Jobs<br/>(Async Tasks)"]
         Mailer["Mailers<br/>(Email)"]
+        Query["Query Objects<br/>(Complex Queries)"]
+        ViewComp["ViewComponents<br/>(Reusable UI)"]
     end
     
     subgraph "Data Storage"
@@ -174,11 +227,15 @@ graph LR
     
     Controller --> Policy
     Controller --> Service
+    Controller --> ViewComp
     Service --> Model
+    Service --> Query
     Service --> Job
     Service --> Mailer
     
     Model --> DB
+    Query --> DB
+    Query --> Cache
     Model --> Cache
     Controller --> Session
     
@@ -189,6 +246,7 @@ graph LR
     Mailer --> Email
     Controller --> Analytics
     Model --> Files
+    ViewComp --> Cache
     
     style Controller fill:#e3f2fd
     style Service fill:#f3e5f5
@@ -292,6 +350,7 @@ graph TB
     subgraph "Application Security"
         Auth["Authentication<br/>(Devise)"]
         AuthZ["Authorization<br/>(Pundit)"]
+        RateLimit["Rate Limiting<br/>(Rack::Attack)"]
         CSRF["CSRF Protection"]
         XSS["XSS Prevention"]
         SQLi["SQL Injection Prevention"]
@@ -325,7 +384,8 @@ graph TB
     SSL --> Auth
     
     Auth --> AuthZ
-    AuthZ --> CSRF
+    AuthZ --> RateLimit
+    RateLimit --> CSRF
     CSRF --> XSS
     XSS --> SQLi
     SQLi --> Params
@@ -434,6 +494,113 @@ graph TB
     class JSON,HTML,Email,Export output
 ```
 
+## Performance & Caching Architecture
+
+```mermaid
+graph TB
+    subgraph "Request Flow"
+        Request["Incoming Request"]
+        RateLimit["Rack::Attack<br/>Rate Limiting"]
+        Router["Rails Router"]
+    end
+    
+    subgraph "Caching Layers"
+        CDN["CDN Cache<br/>(Static Assets)"]
+        Fragment["Fragment Cache<br/>(View Partials)"]
+        Model["Model Cache<br/>(Cacheable Concern)"]
+        Query["Query Cache<br/>(Query Objects)"]
+        Redis["Redis Cache<br/>(Sessions/Jobs)"]
+    end
+    
+    subgraph "Background Processing"
+        TrackActivity["TrackUserActivityJob<br/>(5-min intervals)"]
+        EmailJob["Email Notifications"]
+        BillingJob["Billing Updates"]
+        CleanupJob["Data Cleanup"]
+    end
+    
+    subgraph "Optimizations"
+        Eager["Eager Loading<br/>(includes/preload)"]
+        Indexes["15+ DB Indexes"]
+        PreCalc["Pre-calculated<br/>Statistics"]
+        N1["N+1 Query<br/>Prevention"]
+    end
+    
+    Request --> RateLimit
+    RateLimit --> Router
+    Router --> CDN
+    Router --> Fragment
+    
+    Fragment --> Model
+    Model --> Query
+    Query --> Redis
+    
+    Router --> TrackActivity
+    TrackActivity --> Redis
+    
+    Query --> Eager
+    Eager --> Indexes
+    Indexes --> PreCalc
+    PreCalc --> N1
+    
+    style RateLimit fill:#ffcdd2,stroke:#d32f2f
+    style Redis fill:#e3f2fd,stroke:#1976d2
+    style Eager fill:#c8e6c9,stroke:#2e7d32
+    style TrackActivity fill:#f3e5f5,stroke:#7b1fa2
+```
+
+## Enterprise Architecture
+
+```mermaid
+graph LR
+    subgraph "Enterprise Management"
+        SuperAdmin["Super Admin<br/>Creates Groups"]
+        EntInvite["Enterprise<br/>Invitation"]
+        EntAdmin["Enterprise Admin<br/>(Invited)"]
+        EntMembers["Enterprise<br/>Members"]
+    end
+    
+    subgraph "Enterprise Features"
+        PurpleUI["Purple Theme<br/>UI"]
+        CustomBilling["Custom Billing<br/>Plans"]
+        BulkMgmt["Bulk User<br/>Management"]
+        AuditLog["Audit<br/>Logging"]
+    end
+    
+    subgraph "Enterprise Namespace"
+        EntBase["Enterprise::BaseController"]
+        EntDash["Enterprise::DashboardController"]
+        EntMember["Enterprise::MembersController"]
+        EntSettings["Enterprise::SettingsController"]
+    end
+    
+    subgraph "Polymorphic System"
+        Invitation["Invitations Table<br/>(Polymorphic)"]
+        TeamInv["Team<br/>Invitations"]
+        EntInv["Enterprise<br/>Invitations"]
+    end
+    
+    SuperAdmin --> EntInvite
+    EntInvite --> EntAdmin
+    EntAdmin --> EntMembers
+    
+    EntAdmin --> PurpleUI
+    EntAdmin --> CustomBilling
+    EntAdmin --> BulkMgmt
+    EntAdmin --> AuditLog
+    
+    EntBase --> EntDash
+    EntBase --> EntMember
+    EntBase --> EntSettings
+    
+    Invitation --> TeamInv
+    Invitation --> EntInv
+    
+    style PurpleUI fill:#e1bee7,stroke:#4a148c
+    style EntBase fill:#d1c4e9,stroke:#5e35b1
+    style Invitation fill:#fff9c4,stroke:#f9a825
+```
+
 ## Scaling Architecture
 
 ```mermaid
@@ -503,7 +670,48 @@ graph LR
     style M4Edge fill:#e8f5e9
 ```
 
+## Current Application State (January 2025)
+
+```mermaid
+pie title "Code Quality Metrics"
+    "Clean Code" : 247
+    "RuboCop Offenses" : 253
+```
+
+```mermaid
+pie title "Test Coverage"
+    "Untested Code" : 98.67
+    "Tested Code" : 1.33
+```
+
+```mermaid
+graph LR
+    subgraph "Priority Areas"
+        Test["🔴 Test Coverage<br/>1.33% → 90%"]
+        Quality["🟡 Code Quality<br/>253 offenses"]
+        Security["🟡 Security<br/>1 warning"]
+        Perf["✅ Performance<br/>< 100ms"]
+    end
+    
+    subgraph "Technical Debt"
+        Tests["498 tests<br/>42 errors<br/>34 skips"]
+        Coverage["Line: 1.33%<br/>Branch: 0%"]
+        Rubocop["253 offenses<br/>246 autocorrectable"]
+        Brakeman["1 minor<br/>warning"]
+    end
+    
+    Test --> Tests
+    Test --> Coverage
+    Quality --> Rubocop
+    Security --> Brakeman
+    
+    style Test fill:#ffcdd2,stroke:#d32f2f
+    style Quality fill:#fff9c4,stroke:#f9a825
+    style Security fill:#fff9c4,stroke:#f9a825
+    style Perf fill:#c8e6c9,stroke:#2e7d32
+```
+
 ---
 
-**Last Updated**: June 2025
-**Related**: [User Flow Diagrams](user-flows.md) | [Database ERD](database-erd.md)
+**Last Updated**: January 2025
+**Related**: [User Flow Diagrams](user-flows.md) | [Database ERD](database-erd.md) | [Architecture Overview](../README.md)

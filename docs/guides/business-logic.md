@@ -4,6 +4,8 @@
 
 This document consolidates all critical business logic rules for the SaaS application. It serves as the authoritative source for understanding system constraints, user type behaviors, and security requirements. All tests should be evaluated against these documented rules.
 
+> **Note**: For current test coverage statistics of these business rules, see [Business Logic Coverage Summary](../business_logic_coverage_summary.md)
+
 ## Table of Contents
 
 1. [User Type System](#user-type-system)

@@ -8,7 +8,7 @@ The application implements a comprehensive security architecture using Devise fo
 
 ### Devise Configuration
 
-The application uses 8 Devise modules for comprehensive authentication:
+The application uses 8 Devise modules with enhanced configuration:
 
 ```ruby
 class User < ApplicationRecord
@@ -21,6 +21,22 @@ class User < ApplicationRecord
          :trackable,                # Sign-in tracking
          :lockable                  # Account locking
 end
+```
+
+#### Enhanced Settings
+```ruby
+# config/initializers/devise.rb
+config.scoped_views = true                    # Custom views per scope
+config.reconfirmable = true                   # Email change confirmation
+config.expire_all_remember_me_on_sign_out = true
+config.lock_strategy = :failed_attempts
+config.unlock_keys = [:email]
+config.unlock_strategy = :email
+config.maximum_attempts = 5
+config.unlock_in = 1.hour
+
+# Turbo/Hotwire compatibility
+config.navigational_formats = ['*/*', :html, :turbo_stream]
 ```
 
 ### Authentication Flow
@@ -59,15 +75,21 @@ flowchart TD
 
 #### Password Requirements
 ```ruby
-# Strong password validation
-def password_complexity
-  return if password.blank?
+# Strong password validation in User model
+class User < ApplicationRecord
+  validate :password_complexity, if: :password_required?
   
-  errors.add :password, "must be at least 8 characters" if password.length < 8
-  errors.add :password, "must include uppercase letter" unless password.match?(/[A-Z]/)
-  errors.add :password, "must include lowercase letter" unless password.match?(/[a-z]/)
-  errors.add :password, "must include number" unless password.match?(/[0-9]/)
-  errors.add :password, "must include special character" unless password.match?(/[^A-Za-z0-9]/)
+  private
+  
+  def password_complexity
+    return if password.blank?
+    
+    errors.add(:password, "must be at least 8 characters") if password.length < 8
+    errors.add(:password, "must include one uppercase letter") unless password =~ /[A-Z]/
+    errors.add(:password, "must include one lowercase letter") unless password =~ /[a-z]/
+    errors.add(:password, "must include one digit") unless password =~ /\d/
+    errors.add(:password, "must include one special character") unless password =~ /[[:^alnum:]]/
+  end
 end
 ```
 
@@ -113,7 +135,9 @@ class User < ApplicationRecord
 end
 ```
 
-#### Account Locking
+#### Account Locking & Rate Limiting
+
+#### Devise Locking Configuration
 ```ruby
 # config/initializers/devise.rb
 config.lock_strategy = :failed_attempts
@@ -123,21 +147,84 @@ config.maximum_attempts = 5
 config.unlock_in = 1.hour
 ```
 
-#### Login Tracking
+#### Rack::Attack Rate Limiting
+```ruby
+# config/initializers/rack_attack.rb
+# Fail2Ban-style blocking
+Rack::Attack.blocklist('fail2ban:logins') do |req|
+  Rack::Attack::Fail2Ban.filter("fail2ban:login-#{req.ip}", 
+    maxretry: 3,      # 3 attempts
+    findtime: 10.minutes,
+    bantime: 10.minutes
+  ) do
+    req.path == '/users/sign_in' && req.post? && 
+    req.env['rack.attack.matched'] == 'limit login attempts per ip'
+  end
+end
+
+# Login attempt throttling
+Rack::Attack.throttle('limit login attempts per ip', 
+  limit: 5, 
+  period: 1.minute
+) do |req|
+  req.ip if req.path == '/users/sign_in' && req.post?
+end
+
+# Password reset throttling
+Rack::Attack.throttle('limit password resets per email', 
+  limit: 3, 
+  period: 1.hour
+) do |req|
+  req.params.dig('user', 'email')&.downcase if 
+    req.path == '/users/password' && req.post?
+end
+```
+
+#### Login Tracking & Activity Monitoring
 ```ruby
 # Devise trackable provides:
 # - sign_in_count
 # - current_sign_in_at / last_sign_in_at
 # - current_sign_in_ip / last_sign_in_ip
 
-# Enhanced tracking via callbacks
-after_sign_in do |user|
-  AuditLog.create!(
-    user: user,
-    action: 'user.login',
-    ip_address: request.remote_ip,
-    user_agent: request.user_agent
-  )
+# Enhanced tracking with background jobs
+class ApplicationController < ActionController::Base
+  include ActivityTrackable
+  
+  # Track user activity asynchronously (5-minute cache)
+  after_action :track_user_activity
+  
+  private
+  
+  def track_user_activity
+    return unless current_user
+    
+    cache_key = "user_activity_#{current_user.id}"
+    unless Rails.cache.exist?(cache_key)
+      TrackUserActivityJob.perform_later(current_user)
+      Rails.cache.write(cache_key, true, expires_in: 5.minutes)
+    end
+  end
+end
+
+# Admin activity tracking
+class Admin::BaseController < ApplicationController
+  after_action :track_admin_activity, except: [:index, :show]
+  
+  private
+  
+  def track_admin_activity
+    TrackAdminActivityJob.perform_later(
+      admin_user: current_user,
+      controller: controller_name,
+      action: action_name,
+      path: request.path,
+      method: request.method,
+      params: request.filtered_parameters,
+      ip_address: request.remote_ip,
+      user_agent: request.user_agent
+    )
+  end
 end
 ```
 
@@ -378,6 +465,95 @@ class Teams::MembersController < ApplicationController
 end
 ```
 
+## Email Change Security
+
+### Email Change Request System
+```ruby
+# Prevents direct email changes
+module EmailChangeProtection
+  extend ActiveSupport::Concern
+  
+  included do
+    # Block direct email updates
+    before_save :prevent_email_change, if: :will_save_change_to_email?
+  end
+  
+  private
+  
+  def prevent_email_change
+    return if new_record?
+    return if Thread.current[:authorized_email_change]
+    
+    # Super admins can change email directly
+    return if Thread.current[:current_user]&.super_admin?
+    
+    errors.add(:email, "cannot be changed directly")
+    throw :abort
+  end
+end
+
+# Email change request workflow
+class EmailChangeRequest < ApplicationRecord
+  belongs_to :user
+  belongs_to :approved_by, class_name: 'User', optional: true
+  
+  enum status: { pending: 0, approved: 1, rejected: 2 }
+  
+  scope :expired, -> { where('created_at < ?', 30.days.ago) }
+  
+  before_create :generate_token
+  after_create :send_notification
+  
+  def approve!(admin)
+    transaction do
+      update!(status: 'approved', approved_by: admin, approved_at: Time.current)
+      
+      # Authorize the email change
+      Thread.current[:authorized_email_change] = true
+      old_email = user.email
+      
+      user.update!(email: new_email)
+      
+      # Security notifications
+      UserMailer.email_changed_notification(user, old_email).deliver_later
+      
+      # Audit logging
+      AuditLogService.log_security_event(
+        user: admin,
+        action: 'email_change.approve',
+        target_user: user,
+        details: { old_email: old_email, new_email: new_email }
+      )
+    ensure
+      Thread.current[:authorized_email_change] = false
+    end
+  end
+end
+```
+
+### Super Admin Direct Email Change
+```ruby
+class ProfilesController < ApplicationController
+  def update
+    if current_user.super_admin? && params[:user][:email].present?
+      # Direct email change with audit logging
+      old_email = current_user.email
+      
+      Thread.current[:authorized_email_change] = true
+      if current_user.update(user_params)
+        AuditLogService.log_security_event(
+          user: current_user,
+          action: 'email_change.direct',
+          target_user: current_user,
+          details: { old_email: old_email, new_email: current_user.email }
+        )
+      end
+      Thread.current[:authorized_email_change] = false
+    end
+  end
+end
+```
+
 ## Security Middleware
 
 ### Warden Configuration
@@ -586,6 +762,88 @@ User.where("email = '#{params[:email]}'")  # Bad - SQL injection risk
 
 ## Monitoring & Alerts
 
+### Enhanced Audit Logging
+```ruby
+class AuditLogService
+  # Security-specific event logging
+  def self.log_security_event(user:, action:, target_user: nil, details: {})
+    AuditLog.create!(
+      user: user,
+      target_user: target_user || user,
+      action: action,
+      details: details.merge(
+        security_event: true,
+        timestamp: Time.current,
+        ip_address: Thread.current[:current_request]&.remote_ip
+      )
+    )
+  end
+  
+  # Team action logging
+  def self.log_team_action(user:, team:, action:, details: {})
+    AuditLog.create!(
+      user: user,
+      action: "team.#{action}",
+      details: details.merge(
+        team_id: team.id,
+        team_slug: team.slug
+      )
+    )
+  end
+  
+  # System action logging
+  def self.log_system_action(user:, action:, details: {})
+    AuditLog.create!(
+      user: user,
+      action: "system.#{action}",
+      details: details.merge(
+        system_event: true,
+        admin_role: user.system_role
+      )
+    )
+  end
+end
+```
+
+### Admin Activity Monitoring
+```ruby
+class AdminActivityLog < ApplicationRecord
+  belongs_to :admin_user, class_name: 'User'
+  
+  # Suspicious activity detection
+  scope :suspicious, -> {
+    where("response_time_ms > ? OR path LIKE ?", 5000, '%destroy%')
+  }
+  
+  scope :rapid_actions, -> { 
+    select('admin_user_id, COUNT(*) as action_count')
+    .where('created_at > ?', 5.minutes.ago)
+    .group(:admin_user_id)
+    .having('COUNT(*) > 50')
+  }
+  
+  # Alert on unusual patterns
+  def self.check_suspicious_activity
+    rapid_actions.each do |activity|
+      SecurityMailer.rapid_admin_actions_alert(
+        User.find(activity.admin_user_id),
+        activity.action_count
+      ).deliver_later
+    end
+    
+    # Check for unusual IP addresses
+    unusual_ips = where('created_at > ?', 1.hour.ago)
+      .group(:ip_address)
+      .having('COUNT(DISTINCT admin_user_id) > 3')
+      .count
+      
+    unusual_ips.each do |ip, count|
+      SecurityMailer.unusual_ip_alert(ip, count).deliver_later
+    end
+  end
+end
+```
+
 ### Failed Authentication Monitoring
 ```ruby
 # app/services/security_monitor_service.rb
@@ -623,7 +881,92 @@ class SecurityMetric
       locked_accounts: User.locked.count,
       failed_logins_today: AuditLog.where(action: 'login.failed').today.count,
       password_resets_today: User.where('reset_password_sent_at > ?', Date.current).count,
-      suspicious_ips: Rack::Attack.blocked_ips.count
+      suspicious_ips: Rack::Attack.blocked_ips.count,
+      pending_email_changes: EmailChangeRequest.pending.count,
+      admin_actions_today: AdminActivityLog.where('created_at > ?', Date.current).count
+    }
+  end
+end
+```
+
+## Notification System Integration
+
+### Authentication Notifications
+```ruby
+# Email change request notifications
+class EmailChangeRequestNotifier < ApplicationNotifier
+  deliver_by :email do |config|
+    config.mailer = 'UserMailer'
+    config.method = :email_change_request
+  end
+  
+  deliver_by :database
+  
+  param :email_change_request
+  
+  def message
+    "Email change requested to #{params[:email_change_request].new_email}"
+  end
+  
+  def url
+    email_change_request_url(params[:email_change_request])
+  end
+end
+
+# Security alert notifications
+class SecurityAlertNotifier < ApplicationNotifier
+  deliver_by :email, if: :email_enabled?
+  deliver_by :database
+  
+  param :alert_type
+  param :details
+  
+  def message
+    case params[:alert_type]
+    when 'unusual_login'
+      "Unusual login detected from #{params[:details][:ip]}"
+    when 'email_changed'
+      "Your email was changed to #{params[:details][:new_email]}"
+    when 'password_changed'
+      "Your password was changed"
+    end
+  end
+  
+  private
+  
+  def email_enabled?
+    recipient.notification_preferences.dig('email', 'security_alerts')
+  end
+end
+```
+
+### Notification Preferences
+```ruby
+# User notification preferences structure
+class User < ApplicationRecord
+  # Default notification preferences
+  after_initialize :set_default_notification_preferences
+  
+  private
+  
+  def set_default_notification_preferences
+    self.notification_preferences ||= {
+      'email' => {
+        'enabled' => true,
+        'frequency' => 'immediate',
+        'security_alerts' => true,
+        'status_changes' => true,
+        'role_changes' => true
+      },
+      'in_app' => {
+        'enabled' => true,
+        'security_alerts' => true,
+        'status_changes' => true
+      },
+      'real_time' => {
+        'enabled' => false,
+        'sound' => true
+      }
     }
   end
 end
@@ -683,6 +1026,76 @@ end
 
 ---
 
-**Last Updated**: June 2025
+## Advanced Security Features
+
+### Suspicious Path & User Agent Blocking
+```ruby
+# config/initializers/rack_attack.rb
+# Block suspicious paths
+Rack::Attack.blocklist('block suspicious paths') do |req|
+  suspicious_paths = %w[.php .asp .aspx .jsp .cgi .pl .py .sh .env wp-admin phpmyadmin]
+  path = req.path.downcase
+  
+  suspicious_paths.any? { |ext| path.include?(ext) }
+end
+
+# Block bad user agents
+Rack::Attack.blocklist('block bad user agents') do |req|
+  bad_agents = %w[masscan nikto sqlmap havij acunetix netsparker]
+  user_agent = req.user_agent.to_s.downcase
+  
+  bad_agents.any? { |agent| user_agent.include?(agent) }
+end
+
+# Custom responses
+Rack::Attack.blocklisted_responder = lambda do |request|
+  [ 403, 
+    { 'Content-Type' => 'text/plain' }, 
+    ["Forbidden - Your request has been blocked.\n"]
+  ]
+end
+
+Rack::Attack.throttled_responder = lambda do |request|
+  [ 429,
+    { 'Content-Type' => 'text/plain', 'Retry-After' => '60' },
+    ["Too Many Requests - Please try again later.\n"]
+  ]
+end
+```
+
+### Force Logout Mechanism
+```ruby
+class Users::StatusManagementService
+  def deactivate_user(user, admin:, reason:)
+    user.transaction do
+      # Update status
+      user.update!(status: 'inactive')
+      
+      # Force logout by resetting sign_in_count
+      user.update_column(:sign_in_count, 0)
+      
+      # Invalidate remember token
+      user.update_column(:remember_created_at, nil)
+      
+      # Clear all sessions
+      ActiveRecord::SessionStore::Session
+        .where("data LIKE ?", "%user_id: #{user.id}%")
+        .destroy_all
+      
+      # Audit log
+      AuditLogService.log_security_event(
+        user: admin,
+        action: 'user.deactivate',
+        target_user: user,
+        details: { reason: reason }
+      )
+    end
+  end
+end
+```
+
+---
+
+**Last Updated**: January 2025
 **Previous**: [Database Design](03-database-design.md)
 **Next**: [Billing Architecture](05-billing-architecture.md)

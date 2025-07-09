@@ -100,7 +100,7 @@ sequenceDiagram
     end
 ```
 
-### Enterprise User Flow
+### Enterprise User Flow (Polymorphic Invitations)
 
 ```mermaid
 flowchart TD
@@ -108,28 +108,29 @@ flowchart TD
     CreateEnt --> EnterDetails[Enter Organization Details]
     EnterDetails --> SelectPlan[Select Enterprise Plan]
     SelectPlan --> SetContact[Set Contact Info]
-    SetContact --> CreateGroup[Create Enterprise Group Record]
+    SetContact --> CreateGroup[Create Enterprise Group Record<br/>admin_id: null]
     
-    CreateGroup --> InviteAdmin{Invite Admin?}
-    InviteAdmin -->|Yes| SendAdminInv[Send Admin Invitation]
-    InviteAdmin -->|No| ManualSetup[Manual Setup Later]
+    CreateGroup --> SendAdminInv[Send Admin Invitation<br/>Polymorphic]
+    SendAdminInv --> CreateInv[Create Invitation<br/>invitable_type: EnterpriseGroup<br/>invitable_id: group.id]
     
-    SendAdminInv --> AdminEmail[Admin Receives Email]
+    CreateInv --> AdminEmail[Admin Receives Email]
     AdminEmail --> AdminAccept[Admin Accepts Invitation]
     AdminAccept --> AdminReg[Admin Registration]
-    AdminReg --> CreateAdmin[Create Enterprise Admin User]
-    CreateAdmin --> AssignAdmin[Assign as Group Admin]
-    AssignAdmin --> AdminDash[Access Enterprise Dashboard]
+    AdminReg --> CreateAdmin[Create Enterprise Admin User<br/>user_type: enterprise]
+    CreateAdmin --> UpdateGroup[Update Enterprise Group<br/>admin_id = user.id]
+    UpdateGroup --> AdminDash[Access Enterprise Dashboard<br/>Purple Theme]
     
-    AdminDash --> InviteMembers[Invite Team Members]
-    InviteMembers --> MemberFlow[Member Invitation Flow]
+    AdminDash --> InviteMembers[Invite Members]
+    InviteMembers --> MemberInv[Create Member Invitations<br/>Polymorphic]
+    MemberInv --> MemberFlow[Member Invitation Flow]
     MemberFlow --> MemberReg[Member Registration]
     MemberReg --> CreateMember[Create Enterprise Member]
     CreateMember --> MemberAccess[Access Enterprise Portal]
     
     style SA fill:#ffebee
-    style AdminDash fill:#e8f5e9
-    style MemberAccess fill:#e3f2fd
+    style AdminDash fill:#e1bee7,stroke:#4a148c
+    style MemberAccess fill:#e1bee7,stroke:#4a148c
+    style CreateInv fill:#fff9c4,stroke:#f9a825
 ```
 
 ## Authentication & Authorization Flows
@@ -138,7 +139,9 @@ flowchart TD
 
 ```mermaid
 flowchart TD
-    Start([User Login]) --> EnterCreds[Enter Email/Password]
+    Start([User Login]) --> RateLimit{Rate Limit Check}
+    RateLimit -->|Exceeded| RateLimitError[Too Many Attempts<br/>Try Again Later]
+    RateLimit -->|OK| EnterCreds[Enter Email/Password]
     EnterCreds --> Submit[Submit Form]
     
     Submit --> ValidateEmail{Valid Email?}
@@ -169,10 +172,15 @@ flowchart TD
     
     CheckUserType -->|Direct| DirectRoute{Has Team?}
     CheckUserType -->|Invited| TeamRoute[Route to Team Dashboard]
-    CheckUserType -->|Enterprise| EntRoute[Route to Enterprise Dashboard]
+    CheckUserType -->|Enterprise| EntRoute[Route to Enterprise Dashboard<br/>Purple Theme]
     
-    DirectRoute -->|Yes| TeamDash[Team Dashboard]
+    DirectRoute -->|Yes & owns_team| TeamDash[Team Dashboard]
     DirectRoute -->|No| UserDash[User Dashboard]
+    
+    TeamRoute --> TrackActivity[Track Activity<br/>Background Job]
+    EntRoute --> TrackActivity
+    UserDash --> TrackActivity
+    TeamDash --> TrackActivity
     
     style Start fill:#e8f5e9
     style UserDash fill:#c8e6c9
@@ -404,6 +412,99 @@ journey
       Manage Team: 4: Admin
 ```
 
+## Admin Feature Flows
+
+### Super Admin Email Change Flow
+
+```mermaid
+flowchart TD
+    Start([Super Admin Login]) --> Profile[Access Profile]
+    Profile --> EditEmail[Click Edit Email]
+    EditEmail --> CheckRole{Is Super Admin?}
+    
+    CheckRole -->|No| ShowRequest[Show Email Change Request Form]
+    CheckRole -->|Yes| ShowDirect[Show Direct Email Change Form]
+    
+    ShowDirect --> EnterNew[Enter New Email]
+    EnterNew --> Validate{Valid Email?}
+    Validate -->|No| ShowError[Show Validation Error]
+    Validate -->|Yes| CheckUnique{Email Unique?}
+    
+    CheckUnique -->|No| ShowTaken[Email Already Taken]
+    CheckUnique -->|Yes| UpdateEmail[Update Email Directly]
+    
+    UpdateEmail --> AuditLog[Create Audit Log Entry]
+    AuditLog --> UpdateSession[Update Session]
+    UpdateSession --> SendNotif[Send Notification to Old Email]
+    SendNotif --> ShowSuccess[Show Success Message]
+    
+    ShowRequest --> StandardFlow[Standard Email Change Flow]
+    
+    style Start fill:#ffebee
+    style ShowDirect fill:#c8e6c9
+    style UpdateEmail fill:#c8e6c9
+    style ShowRequest fill:#fff9c4
+```
+
+### Admin Subscription Bypass
+
+```mermaid
+flowchart TD
+    Request([Page Request]) --> CheckSub{Check Subscription}
+    CheckSub --> IsAdmin{Admin Role?}
+    
+    IsAdmin -->|Super Admin| BypassSub[subscribed? = true]
+    IsAdmin -->|Site Admin| BypassSub
+    IsAdmin -->|Regular User| CheckPlan{Has Active Plan?}
+    
+    CheckPlan -->|Yes| AllowAccess[Allow Access]
+    CheckPlan -->|No| RequireSub[Redirect to Billing]
+    
+    BypassSub --> AllowAccess
+    AllowAccess --> ShowPage[Display Page]
+    
+    RequireSub --> BillingPage[Show Billing Options]
+    
+    style BypassSub fill:#c8e6c9
+    style AllowAccess fill:#c8e6c9
+    style RequireSub fill:#ffcdd2
+```
+
+## UI/UX Navigation Flows
+
+### Tailwind UI Sidebar Navigation
+
+```mermaid
+flowchart LR
+    Login([User Login]) --> CheckType{User Type?}
+    
+    CheckType -->|Direct| DirectNav[User Sidebar]
+    CheckType -->|Team| TeamNav[Team Sidebar]
+    CheckType -->|Enterprise| EntNav[Enterprise Sidebar]
+    CheckType -->|Admin| AdminNav[Admin Sidebar]
+    
+    DirectNav --> DirectItems[Dashboard Only<br/>+ Avatar Menu]
+    TeamNav --> TeamItems[Team Features<br/>+ Avatar Menu]
+    EntNav --> EntItems[Enterprise Features<br/>+ Avatar Menu<br/>Purple Theme]
+    AdminNav --> AdminItems[Full Admin Menu<br/>+ Avatar Menu]
+    
+    subgraph "Avatar Dropdown"
+        Profile[Profile]
+        Settings[Settings]
+        Billing[Billing<br/>if not admin]
+        Support[Support]
+        SignOut[Sign Out]
+    end
+    
+    DirectItems --> Profile
+    TeamItems --> Profile
+    EntItems --> Profile
+    AdminItems --> Profile
+    
+    style EntNav fill:#e1bee7,stroke:#4a148c
+    style EntItems fill:#e1bee7,stroke:#4a148c
+```
+
 ## Error & Recovery Flows
 
 ### Password Reset Flow
@@ -501,8 +602,106 @@ flowchart TD
     style StayDeactivated fill:#ffcdd2
 ```
 
+## Performance & Background Processing Flows
+
+### Activity Tracking Flow
+
+```mermaid
+sequenceDiagram
+    participant User
+    participant Controller
+    participant Redis
+    participant Job as Background Job
+    participant DB as Database
+    
+    User->>Controller: Make Request
+    Controller->>Controller: Process Request
+    Controller->>Redis: Check Activity Cache
+    
+    alt Cache Miss or Expired
+        Controller->>Job: Enqueue TrackUserActivityJob
+        Job-->>Controller: Job ID
+        
+        Note over Job,DB: Async Processing (5-min delay)
+        Job->>Redis: Update Cache
+        Job->>DB: Update last_activity_at
+    else Cache Hit
+        Note over Controller: Skip tracking
+    end
+    
+    Controller->>User: Return Response
+```
+
+### Query Optimization Flow
+
+```mermaid
+flowchart TD
+    Request([Controller Request]) --> CheckQuery{Complex Query?}
+    
+    CheckQuery -->|Simple| DirectQuery[Model.where(...)]
+    CheckQuery -->|Complex| QueryObject[Use Query Object]
+    
+    QueryObject --> UsersQuery[UsersQuery<br/>TeamsQuery]
+    UsersQuery --> AddIncludes[Add Eager Loading]
+    AddIncludes --> AddScopes[Add Scopes]
+    AddScopes --> PreCalc[Pre-calculate Stats]
+    
+    DirectQuery --> CheckN1{N+1 Risk?}
+    CheckN1 -->|Yes| AddEager[Add includes/preload]
+    CheckN1 -->|No| Execute[Execute Query]
+    
+    AddEager --> Execute
+    PreCalc --> Execute
+    Execute --> CheckCache{Cacheable?}
+    
+    CheckCache -->|Yes| CacheResult[Cache Results]
+    CheckCache -->|No| ReturnData[Return Data]
+    
+    CacheResult --> ReturnData
+    
+    style QueryObject fill:#c8e6c9
+    style CacheResult fill:#e3f2fd
+```
+
+## Current State & Technical Debt
+
+### Application Health Status
+
+```mermaid
+pie title "Test Coverage Status"
+    "Untested Code" : 98.67
+    "Tested Code" : 1.33
+```
+
+```mermaid
+flowchart TD
+    subgraph "Current Issues"
+        Test[Test Coverage: 1.33%<br/>498 tests, 42 errors]
+        Code[Code Quality: 253<br/>RuboCop Offenses]
+        Security[Security: 1<br/>Brakeman Warning]
+    end
+    
+    subgraph "Performance"
+        Response[Response Time:<br/><100ms ✅]
+        Queries[N+1 Queries:<br/>0 ✅]
+        Cache[Cache Hit Rate:<br/>~80% ✅]
+    end
+    
+    Test --> Priority1[🔴 Critical Priority]
+    Code --> Priority2[🟡 High Priority]
+    Security --> Priority3[🟡 Medium Priority]
+    
+    style Test fill:#ffcdd2
+    style Code fill:#fff9c4
+    style Security fill:#fff9c4
+    style Response fill:#c8e6c9
+    style Queries fill:#c8e6c9
+    style Cache fill:#c8e6c9
+```
+
 ---
 
-**Last Updated**: June 2025
+**Last Updated**: January 2025
 **Previous**: [System Overview](system-overview.md)
 **Next**: [Database ERD](database-erd.md)
+**Return to**: [Architecture Overview](../README.md)

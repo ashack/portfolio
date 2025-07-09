@@ -34,6 +34,8 @@ Development workflow, guidelines, code review process, and deployment procedures
 ### [Project Status](project_status.md)
 Current metrics, feature completion status, pending tasks, and roadmap.
 
+**Current Health**: 🔴 Test Coverage: 1.33% | 🟡 Code Quality: 253 RuboCop offenses | ✅ Performance: <100ms response times
+
 ## 📖 Specialized Guides
 
 ### System Design
@@ -91,6 +93,15 @@ docs/
 - **Linking**: Cross-reference related documents
 - **Focus**: One topic per document
 - **Examples**: Include practical code samples
+
+## 🎯 Priority Areas for Improvement
+
+1. **Test Coverage**: Critical need to increase from 1.33% to 90%
+2. **Code Quality**: Address 253 RuboCop offenses
+3. **Security**: Resolve remaining Brakeman warning
+4. **Documentation**: Continue expanding architecture guides
+
+See [Architecture Priority Areas](architecture/README.md#priority-areas-for-improvement) for details.
 
 ## 🔍 Need Help?
 
