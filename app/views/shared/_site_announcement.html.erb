@@ -1,11 +1,12 @@
 <% if announcement = Announcement.current %>
   <% cookie_name = "announcement_#{announcement.id}_dismissed" %>
   <% unless cookies[cookie_name] == "true" %>
-    <div data-controller="announcement" 
+    <div data-controller="announcement announcement-height" 
          data-announcement-id="<%= announcement.id %>"
-         class="<%= announcement.style_classes %> announcement-banner">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex items-center justify-between flex-wrap">
+         id="site-announcement"
+         class="<%= announcement.style_classes %> announcement-banner relative z-40 border-t border-b">
+      <div class="px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between flex-wrap py-3">
           <div class="flex-1 flex items-center">
             <span class="flex p-2">
               <%= icon announcement.icon, class: "h-6 w-6" %>
@@ -20,7 +21,7 @@
           <% if announcement.dismissible? %>
             <div class="flex-shrink-0 sm:ml-3">
               <button type="button" 
-                      data-action="click->announcement#dismiss"
+                      data-action="click->announcement#dismiss click->announcement-height#remove"
                       class="-mr-1 flex p-2 rounded-md hover:bg-opacity-20 hover:bg-black focus:outline-none focus:ring-2 focus:ring-white sm:-mr-2 transition-colors duration-200"
                       aria-label="Dismiss announcement">
                 <%= icon "x", class: "h-6 w-6" %>

@@ -1,7 +1,7 @@
 class Admin::Site::BaseController < ApplicationController
   include ActivityTrackable
 
-  layout "admin"
+  layout "modern_user"
   before_action :require_site_admin!
 
   private

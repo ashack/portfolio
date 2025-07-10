@@ -18,7 +18,10 @@ class Announcement < ApplicationRecord
       .where("starts_at <= ?", Time.current)
       .where("ends_at IS NULL OR ends_at >= ?", Time.current)
   }
-  scope :current, -> { active.order(created_at: :desc).first }
+  # Use class method instead of scope for single record return
+  def self.current
+    active.order(created_at: :desc).first
+  end
   scope :upcoming, -> { published.where("starts_at > ?", Time.current).order(starts_at: :asc) }
   scope :expired, -> { published.where("ends_at < ?", Time.current).order(ends_at: :desc) }
 
@@ -39,30 +42,28 @@ class Announcement < ApplicationRecord
   end
 
   def style_classes
-    base_classes = "px-4 py-3 rounded-lg border relative"
-
     case style
     when "info"
-      "#{base_classes} bg-blue-50 border-blue-200 text-blue-800"
+      "bg-blue-50 border-blue-200 text-blue-800"
     when "success"
-      "#{base_classes} bg-green-50 border-green-200 text-green-800"
+      "bg-green-50 border-green-200 text-green-800"
     when "warning"
-      "#{base_classes} bg-yellow-50 border-yellow-200 text-yellow-800"
+      "bg-yellow-50 border-yellow-200 text-yellow-800"
     when "danger"
-      "#{base_classes} bg-red-50 border-red-200 text-red-800"
+      "bg-red-50 border-red-200 text-red-800"
     else
-      "#{base_classes} bg-gray-50 border-gray-200 text-gray-800"
+      "bg-gray-50 border-gray-200 text-gray-800"
     end
   end
 
   def icon
     case style
     when "info"
-      "information-circle"
+      "info"
     when "success"
       "check-circle"
     when "warning"
-      "exclamation-triangle"
+      "warning-circle"
     when "danger"
       "x-circle"
     else

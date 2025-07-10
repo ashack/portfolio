@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_07_09_192448) do
+ActiveRecord::Schema[8.0].define(version: 2025_07_10_155428) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -238,6 +238,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_09_192448) do
     t.datetime "updated_at", null: false
     t.index ["event_id"], name: "index_noticed_notifications_on_event_id"
     t.index ["read_at"], name: "index_noticed_notifications_on_read_at"
+    t.index ["recipient_id", "recipient_type", "created_at"], name: "index_notifications_on_recipient_and_created_at"
+    t.index ["recipient_id", "recipient_type", "read_at"], name: "index_notifications_on_recipient_and_read_status"
     t.index ["recipient_type", "recipient_id", "read_at"], name: "index_notifications_on_recipient_and_read_at"
     t.index ["recipient_type", "recipient_id"], name: "index_noticed_notifications_on_recipient"
     t.index ["seen_at"], name: "index_noticed_notifications_on_seen_at"
@@ -394,6 +396,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_09_192448) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["admin_id"], name: "index_teams_on_admin_id"
+    t.index ["created_at", "status"], name: "index_teams_on_created_at_and_status"
     t.index ["created_by_id"], name: "index_teams_on_created_by_id"
     t.index ["slug", "status"], name: "index_teams_on_slug_and_status"
     t.index ["slug"], name: "index_teams_on_slug", unique: true
@@ -470,6 +473,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_09_192448) do
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
     t.index ["status", "last_activity_at"], name: "index_users_on_status_and_activity"
     t.index ["status"], name: "index_users_on_status"
+    t.index ["system_role", "created_at"], name: "index_users_on_system_role_and_created_at"
+    t.index ["system_role", "last_activity_at"], name: "index_users_on_system_role_and_last_activity"
     t.index ["team_id", "status"], name: "index_users_on_team_and_status"
     t.index ["team_id", "team_role"], name: "index_users_on_team_associations"
     t.index ["team_id"], name: "index_users_on_team_id"

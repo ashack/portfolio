@@ -11,3 +11,28 @@
 
 /* Link to Tailwind CSS from builds directory */
 /*= link ../builds/tailwind.css */
+
+/* Announcement offset CSS variables */
+:root {
+  --announcement-offset: 0px;
+  --announcement-height: 0px;
+}
+
+/* Ensure min-h-full works properly */
+.min-h-full {
+  min-height: 100vh;
+}
+
+/* Smooth transitions for sticky elements when announcement height changes */
+.transition-all {
+  transition-property: all;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 300ms;
+}
+
+/* Custom sticky header class that uses the announcement offset */
+.sticky-with-announcement {
+  position: sticky;
+  top: var(--announcement-offset, 0px);
+  transition: top 0.3s ease-out;
+}

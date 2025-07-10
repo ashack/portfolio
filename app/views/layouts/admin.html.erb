@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html class="h-full bg-white">
+<html class="bg-white">
   <head>
     <title><%= content_for(:title) || "Admin - SaaS App" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -18,8 +18,9 @@
     <%= javascript_importmap_tags %>
   </head>
 
-  <body class="h-full">
-    <div data-controller="sidebar">
+  <body>
+    <%= render 'shared/site_announcement' %>
+    <div class="min-h-full" data-controller="sidebar">
       <!-- Off-canvas menu for mobile -->
       <div class="relative z-50 lg:hidden" role="dialog" aria-modal="true" data-sidebar-target="mobileMenu">
         <!-- Backdrop -->
@@ -277,7 +278,7 @@
       </div>
 
       <div class="lg:pl-72">
-        <div class="sticky top-0 z-40 lg:mx-auto lg:max-w-7xl lg:px-8">
+        <div class="sticky-with-announcement z-40 lg:mx-auto lg:max-w-7xl lg:px-8">
           <div class="flex h-16 items-center gap-x-4 border-b border-gray-200 bg-white px-4 shadow-xs sm:gap-x-6 sm:px-6 lg:px-0 lg:shadow-none">
             <button type="button" class="-m-2.5 p-2.5 text-gray-700 lg:hidden" data-action="click->sidebar#toggle">
               <span class="sr-only">Open sidebar</span>
@@ -301,8 +302,6 @@
             </div>
           </div>
         </div>
-
-        <%= render 'shared/site_announcement' %>
 
         <!-- Flash Messages -->
         <% if flash[:notice].present? || flash[:alert].present? %>
@@ -329,6 +328,8 @@
       </div>
     </div>
 
+    </div>
+    
     <!-- Help Widget -->
     <%= render "shared/help_widget" %>
   </body>

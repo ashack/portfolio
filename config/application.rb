@@ -55,5 +55,9 @@ module SaasRorStarter
     # Add security headers middleware
     require_relative "../app/middleware/security_headers"
     config.middleware.use SecurityHeaders
+    
+    # Fix JavaScript MIME type issues (insert early in stack)
+    require_relative "../app/middleware/javascript_mime_type"
+    config.middleware.insert_after ActionDispatch::Static, JavascriptMimeType
   end
 end

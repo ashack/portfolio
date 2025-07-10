@@ -4,6 +4,17 @@
 
 import { application } from "controllers/application"
 
+
+
+import AnnouncementController from "controllers/announcement_controller"
+application.register("announcement", AnnouncementController)
+
+import AnnouncementHeightController from "controllers/announcement_height_controller"
+application.register("announcement-height", AnnouncementHeightController)
+
+import AnnouncementPreviewController from "controllers/announcement_preview_controller"
+application.register("announcement-preview", AnnouncementPreviewController)
+
 import ConfirmationModalController from "controllers/confirmation_modal_controller"
 application.register("confirmation-modal", ConfirmationModalController)
 

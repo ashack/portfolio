@@ -1,5 +1,5 @@
 <!-- Notification Center -->
-<div class="relative" data-controller="notifications" data-settings-path="<%= current_user.direct? ? users_settings_path : (current_user.invited? && current_user.team_role == 'admin' ? team_admin_settings_path(team_slug: current_user.team.slug) : '#') %>">
+<div class="relative" data-controller="notifications" data-settings-path="<%= current_user.super_admin? ? admin_super_settings_path : (current_user.direct? ? users_settings_path : (current_user.invited? && current_user.team_role == 'admin' ? team_admin_settings_path(team_slug: current_user.team.slug) : '#')) %>">
   <!-- Notification Bell Button -->
   <button type="button"
           data-action="click->notifications#toggle" 

@@ -92,7 +92,7 @@ Rails.application.routes.draw do
         end
       end
 
-      resources :settings, only: [ :index, :update ]
+      resource :settings, only: [ :show, :update ]
       resources :analytics, only: [ :index ]
       resources :plans
       resources :notifications, only: [ :index, :new, :create, :show ]
