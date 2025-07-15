@@ -16,6 +16,6 @@ class CreateAnnouncements < ActiveRecord::Migration[8.0]
     add_index :announcements, :published
     add_index :announcements, :starts_at
     add_index :announcements, :ends_at
-    add_index :announcements, [:published, :starts_at, :ends_at], name: "index_announcements_on_active_status"
+    add_index :announcements, [ :published, :starts_at, :ends_at ], name: "index_announcements_on_active_status"
   end
 end

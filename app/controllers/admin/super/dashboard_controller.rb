@@ -1,7 +1,4 @@
 class Admin::Super::DashboardController < Admin::Super::BaseController
-  # Use modern layout for dashboard
-  layout "modern_user"
-  
   # Dashboard shows statistics, not scoped resources
   skip_after_action :verify_policy_scoped, only: :index
 
@@ -22,7 +19,7 @@ class Admin::Super::DashboardController < Admin::Super::BaseController
     @recent_teams = Team.includes(:admin, :users).order(created_at: :desc).limit(5)
     @recent_users = User.includes(:team, :plan).where.not(system_role: "super_admin").order(created_at: :desc).limit(10)
     @recent_activities = User.includes(:team).where.not(system_role: "super_admin").order(last_activity_at: :desc).limit(10)
-    
+
     render "index_modern"
   end
 end

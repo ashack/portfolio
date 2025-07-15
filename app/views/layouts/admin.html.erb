@@ -90,6 +90,12 @@
                           <% end %>
                         </li>
                         <li>
+                          <%= link_to admin_super_plans_path, class: "group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold #{request.path.include?('/admin/super/plans') ? 'bg-gray-50 text-indigo-600' : 'text-gray-700 hover:text-indigo-600 hover:bg-gray-50'}" do %>
+                            <%= icon "credit-card", class: "size-6 shrink-0 #{request.path.include?('/admin/super/plans') ? 'text-indigo-600' : 'text-gray-400 group-hover:text-indigo-600'}" %>
+                            Plans
+                          <% end %>
+                        </li>
+                        <li>
                           <%= link_to admin_super_notifications_path, class: "group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold #{request.path.include?('/admin/super/notifications') && !request.path.include?('notification_categories') ? 'bg-gray-50 text-indigo-600' : 'text-gray-700 hover:text-indigo-600 hover:bg-gray-50'}" do %>
                             <%= icon "bell", class: "size-6 shrink-0 #{request.path.include?('/admin/super/notifications') && !request.path.include?('notification_categories') ? 'text-indigo-600' : 'text-gray-400 group-hover:text-indigo-600'}" %>
                             Notifications
@@ -105,6 +111,12 @@
                           <%= link_to admin_super_announcements_path, class: "group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold #{request.path.include?('/admin/super/announcements') ? 'bg-gray-50 text-indigo-600' : 'text-gray-700 hover:text-indigo-600 hover:bg-gray-50'}" do %>
                             <%= icon "megaphone", class: "size-6 shrink-0 #{request.path.include?('/admin/super/announcements') ? 'text-indigo-600' : 'text-gray-400 group-hover:text-indigo-600'}" %>
                             Announcements
+                          <% end %>
+                        </li>
+                        <li>
+                          <%= link_to admin_site_support_index_path, class: "group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold #{request.path.include?('/support') ? 'bg-gray-50 text-indigo-600' : 'text-gray-700 hover:text-indigo-600 hover:bg-gray-50'}" do %>
+                            <%= icon "headset", class: "size-6 shrink-0 #{request.path.include?('/support') ? 'text-indigo-600' : 'text-gray-400 group-hover:text-indigo-600'}" %>
+                            Support
                           <% end %>
                         </li>
                         <li>
@@ -136,6 +148,18 @@
                           <%= link_to admin_site_support_index_path, class: "group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold #{request.path.include?('/admin/site/support') ? 'bg-gray-50 text-indigo-600' : 'text-gray-700 hover:text-indigo-600 hover:bg-gray-50'}" do %>
                             <%= icon "headset", class: "size-6 shrink-0 #{request.path.include?('/admin/site/support') ? 'text-indigo-600' : 'text-gray-400 group-hover:text-indigo-600'}" %>
                             Support
+                          <% end %>
+                        </li>
+                        <li>
+                          <%= link_to admin_site_notifications_path, class: "group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold #{request.path.include?('/notifications') ? 'bg-gray-50 text-indigo-600' : 'text-gray-700 hover:text-indigo-600 hover:bg-gray-50'}" do %>
+                            <%= icon "bell", class: "size-6 shrink-0 #{request.path.include?('/notifications') ? 'text-indigo-600' : 'text-gray-400 group-hover:text-indigo-600'}" %>
+                            Notifications
+                          <% end %>
+                        </li>
+                        <li>
+                          <%= link_to admin_site_announcements_path, class: "group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold #{request.path.include?('/announcements') ? 'bg-gray-50 text-indigo-600' : 'text-gray-700 hover:text-indigo-600 hover:bg-gray-50'}" do %>
+                            <%= icon "megaphone", class: "size-6 shrink-0 #{request.path.include?('/announcements') ? 'text-indigo-600' : 'text-gray-400 group-hover:text-indigo-600'}" %>
+                            Announcements
                           <% end %>
                         </li>
                         <li>
@@ -204,6 +228,12 @@
                       <% end %>
                     </li>
                     <li>
+                      <%= link_to admin_super_plans_path, class: "group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold #{request.path.include?('/admin/super/plans') ? 'bg-gray-50 text-indigo-600' : 'text-gray-700 hover:text-indigo-600 hover:bg-gray-50'}" do %>
+                        <%= icon "credit-card", class: "size-6 shrink-0 #{request.path.include?('/admin/super/plans') ? 'text-indigo-600' : 'text-gray-400 group-hover:text-indigo-600'}" %>
+                        Plans
+                      <% end %>
+                    </li>
+                    <li>
                       <%= link_to admin_super_notifications_path, class: "group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold #{request.path.include?('/admin/super/notifications') && !request.path.include?('notification_categories') ? 'bg-gray-50 text-indigo-600' : 'text-gray-700 hover:text-indigo-600 hover:bg-gray-50'}" do %>
                         <%= icon "bell", class: "size-6 shrink-0 #{request.path.include?('/admin/super/notifications') && !request.path.include?('notification_categories') ? 'text-indigo-600' : 'text-gray-400 group-hover:text-indigo-600'}" %>
                         Notifications
@@ -219,6 +249,12 @@
                       <%= link_to admin_super_announcements_path, class: "group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold #{request.path.include?('/admin/super/announcements') ? 'bg-gray-50 text-indigo-600' : 'text-gray-700 hover:text-indigo-600 hover:bg-gray-50'}" do %>
                         <%= icon "megaphone", class: "size-6 shrink-0 #{request.path.include?('/admin/super/announcements') ? 'text-indigo-600' : 'text-gray-400 group-hover:text-indigo-600'}" %>
                         Announcements
+                      <% end %>
+                    </li>
+                    <li>
+                      <%= link_to admin_site_support_index_path, class: "group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold #{request.path.include?('/support') ? 'bg-gray-50 text-indigo-600' : 'text-gray-700 hover:text-indigo-600 hover:bg-gray-50'}" do %>
+                        <%= icon "headset", class: "size-6 shrink-0 #{request.path.include?('/support') ? 'text-indigo-600' : 'text-gray-400 group-hover:text-indigo-600'}" %>
+                        Support
                       <% end %>
                     </li>
                     <li>
@@ -250,6 +286,18 @@
                       <%= link_to admin_site_support_index_path, class: "group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold #{request.path.include?('/admin/site/support') ? 'bg-gray-50 text-indigo-600' : 'text-gray-700 hover:text-indigo-600 hover:bg-gray-50'}" do %>
                         <%= icon "headset", class: "size-6 shrink-0 #{request.path.include?('/admin/site/support') ? 'text-indigo-600' : 'text-gray-400 group-hover:text-indigo-600'}" %>
                         Support
+                      <% end %>
+                    </li>
+                    <li>
+                      <%= link_to admin_site_notifications_path, class: "group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold #{request.path.include?('/notifications') ? 'bg-gray-50 text-indigo-600' : 'text-gray-700 hover:text-indigo-600 hover:bg-gray-50'}" do %>
+                        <%= icon "bell", class: "size-6 shrink-0 #{request.path.include?('/notifications') ? 'text-indigo-600' : 'text-gray-400 group-hover:text-indigo-600'}" %>
+                        Notifications
+                      <% end %>
+                    </li>
+                    <li>
+                      <%= link_to admin_site_announcements_path, class: "group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold #{request.path.include?('/announcements') ? 'bg-gray-50 text-indigo-600' : 'text-gray-700 hover:text-indigo-600 hover:bg-gray-50'}" do %>
+                        <%= icon "megaphone", class: "size-6 shrink-0 #{request.path.include?('/announcements') ? 'text-indigo-600' : 'text-gray-400 group-hover:text-indigo-600'}" %>
+                        Announcements
                       <% end %>
                     </li>
                     <li>

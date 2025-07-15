@@ -2,7 +2,6 @@ class Admin::Super::EnterpriseGroupsController < ApplicationController
   include ActivityTrackable
   include Paginatable
 
-  layout "modern_user"
   before_action :require_admin!
   before_action :set_enterprise_group, only: [ :show, :edit, :update, :destroy ]
 

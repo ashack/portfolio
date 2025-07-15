@@ -27,16 +27,16 @@ module ApplicationHelper
 
   def priority_badge_class(priority)
     case priority.to_s
-    when 'critical'
-      'bg-red-100 text-red-800'
-    when 'high'
-      'bg-orange-100 text-orange-800'
-    when 'medium'
-      'bg-yellow-100 text-yellow-800'
-    when 'low'
-      'bg-gray-100 text-gray-800'
+    when "critical"
+      "bg-red-100 text-red-800"
+    when "high"
+      "bg-orange-100 text-orange-800"
+    when "medium"
+      "bg-yellow-100 text-yellow-800"
+    when "low"
+      "bg-gray-100 text-gray-800"
     else
-      'bg-gray-100 text-gray-800'
+      "bg-gray-100 text-gray-800"
     end
   end
 end

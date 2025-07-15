@@ -1,7 +1,4 @@
 class Users::SubscriptionsController < Users::BaseController
-  # Use admin layout for admin users
-  layout :determine_layout
-
   before_action :set_current_plan
   before_action :set_available_plans, only: [ :show, :edit ]
   before_action :set_new_plan, only: [ :update ]
@@ -64,13 +61,5 @@ class Users::SubscriptionsController < Users::BaseController
 
   def change_plan_to(new_plan)
     current_user.update(plan: new_plan)
-  end
-
-  def determine_layout
-    if current_user&.super_admin? || current_user&.site_admin?
-      "admin"
-    else
-      "user"
-    end
   end
 end

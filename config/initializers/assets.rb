@@ -14,6 +14,6 @@ Rails.application.config.assets.paths << Rails.root.join("app/assets/builds")
 
 # Configure Propshaft compilers for JavaScript modules
 Rails.application.config.assets.compilers << [
-  'application/javascript', 
+  "application/javascript",
   Propshaft::Compiler::SourceMappingUrls
 ]

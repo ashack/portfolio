@@ -34,4 +34,3 @@ class NotifyUsersAboutAnnouncementJob < ApplicationJob
     end
   end
 end
-

@@ -5,9 +5,6 @@ class Users::SettingsController < Users::BaseController
   skip_after_action :verify_authorized
   skip_after_action :verify_policy_scoped
 
-  # Use admin layout for admin users
-  layout :determine_layout
-
   def show
     @user = current_user
   end
@@ -70,13 +67,5 @@ class Users::SettingsController < Users::BaseController
         "enabled" => prefs.dig(:marketing, :enabled) == "1"
       }
     }
-  end
-
-  def determine_layout
-    if current_user&.super_admin? || current_user&.site_admin?
-      "admin"
-    else
-      "user"
-    end
   end
 end

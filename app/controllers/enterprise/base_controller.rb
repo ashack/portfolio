@@ -4,8 +4,6 @@ class Enterprise::BaseController < ApplicationController
   before_action :set_enterprise_group
   before_action :verify_enterprise_group_access
 
-  layout "enterprise"
-
   private
 
   def require_enterprise_user!

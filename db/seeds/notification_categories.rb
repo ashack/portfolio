@@ -102,7 +102,7 @@ if admin_user
   # Create some example team-specific categories if there are teams
   Team.active.limit(2).each do |team|
     next unless team.admin
-    
+
     team_categories = [
       {
         name: 'Task Assignments',
@@ -125,7 +125,7 @@ if admin_user
         send_email: false
       }
     ]
-    
+
     team_categories.each do |attrs|
       category = NotificationCategory.find_or_create_by!(key: attrs[:key]) do |cat|
         cat.attributes = attrs.merge(
@@ -141,7 +141,7 @@ if admin_user
   # Create some example enterprise-specific categories if there are enterprise groups
   EnterpriseGroup.active.limit(2).each do |enterprise|
     next unless enterprise.admin
-    
+
     enterprise_categories = [
       {
         name: 'Compliance Updates',
@@ -164,7 +164,7 @@ if admin_user
         send_email: false
       }
     ]
-    
+
     enterprise_categories.each do |attrs|
       category = NotificationCategory.find_or_create_by!(key: attrs[:key]) do |cat|
         cat.attributes = attrs.merge(
@@ -176,7 +176,7 @@ if admin_user
       puts "  Created/Updated enterprise category for #{enterprise.name}: #{category.name}"
     end
   end
-  
+
   puts "✓ Default notification categories created successfully!"
 else
   puts "⚠ No admin user found. Skipping notification category creation."

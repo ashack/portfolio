@@ -1,5 +1,4 @@
 class Teams::BaseController < ApplicationController
-  layout "team"
   before_action :require_team_member!
   before_action :set_team
 

@@ -7,9 +7,6 @@ class Users::ProfileController < Users::BaseController
 
   before_action :set_user
 
-  # Use admin layout for admin users
-  layout :determine_layout
-
   def show
     # Show user profile (read-only view)
   end
@@ -49,13 +46,5 @@ class Users::ProfileController < Users::BaseController
     permitted_attributes << :email if current_user&.super_admin?
 
     params.require(:user).permit(permitted_attributes)
-  end
-
-  def determine_layout
-    if current_user&.super_admin? || current_user&.site_admin?
-      "admin"
-    else
-      "user"
-    end
   end
 end

@@ -1,6 +1,5 @@
 class Users::BaseController < ApplicationController
   before_action :require_direct_user!
-  layout "user"
 
   private
 

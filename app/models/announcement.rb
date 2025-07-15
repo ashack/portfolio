@@ -90,4 +90,3 @@ class Announcement < ApplicationRecord
     NotifyUsersAboutAnnouncementJob.perform_later(self)
   end
 end
-

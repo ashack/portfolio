@@ -2,7 +2,6 @@ class Admin::Super::TeamsController < ApplicationController
   include ActivityTrackable
   include Paginatable
 
-  layout "modern_user"
   before_action :require_admin!
   before_action :set_team, only: [ :show, :edit, :update, :assign_admin, :change_status, :destroy ]
 

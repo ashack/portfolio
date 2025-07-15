@@ -1,12 +1,12 @@
 # Policy for announcement management
-# Only super admins can manage announcements
+# Super admins can manage, site admins can view
 class AnnouncementPolicy < ApplicationPolicy
   def index?
-    super_admin?
+    super_admin? || site_admin?
   end
 
   def show?
-    super_admin?
+    super_admin? || site_admin?
   end
 
   def new?
@@ -31,7 +31,7 @@ class AnnouncementPolicy < ApplicationPolicy
 
   class Scope < ApplicationPolicy::Scope
     def resolve
-      if user.super_admin?
+      if user.super_admin? || user.site_admin?
         scope.all
       else
         scope.none
@@ -39,4 +39,3 @@ class AnnouncementPolicy < ApplicationPolicy
     end
   end
 end
-
