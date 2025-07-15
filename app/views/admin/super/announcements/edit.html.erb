@@ -1,0 +1,16 @@
+<% content_for :page_title, "Edit Announcement" %>
+
+<div class="max-w-4xl mx-auto">
+  <div class="bg-white shadow overflow-hidden sm:rounded-lg">
+    <div class="px-4 py-5 sm:p-6">
+      <div class="mb-6">
+        <h3 class="text-lg leading-6 font-medium text-gray-900">Edit Announcement</h3>
+        <p class="mt-1 text-sm text-gray-500">
+          Update the announcement details below.
+        </p>
+      </div>
+
+      <%= render 'form', announcement: @announcement %>
+    </div>
+  </div>
+</div>

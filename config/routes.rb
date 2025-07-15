@@ -92,11 +92,12 @@ Rails.application.routes.draw do
         end
       end
 
-      resources :settings, only: [ :index, :update ]
+      resource :settings, only: [ :show, :update ]
       resources :analytics, only: [ :index ]
       resources :plans
       resources :notifications, only: [ :index, :new, :create, :show ]
       resources :notification_categories
+      resources :announcements
       resources :enterprise_groups do
         resources :invitations, controller: "enterprise_group_invitations", only: [ :index ] do
           member do
@@ -129,6 +130,8 @@ Rails.application.routes.draw do
       resources :teams, only: [ :show ]
       resources :enterprise_groups, only: [ :show ]
       resources :support, only: [ :index, :show, :update ]
+      resources :notifications, only: [ :index, :show ]
+      resources :announcements, only: [ :index, :show ]
       resource :profile, only: [ :show, :edit, :update ], controller: "profile"
     end
   end
@@ -215,7 +218,7 @@ Rails.application.routes.draw do
       end
     end
     resource :settings, controller: "enterprise/settings", only: [ :show, :update ]
-    
+
     # Enterprise admin routes
     scope "/admin" do
       resources :notification_categories, controller: "enterprise/admin/notification_categories", as: :enterprise_admin_notification_categories

@@ -11,3 +11,9 @@ Rails.application.config.assets.paths << Rails.root.join("node_modules") if Rail
 
 # Include the Tailwind CSS build directory
 Rails.application.config.assets.paths << Rails.root.join("app/assets/builds")
+
+# Configure Propshaft compilers for JavaScript modules
+Rails.application.config.assets.compilers << [
+  "application/javascript",
+  Propshaft::Compiler::SourceMappingUrls
+]

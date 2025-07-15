@@ -1,0 +1,135 @@
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+  <!-- Header -->
+  <div class="mb-8">
+    <div class="flex items-center justify-between">
+      <div>
+        <h1 class="text-3xl font-bold text-gray-900">Notification Details</h1>
+        <p class="mt-2 text-sm text-gray-600">
+          <%= @notification_event.type.gsub('Notifier', '') %> sent <%= time_ago_in_words(@notification_event.created_at) %> ago
+        </p>
+      </div>
+      <%= link_to admin_site_notifications_path, class: "inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" do %>
+        <%= icon "arrow-left", class: "mr-2 h-4 w-4" %>
+        Back
+      <% end %>
+    </div>
+  </div>
+
+  <!-- Event Details -->
+  <div class="bg-white shadow overflow-hidden sm:rounded-lg mb-8">
+    <div class="px-4 py-5 sm:px-6">
+      <h3 class="text-lg leading-6 font-medium text-gray-900">
+        Event Information
+      </h3>
+    </div>
+    <div class="border-t border-gray-200">
+      <dl>
+        <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+          <dt class="text-sm font-medium text-gray-500">Type</dt>
+          <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+            <%= @notification_event.type.gsub('Notifier', '') %>
+          </dd>
+        </div>
+        <% if @notification_event.params[:title] %>
+          <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+            <dt class="text-sm font-medium text-gray-500">Title</dt>
+            <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+              <%= @notification_event.params[:title] %>
+            </dd>
+          </div>
+        <% end %>
+        <% if @notification_event.params[:message] %>
+          <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+            <dt class="text-sm font-medium text-gray-500">Message</dt>
+            <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+              <%= @notification_event.params[:message] %>
+            </dd>
+          </div>
+        <% end %>
+        <% if @notification_event.params[:priority] %>
+          <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+            <dt class="text-sm font-medium text-gray-500">Priority</dt>
+            <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium <%= @notification_event.params[:priority] == 'high' || @notification_event.params[:priority] == 'critical' ? 'bg-red-100 text-red-800' : 'bg-gray-100 text-gray-800' %>">
+                <%= @notification_event.params[:priority] %>
+              </span>
+            </dd>
+          </div>
+        <% end %>
+        <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+          <dt class="text-sm font-medium text-gray-500">Total Recipients</dt>
+          <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+            <%= @notification_event.notifications_count %>
+          </dd>
+        </div>
+      </dl>
+    </div>
+  </div>
+
+  <!-- Recipients List -->
+  <div class="bg-white shadow overflow-hidden sm:rounded-md">
+    <div class="px-4 py-5 sm:px-6">
+      <h3 class="text-lg leading-6 font-medium text-gray-900">
+        Recipients
+      </h3>
+    </div>
+    <div class="border-t border-gray-200">
+      <% if @notifications.any? %>
+        <ul class="divide-y divide-gray-200">
+          <% @notifications.each do |notification| %>
+            <li class="px-4 py-4 sm:px-6">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                  <div class="flex-shrink-0">
+                    <% if notification.recipient.avatar.attached? %>
+                      <%= image_tag notification.recipient.avatar, class: "h-10 w-10 rounded-full" %>
+                    <% else %>
+                      <div class="h-10 w-10 rounded-full bg-gray-300 flex items-center justify-center">
+                        <span class="text-gray-700 font-medium text-sm">
+                          <%= notification.recipient.email[0].upcase %>
+                        </span>
+                      </div>
+                    <% end %>
+                  </div>
+                  <div class="ml-4">
+                    <div class="text-sm font-medium text-gray-900">
+                      <%= notification.recipient.email %>
+                    </div>
+                    <div class="text-sm text-gray-500">
+                      <%= notification.recipient.full_name if notification.recipient.respond_to?(:full_name) %>
+                    </div>
+                  </div>
+                </div>
+                <div class="flex items-center">
+                  <% if notification.read? %>
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                      Read
+                    </span>
+                  <% else %>
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                      Unread
+                    </span>
+                  <% end %>
+                  <span class="ml-4 text-sm text-gray-500">
+                    <%= time_ago_in_words(notification.created_at) %> ago
+                  </span>
+                </div>
+              </div>
+            </li>
+          <% end %>
+        </ul>
+        
+        <!-- Pagination -->
+        <% if @pagy.pages > 1 %>
+          <div class="px-4 py-3 bg-gray-50 border-t border-gray-200">
+            <%= pagy_tailwind_nav(@pagy) %>
+          </div>
+        <% end %>
+      <% else %>
+        <div class="text-center py-4">
+          <p class="text-gray-500">No recipients found.</p>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

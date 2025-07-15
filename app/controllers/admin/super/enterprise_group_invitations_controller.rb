@@ -1,7 +1,6 @@
 class Admin::Super::EnterpriseGroupInvitationsController < ApplicationController
   include ActivityTrackable
 
-  layout "admin"
   before_action :require_super_admin!
   before_action :set_enterprise_group
   before_action :set_invitation, only: [ :resend, :revoke ]

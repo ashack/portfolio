@@ -1,7 +1,6 @@
 class Admin::Super::BaseController < ApplicationController
   include ActivityTrackable
 
-  layout "admin"
   before_action :require_super_admin!
 
   private

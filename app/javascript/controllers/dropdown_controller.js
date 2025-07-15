@@ -11,6 +11,7 @@ export default class extends Controller {
     // Ensure menu is hidden on connect
     if (this.hasMenuTarget) {
       this.menuTarget.classList.add("hidden")
+      this.menuTarget.classList.add("opacity-0", "scale-95")
     }
   }
   
@@ -19,12 +20,17 @@ export default class extends Controller {
   }
   
   toggle(event) {
-    event.stopPropagation()
+    if (event) {
+      event.preventDefault()
+      event.stopPropagation()
+      event.stopImmediatePropagation()
+    }
+    
     this.open ? this.hide() : this.show()
     
     // Remove focus from button after mouse click to prevent focus ring
     // But keep focus for keyboard navigation (Enter/Space key)
-    if (this.hasButtonTarget && event.type === 'click' && event.detail > 0) {
+    if (this.hasButtonTarget && event && event.type === 'click' && event.detail > 0) {
       this.buttonTarget.blur()
     }
   }
@@ -33,7 +39,16 @@ export default class extends Controller {
     if (this.open || !this.hasMenuTarget) return
     
     this.open = true
+    
+    // Show with animation
     this.menuTarget.classList.remove("hidden")
+    // Force reflow
+    this.menuTarget.offsetHeight
+    // Add transition classes
+    requestAnimationFrame(() => {
+      this.menuTarget.classList.remove("opacity-0", "scale-95")
+      this.menuTarget.classList.add("opacity-100", "scale-100")
+    })
     
     if (this.hasButtonTarget) {
       this.buttonTarget.setAttribute("aria-expanded", "true")
@@ -41,7 +56,10 @@ export default class extends Controller {
     
     // Add event listeners
     document.addEventListener("keydown", this.handleEscape)
-    document.addEventListener("click", this.handleClickOutside)
+    // Delay click outside listener to prevent immediate close
+    setTimeout(() => {
+      document.addEventListener("click", this.handleClickOutside)
+    }, 100)
     
     // Focus first menu item for accessibility
     requestAnimationFrame(() => {
@@ -54,7 +72,17 @@ export default class extends Controller {
     if (!this.open || !this.hasMenuTarget) return
     
     this.open = false
-    this.menuTarget.classList.add("hidden")
+    
+    // Hide with animation
+    this.menuTarget.classList.remove("opacity-100", "scale-100")
+    this.menuTarget.classList.add("opacity-0", "scale-95")
+    
+    // Hide after transition
+    setTimeout(() => {
+      if (!this.open) {
+        this.menuTarget.classList.add("hidden")
+      }
+    }, 200)
     
     if (this.hasButtonTarget) {
       this.buttonTarget.setAttribute("aria-expanded", "false")

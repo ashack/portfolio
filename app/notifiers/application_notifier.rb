@@ -3,7 +3,7 @@
 class ApplicationNotifier < Noticed::Event
   # Default delivery methods for all notifications
   # Individual notifiers can override or add to these
-  
+
   # Access to the recipient (injected by NoticedNotificationExtensions)
   attr_accessor :recipient
 

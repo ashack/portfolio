@@ -44,6 +44,5 @@ class SystemAnnouncementNotifier < ApplicationNotifier
       # System announcements typically don't have a specific URL
       nil
     end
-
   end
 end

@@ -1,18 +1,13 @@
-#!/bin/bash
+#\!/bin/bash
+# Kill any existing processes
+lsof -ti:3000 | xargs kill -9 2>/dev/null || true
+pkill -f "bin/rails server" 2>/dev/null || true
+pkill -f "tailwindcss" 2>/dev/null || true
 
-# Kill any existing Rails processes
-pkill -f "rails server" || true
-pkill -f "foreman" || true
-pkill -f "tailwindcss:watch" || true
+# Clear caches
+rm -rf tmp/cache/*
+rm -rf public/assets/
 
-# Clean up any precompiled assets
-rm -rf public/assets
-rm -rf app/assets/builds/tailwind.css
-
-# Build Tailwind CSS
-bundle exec rails tailwindcss:build
-
-# Start development server
-echo "Starting development server..."
-echo "Access the application at: http://localhost:3000"
-./bin/dev
+echo "Starting development server with bin/dev..."
+echo "This will handle both Rails and asset compilation"
+echo "Use Ctrl+C to stop"

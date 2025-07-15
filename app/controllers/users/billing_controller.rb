@@ -3,9 +3,6 @@ class Users::BillingController < Users::BaseController
   skip_after_action :verify_policy_scoped, only: :index
   skip_after_action :verify_authorized
 
-  # Use admin layout for admin users
-  layout :determine_layout
-
   before_action :set_payment_processor, if: :payment_processor_available?
 
   def index
@@ -53,13 +50,5 @@ class Users::BillingController < Users::BaseController
 
   def payment_method_params
     params.require(:payment_method).permit(:default)
-  end
-
-  def determine_layout
-    if current_user&.super_admin? || current_user&.site_admin?
-      "admin"
-    else
-      "user"
-    end
   end
 end

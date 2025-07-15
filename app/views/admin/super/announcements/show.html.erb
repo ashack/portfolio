@@ -1,0 +1,156 @@
+<% content_for :page_title, @announcement.title %>
+
+<div class="max-w-4xl mx-auto">
+  <div class="bg-white shadow overflow-hidden sm:rounded-lg">
+    <div class="px-4 py-5 sm:px-6">
+      <div class="flex justify-between items-start">
+        <div>
+          <h3 class="text-lg leading-6 font-medium text-gray-900">
+            <%= @announcement.title %>
+          </h3>
+          <p class="mt-1 max-w-2xl text-sm text-gray-500">
+            Created by <%= @announcement.created_by.email %> on <%= @announcement.created_at.strftime("%B %d, %Y") %>
+          </p>
+        </div>
+        <div class="flex space-x-3">
+          <%= link_to "Edit", edit_admin_super_announcement_path(@announcement), 
+              class: "inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" %>
+          <%= link_to "Delete", admin_super_announcement_path(@announcement), 
+              data: { 
+                turbo_method: :delete,
+                turbo_confirm: "Are you sure you want to delete this announcement?" 
+              },
+              class: "inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500" %>
+        </div>
+      </div>
+    </div>
+    
+    <div class="border-t border-gray-200">
+      <dl>
+        <!-- Status -->
+        <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+          <dt class="text-sm font-medium text-gray-500">Status</dt>
+          <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+            <% if @announcement.active? %>
+              <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                Active
+              </span>
+            <% elsif @announcement.upcoming? %>
+              <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+                Scheduled
+              </span>
+            <% elsif @announcement.expired? %>
+              <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">
+                Expired
+              </span>
+            <% elsif !@announcement.published? %>
+              <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
+                Draft
+              </span>
+            <% end %>
+            
+            <% if @announcement.published? %>
+              <span class="ml-2 text-sm text-gray-500">Published</span>
+            <% else %>
+              <span class="ml-2 text-sm text-gray-500">Not Published</span>
+            <% end %>
+          </dd>
+        </div>
+
+        <!-- Style -->
+        <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+          <dt class="text-sm font-medium text-gray-500">Style</dt>
+          <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+              <%= case @announcement.style
+                  when 'info' then 'bg-blue-100 text-blue-800'
+                  when 'success' then 'bg-green-100 text-green-800'
+                  when 'warning' then 'bg-yellow-100 text-yellow-800'
+                  when 'danger' then 'bg-red-100 text-red-800'
+                  else 'bg-gray-100 text-gray-800'
+                  end %>">
+              <%= @announcement.style.capitalize %>
+            </span>
+          </dd>
+        </div>
+
+        <!-- Schedule -->
+        <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+          <dt class="text-sm font-medium text-gray-500">Schedule</dt>
+          <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+            <div>
+              <strong>Starts:</strong> <%= @announcement.starts_at.strftime("%B %d, %Y at %l:%M %p %Z") %>
+            </div>
+            <% if @announcement.ends_at? %>
+              <div class="mt-1">
+                <strong>Ends:</strong> <%= @announcement.ends_at.strftime("%B %d, %Y at %l:%M %p %Z") %>
+              </div>
+            <% else %>
+              <div class="mt-1 text-gray-500">No end date</div>
+            <% end %>
+          </dd>
+        </div>
+
+        <!-- Options -->
+        <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+          <dt class="text-sm font-medium text-gray-500">Options</dt>
+          <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+            <% if @announcement.dismissible? %>
+              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                <%= icon "check", class: "mr-1 h-3 w-3" %>
+                Dismissible
+              </span>
+            <% else %>
+              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                <%= icon "x", class: "mr-1 h-3 w-3" %>
+                Not Dismissible
+              </span>
+            <% end %>
+          </dd>
+        </div>
+
+        <!-- Message -->
+        <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+          <dt class="text-sm font-medium text-gray-500">Message</dt>
+          <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+            <div class="prose max-w-none">
+              <%= simple_format(@announcement.message) %>
+            </div>
+          </dd>
+        </div>
+
+        <!-- Preview -->
+        <div class="bg-white px-4 py-5 sm:px-6">
+          <dt class="text-sm font-medium text-gray-500 mb-3">Preview</dt>
+          <dd class="mt-1">
+            <div class="border border-gray-300 rounded-md p-4 bg-gray-50">
+              <div class="<%= @announcement.style_classes %>">
+                <div class="flex">
+                  <div class="flex-shrink-0">
+                    <%= icon @announcement.icon, class: "h-5 w-5" %>
+                  </div>
+                  <div class="ml-3 flex-1">
+                    <h3 class="font-semibold"><%= @announcement.title %></h3>
+                    <p class="mt-1"><%= @announcement.message %></p>
+                  </div>
+                  <% if @announcement.dismissible? %>
+                    <div class="ml-auto pl-3">
+                      <button type="button" class="-m-1.5 flex p-1.5 focus:outline-none">
+                        <%= icon "x", class: "h-5 w-5" %>
+                      </button>
+                    </div>
+                  <% end %>
+                </div>
+              </div>
+            </div>
+          </dd>
+        </div>
+      </dl>
+    </div>
+  </div>
+
+  <div class="mt-6 flex justify-end">
+    <%= link_to "Back to Announcements", admin_super_announcements_path, 
+        class: "text-indigo-600 hover:text-indigo-900" %>
+  </div>
+</div>

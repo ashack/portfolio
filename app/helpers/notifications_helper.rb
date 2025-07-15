@@ -1,7 +1,7 @@
 module NotificationsHelper
   def notification_icon_bg_class(notification)
     notification_type = notification.notification_type
-    
+
     case notification_type
     when "status_change", "account_update"
       "bg-green-100"
@@ -22,7 +22,7 @@ module NotificationsHelper
 
   def notification_icon_color_class(notification)
     notification_type = notification.notification_type
-    
+
     case notification_type
     when "status_change", "account_update"
       "text-green-600"

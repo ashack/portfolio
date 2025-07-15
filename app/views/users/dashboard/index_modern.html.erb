@@ -1,0 +1,166 @@
+<div class="px-4 sm:px-0">
+  <!-- Tab Navigation -->
+  <div class="grid grid-cols-1 sm:hidden">
+    <select aria-label="Select a tab" class="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-2 pr-8 pl-3 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600">
+      <option selected>Dashboard</option>
+      <option>Activity</option>
+      <option>Settings</option>
+    </select>
+    <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end fill-gray-500" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
+      <path fill-rule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+    </svg>
+  </div>
+  <div class="hidden sm:block">
+    <nav class="isolate flex divide-x divide-gray-200 rounded-lg shadow-sm" aria-label="Tabs">
+      <a href="#" aria-current="page" class="group relative min-w-0 flex-1 overflow-hidden rounded-l-lg bg-white px-6 py-4 text-center text-sm font-medium text-gray-900 hover:bg-gray-50 focus:z-10">
+        <span>Dashboard</span>
+        <span aria-hidden="true" class="absolute inset-x-0 bottom-0 h-0.5 bg-indigo-500"></span>
+      </a>
+      <a href="#" class="group relative min-w-0 flex-1 overflow-hidden bg-white px-6 py-4 text-center text-sm font-medium text-gray-500 hover:bg-gray-50 hover:text-gray-700 focus:z-10">
+        <span>Activity</span>
+        <span aria-hidden="true" class="absolute inset-x-0 bottom-0 h-0.5 bg-transparent"></span>
+      </a>
+      <a href="#" class="group relative min-w-0 flex-1 overflow-hidden rounded-r-lg bg-white px-6 py-4 text-center text-sm font-medium text-gray-500 hover:bg-gray-50 hover:text-gray-700 focus:z-10">
+        <span>Settings</span>
+        <span aria-hidden="true" class="absolute inset-x-0 bottom-0 h-0.5 bg-transparent"></span>
+      </a>
+    </nav>
+  </div>
+</div>
+
+<div class="mt-4">
+  <h1 class="sr-only">Dashboard</h1>
+  <ul role="list" class="space-y-4">
+    <!-- Welcome Card -->
+    <li class="bg-white px-4 py-6 shadow-sm sm:rounded-lg sm:p-6">
+      <article>
+        <div>
+          <div class="flex space-x-3">
+            <div class="shrink-0">
+              <% if current_user.avatar.attached? %>
+                <%= image_tag current_user.avatar.variant(resize_to_fill: [40, 40]), 
+                    class: "size-10 rounded-full bg-gray-50", 
+                    alt: current_user.full_name %>
+              <% else %>
+                <div class="size-10 rounded-full bg-indigo-600 flex items-center justify-center">
+                  <span class="text-white font-medium text-sm"><%= current_user.initials %></span>
+                </div>
+              <% end %>
+            </div>
+            <div class="min-w-0 flex-1">
+              <p class="text-sm font-medium text-gray-900">
+                Welcome back, <%= current_user.full_name.presence || current_user.email.split('@').first %>!
+              </p>
+              <p class="text-sm text-gray-500">
+                Account created <time datetime="<%= current_user.created_at.iso8601 %>"><%= current_user.created_at.strftime("%B %Y") %></time>
+              </p>
+            </div>
+          </div>
+          <h2 class="mt-4 text-base font-medium text-gray-900">Your account overview</h2>
+        </div>
+        <div class="mt-2 space-y-4 text-sm text-gray-700">
+          <p>Here's a quick summary of your account status and recent activity. You can manage your subscription, update your profile, and explore available features from this dashboard.</p>
+        </div>
+      </article>
+    </li>
+
+    <!-- Recent Activity -->
+    <li class="bg-white px-4 py-6 shadow-sm sm:rounded-lg sm:p-6">
+      <article>
+        <div>
+          <h2 class="text-base font-medium text-gray-900">Recent Activity</h2>
+        </div>
+        <div class="mt-4">
+          <% if @recent_activities.any? %>
+            <div class="flow-root">
+              <ul role="list" class="-mb-8">
+                <% @recent_activities.each_with_index do |activity, index| %>
+                  <li>
+                    <div class="relative pb-8">
+                      <% unless index == @recent_activities.size - 1 %>
+                        <span class="absolute left-4 top-4 -ml-px h-full w-0.5 bg-gray-200" aria-hidden="true"></span>
+                      <% end %>
+                      <div class="relative flex space-x-3">
+                        <div>
+                          <span class="h-8 w-8 rounded-full bg-green-500 flex items-center justify-center ring-8 ring-white">
+                            <%= icon "sign-in", class: "h-4 w-4 text-white" %>
+                          </span>
+                        </div>
+                        <div class="flex min-w-0 flex-1 justify-between space-x-4 pt-1.5">
+                          <div>
+                            <p class="text-sm text-gray-500">Signed in from <span class="font-medium text-gray-900"><%= activity.ip %></span></p>
+                          </div>
+                          <div class="whitespace-nowrap text-right text-sm text-gray-500">
+                            <time datetime="<%= activity.started_at.iso8601 %>"><%= time_ago_in_words(activity.started_at) %> ago</time>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </li>
+                <% end %>
+              </ul>
+            </div>
+          <% else %>
+            <div class="text-center py-4">
+              <p class="text-sm text-gray-500">No recent activity to show.</p>
+            </div>
+          <% end %>
+        </div>
+      </article>
+    </li>
+
+    <!-- Available Features -->
+    <li class="bg-white px-4 py-6 shadow-sm sm:rounded-lg sm:p-6">
+      <article>
+        <div>
+          <h2 class="text-base font-medium text-gray-900">Available Features</h2>
+        </div>
+        <div class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <%= link_to root_path, class: "relative flex items-center space-x-3 rounded-lg border border-gray-300 bg-white px-4 py-3 shadow-xs hover:border-gray-400 focus-within:ring-2 focus-within:ring-indigo-500 focus-within:ring-offset-2" do %>
+            <div class="shrink-0">
+              <%= icon "chart-bar", class: "h-6 w-6 text-indigo-600" %>
+            </div>
+            <div class="min-w-0 flex-1">
+              <span class="absolute inset-0" aria-hidden="true"></span>
+              <p class="text-sm font-medium text-gray-900">Dashboard</p>
+              <p class="text-sm text-gray-500">Your personal dashboard</p>
+            </div>
+          <% end %>
+
+          <%= link_to users_billing_index_path, class: "relative flex items-center space-x-3 rounded-lg border border-gray-300 bg-white px-4 py-3 shadow-xs hover:border-gray-400 focus-within:ring-2 focus-within:ring-indigo-500 focus-within:ring-offset-2" do %>
+            <div class="shrink-0">
+              <%= icon "currency-dollar", class: "h-6 w-6 text-indigo-600" %>
+            </div>
+            <div class="min-w-0 flex-1">
+              <span class="absolute inset-0" aria-hidden="true"></span>
+              <p class="text-sm font-medium text-gray-900">Billing</p>
+              <p class="text-sm text-gray-500">Manage your subscription</p>
+            </div>
+          <% end %>
+
+          <%= link_to users_settings_path, class: "relative flex items-center space-x-3 rounded-lg border border-gray-300 bg-white px-4 py-3 shadow-xs hover:border-gray-400 focus-within:ring-2 focus-within:ring-indigo-500 focus-within:ring-offset-2" do %>
+            <div class="shrink-0">
+              <%= icon "gear", class: "h-6 w-6 text-indigo-600" %>
+            </div>
+            <div class="min-w-0 flex-1">
+              <span class="absolute inset-0" aria-hidden="true"></span>
+              <p class="text-sm font-medium text-gray-900">Settings</p>
+              <p class="text-sm text-gray-500">Account preferences</p>
+            </div>
+          <% end %>
+
+          <%= link_to edit_users_profile_path(current_user), class: "relative flex items-center space-x-3 rounded-lg border border-gray-300 bg-white px-4 py-3 shadow-xs hover:border-gray-400 focus-within:ring-2 focus-within:ring-indigo-500 focus-within:ring-offset-2" do %>
+            <div class="shrink-0">
+              <%= icon "user", class: "h-6 w-6 text-indigo-600" %>
+            </div>
+            <div class="min-w-0 flex-1">
+              <span class="absolute inset-0" aria-hidden="true"></span>
+              <p class="text-sm font-medium text-gray-900">Profile</p>
+              <p class="text-sm text-gray-500">Update your information</p>
+            </div>
+          <% end %>
+        </div>
+      </article>
+    </li>
+  </ul>
+</div>

@@ -509,7 +509,7 @@ if Rails.env.development?
 
   # Create test notifications inline instead of loading separate file
   puts "\n=== Creating Test Notifications ==="
-  
+
   # Clear existing notifications for a clean slate
   puts "Clearing existing notifications..."
   Noticed::Notification.destroy_all
@@ -528,10 +528,10 @@ if Rails.env.development?
   if all_users.any?
     all_users.each_with_index do |user, index|
       next unless user
-      
+
       # Mix of read and unread notifications
       days_ago = rand(0..30)
-      
+
       # 1. Status change notification
       notification = UserStatusNotifier.with(
         user: user,
@@ -539,21 +539,21 @@ if Rails.env.development?
         new_status: "active",
         changed_by: super_admin || User.first
       ).deliver(user)
-      
+
       if days_ago > 7
         user.notifications.last&.mark_as_read!
       end
-      
+
       # 2. Login notification
       locations = [ "New York, NY", "London, UK", "Tokyo, Japan", "Sydney, Australia", "Berlin, Germany" ]
       ip_addresses = [ "192.168.1.1", "10.0.0.1", "172.16.0.1", "203.0.113.0", "198.51.100.0" ]
-      
+
       LoginNotifier.with(
         ip_address: ip_addresses.sample,
         user_agent: "Mozilla/5.0 (#{[ 'Macintosh', 'Windows', 'Linux' ].sample})",
         location: locations.sample
       ).deliver(user)
-      
+
       # 3. Security alerts (critical - always unread)
       if index % 3 == 0
         SecurityAlertNotifier.with(
@@ -563,7 +563,7 @@ if Rails.env.development?
           details: "Multiple failed login attempts detected from this IP address"
         ).deliver(user)
       end
-      
+
       # 4. Team-specific notifications
       if user.invited? && user.team
         TeamMemberNotifier.with(
@@ -572,13 +572,13 @@ if Rails.env.development?
           action: [ "added", "removed", "role_changed" ].sample,
           performed_by: user.team.admin
         ).deliver(user)
-        
+
         # Mark some as read
         if rand > 0.5
           user.notifications.last&.mark_as_read!
         end
       end
-      
+
       # 5. Account updates
       AccountUpdateNotifier.with(
         changes: {
@@ -586,7 +586,7 @@ if Rails.env.development?
           last_name: [ "Old Last", user.last_name ]
         }
       ).deliver(user)
-      
+
       # 6. Admin actions (for some users)
       if index % 4 == 0
         AdminActionNotifier.with(
@@ -596,7 +596,7 @@ if Rails.env.development?
         ).deliver(user)
       end
     end
-    
+
     # Create some system announcements
     3.times do |i|
       SystemAnnouncementNotifier.with(
@@ -606,7 +606,7 @@ if Rails.env.development?
         announcement_type: [ "maintenance", "feature", "general" ].sample
       ).deliver(User.active.limit(5))
     end
-    
+
     puts "\n=== Notification Summary ==="
     puts "Total notification events: #{Noticed::Event.count}"
     puts "Total notifications: #{Noticed::Notification.count}"

@@ -12,7 +12,7 @@ class AccountUpdateNotifier < ApplicationNotifier
       changes_text = params[:changes].map do |field, (old_val, new_val)|
         "#{field.to_s.humanize}: #{old_val} → #{new_val}"
       end.join(", ")
-      
+
       "Your account was updated: #{changes_text}"
     end
 

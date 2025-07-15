@@ -5,6 +5,9 @@ class ApplicationController < ActionController::Base
 
   helper_method :pagy_url_for
 
+  # Set default layout
+  layout :layout_by_resource
+
   # CSRF Protection - Protect all forms from Cross-Site Request Forgery
   protect_from_forgery with: :exception
 
@@ -85,25 +88,17 @@ class ApplicationController < ActionController::Base
   end
 
   def skip_pundit?
-    devise_controller? || 
+    devise_controller? ||
     params[:controller] =~ /(^pages$)|(^home$)|(^redirect$)/ ||
     params[:controller] =~ /^admin\/super\//
   end
 
   # Layout selection based on user type and context
   def layout_by_resource
-    if devise_controller?
+    if devise_controller? || !user_signed_in?
       "application"
-    elsif current_user&.super_admin? || current_user&.site_admin?
-      "admin"
-    elsif current_user&.invited? && current_user.team
-      "team"
-    elsif current_user&.enterprise? && current_user.enterprise_group
-      "enterprise"
-    elsif current_user&.direct?
-      "user"
     else
-      "application"
+      "modern_user"
     end
   end
 

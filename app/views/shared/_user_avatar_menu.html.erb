@@ -7,20 +7,20 @@
           id="user-menu-button"
           aria-expanded="false"
           aria-haspopup="true">
-    <span class="absolute -inset-1.5"></span>
+    <span class="absolute -inset-1.5 pointer-events-none"></span>
     <span class="sr-only">Open user menu</span>
     <% if current_user.avatar.attached? %>
       <%= image_tag current_user.avatar.variant(resize_to_fill: [32, 32]), 
-          class: "h-8 w-8 rounded-full bg-gray-50", 
+          class: "h-8 w-8 rounded-full bg-gray-50 pointer-events-none", 
           alt: current_user.full_name %>
     <% else %>
-      <div class="h-8 w-8 rounded-full bg-indigo-600 flex items-center justify-center">
-        <span class="text-white font-medium text-sm"><%= current_user.initials %></span>
+      <div class="h-8 w-8 rounded-full bg-indigo-600 flex items-center justify-center pointer-events-none">
+        <span class="text-white font-medium text-sm pointer-events-none"><%= current_user.initials %></span>
       </div>
     <% end %>
-    <span class="hidden lg:flex lg:items-center">
-      <span class="ml-4 text-sm/6 font-semibold text-gray-900" aria-hidden="true"><%= current_user.first_name || current_user.email.split('@').first %></span>
-      <svg class="ml-2 h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+    <span class="hidden lg:flex lg:items-center pointer-events-none">
+      <span class="ml-4 text-sm/6 font-semibold text-gray-900 pointer-events-none" aria-hidden="true"><%= current_user.first_name || current_user.email.split('@').first %></span>
+      <svg class="ml-2 h-5 w-5 text-gray-400 pointer-events-none" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
         <path fill-rule="evenodd" d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
       </svg>
     </span>
@@ -28,7 +28,7 @@
 
   <!-- Dropdown Panel -->
   <div data-dropdown-target="menu" 
-       class="hidden absolute right-0 z-10 mt-2.5 w-48 origin-top-right rounded-md bg-white py-2 shadow-lg ring-1 ring-gray-900/5 focus:outline-none"
+       class="hidden absolute right-0 z-[100] mt-2.5 w-48 origin-top-right rounded-md bg-white py-2 shadow-lg ring-1 ring-gray-900/5 focus:outline-none transform transition-all duration-200 ease-out opacity-0 scale-95"
        role="menu"
        aria-orientation="vertical"
        aria-labelledby="user-menu-button"

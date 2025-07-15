@@ -1,0 +1,189 @@
+<div class="px-4 sm:px-0">
+  <!-- Tab Navigation -->
+  <div class="grid grid-cols-1 sm:hidden">
+    <select aria-label="Select a tab" class="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-2 pr-8 pl-3 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600">
+      <option selected>Overview</option>
+      <option>Teams</option>
+      <option>Users</option>
+      <option>Activity</option>
+    </select>
+    <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end fill-gray-500" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
+      <path fill-rule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+    </svg>
+  </div>
+  <div class="hidden sm:block">
+    <nav class="isolate flex divide-x divide-gray-200 rounded-lg shadow-sm" aria-label="Tabs">
+      <a href="#" aria-current="page" class="group relative min-w-0 flex-1 overflow-hidden rounded-l-lg bg-white px-6 py-4 text-center text-sm font-medium text-gray-900 hover:bg-gray-50 focus:z-10">
+        <span>Overview</span>
+        <span aria-hidden="true" class="absolute inset-x-0 bottom-0 h-0.5 bg-indigo-500"></span>
+      </a>
+      <a href="#" class="group relative min-w-0 flex-1 overflow-hidden bg-white px-6 py-4 text-center text-sm font-medium text-gray-500 hover:bg-gray-50 hover:text-gray-700 focus:z-10">
+        <span>Teams</span>
+        <span aria-hidden="true" class="absolute inset-x-0 bottom-0 h-0.5 bg-transparent"></span>
+      </a>
+      <a href="#" class="group relative min-w-0 flex-1 overflow-hidden bg-white px-6 py-4 text-center text-sm font-medium text-gray-500 hover:bg-gray-50 hover:text-gray-700 focus:z-10">
+        <span>Users</span>
+        <span aria-hidden="true" class="absolute inset-x-0 bottom-0 h-0.5 bg-transparent"></span>
+      </a>
+      <a href="#" class="group relative min-w-0 flex-1 overflow-hidden rounded-r-lg bg-white px-6 py-4 text-center text-sm font-medium text-gray-500 hover:bg-gray-50 hover:text-gray-700 focus:z-10">
+        <span>Activity</span>
+        <span aria-hidden="true" class="absolute inset-x-0 bottom-0 h-0.5 bg-transparent"></span>
+      </a>
+    </nav>
+  </div>
+</div>
+
+<div class="mt-4">
+  <h1 class="sr-only">Admin Dashboard</h1>
+  <ul role="list" class="space-y-4">
+    <!-- Welcome Card -->
+    <li class="bg-white px-4 py-6 shadow-sm sm:rounded-lg sm:p-6">
+      <article>
+        <div>
+          <div class="flex space-x-3">
+            <div class="shrink-0">
+              <div class="size-10 rounded-full bg-indigo-600 flex items-center justify-center">
+                <span class="text-white font-medium text-sm"><%= current_user.initials %></span>
+              </div>
+            </div>
+            <div class="min-w-0 flex-1">
+              <p class="text-sm font-medium text-gray-900">
+                Welcome back, Super Admin!
+              </p>
+              <p class="text-sm text-gray-500">
+                Platform management dashboard
+              </p>
+            </div>
+          </div>
+          <h2 class="mt-4 text-base font-medium text-gray-900">Platform Overview</h2>
+        </div>
+        <div class="mt-2 space-y-4 text-sm text-gray-700">
+          <p>Manage your SaaS platform from this central dashboard. Monitor users, teams, and system health.</p>
+        </div>
+      </article>
+    </li>
+
+    <!-- Stats Overview -->
+    <li class="bg-white px-4 py-6 shadow-sm sm:rounded-lg sm:p-6">
+      <article>
+        <div>
+          <h2 class="text-base font-medium text-gray-900">Platform Statistics</h2>
+        </div>
+        <div class="mt-4 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          <div class="overflow-hidden rounded-lg bg-gray-50 px-4 py-5 shadow-xs sm:p-6">
+            <dt class="truncate text-sm font-medium text-gray-500">Total Users</dt>
+            <dd class="mt-1 text-3xl font-semibold tracking-tight text-gray-900"><%= @total_users %></dd>
+          </div>
+          <div class="overflow-hidden rounded-lg bg-gray-50 px-4 py-5 shadow-xs sm:p-6">
+            <dt class="truncate text-sm font-medium text-gray-500">Total Teams</dt>
+            <dd class="mt-1 text-3xl font-semibold tracking-tight text-gray-900"><%= @total_teams %></dd>
+          </div>
+          <div class="overflow-hidden rounded-lg bg-gray-50 px-4 py-5 shadow-xs sm:p-6">
+            <dt class="truncate text-sm font-medium text-gray-500">Active Teams</dt>
+            <dd class="mt-1 text-3xl font-semibold tracking-tight text-gray-900"><%= @active_teams %></dd>
+          </div>
+          <div class="overflow-hidden rounded-lg bg-gray-50 px-4 py-5 shadow-xs sm:p-6">
+            <dt class="truncate text-sm font-medium text-gray-500">Direct Users</dt>
+            <dd class="mt-1 text-3xl font-semibold tracking-tight text-gray-900"><%= @direct_users %></dd>
+          </div>
+          <div class="overflow-hidden rounded-lg bg-gray-50 px-4 py-5 shadow-xs sm:p-6">
+            <dt class="truncate text-sm font-medium text-gray-500">Team Members</dt>
+            <dd class="mt-1 text-3xl font-semibold tracking-tight text-gray-900"><%= @team_users %></dd>
+          </div>
+          <div class="overflow-hidden rounded-lg bg-gray-50 px-4 py-5 shadow-xs sm:p-6">
+            <dt class="truncate text-sm font-medium text-gray-500">Active Users</dt>
+            <dd class="mt-1 text-3xl font-semibold tracking-tight text-gray-900"><%= @active_users %></dd>
+          </div>
+        </div>
+      </article>
+    </li>
+
+    <!-- Recent Teams -->
+    <li class="bg-white px-4 py-6 shadow-sm sm:rounded-lg sm:p-6">
+      <article>
+        <div>
+          <h2 class="text-base font-medium text-gray-900">Recent Teams</h2>
+        </div>
+        <div class="mt-4">
+          <% if @recent_teams.any? %>
+            <div class="flow-root">
+              <ul role="list" class="-my-5 divide-y divide-gray-200">
+                <% @recent_teams.each do |team| %>
+                  <li class="py-5">
+                    <div class="relative focus-within:ring-2 focus-within:ring-indigo-500">
+                      <h3 class="text-sm font-semibold text-gray-800">
+                        <%= link_to team.name, admin_super_team_path(team), class: "hover:underline focus:outline-none" %>
+                      </h3>
+                      <p class="mt-1 text-sm text-gray-600 line-clamp-2">
+                        Admin: <%= team.admin&.full_name || team.admin&.email || "No admin" %> • 
+                        <%= team.users.size %> members • 
+                        Created <%= time_ago_in_words(team.created_at) %> ago
+                      </p>
+                    </div>
+                  </li>
+                <% end %>
+              </ul>
+            </div>
+            <div class="mt-6">
+              <%= link_to "View all teams", admin_super_teams_path, class: "flex w-full items-center justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-xs ring-1 ring-gray-300 ring-inset hover:bg-gray-50" %>
+            </div>
+          <% else %>
+            <p class="text-sm text-gray-500">No teams created yet.</p>
+          <% end %>
+        </div>
+      </article>
+    </li>
+
+    <!-- Recent Activity -->
+    <li class="bg-white px-4 py-6 shadow-sm sm:rounded-lg sm:p-6">
+      <article>
+        <div>
+          <h2 class="text-base font-medium text-gray-900">Recent User Activity</h2>
+        </div>
+        <div class="mt-4">
+          <% if @recent_activities.any? %>
+            <div class="flow-root">
+              <ul role="list" class="-mb-8">
+                <% @recent_activities.each_with_index do |user, index| %>
+                  <li>
+                    <div class="relative pb-8">
+                      <% unless index == @recent_activities.size - 1 %>
+                        <span class="absolute left-4 top-4 -ml-px h-full w-0.5 bg-gray-200" aria-hidden="true"></span>
+                      <% end %>
+                      <div class="relative flex space-x-3">
+                        <div>
+                          <span class="h-8 w-8 rounded-full bg-gray-400 flex items-center justify-center ring-8 ring-white">
+                            <%= icon "user", class: "h-4 w-4 text-white" %>
+                          </span>
+                        </div>
+                        <div class="flex min-w-0 flex-1 justify-between space-x-4 pt-1.5">
+                          <div>
+                            <p class="text-sm text-gray-500">
+                              <%= link_to user.full_name.presence || user.email, admin_super_user_path(user), class: "font-medium text-gray-900 hover:underline" %>
+                              <% if user.team %>
+                                (<%= user.team.name %>)
+                              <% end %>
+                            </p>
+                          </div>
+                          <div class="whitespace-nowrap text-right text-sm text-gray-500">
+                            <% if user.last_activity_at %>
+                              <time datetime="<%= user.last_activity_at.iso8601 %>"><%= time_ago_in_words(user.last_activity_at) %> ago</time>
+                            <% else %>
+                              Never active
+                            <% end %>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </li>
+                <% end %>
+              </ul>
+            </div>
+          <% else %>
+            <p class="text-sm text-gray-500">No recent activity.</p>
+          <% end %>
+        </div>
+      </article>
+    </li>
+  </ul>
+</div>

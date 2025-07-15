@@ -1,7 +1,6 @@
 class Admin::Site::BaseController < ApplicationController
   include ActivityTrackable
 
-  layout "admin"
   before_action :require_site_admin!
 
   private

@@ -40,6 +40,5 @@ class SecurityAlertNotifier < ApplicationNotifier
     def url
       Rails.application.routes.url_helpers.users_settings_path(anchor: "security-settings")
     end
-
   end
 end

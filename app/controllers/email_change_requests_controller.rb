@@ -2,8 +2,6 @@ class EmailChangeRequestsController < ApplicationController
   include ActivityTrackable
   include Pundit::Authorization
 
-  layout :determine_layout
-
   before_action :authenticate_user!
   before_action :set_email_change_request, only: [ :show ]
   before_action :set_team_for_layout
@@ -71,22 +69,6 @@ class EmailChangeRequestsController < ApplicationController
       team_root_path(team_slug: current_user.team.slug)
     else
       root_path
-    end
-  end
-
-  def determine_layout
-    return "application" unless user_signed_in?
-
-    # Check admin status first (system_role)
-    if current_user.super_admin? || current_user.site_admin?
-      Rails.logger.debug "EMAIL_CHANGE_REQUEST: Using admin layout for user #{current_user.email} (#{current_user.system_role})"
-      "admin"
-    elsif current_user.user_type == "invited"
-      Rails.logger.debug "EMAIL_CHANGE_REQUEST: Using team layout for user #{current_user.email}"
-      "team"
-    else
-      Rails.logger.debug "EMAIL_CHANGE_REQUEST: Using application layout for user #{current_user.email}"
-      "application"
     end
   end
 

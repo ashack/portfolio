@@ -12,5 +12,8 @@ class Users::DashboardController < Users::BaseController
     if @user.respond_to?(:payment_processor) && @user.payment_processor.present?
       @subscription = @user.payment_processor.subscription
     end
+
+    # Use modern view template
+    render "index_modern"
   end
 end

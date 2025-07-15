@@ -1,7 +1,7 @@
 class NotificationsController < ApplicationController
   before_action :authenticate_user!
   before_action :set_notification, only: [ :mark_as_read, :destroy ]
-  
+
   # Skip Pundit for collection actions
   skip_after_action :verify_authorized, only: [ :mark_all_as_read, :destroy_all ]
   skip_after_action :verify_policy_scoped, only: [ :index ]

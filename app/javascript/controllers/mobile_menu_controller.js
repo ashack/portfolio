@@ -1,11 +1,12 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["panel", "openIcon", "closeIcon"]
+  static targets = ["menu", "openIcon", "closeIcon"]
   
   connect() {
-    this.open = false
+    this.isOpen = false
     this.handleEscape = this.handleEscape.bind(this)
+    this.handleClickOutside = this.handleClickOutside.bind(this)
   }
   
   disconnect() {
@@ -13,57 +14,67 @@ export default class extends Controller {
   }
   
   toggle() {
-    this.open ? this.close() : this.open()
+    this.isOpen ? this.close() : this.open()
   }
   
   open() {
-    if (this.open) return
+    if (this.isOpen) return
     
-    this.open = true
-    this.panelTarget.classList.remove("hidden")
+    this.isOpen = true
+    
+    // Show menu
+    if (this.hasMenuTarget) {
+      this.menuTarget.classList.remove("hidden")
+    }
     
     // Swap icons
     if (this.hasOpenIconTarget) this.openIconTarget.classList.add("hidden")
     if (this.hasCloseIconTarget) this.closeIconTarget.classList.remove("hidden")
     
-    // Prevent body scroll
-    document.body.classList.add("overflow-hidden")
+    // Update aria-expanded on button
+    const button = this.element.querySelector('[data-action*="mobile-menu#toggle"]')
+    if (button) button.setAttribute("aria-expanded", "true")
     
     // Add escape listener
     document.addEventListener("keydown", this.handleEscape)
     
-    // Animate in
-    requestAnimationFrame(() => {
-      this.panelTarget.classList.add("show")
-    })
+    // Add click outside listener with small delay to prevent immediate close
+    setTimeout(() => {
+      document.addEventListener("click", this.handleClickOutside)
+    }, 100)
   }
   
   close() {
-    if (!this.open) return
+    if (!this.isOpen) return
     
-    this.open = false
+    this.isOpen = false
+    
+    // Hide menu
+    if (this.hasMenuTarget) {
+      this.menuTarget.classList.add("hidden")
+    }
     
     // Swap icons
     if (this.hasOpenIconTarget) this.openIconTarget.classList.remove("hidden")
     if (this.hasCloseIconTarget) this.closeIconTarget.classList.add("hidden")
     
-    // Re-enable body scroll
-    document.body.classList.remove("overflow-hidden")
+    // Update aria-expanded on button
+    const button = this.element.querySelector('[data-action*="mobile-menu#toggle"]')
+    if (button) button.setAttribute("aria-expanded", "false")
     
-    // Remove escape listener
+    // Remove listeners
     document.removeEventListener("keydown", this.handleEscape)
-    
-    // Animate out then hide
-    this.panelTarget.classList.remove("show")
-    setTimeout(() => {
-      if (!this.open) {
-        this.panelTarget.classList.add("hidden")
-      }
-    }, 300)
+    document.removeEventListener("click", this.handleClickOutside)
   }
   
   handleEscape(event) {
     if (event.key === "Escape") {
+      this.close()
+    }
+  }
+  
+  handleClickOutside(event) {
+    if (!this.element.contains(event.target) && !this.menuTarget.contains(event.target)) {
       this.close()
     }
   }
