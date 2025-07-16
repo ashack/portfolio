@@ -9,7 +9,7 @@ class EmailChangeRequestNotifier < ApplicationNotifier
   # Deliver by email
   deliver_by :email do |config|
     config.mailer = "EmailChangeMailer"
-    config.method = email_method
+    config.method = -> { email_method }
     config.params = -> { email_params }
     config.if = -> { notification_enabled?("email", "email_changes") }
   end

@@ -140,6 +140,7 @@ class Invitation < ApplicationRecord
           team_role: role,
           status: "active",
           accepting_invitation: true,
+          confirmed_at: Time.current,
           **user_attributes
         )
       elsif enterprise_invitation?
@@ -152,6 +153,7 @@ class Invitation < ApplicationRecord
           enterprise_group_role: role,
           status: "active",
           accepting_invitation: true,
+          confirmed_at: Time.current,
           **user_attributes
         )
       end

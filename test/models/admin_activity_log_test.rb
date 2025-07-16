@@ -409,17 +409,86 @@ class AdminActivityLogTest < ActiveSupport::TestCase
 
   # Weight: 5 - Security pattern detection for admin activities
   test "security_report detects suspicious patterns" do
-    skip "Complex test with ActiveRecord relation expectations"
+    # Create base activity
+    @log.save!
+
+    # Create rapid activity (more than 20 in 1 minute)
+    25.times do |i|
+      AdminActivityLog.create!(
+        admin_user: @admin,
+        controller: "admin/super/users",
+        action: "update",
+        method: "PATCH",
+        path: "/admin/super/users/#{i}",
+        timestamp: Time.current
+      )
+    end
+
+    # Create activity from new IP
+    AdminActivityLog.create!(
+      admin_user: @admin,
+      controller: "admin/super/users",
+      action: "index",
+      method: "GET",
+      path: "/admin/super/users",
+      ip_address: "10.0.0.1",
+      timestamp: 2.days.ago # Historical activity
+    )
+
+    report = AdminActivityLog.security_report(:today)
+
+    assert report[:suspicious_activity].present?
+    assert report[:suspicious_activity].any? { |s| s[:type] == "rapid_activity" }
+    assert report[:ip_analysis].present?
   end
 
   # Weight: 5 - Rapid activity detection for security monitoring
   test "detect_suspicious_patterns identifies rapid activity" do
-    skip "Method expects ActiveRecord relation, not array"
+    # Create normal activity
+    @log.save!
+
+    # Create rapid activity (more than 20 in 1 minute)
+    25.times do |i|
+      AdminActivityLog.create!(
+        admin_user: @admin,
+        controller: "admin/super/users",
+        action: "update",
+        method: "PATCH",
+        path: "/admin/super/users/#{i}",
+        timestamp: Time.current
+      )
+    end
+
+    patterns = AdminActivityLog.send(:detect_suspicious_patterns, AdminActivityLog.today)
+
+    assert patterns.any? { |p| p[:type] == "rapid_activity" }
+    rapid_pattern = patterns.find { |p| p[:type] == "rapid_activity" }
+    assert_equal @admin.id, rapid_pattern[:admin_id]
+    assert rapid_pattern[:count] >= 25
   end
 
   # Weight: 4 - IP pattern analysis for security monitoring
   test "analyze_ip_patterns returns correct statistics" do
-    skip "Method expects ActiveRecord relation, not array"
+    # Create activities from different IPs
+    ips = [ "192.168.1.1", "10.0.0.1", "172.16.0.1", "192.168.1.1" ]
+
+    ips.each_with_index do |ip, i|
+      AdminActivityLog.create!(
+        admin_user: @admin,
+        controller: "admin/super/users",
+        action: "index",
+        method: "GET",
+        path: "/admin/super/users",
+        ip_address: ip,
+        timestamp: Time.current - i.minutes
+      )
+    end
+
+    analysis = AdminActivityLog.send(:analyze_ip_patterns, AdminActivityLog.today)
+
+    assert_equal 3, analysis[:unique_ips]
+    assert_equal "192.168.1.1", analysis[:most_active_ip]
+    assert_equal 2, analysis[:ip_distribution]["192.168.1.1"]
   end
 
   # ========================================================================

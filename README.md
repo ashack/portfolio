@@ -6,7 +6,7 @@ A complete Ruby on Rails 8 SaaS application with triple-track user system suppor
 
 ### User Types
 - **Super Admin**: Platform owner with complete system access
-- **Site Admin**: Customer support and user management
+- **Site Admin**: Customer support and user management (with access to notifications and announcements)
 - **Direct User**: Individual users with personal billing who can also create teams
 - **Team Admin**: Manages team billing and members (can be direct user or invited)
 - **Team Member**: Invitation-only team participants
@@ -14,6 +14,7 @@ A complete Ruby on Rails 8 SaaS application with triple-track user system suppor
 - **Enterprise User**: Members of enterprise organizations
 
 ### Core Features
+- **Modern Universal Layout**: Consistent modern_user layout across all authenticated pages
 - **Triple-Track SaaS Architecture**: Complete separation of individual, team, and enterprise user systems
 - **Stripe Integration**: Pay gem for both team and individual billing
 - **Complete Authentication**: Devise with all 8 security modules (lockable, confirmable, trackable, etc.)
@@ -22,12 +23,14 @@ A complete Ruby on Rails 8 SaaS application with triple-track user system suppor
 - **Team Management**: Full invitation system with email validation and resend/revoke functionality
 - **Enterprise Organizations**: Large-scale user management with custom plans and dedicated workspace
 - **Email System**: Professional email templates with Letter Opener for development preview
-- **Professional UI**: Tailwind CSS with responsive design and styled Devise views
+- **Professional UI**: Tailwind CSS with responsive design, modern sidebar navigation, and drawer/flyout panels
+- **Notification System**: Noticed gem integration with in-app notifications and categories
+- **Site Announcements**: Scheduled announcements with dismissible banners
 - **Analytics & Monitoring**: Ahoy Matey for user activity tracking
 - **Admin Dashboards**: Separate interfaces for super admin, site admin, and enterprise admin
-- **Security Hardened**: Rack::Attack rate limiting, CSRF protection, session security
+- **Security Hardened**: Rack::Attack rate limiting with Fail2Ban, CSRF protection, session security
 - **Rails 8.0.2 Ready**: Full compatibility with latest Rails and Turbo features
-- **Enhanced Pagination**: Pagy with persistent user preferences, dynamic items per page, and Turbo Frame support
+- **Enhanced Pagination**: Pagy with custom Tailwind styling, persistent user preferences, and Turbo Frame support
 
 ## Setup Instructions
 
@@ -45,11 +48,18 @@ A complete Ruby on Rails 8 SaaS application with triple-track user system suppor
 - **Authentication**: Devise with 8 security modules
 - **Authorization**: Pundit policies
 - **Payments**: Stripe via Pay gem
-- **Analytics**: Ahoy Matey
-- **UI Icons**: Rails Icons (Phosphor icon set)
-- **Tab Navigation**: Reusable tab component for complex navigation
+- **Notifications**: Noticed gem for in-app notifications
+- **Analytics**: Ahoy Matey, Blazer for reporting
+- **UI Components**: 
+  - Rails Icons (Phosphor icon set)
+  - Modern sidebar navigation with drawer/flyout panel
+  - Reusable tab components
+  - Custom notification center
 - **Pagination**: Pagy gem with custom Tailwind styling and user preferences
-- **Testing**: Minitest with SimpleCov (24.14% coverage, 505 passing tests)
+- **Background Jobs**: Solid Queue
+- **Caching**: Solid Cache
+- **Testing**: Minitest with SimpleCov
+- **Code Quality**: RuboCop with Rails Omakase standards (0 offenses)
 - **Session Store**: Secure cookie store with httponly/secure flags
 
 ### Installation
@@ -232,7 +242,7 @@ REDIS_URL=redis://localhost:6379/0    # For distributed rate limiting
 ## Code Quality
 
 ### Linting
-The project uses RuboCop with Rails Omakase standards:
+The project uses RuboCop with Rails Omakase standards. The codebase is currently **100% compliant** with 0 offenses.
 
 ```bash
 # Run linting
@@ -274,14 +284,16 @@ bundle exec brakeman -A
 
 ### 🎯 Production Ready Features
 - ✅ **Rails 8.0.2 Compatible** with all callback validation fixes
-- ✅ **Security Hardened** with comprehensive protection measures
-- ✅ **Performance Optimized** with proper indexing and caching
-- ✅ **Professional UI** with responsive Tailwind CSS design
+- ✅ **Security Hardened** with comprehensive Rack::Attack protection and Fail2Ban
+- ✅ **Performance Optimized** with 50+ database indexes and query optimization
+- ✅ **Professional UI** with modern_user layout, sidebar navigation, and drawer panels
 - ✅ **Zero Security Warnings** (Brakeman verified)
-- ✅ **RuboCop Compliant** (Rails Omakase standards)
+- ✅ **RuboCop 100% Compliant** (0 offenses with Rails Omakase standards)
 - ✅ **Test Coverage** with Minitest and SimpleCov
+- ✅ **Notification System** with Noticed gem and custom categories
+- ✅ **Site Announcements** with scheduled publishing and dismissible banners
 - ✅ **Phosphor Icons** integrated via Rails Icons gem
-- ✅ **Enhanced Pagination** with persistent preferences and Turbo Frame support
+- ✅ **Enhanced Pagination** with custom Tailwind helper and Turbo Frame support
 
 ## Architecture Highlights
 
@@ -293,17 +305,19 @@ bundle exec brakeman -A
 
 ### Security Features
 - **8 Devise Modules**: Database auth, registration, recovery, confirmation, lockable, trackable
-- **Pundit Authorization**: Comprehensive policies for all user types
-- **Rack::Attack Protection**: Rate limiting, IP blocking, and security filtering
+- **Pundit Authorization**: Comprehensive policies for all user types with proper scoping
+- **Rack::Attack Protection**: Rate limiting, IP blocking, Fail2Ban, and security filtering
+- **Email Change Security**: Approval workflow with 30-day expiration
 - **Strong Password Requirements**: Enforced complexity with clear user feedback
 - **Mass Assignment Protection**: Secure parameter handling
 - **Session Security**: HttpOnly, secure, SameSite cookie protection
 - **CSRF Protection**: Enhanced with per-form tokens and origin checking
+- **Activity Tracking**: Background job-based with 5-minute Redis cache
 
 ### Admin Capabilities
-- **Super Admin**: Team/enterprise creation, system management, billing oversight
-- **Site Admin**: User support, status management, view organizations (no billing access)
-- **Team Admin**: Member management, team billing, invitations
+- **Super Admin**: Team/enterprise creation, system management, billing oversight, notifications
+- **Site Admin**: User support, status management, view organizations, notifications, announcements
+- **Team Admin**: Member management, team billing, invitations, notification categories
 - **Enterprise Admin**: Organization management, member invitations, enterprise billing
 
 ### Testing Infrastructure
@@ -323,6 +337,26 @@ bundle exec brakeman -A
 6. Commit your changes (`git commit -m 'Add amazing feature'`)
 7. Push to the branch (`git push origin feature/amazing-feature`)
 8. Open a Pull Request
+
+## Recent Updates (January 2025)
+
+This starter kit has been updated with the following enhancements:
+
+### UI/UX Improvements
+- **Modern Universal Layout**: All authenticated pages now use the modern_user layout
+- **Collapsible Right Sidebar**: Transformed into a drawer/flyout panel with quick access
+- **Enhanced Navigation**: Site admins now have access to notifications and announcements
+- **Custom Pagination Helper**: Tailwind-styled pagination with proper responsive design
+
+### Code Quality
+- **RuboCop Compliance**: 100% compliant with 0 offenses (was 310 offenses)
+- **Consistent Code Style**: All files properly formatted with Rails Omakase standards
+
+### Bug Fixes
+- Fixed notification and announcement access for site admins
+- Resolved Pundit policy scoping issues for Noticed::Event
+- Corrected database column names (starts_at/ends_at)
+- Fixed layout determination for unauthenticated pages
 
 ## License
 

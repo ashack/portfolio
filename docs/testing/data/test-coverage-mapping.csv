@@ -26,8 +26,26 @@ NO TEST COVERAGE,N/A,N/A,CR-E1,Admin assignment via invitation,Enterprise Groups
 NO TEST COVERAGE,N/A,N/A,CR-E2,Enterprise user isolation,Enterprise Groups,9,HIGH,NOT COVERED
 should have many invitations as invitable,test/models/enterprise_group_test.rb,185,CR-I3,Polymorphic type safety,Invitation System,9,HIGH,covered
 polymorphic invitation type safety enforced,test/models/invitation_test.rb,135,CR-I3,Polymorphic type safety,Invitation System,9,HIGH,covered
-NO TEST COVERAGE,N/A,N/A,CR-S1,CSRF protection,Security Constraints,9,HIGH,NOT COVERED
-NO TEST COVERAGE,N/A,N/A,CR-S2,Mass assignment protection,Security Constraints,9,HIGH,NOT COVERED
+application enforces CSRF protection on state-changing requests,test/controllers/concerns/csrf_protection_test.rb,36,CR-S1,CSRF protection,Security Constraints,9,HIGH,covered
+admin actions require valid CSRF tokens,test/controllers/concerns/csrf_protection_test.rb,68,CR-S1,CSRF protection,Security Constraints,9,HIGH,covered
+user profile updates require CSRF protection,test/controllers/concerns/csrf_protection_test.rb,95,CR-S1,CSRF protection,Security Constraints,9,HIGH,covered
+billing endpoints enforce CSRF protection,test/controllers/concerns/csrf_protection_test.rb,117,CR-S1,CSRF protection,Security Constraints,9,HIGH,covered
+read-only requests do not require CSRF tokens,test/controllers/concerns/csrf_protection_test.rb,129,CR-S1,CSRF protection,Security Constraints,9,HIGH,covered
+team management actions require CSRF protection,test/controllers/concerns/csrf_protection_test.rb,144,CR-S1,CSRF protection,Security Constraints,9,HIGH,covered
+invitation actions require CSRF protection,test/controllers/concerns/csrf_protection_test.rb,182,CR-S1,CSRF protection,Security Constraints,9,HIGH,covered
+AJAX requests can use X-CSRF-Token header,test/controllers/concerns/csrf_protection_test.rb,208,CR-S1,CSRF protection,Security Constraints,9,HIGH,covered
+CSRF tokens are rotated after authentication,test/controllers/concerns/csrf_protection_test.rb,228,CR-S1,CSRF protection,Security Constraints,9,HIGH,covered
+all state-changing controllers enforce CSRF protection,test/controllers/concerns/csrf_protection_test.rb,247,CR-S1,CSRF protection,Security Constraints,9,HIGH,covered
+users cannot modify their own system_role through params,test/controllers/concerns/mass_assignment_protection_test.rb,46,CR-S2,Mass assignment protection,Security Constraints,9,HIGH,covered
+users cannot modify their user_type through params,test/controllers/concerns/mass_assignment_protection_test.rb,69,CR-S2,Mass assignment protection,Security Constraints,9,HIGH,covered
+users cannot modify security attributes through params,test/controllers/concerns/mass_assignment_protection_test.rb,102,CR-S2,Mass assignment protection,Security Constraints,9,HIGH,covered
+team members cannot escalate their team_role,test/controllers/concerns/mass_assignment_protection_test.rb,133,CR-S2,Mass assignment protection,Security Constraints,9,HIGH,covered
+sensitive user attributes cannot be mass assigned,test/controllers/concerns/mass_assignment_protection_test.rb,161,CR-S2,Mass assignment protection,Security Constraints,9,HIGH,covered
+team creation filters unpermitted parameters,test/controllers/concerns/mass_assignment_protection_test.rb,203,CR-S2,Mass assignment protection,Security Constraints,9,HIGH,covered
+invitation creation filters sensitive parameters,test/controllers/concerns/mass_assignment_protection_test.rb,240,CR-S2,Mass assignment protection,Security Constraints,9,HIGH,covered
+admin user updates respect parameter filtering,test/controllers/concerns/mass_assignment_protection_test.rb,289,CR-S2,Mass assignment protection,Security Constraints,9,HIGH,covered
+users cannot assign themselves to different plans,test/controllers/concerns/mass_assignment_protection_test.rb,317,CR-S2,Mass assignment protection,Security Constraints,9,HIGH,covered
+all controllers properly filter parameters,test/controllers/concerns/mass_assignment_protection_test.rb,341,CR-S2,Mass assignment protection,Security Constraints,9,HIGH,covered
 super admin can change user status to locked,test/services/users/status_management_service_test.rb,43,CR-T1,Team creation authority - only Super Admins,Team Management,9,HIGH,covered
 complete team creation flow works correctly,test/models/team_test.rb,348,CR-T1,Team creation authority - only Super Admins,Team Management,9,HIGH,covered
 can_be_approved_by? returns true for super admin,test/models/email_change_request_test.rb,207,CR-T1,Team creation authority - only Super Admins,Team Management,9,HIGH,covered
