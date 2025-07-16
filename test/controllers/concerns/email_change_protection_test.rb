@@ -1,20 +1,27 @@
 require "test_helper"
 
 class EmailChangeProtectionTest < ActionDispatch::IntegrationTest
-  def setup
-    skip "Skipping EmailChangeProtectionTest due to test controller loading issues"
+  setup do
+    @user = User.create!(
+      email: "test@example.com",
+      password: "Password123!",
+      first_name: "Test",
+      last_name: "User",
+      user_type: "direct",
+      confirmed_at: Time.current
+    )
+    sign_in @user
   end
 
-  test "concern detects email change attempt" do
-    patch "/test_update", params: {
+  test "concern detects email change attempt in user profile update" do
+    patch users_profile_path(@user), params: {
       user: {
         first_name: "Updated",
         email: "new@example.com"
       }
     }
 
-    assert_redirected_to root_path
-    assert_equal "Updated successfully", flash[:notice]
+    assert_redirected_to users_profile_path
     assert_equal "Email changes must be requested through the email change request system for security reasons.", flash[:alert]
 
     @user.reload
@@ -23,7 +30,7 @@ class EmailChangeProtectionTest < ActionDispatch::IntegrationTest
   end
 
   test "concern removes email and unconfirmed_email from params" do
-    patch "/test_update", params: {
+    patch users_profile_path(@user), params: {
       user: {
         first_name: "Updated",
         email: "attacker@example.com",
@@ -31,7 +38,7 @@ class EmailChangeProtectionTest < ActionDispatch::IntegrationTest
       }
     }
 
-    assert_redirected_to root_path
+    assert_redirected_to users_profile_path
 
     @user.reload
     assert_equal "test@example.com", @user.email
@@ -39,21 +46,20 @@ class EmailChangeProtectionTest < ActionDispatch::IntegrationTest
   end
 
   test "concern only triggers when email is different" do
-    patch "/test_update", params: {
+    patch users_profile_path(@user), params: {
       user: {
         first_name: "Updated",
         email: @user.email # Same email
       }
     }
 
-    assert_redirected_to root_path
-    assert_equal "Updated successfully", flash[:notice]
+    assert_redirected_to users_profile_path
     assert_nil flash[:alert] # No warning since email didn't change
   end
 
   test "concern handles various param structures" do
-    # Test with symbol keys
-    patch "/test_update", params: {
+    # Test with user params
+    patch users_profile_path(@user), params: {
       user: {
         email: "new@example.com"
       }
@@ -66,7 +72,7 @@ class EmailChangeProtectionTest < ActionDispatch::IntegrationTest
   test "concern logs security warning" do
     logs = []
     Rails.logger.stub :warn, ->(msg) { logs << msg } do
-      patch "/test_update", params: {
+      patch users_profile_path(@user), params: {
         user: {
           email: "attacker@example.com"
         }

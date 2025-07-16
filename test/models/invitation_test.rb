@@ -31,8 +31,8 @@ class InvitationTest < ActiveSupport::TestCase
     @enterprise_group = EnterpriseGroup.create!(
       name: "Test Enterprise",
       created_by: @admin,
-      plan: @enterprise_plan,
-      admin: @admin
+      plan: @enterprise_plan
+      # Don't set admin - it should be set by first admin invitation
     )
 
     # Basic invitation setup
@@ -80,7 +80,6 @@ class InvitationTest < ActiveSupport::TestCase
 
   # Weight: 9 - CR-I4: Accept creates correct user type - user creation integrity
   test "accept! creates correct user type with proper associations" do
-    skip "Skipping due to ID comparison issues in test environment"
     # Test team invitation creates invited user
     team_invitation = Invitation.create!(
       team: @team,
@@ -129,6 +128,7 @@ class InvitationTest < ActiveSupport::TestCase
 
     # Verify enterprise admin assignment
     @enterprise_group.reload
+    assert_not_nil @enterprise_group.admin, "Enterprise group should have an admin assigned"
     assert_equal enterprise_user.id, @enterprise_group.admin.id
   end
 
@@ -528,7 +528,6 @@ class InvitationTest < ActiveSupport::TestCase
 
   # Weight: 9 - Enterprise admin assignment flow
   test "enterprise invitation creates admin correctly" do
-    skip "Skipping due to ID comparison issues in test environment"
     # First enterprise invitation with admin role
     first_admin_invitation = Invitation.create!(
       invitable: @enterprise_group,
@@ -548,6 +547,7 @@ class InvitationTest < ActiveSupport::TestCase
 
     # Verify admin assignment
     @enterprise_group.reload
+    assert_not_nil @enterprise_group.admin, "Enterprise group should have an admin assigned"
     assert_equal first_admin.id, @enterprise_group.admin.id
     assert_equal "enterprise", first_admin.user_type
     assert_equal "admin", first_admin.enterprise_group_role

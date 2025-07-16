@@ -98,7 +98,7 @@ class AdminActivityLog < ApplicationRecord
 
   def self.security_report(timeframe = :today)
     logs = send(timeframe)
-    critical_logs = logs.select(&:critical_activity?)
+    critical_logs = logs.to_a.select(&:critical_activity?)
 
     {
       timeframe: timeframe,
@@ -115,21 +115,24 @@ class AdminActivityLog < ApplicationRecord
     suspicious = []
 
     # Check for rapid activity from same admin
-    logs.group(:admin_user_id).each do |admin_id, admin_logs|
-      recent_count = admin_logs.select { |log| log.timestamp > 1.minute.ago }.count
-      if recent_count > 20
+    admin_activity_counts = logs.where("timestamp > ?", 1.minute.ago)
+                                .group(:admin_user_id)
+                                .count
+
+    admin_activity_counts.each do |admin_id, count|
+      if count > 20
         suspicious << {
           type: "rapid_activity",
           admin_id: admin_id,
-          count: recent_count,
+          count: count,
           timeframe: "1_minute"
         }
       end
     end
 
     # Check for activity from new IP addresses
-    logs.group(:admin_user_id).each do |admin_id, admin_logs|
-      ips = admin_logs.map(&:ip_address).uniq
+    logs.select(:admin_user_id).distinct.pluck(:admin_user_id).each do |admin_id|
+      ips = logs.where(admin_user_id: admin_id).distinct.pluck(:ip_address)
       historical_ips = AdminActivityLog.where(admin_user_id: admin_id)
                                       .where("timestamp < ?", 1.day.ago)
                                       .distinct
