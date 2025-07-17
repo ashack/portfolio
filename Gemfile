@@ -88,6 +88,7 @@ group :development, :test do
   gem "capybara"
   gem "selenium-webdriver"
   gem "rails-controller-testing"
+  gem "database_cleaner-active_record"
 end
 
 group :development do

@@ -1,0 +1,2570 @@
+# Page snapshot
+
+```yaml
+- banner:
+  - heading "Routing Error" [level=1]
+- main:
+  - heading "No route matches [GET] \"/users/sign_out\"" [level=2]
+  - paragraph:
+    - code: "Rails.root: /Users/work/Code/rails_stuff/saas_starter_kit/saas_ror_starter"
+  - link "Application Trace":
+    - /url: "#"
+  - text: "|"
+  - link "Framework Trace":
+    - /url: "#"
+  - text: "|"
+  - link "Full Trace":
+    - /url: "#"
+  - code:
+    - 'link "app/middleware/javascript_mime_type.rb:13:in `call''"':
+      - /url: "#"
+  - heading "Routes" [level=2]
+  - paragraph: Routes match in priority from top to bottom
+  - table:
+    - rowgroup:
+      - row "Helper (Path / Url) HTTP Verb Path Controller#Action Source Location":
+        - cell "Helper (Path / Url)":
+          - text: Helper (
+          - link "Path":
+            - /url: "#"
+          - text: /
+          - link "Url":
+            - /url: "#"
+          - text: )
+        - cell "HTTP Verb"
+        - cell "Path"
+        - cell "Controller#Action"
+        - cell "Source Location"
+      - row "Search":
+        - cell "Search":
+          - searchbox "Search"
+    - rowgroup
+    - rowgroup
+    - rowgroup:
+      - row "/assets Propshaft::Server":
+        - cell
+        - cell
+        - cell "/assets"
+        - cell "Propshaft::Server":
+          - paragraph: Propshaft::Server
+        - cell:
+          - paragraph
+      - row "blazer_path /blazer Blazer::Engine":
+        - cell "blazer_path"
+        - cell
+        - cell "/blazer"
+        - cell "Blazer::Engine":
+          - paragraph: Blazer::Engine
+        - cell:
+          - paragraph
+      - row "test_form_path GET /test_form(.:format) Inline handler (Proc/Lambda)":
+        - cell "test_form_path"
+        - cell "GET"
+        - cell "/test_form(.:format)"
+        - cell "Inline handler (Proc/Lambda)":
+          - paragraph: Inline handler (Proc/Lambda)
+        - cell:
+          - paragraph
+      - row "csp_violation_reports_path POST /csp_violation_reports(.:format) csp_reports#create":
+        - cell "csp_violation_reports_path"
+        - cell "POST"
+        - cell "/csp_violation_reports(.:format)"
+        - cell "csp_reports#create":
+          - paragraph: csp_reports#create
+        - cell:
+          - paragraph
+      - row "email_change_requests_path GET /email_change_requests(.:format) email_change_requests#index":
+        - cell "email_change_requests_path"
+        - cell "GET"
+        - cell "/email_change_requests(.:format)"
+        - cell "email_change_requests#index":
+          - paragraph: email_change_requests#index
+        - cell:
+          - paragraph
+      - row "POST /email_change_requests(.:format) email_change_requests#create":
+        - cell
+        - cell "POST"
+        - cell "/email_change_requests(.:format)"
+        - cell "email_change_requests#create":
+          - paragraph: email_change_requests#create
+        - cell:
+          - paragraph
+      - row "new_email_change_request_path GET /email_change_requests/new(.:format) email_change_requests#new":
+        - cell "new_email_change_request_path"
+        - cell "GET"
+        - cell "/email_change_requests/new(.:format)"
+        - cell "email_change_requests#new":
+          - paragraph: email_change_requests#new
+        - cell:
+          - paragraph
+      - row "email_change_request_path GET /email_change_requests/:token(.:format) email_change_requests#show":
+        - cell "email_change_request_path"
+        - cell "GET"
+        - cell "/email_change_requests/:token(.:format)"
+        - cell "email_change_requests#show":
+          - paragraph: email_change_requests#show
+        - cell:
+          - paragraph
+      - row "mark_as_read_notification_path PATCH /notifications/:id/mark_as_read(.:format) notifications#mark_as_read":
+        - cell "mark_as_read_notification_path"
+        - cell "PATCH"
+        - cell "/notifications/:id/mark_as_read(.:format)"
+        - cell "notifications#mark_as_read":
+          - paragraph: notifications#mark_as_read
+        - cell:
+          - paragraph
+      - row "notification_path DELETE /notifications/:id(.:format) notifications#destroy":
+        - cell "notification_path"
+        - cell "DELETE"
+        - cell "/notifications/:id(.:format)"
+        - cell "notifications#destroy":
+          - paragraph: notifications#destroy
+        - cell:
+          - paragraph
+      - row "mark_all_as_read_notifications_path PATCH /notifications/mark_all_as_read(.:format) notifications#mark_all_as_read":
+        - cell "mark_all_as_read_notifications_path"
+        - cell "PATCH"
+        - cell "/notifications/mark_all_as_read(.:format)"
+        - cell "notifications#mark_all_as_read":
+          - paragraph: notifications#mark_all_as_read
+        - cell:
+          - paragraph
+      - row "destroy_all_notifications_path DELETE /notifications/destroy_all(.:format) notifications#destroy_all":
+        - cell "destroy_all_notifications_path"
+        - cell "DELETE"
+        - cell "/notifications/destroy_all(.:format)"
+        - cell "notifications#destroy_all":
+          - paragraph: notifications#destroy_all
+        - cell:
+          - paragraph
+      - row "notifications_path GET /notifications(.:format) notifications#index":
+        - cell "notifications_path"
+        - cell "GET"
+        - cell "/notifications(.:format)"
+        - cell "notifications#index":
+          - paragraph: notifications#index
+        - cell:
+          - paragraph
+      - row "mark_as_read_api_notification_path PATCH /api/notifications/:id/mark_as_read(.:format) api/notifications#mark_as_read":
+        - cell "mark_as_read_api_notification_path"
+        - cell "PATCH"
+        - cell "/api/notifications/:id/mark_as_read(.:format)"
+        - cell "api/notifications#mark_as_read":
+          - paragraph: api/notifications#mark_as_read
+        - cell:
+          - paragraph
+      - row "unread_count_api_notifications_path GET /api/notifications/unread_count(.:format) api/notifications#unread_count":
+        - cell "unread_count_api_notifications_path"
+        - cell "GET"
+        - cell "/api/notifications/unread_count(.:format)"
+        - cell "api/notifications#unread_count":
+          - paragraph: api/notifications#unread_count
+        - cell:
+          - paragraph
+      - row "mark_all_as_read_api_notifications_path PATCH /api/notifications/mark_all_as_read(.:format) api/notifications#mark_all_as_read":
+        - cell "mark_all_as_read_api_notifications_path"
+        - cell "PATCH"
+        - cell "/api/notifications/mark_all_as_read(.:format)"
+        - cell "api/notifications#mark_all_as_read":
+          - paragraph: api/notifications#mark_all_as_read
+        - cell:
+          - paragraph
+      - row "api_notifications_path GET /api/notifications(.:format) api/notifications#index":
+        - cell "api_notifications_path"
+        - cell "GET"
+        - cell "/api/notifications(.:format)"
+        - cell "api/notifications#index":
+          - paragraph: api/notifications#index
+        - cell:
+          - paragraph
+      - row "new_user_session_path GET /users/sign_in(.:format) users/sessions#new":
+        - cell "new_user_session_path"
+        - cell "GET"
+        - cell "/users/sign_in(.:format)"
+        - cell "users/sessions#new":
+          - paragraph: users/sessions#new
+        - cell:
+          - paragraph
+      - row "user_session_path POST /users/sign_in(.:format) users/sessions#create":
+        - cell "user_session_path"
+        - cell "POST"
+        - cell "/users/sign_in(.:format)"
+        - cell "users/sessions#create":
+          - paragraph: users/sessions#create
+        - cell:
+          - paragraph
+      - row "destroy_user_session_path DELETE /users/sign_out(.:format) users/sessions#destroy":
+        - cell "destroy_user_session_path"
+        - cell "DELETE"
+        - cell "/users/sign_out(.:format)"
+        - cell "users/sessions#destroy":
+          - paragraph: users/sessions#destroy
+        - cell:
+          - paragraph
+      - row "new_user_password_path GET /users/password/new(.:format) devise/passwords#new":
+        - cell "new_user_password_path"
+        - cell "GET"
+        - cell "/users/password/new(.:format)"
+        - cell "devise/passwords#new":
+          - paragraph: devise/passwords#new
+        - cell:
+          - paragraph
+      - row "edit_user_password_path GET /users/password/edit(.:format) devise/passwords#edit":
+        - cell "edit_user_password_path"
+        - cell "GET"
+        - cell "/users/password/edit(.:format)"
+        - cell "devise/passwords#edit":
+          - paragraph: devise/passwords#edit
+        - cell:
+          - paragraph
+      - row "user_password_path PATCH /users/password(.:format) devise/passwords#update":
+        - cell "user_password_path"
+        - cell "PATCH"
+        - cell "/users/password(.:format)"
+        - cell "devise/passwords#update":
+          - paragraph: devise/passwords#update
+        - cell:
+          - paragraph
+      - row "PUT /users/password(.:format) devise/passwords#update":
+        - cell
+        - cell "PUT"
+        - cell "/users/password(.:format)"
+        - cell "devise/passwords#update":
+          - paragraph: devise/passwords#update
+        - cell:
+          - paragraph
+      - row "POST /users/password(.:format) devise/passwords#create":
+        - cell
+        - cell "POST"
+        - cell "/users/password(.:format)"
+        - cell "devise/passwords#create":
+          - paragraph: devise/passwords#create
+        - cell:
+          - paragraph
+      - row "cancel_user_registration_path GET /users/cancel(.:format) users/registrations#cancel":
+        - cell "cancel_user_registration_path"
+        - cell "GET"
+        - cell "/users/cancel(.:format)"
+        - cell "users/registrations#cancel":
+          - paragraph: users/registrations#cancel
+        - cell:
+          - paragraph
+      - row "new_user_registration_path GET /users/sign_up(.:format) users/registrations#new":
+        - cell "new_user_registration_path"
+        - cell "GET"
+        - cell "/users/sign_up(.:format)"
+        - cell "users/registrations#new":
+          - paragraph: users/registrations#new
+        - cell:
+          - paragraph
+      - row "edit_user_registration_path GET /users/edit(.:format) users/registrations#edit":
+        - cell "edit_user_registration_path"
+        - cell "GET"
+        - cell "/users/edit(.:format)"
+        - cell "users/registrations#edit":
+          - paragraph: users/registrations#edit
+        - cell:
+          - paragraph
+      - row "user_registration_path PATCH /users(.:format) users/registrations#update":
+        - cell "user_registration_path"
+        - cell "PATCH"
+        - cell "/users(.:format)"
+        - cell "users/registrations#update":
+          - paragraph: users/registrations#update
+        - cell:
+          - paragraph
+      - row "PUT /users(.:format) users/registrations#update":
+        - cell
+        - cell "PUT"
+        - cell "/users(.:format)"
+        - cell "users/registrations#update":
+          - paragraph: users/registrations#update
+        - cell:
+          - paragraph
+      - row "DELETE /users(.:format) users/registrations#destroy":
+        - cell
+        - cell "DELETE"
+        - cell "/users(.:format)"
+        - cell "users/registrations#destroy":
+          - paragraph: users/registrations#destroy
+        - cell:
+          - paragraph
+      - row "POST /users(.:format) users/registrations#create":
+        - cell
+        - cell "POST"
+        - cell "/users(.:format)"
+        - cell "users/registrations#create":
+          - paragraph: users/registrations#create
+        - cell:
+          - paragraph
+      - row "new_user_confirmation_path GET /users/confirmation/new(.:format) devise/confirmations#new":
+        - cell "new_user_confirmation_path"
+        - cell "GET"
+        - cell "/users/confirmation/new(.:format)"
+        - cell "devise/confirmations#new":
+          - paragraph: devise/confirmations#new
+        - cell:
+          - paragraph
+      - row "user_confirmation_path GET /users/confirmation(.:format) devise/confirmations#show":
+        - cell "user_confirmation_path"
+        - cell "GET"
+        - cell "/users/confirmation(.:format)"
+        - cell "devise/confirmations#show":
+          - paragraph: devise/confirmations#show
+        - cell:
+          - paragraph
+      - row "POST /users/confirmation(.:format) devise/confirmations#create":
+        - cell
+        - cell "POST"
+        - cell "/users/confirmation(.:format)"
+        - cell "devise/confirmations#create":
+          - paragraph: devise/confirmations#create
+        - cell:
+          - paragraph
+      - row "new_user_unlock_path GET /users/unlock/new(.:format) devise/unlocks#new":
+        - cell "new_user_unlock_path"
+        - cell "GET"
+        - cell "/users/unlock/new(.:format)"
+        - cell "devise/unlocks#new":
+          - paragraph: devise/unlocks#new
+        - cell:
+          - paragraph
+      - row "user_unlock_path GET /users/unlock(.:format) devise/unlocks#show":
+        - cell "user_unlock_path"
+        - cell "GET"
+        - cell "/users/unlock(.:format)"
+        - cell "devise/unlocks#show":
+          - paragraph: devise/unlocks#show
+        - cell:
+          - paragraph
+      - row "POST /users/unlock(.:format) devise/unlocks#create":
+        - cell
+        - cell "POST"
+        - cell "/users/unlock(.:format)"
+        - cell "devise/unlocks#create":
+          - paragraph: devise/unlocks#create
+        - cell:
+          - paragraph
+      - row "root_path GET / home#index":
+        - cell "root_path"
+        - cell "GET"
+        - cell /
+        - cell "home#index":
+          - paragraph: home#index
+        - cell:
+          - paragraph
+      - row "pricing_path GET /pricing(.:format) pages#pricing":
+        - cell "pricing_path"
+        - cell "GET"
+        - cell "/pricing(.:format)"
+        - cell "pages#pricing":
+          - paragraph: pages#pricing
+        - cell:
+          - paragraph
+      - row "features_path GET /features(.:format) pages#features":
+        - cell "features_path"
+        - cell "GET"
+        - cell "/features(.:format)"
+        - cell "pages#features":
+          - paragraph: pages#features
+        - cell:
+          - paragraph
+      - row "choose_plan_type_path GET /choose-plan-type(.:format) pages#choose_plan_type":
+        - cell "choose_plan_type_path"
+        - cell "GET"
+        - cell "/choose-plan-type(.:format)"
+        - cell "pages#choose_plan_type":
+          - paragraph: pages#choose_plan_type
+        - cell:
+          - paragraph
+      - row "contact_sales_path GET /contact-sales(.:format) pages#contact_sales":
+        - cell "contact_sales_path"
+        - cell "GET"
+        - cell "/contact-sales(.:format)"
+        - cell "pages#contact_sales":
+          - paragraph: pages#contact_sales
+        - cell:
+          - paragraph
+      - row "rails_health_check_path GET /up(.:format) rails/health#show":
+        - cell "rails_health_check_path"
+        - cell "GET"
+        - cell "/up(.:format)"
+        - cell "rails/health#show":
+          - paragraph: rails/health#show
+        - cell:
+          - paragraph
+      - row "admin_super_root_path GET /admin/super(.:format) admin/super/dashboard#index":
+        - cell "admin_super_root_path"
+        - cell "GET"
+        - cell "/admin/super(.:format)"
+        - cell "admin/super/dashboard#index":
+          - paragraph: admin/super/dashboard#index
+        - cell:
+          - paragraph
+      - row "assign_admin_admin_super_team_path PATCH /admin/super/teams/:id/assign_admin(.:format) admin/super/teams#assign_admin":
+        - cell "assign_admin_admin_super_team_path"
+        - cell "PATCH"
+        - cell "/admin/super/teams/:id/assign_admin(.:format)"
+        - cell "admin/super/teams#assign_admin":
+          - paragraph: admin/super/teams#assign_admin
+        - cell:
+          - paragraph
+      - row "change_status_admin_super_team_path PATCH /admin/super/teams/:id/change_status(.:format) admin/super/teams#change_status":
+        - cell "change_status_admin_super_team_path"
+        - cell "PATCH"
+        - cell "/admin/super/teams/:id/change_status(.:format)"
+        - cell "admin/super/teams#change_status":
+          - paragraph: admin/super/teams#change_status
+        - cell:
+          - paragraph
+      - row "admin_super_team_path DELETE /admin/super/teams/:id(.:format) admin/super/teams#destroy":
+        - cell "admin_super_team_path"
+        - cell "DELETE"
+        - cell "/admin/super/teams/:id(.:format)"
+        - cell "admin/super/teams#destroy":
+          - paragraph: admin/super/teams#destroy
+        - cell:
+          - paragraph
+      - row "admin_super_teams_path GET /admin/super/teams(.:format) admin/super/teams#index":
+        - cell "admin_super_teams_path"
+        - cell "GET"
+        - cell "/admin/super/teams(.:format)"
+        - cell "admin/super/teams#index":
+          - paragraph: admin/super/teams#index
+        - cell:
+          - paragraph
+      - row "POST /admin/super/teams(.:format) admin/super/teams#create":
+        - cell
+        - cell "POST"
+        - cell "/admin/super/teams(.:format)"
+        - cell "admin/super/teams#create":
+          - paragraph: admin/super/teams#create
+        - cell:
+          - paragraph
+      - row "new_admin_super_team_path GET /admin/super/teams/new(.:format) admin/super/teams#new":
+        - cell "new_admin_super_team_path"
+        - cell "GET"
+        - cell "/admin/super/teams/new(.:format)"
+        - cell "admin/super/teams#new":
+          - paragraph: admin/super/teams#new
+        - cell:
+          - paragraph
+      - row "edit_admin_super_team_path GET /admin/super/teams/:id/edit(.:format) admin/super/teams#edit":
+        - cell "edit_admin_super_team_path"
+        - cell "GET"
+        - cell "/admin/super/teams/:id/edit(.:format)"
+        - cell "admin/super/teams#edit":
+          - paragraph: admin/super/teams#edit
+        - cell:
+          - paragraph
+      - row "GET /admin/super/teams/:id(.:format) admin/super/teams#show":
+        - cell
+        - cell "GET"
+        - cell "/admin/super/teams/:id(.:format)"
+        - cell "admin/super/teams#show":
+          - paragraph: admin/super/teams#show
+        - cell:
+          - paragraph
+      - row "PATCH /admin/super/teams/:id(.:format) admin/super/teams#update":
+        - cell
+        - cell "PATCH"
+        - cell "/admin/super/teams/:id(.:format)"
+        - cell "admin/super/teams#update":
+          - paragraph: admin/super/teams#update
+        - cell:
+          - paragraph
+      - row "PUT /admin/super/teams/:id(.:format) admin/super/teams#update":
+        - cell
+        - cell "PUT"
+        - cell "/admin/super/teams/:id(.:format)"
+        - cell "admin/super/teams#update":
+          - paragraph: admin/super/teams#update
+        - cell:
+          - paragraph
+      - row "DELETE /admin/super/teams/:id(.:format) admin/super/teams#destroy":
+        - cell
+        - cell "DELETE"
+        - cell "/admin/super/teams/:id(.:format)"
+        - cell "admin/super/teams#destroy":
+          - paragraph: admin/super/teams#destroy
+        - cell:
+          - paragraph
+      - row "promote_to_site_admin_admin_super_user_path PATCH /admin/super/users/:id/promote_to_site_admin(.:format) admin/super/users#promote_to_site_admin":
+        - cell "promote_to_site_admin_admin_super_user_path"
+        - cell "PATCH"
+        - cell "/admin/super/users/:id/promote_to_site_admin(.:format)"
+        - cell "admin/super/users#promote_to_site_admin":
+          - paragraph: admin/super/users#promote_to_site_admin
+        - cell:
+          - paragraph
+      - row "demote_from_site_admin_admin_super_user_path PATCH /admin/super/users/:id/demote_from_site_admin(.:format) admin/super/users#demote_from_site_admin":
+        - cell "demote_from_site_admin_admin_super_user_path"
+        - cell "PATCH"
+        - cell "/admin/super/users/:id/demote_from_site_admin(.:format)"
+        - cell "admin/super/users#demote_from_site_admin":
+          - paragraph: admin/super/users#demote_from_site_admin
+        - cell:
+          - paragraph
+      - row "set_status_admin_super_user_path PATCH /admin/super/users/:id/set_status(.:format) admin/super/users#set_status":
+        - cell "set_status_admin_super_user_path"
+        - cell "PATCH"
+        - cell "/admin/super/users/:id/set_status(.:format)"
+        - cell "admin/super/users#set_status":
+          - paragraph: admin/super/users#set_status
+        - cell:
+          - paragraph
+      - row "activity_admin_super_user_path GET /admin/super/users/:id/activity(.:format) admin/super/users#activity":
+        - cell "activity_admin_super_user_path"
+        - cell "GET"
+        - cell "/admin/super/users/:id/activity(.:format)"
+        - cell "admin/super/users#activity":
+          - paragraph: admin/super/users#activity
+        - cell:
+          - paragraph
+      - row "impersonate_admin_super_user_path POST /admin/super/users/:id/impersonate(.:format) admin/super/users#impersonate":
+        - cell "impersonate_admin_super_user_path"
+        - cell "POST"
+        - cell "/admin/super/users/:id/impersonate(.:format)"
+        - cell "admin/super/users#impersonate":
+          - paragraph: admin/super/users#impersonate
+        - cell:
+          - paragraph
+      - row "reset_password_admin_super_user_path POST /admin/super/users/:id/reset_password(.:format) admin/super/users#reset_password":
+        - cell "reset_password_admin_super_user_path"
+        - cell "POST"
+        - cell "/admin/super/users/:id/reset_password(.:format)"
+        - cell "admin/super/users#reset_password":
+          - paragraph: admin/super/users#reset_password
+        - cell:
+          - paragraph
+      - row "confirm_email_admin_super_user_path POST /admin/super/users/:id/confirm_email(.:format) admin/super/users#confirm_email":
+        - cell "confirm_email_admin_super_user_path"
+        - cell "POST"
+        - cell "/admin/super/users/:id/confirm_email(.:format)"
+        - cell "admin/super/users#confirm_email":
+          - paragraph: admin/super/users#confirm_email
+        - cell:
+          - paragraph
+      - row "resend_confirmation_admin_super_user_path POST /admin/super/users/:id/resend_confirmation(.:format) admin/super/users#resend_confirmation":
+        - cell "resend_confirmation_admin_super_user_path"
+        - cell "POST"
+        - cell "/admin/super/users/:id/resend_confirmation(.:format)"
+        - cell "admin/super/users#resend_confirmation":
+          - paragraph: admin/super/users#resend_confirmation
+        - cell:
+          - paragraph
+      - row "unlock_account_admin_super_user_path POST /admin/super/users/:id/unlock_account(.:format) admin/super/users#unlock_account":
+        - cell "unlock_account_admin_super_user_path"
+        - cell "POST"
+        - cell "/admin/super/users/:id/unlock_account(.:format)"
+        - cell "admin/super/users#unlock_account":
+          - paragraph: admin/super/users#unlock_account
+        - cell:
+          - paragraph
+      - row "admin_super_users_path GET /admin/super/users(.:format) admin/super/users#index":
+        - cell "admin_super_users_path"
+        - cell "GET"
+        - cell "/admin/super/users(.:format)"
+        - cell "admin/super/users#index":
+          - paragraph: admin/super/users#index
+        - cell:
+          - paragraph
+      - row "POST /admin/super/users(.:format) admin/super/users#create":
+        - cell
+        - cell "POST"
+        - cell "/admin/super/users(.:format)"
+        - cell "admin/super/users#create":
+          - paragraph: admin/super/users#create
+        - cell:
+          - paragraph
+      - row "new_admin_super_user_path GET /admin/super/users/new(.:format) admin/super/users#new":
+        - cell "new_admin_super_user_path"
+        - cell "GET"
+        - cell "/admin/super/users/new(.:format)"
+        - cell "admin/super/users#new":
+          - paragraph: admin/super/users#new
+        - cell:
+          - paragraph
+      - row "edit_admin_super_user_path GET /admin/super/users/:id/edit(.:format) admin/super/users#edit":
+        - cell "edit_admin_super_user_path"
+        - cell "GET"
+        - cell "/admin/super/users/:id/edit(.:format)"
+        - cell "admin/super/users#edit":
+          - paragraph: admin/super/users#edit
+        - cell:
+          - paragraph
+      - row "admin_super_user_path GET /admin/super/users/:id(.:format) admin/super/users#show":
+        - cell "admin_super_user_path"
+        - cell "GET"
+        - cell "/admin/super/users/:id(.:format)"
+        - cell "admin/super/users#show":
+          - paragraph: admin/super/users#show
+        - cell:
+          - paragraph
+      - row "PATCH /admin/super/users/:id(.:format) admin/super/users#update":
+        - cell
+        - cell "PATCH"
+        - cell "/admin/super/users/:id(.:format)"
+        - cell "admin/super/users#update":
+          - paragraph: admin/super/users#update
+        - cell:
+          - paragraph
+      - row "PUT /admin/super/users/:id(.:format) admin/super/users#update":
+        - cell
+        - cell "PUT"
+        - cell "/admin/super/users/:id(.:format)"
+        - cell "admin/super/users#update":
+          - paragraph: admin/super/users#update
+        - cell:
+          - paragraph
+      - row "DELETE /admin/super/users/:id(.:format) admin/super/users#destroy":
+        - cell
+        - cell "DELETE"
+        - cell "/admin/super/users/:id(.:format)"
+        - cell "admin/super/users#destroy":
+          - paragraph: admin/super/users#destroy
+        - cell:
+          - paragraph
+      - row "admin_super_settings_path GET /admin/super/settings(.:format) admin/super/settings#show":
+        - cell "admin_super_settings_path"
+        - cell "GET"
+        - cell "/admin/super/settings(.:format)"
+        - cell "admin/super/settings#show":
+          - paragraph: admin/super/settings#show
+        - cell:
+          - paragraph
+      - row "PATCH /admin/super/settings(.:format) admin/super/settings#update":
+        - cell
+        - cell "PATCH"
+        - cell "/admin/super/settings(.:format)"
+        - cell "admin/super/settings#update":
+          - paragraph: admin/super/settings#update
+        - cell:
+          - paragraph
+      - row "PUT /admin/super/settings(.:format) admin/super/settings#update":
+        - cell
+        - cell "PUT"
+        - cell "/admin/super/settings(.:format)"
+        - cell "admin/super/settings#update":
+          - paragraph: admin/super/settings#update
+        - cell:
+          - paragraph
+      - row "admin_super_analytics_path GET /admin/super/analytics(.:format) admin/super/analytics#index":
+        - cell "admin_super_analytics_path"
+        - cell "GET"
+        - cell "/admin/super/analytics(.:format)"
+        - cell "admin/super/analytics#index":
+          - paragraph: admin/super/analytics#index
+        - cell:
+          - paragraph
+      - row "admin_super_plans_path GET /admin/super/plans(.:format) admin/super/plans#index":
+        - cell "admin_super_plans_path"
+        - cell "GET"
+        - cell "/admin/super/plans(.:format)"
+        - cell "admin/super/plans#index":
+          - paragraph: admin/super/plans#index
+        - cell:
+          - paragraph
+      - row "POST /admin/super/plans(.:format) admin/super/plans#create":
+        - cell
+        - cell "POST"
+        - cell "/admin/super/plans(.:format)"
+        - cell "admin/super/plans#create":
+          - paragraph: admin/super/plans#create
+        - cell:
+          - paragraph
+      - row "new_admin_super_plan_path GET /admin/super/plans/new(.:format) admin/super/plans#new":
+        - cell "new_admin_super_plan_path"
+        - cell "GET"
+        - cell "/admin/super/plans/new(.:format)"
+        - cell "admin/super/plans#new":
+          - paragraph: admin/super/plans#new
+        - cell:
+          - paragraph
+      - row "edit_admin_super_plan_path GET /admin/super/plans/:id/edit(.:format) admin/super/plans#edit":
+        - cell "edit_admin_super_plan_path"
+        - cell "GET"
+        - cell "/admin/super/plans/:id/edit(.:format)"
+        - cell "admin/super/plans#edit":
+          - paragraph: admin/super/plans#edit
+        - cell:
+          - paragraph
+      - row "admin_super_plan_path GET /admin/super/plans/:id(.:format) admin/super/plans#show":
+        - cell "admin_super_plan_path"
+        - cell "GET"
+        - cell "/admin/super/plans/:id(.:format)"
+        - cell "admin/super/plans#show":
+          - paragraph: admin/super/plans#show
+        - cell:
+          - paragraph
+      - row "PATCH /admin/super/plans/:id(.:format) admin/super/plans#update":
+        - cell
+        - cell "PATCH"
+        - cell "/admin/super/plans/:id(.:format)"
+        - cell "admin/super/plans#update":
+          - paragraph: admin/super/plans#update
+        - cell:
+          - paragraph
+      - row "PUT /admin/super/plans/:id(.:format) admin/super/plans#update":
+        - cell
+        - cell "PUT"
+        - cell "/admin/super/plans/:id(.:format)"
+        - cell "admin/super/plans#update":
+          - paragraph: admin/super/plans#update
+        - cell:
+          - paragraph
+      - row "DELETE /admin/super/plans/:id(.:format) admin/super/plans#destroy":
+        - cell
+        - cell "DELETE"
+        - cell "/admin/super/plans/:id(.:format)"
+        - cell "admin/super/plans#destroy":
+          - paragraph: admin/super/plans#destroy
+        - cell:
+          - paragraph
+      - row "admin_super_notifications_path GET /admin/super/notifications(.:format) admin/super/notifications#index":
+        - cell "admin_super_notifications_path"
+        - cell "GET"
+        - cell "/admin/super/notifications(.:format)"
+        - cell "admin/super/notifications#index":
+          - paragraph: admin/super/notifications#index
+        - cell:
+          - paragraph
+      - row "POST /admin/super/notifications(.:format) admin/super/notifications#create":
+        - cell
+        - cell "POST"
+        - cell "/admin/super/notifications(.:format)"
+        - cell "admin/super/notifications#create":
+          - paragraph: admin/super/notifications#create
+        - cell:
+          - paragraph
+      - row "new_admin_super_notification_path GET /admin/super/notifications/new(.:format) admin/super/notifications#new":
+        - cell "new_admin_super_notification_path"
+        - cell "GET"
+        - cell "/admin/super/notifications/new(.:format)"
+        - cell "admin/super/notifications#new":
+          - paragraph: admin/super/notifications#new
+        - cell:
+          - paragraph
+      - row "admin_super_notification_path GET /admin/super/notifications/:id(.:format) admin/super/notifications#show":
+        - cell "admin_super_notification_path"
+        - cell "GET"
+        - cell "/admin/super/notifications/:id(.:format)"
+        - cell "admin/super/notifications#show":
+          - paragraph: admin/super/notifications#show
+        - cell:
+          - paragraph
+      - row "admin_super_notification_categories_path GET /admin/super/notification_categories(.:format) admin/super/notification_categories#index":
+        - cell "admin_super_notification_categories_path"
+        - cell "GET"
+        - cell "/admin/super/notification_categories(.:format)"
+        - cell "admin/super/notification_categories#index":
+          - paragraph: admin/super/notification_categories#index
+        - cell:
+          - paragraph
+      - row "POST /admin/super/notification_categories(.:format) admin/super/notification_categories#create":
+        - cell
+        - cell "POST"
+        - cell "/admin/super/notification_categories(.:format)"
+        - cell "admin/super/notification_categories#create":
+          - paragraph: admin/super/notification_categories#create
+        - cell:
+          - paragraph
+      - row "new_admin_super_notification_category_path GET /admin/super/notification_categories/new(.:format) admin/super/notification_categories#new":
+        - cell "new_admin_super_notification_category_path"
+        - cell "GET"
+        - cell "/admin/super/notification_categories/new(.:format)"
+        - cell "admin/super/notification_categories#new":
+          - paragraph: admin/super/notification_categories#new
+        - cell:
+          - paragraph
+      - row "edit_admin_super_notification_category_path GET /admin/super/notification_categories/:id/edit(.:format) admin/super/notification_categories#edit":
+        - cell "edit_admin_super_notification_category_path"
+        - cell "GET"
+        - cell "/admin/super/notification_categories/:id/edit(.:format)"
+        - cell "admin/super/notification_categories#edit":
+          - paragraph: admin/super/notification_categories#edit
+        - cell:
+          - paragraph
+      - row "admin_super_notification_category_path GET /admin/super/notification_categories/:id(.:format) admin/super/notification_categories#show":
+        - cell "admin_super_notification_category_path"
+        - cell "GET"
+        - cell "/admin/super/notification_categories/:id(.:format)"
+        - cell "admin/super/notification_categories#show":
+          - paragraph: admin/super/notification_categories#show
+        - cell:
+          - paragraph
+      - row "PATCH /admin/super/notification_categories/:id(.:format) admin/super/notification_categories#update":
+        - cell
+        - cell "PATCH"
+        - cell "/admin/super/notification_categories/:id(.:format)"
+        - cell "admin/super/notification_categories#update":
+          - paragraph: admin/super/notification_categories#update
+        - cell:
+          - paragraph
+      - row "PUT /admin/super/notification_categories/:id(.:format) admin/super/notification_categories#update":
+        - cell
+        - cell "PUT"
+        - cell "/admin/super/notification_categories/:id(.:format)"
+        - cell "admin/super/notification_categories#update":
+          - paragraph: admin/super/notification_categories#update
+        - cell:
+          - paragraph
+      - row "DELETE /admin/super/notification_categories/:id(.:format) admin/super/notification_categories#destroy":
+        - cell
+        - cell "DELETE"
+        - cell "/admin/super/notification_categories/:id(.:format)"
+        - cell "admin/super/notification_categories#destroy":
+          - paragraph: admin/super/notification_categories#destroy
+        - cell:
+          - paragraph
+      - row "admin_super_announcements_path GET /admin/super/announcements(.:format) admin/super/announcements#index":
+        - cell "admin_super_announcements_path"
+        - cell "GET"
+        - cell "/admin/super/announcements(.:format)"
+        - cell "admin/super/announcements#index":
+          - paragraph: admin/super/announcements#index
+        - cell:
+          - paragraph
+      - row "POST /admin/super/announcements(.:format) admin/super/announcements#create":
+        - cell
+        - cell "POST"
+        - cell "/admin/super/announcements(.:format)"
+        - cell "admin/super/announcements#create":
+          - paragraph: admin/super/announcements#create
+        - cell:
+          - paragraph
+      - row "new_admin_super_announcement_path GET /admin/super/announcements/new(.:format) admin/super/announcements#new":
+        - cell "new_admin_super_announcement_path"
+        - cell "GET"
+        - cell "/admin/super/announcements/new(.:format)"
+        - cell "admin/super/announcements#new":
+          - paragraph: admin/super/announcements#new
+        - cell:
+          - paragraph
+      - row "edit_admin_super_announcement_path GET /admin/super/announcements/:id/edit(.:format) admin/super/announcements#edit":
+        - cell "edit_admin_super_announcement_path"
+        - cell "GET"
+        - cell "/admin/super/announcements/:id/edit(.:format)"
+        - cell "admin/super/announcements#edit":
+          - paragraph: admin/super/announcements#edit
+        - cell:
+          - paragraph
+      - row "admin_super_announcement_path GET /admin/super/announcements/:id(.:format) admin/super/announcements#show":
+        - cell "admin_super_announcement_path"
+        - cell "GET"
+        - cell "/admin/super/announcements/:id(.:format)"
+        - cell "admin/super/announcements#show":
+          - paragraph: admin/super/announcements#show
+        - cell:
+          - paragraph
+      - row "PATCH /admin/super/announcements/:id(.:format) admin/super/announcements#update":
+        - cell
+        - cell "PATCH"
+        - cell "/admin/super/announcements/:id(.:format)"
+        - cell "admin/super/announcements#update":
+          - paragraph: admin/super/announcements#update
+        - cell:
+          - paragraph
+      - row "PUT /admin/super/announcements/:id(.:format) admin/super/announcements#update":
+        - cell
+        - cell "PUT"
+        - cell "/admin/super/announcements/:id(.:format)"
+        - cell "admin/super/announcements#update":
+          - paragraph: admin/super/announcements#update
+        - cell:
+          - paragraph
+      - row "DELETE /admin/super/announcements/:id(.:format) admin/super/announcements#destroy":
+        - cell
+        - cell "DELETE"
+        - cell "/admin/super/announcements/:id(.:format)"
+        - cell "admin/super/announcements#destroy":
+          - paragraph: admin/super/announcements#destroy
+        - cell:
+          - paragraph
+      - row "resend_admin_super_enterprise_group_invitation_path POST /admin/super/enterprise_groups/:enterprise_group_id/invitations/:id/resend(.:format) admin/super/enterprise_group_invitations#resend":
+        - cell "resend_admin_super_enterprise_group_invitation_path"
+        - cell "POST"
+        - cell "/admin/super/enterprise_groups/:enterprise_group_id/invitations/:id/resend(.:format)"
+        - cell "admin/super/enterprise_group_invitations#resend":
+          - paragraph: admin/super/enterprise_group_invitations#resend
+        - cell:
+          - paragraph
+      - row "revoke_admin_super_enterprise_group_invitation_path DELETE /admin/super/enterprise_groups/:enterprise_group_id/invitations/:id/revoke(.:format) admin/super/enterprise_group_invitations#revoke":
+        - cell "revoke_admin_super_enterprise_group_invitation_path"
+        - cell "DELETE"
+        - cell "/admin/super/enterprise_groups/:enterprise_group_id/invitations/:id/revoke(.:format)"
+        - cell "admin/super/enterprise_group_invitations#revoke":
+          - paragraph: admin/super/enterprise_group_invitations#revoke
+        - cell:
+          - paragraph
+      - row "admin_super_enterprise_group_invitations_path GET /admin/super/enterprise_groups/:enterprise_group_id/invitations(.:format) admin/super/enterprise_group_invitations#index":
+        - cell "admin_super_enterprise_group_invitations_path"
+        - cell "GET"
+        - cell "/admin/super/enterprise_groups/:enterprise_group_id/invitations(.:format)"
+        - cell "admin/super/enterprise_group_invitations#index":
+          - paragraph: admin/super/enterprise_group_invitations#index
+        - cell:
+          - paragraph
+      - row "admin_super_enterprise_groups_path GET /admin/super/enterprise_groups(.:format) admin/super/enterprise_groups#index":
+        - cell "admin_super_enterprise_groups_path"
+        - cell "GET"
+        - cell "/admin/super/enterprise_groups(.:format)"
+        - cell "admin/super/enterprise_groups#index":
+          - paragraph: admin/super/enterprise_groups#index
+        - cell:
+          - paragraph
+      - row "POST /admin/super/enterprise_groups(.:format) admin/super/enterprise_groups#create":
+        - cell
+        - cell "POST"
+        - cell "/admin/super/enterprise_groups(.:format)"
+        - cell "admin/super/enterprise_groups#create":
+          - paragraph: admin/super/enterprise_groups#create
+        - cell:
+          - paragraph
+      - row "new_admin_super_enterprise_group_path GET /admin/super/enterprise_groups/new(.:format) admin/super/enterprise_groups#new":
+        - cell "new_admin_super_enterprise_group_path"
+        - cell "GET"
+        - cell "/admin/super/enterprise_groups/new(.:format)"
+        - cell "admin/super/enterprise_groups#new":
+          - paragraph: admin/super/enterprise_groups#new
+        - cell:
+          - paragraph
+      - row "edit_admin_super_enterprise_group_path GET /admin/super/enterprise_groups/:id/edit(.:format) admin/super/enterprise_groups#edit":
+        - cell "edit_admin_super_enterprise_group_path"
+        - cell "GET"
+        - cell "/admin/super/enterprise_groups/:id/edit(.:format)"
+        - cell "admin/super/enterprise_groups#edit":
+          - paragraph: admin/super/enterprise_groups#edit
+        - cell:
+          - paragraph
+      - row "admin_super_enterprise_group_path GET /admin/super/enterprise_groups/:id(.:format) admin/super/enterprise_groups#show":
+        - cell "admin_super_enterprise_group_path"
+        - cell "GET"
+        - cell "/admin/super/enterprise_groups/:id(.:format)"
+        - cell "admin/super/enterprise_groups#show":
+          - paragraph: admin/super/enterprise_groups#show
+        - cell:
+          - paragraph
+      - row "PATCH /admin/super/enterprise_groups/:id(.:format) admin/super/enterprise_groups#update":
+        - cell
+        - cell "PATCH"
+        - cell "/admin/super/enterprise_groups/:id(.:format)"
+        - cell "admin/super/enterprise_groups#update":
+          - paragraph: admin/super/enterprise_groups#update
+        - cell:
+          - paragraph
+      - row "PUT /admin/super/enterprise_groups/:id(.:format) admin/super/enterprise_groups#update":
+        - cell
+        - cell "PUT"
+        - cell "/admin/super/enterprise_groups/:id(.:format)"
+        - cell "admin/super/enterprise_groups#update":
+          - paragraph: admin/super/enterprise_groups#update
+        - cell:
+          - paragraph
+      - row "DELETE /admin/super/enterprise_groups/:id(.:format) admin/super/enterprise_groups#destroy":
+        - cell
+        - cell "DELETE"
+        - cell "/admin/super/enterprise_groups/:id(.:format)"
+        - cell "admin/super/enterprise_groups#destroy":
+          - paragraph: admin/super/enterprise_groups#destroy
+        - cell:
+          - paragraph
+      - row "approve_admin_super_email_change_request_path PATCH /admin/super/email_change_requests/:token/approve(.:format) admin/super/email_change_requests#approve":
+        - cell "approve_admin_super_email_change_request_path"
+        - cell "PATCH"
+        - cell "/admin/super/email_change_requests/:token/approve(.:format)"
+        - cell "admin/super/email_change_requests#approve":
+          - paragraph: admin/super/email_change_requests#approve
+        - cell:
+          - paragraph
+      - row "reject_admin_super_email_change_request_path PATCH /admin/super/email_change_requests/:token/reject(.:format) admin/super/email_change_requests#reject":
+        - cell "reject_admin_super_email_change_request_path"
+        - cell "PATCH"
+        - cell "/admin/super/email_change_requests/:token/reject(.:format)"
+        - cell "admin/super/email_change_requests#reject":
+          - paragraph: admin/super/email_change_requests#reject
+        - cell:
+          - paragraph
+      - row "admin_super_email_change_requests_path GET /admin/super/email_change_requests(.:format) admin/super/email_change_requests#index":
+        - cell "admin_super_email_change_requests_path"
+        - cell "GET"
+        - cell "/admin/super/email_change_requests(.:format)"
+        - cell "admin/super/email_change_requests#index":
+          - paragraph: admin/super/email_change_requests#index
+        - cell:
+          - paragraph
+      - row "admin_super_email_change_request_path GET /admin/super/email_change_requests/:token(.:format) admin/super/email_change_requests#show":
+        - cell "admin_super_email_change_request_path"
+        - cell "GET"
+        - cell "/admin/super/email_change_requests/:token(.:format)"
+        - cell "admin/super/email_change_requests#show":
+          - paragraph: admin/super/email_change_requests#show
+        - cell:
+          - paragraph
+      - row "admin_site_root_path GET /admin/site(.:format) admin/site/dashboard#index":
+        - cell "admin_site_root_path"
+        - cell "GET"
+        - cell "/admin/site(.:format)"
+        - cell "admin/site/dashboard#index":
+          - paragraph: admin/site/dashboard#index
+        - cell:
+          - paragraph
+      - row "set_status_admin_site_user_path PATCH /admin/site/users/:id/set_status(.:format) admin/site/users#set_status":
+        - cell "set_status_admin_site_user_path"
+        - cell "PATCH"
+        - cell "/admin/site/users/:id/set_status(.:format)"
+        - cell "admin/site/users#set_status":
+          - paragraph: admin/site/users#set_status
+        - cell:
+          - paragraph
+      - row "activity_admin_site_user_path GET /admin/site/users/:id/activity(.:format) admin/site/users#activity":
+        - cell "activity_admin_site_user_path"
+        - cell "GET"
+        - cell "/admin/site/users/:id/activity(.:format)"
+        - cell "admin/site/users#activity":
+          - paragraph: admin/site/users#activity
+        - cell:
+          - paragraph
+      - row "impersonate_admin_site_user_path POST /admin/site/users/:id/impersonate(.:format) admin/site/users#impersonate":
+        - cell "impersonate_admin_site_user_path"
+        - cell "POST"
+        - cell "/admin/site/users/:id/impersonate(.:format)"
+        - cell "admin/site/users#impersonate":
+          - paragraph: admin/site/users#impersonate
+        - cell:
+          - paragraph
+      - row "admin_site_users_path GET /admin/site/users(.:format) admin/site/users#index":
+        - cell "admin_site_users_path"
+        - cell "GET"
+        - cell "/admin/site/users(.:format)"
+        - cell "admin/site/users#index":
+          - paragraph: admin/site/users#index
+        - cell:
+          - paragraph
+      - row "admin_site_user_path GET /admin/site/users/:id(.:format) admin/site/users#show":
+        - cell "admin_site_user_path"
+        - cell "GET"
+        - cell "/admin/site/users/:id(.:format)"
+        - cell "admin/site/users#show":
+          - paragraph: admin/site/users#show
+        - cell:
+          - paragraph
+      - row "admin_site_organizations_path GET /admin/site/organizations(.:format) admin/site/organizations#index":
+        - cell "admin_site_organizations_path"
+        - cell "GET"
+        - cell "/admin/site/organizations(.:format)"
+        - cell "admin/site/organizations#index":
+          - paragraph: admin/site/organizations#index
+        - cell:
+          - paragraph
+      - row "admin_site_team_path GET /admin/site/teams/:id(.:format) admin/site/teams#show":
+        - cell "admin_site_team_path"
+        - cell "GET"
+        - cell "/admin/site/teams/:id(.:format)"
+        - cell "admin/site/teams#show":
+          - paragraph: admin/site/teams#show
+        - cell:
+          - paragraph
+      - row "admin_site_enterprise_group_path GET /admin/site/enterprise_groups/:id(.:format) admin/site/enterprise_groups#show":
+        - cell "admin_site_enterprise_group_path"
+        - cell "GET"
+        - cell "/admin/site/enterprise_groups/:id(.:format)"
+        - cell "admin/site/enterprise_groups#show":
+          - paragraph: admin/site/enterprise_groups#show
+        - cell:
+          - paragraph
+      - row "admin_site_support_index_path GET /admin/site/support(.:format) admin/site/support#index":
+        - cell "admin_site_support_index_path"
+        - cell "GET"
+        - cell "/admin/site/support(.:format)"
+        - cell "admin/site/support#index":
+          - paragraph: admin/site/support#index
+        - cell:
+          - paragraph
+      - row "admin_site_support_path GET /admin/site/support/:id(.:format) admin/site/support#show":
+        - cell "admin_site_support_path"
+        - cell "GET"
+        - cell "/admin/site/support/:id(.:format)"
+        - cell "admin/site/support#show":
+          - paragraph: admin/site/support#show
+        - cell:
+          - paragraph
+      - row "PATCH /admin/site/support/:id(.:format) admin/site/support#update":
+        - cell
+        - cell "PATCH"
+        - cell "/admin/site/support/:id(.:format)"
+        - cell "admin/site/support#update":
+          - paragraph: admin/site/support#update
+        - cell:
+          - paragraph
+      - row "PUT /admin/site/support/:id(.:format) admin/site/support#update":
+        - cell
+        - cell "PUT"
+        - cell "/admin/site/support/:id(.:format)"
+        - cell "admin/site/support#update":
+          - paragraph: admin/site/support#update
+        - cell:
+          - paragraph
+      - row "admin_site_notifications_path GET /admin/site/notifications(.:format) admin/site/notifications#index":
+        - cell "admin_site_notifications_path"
+        - cell "GET"
+        - cell "/admin/site/notifications(.:format)"
+        - cell "admin/site/notifications#index":
+          - paragraph: admin/site/notifications#index
+        - cell:
+          - paragraph
+      - row "admin_site_notification_path GET /admin/site/notifications/:id(.:format) admin/site/notifications#show":
+        - cell "admin_site_notification_path"
+        - cell "GET"
+        - cell "/admin/site/notifications/:id(.:format)"
+        - cell "admin/site/notifications#show":
+          - paragraph: admin/site/notifications#show
+        - cell:
+          - paragraph
+      - row "admin_site_announcements_path GET /admin/site/announcements(.:format) admin/site/announcements#index":
+        - cell "admin_site_announcements_path"
+        - cell "GET"
+        - cell "/admin/site/announcements(.:format)"
+        - cell "admin/site/announcements#index":
+          - paragraph: admin/site/announcements#index
+        - cell:
+          - paragraph
+      - row "admin_site_announcement_path GET /admin/site/announcements/:id(.:format) admin/site/announcements#show":
+        - cell "admin_site_announcement_path"
+        - cell "GET"
+        - cell "/admin/site/announcements/:id(.:format)"
+        - cell "admin/site/announcements#show":
+          - paragraph: admin/site/announcements#show
+        - cell:
+          - paragraph
+      - row "edit_admin_site_profile_path GET /admin/site/profile/edit(.:format) admin/site/profile#edit":
+        - cell "edit_admin_site_profile_path"
+        - cell "GET"
+        - cell "/admin/site/profile/edit(.:format)"
+        - cell "admin/site/profile#edit":
+          - paragraph: admin/site/profile#edit
+        - cell:
+          - paragraph
+      - row "admin_site_profile_path GET /admin/site/profile(.:format) admin/site/profile#show":
+        - cell "admin_site_profile_path"
+        - cell "GET"
+        - cell "/admin/site/profile(.:format)"
+        - cell "admin/site/profile#show":
+          - paragraph: admin/site/profile#show
+        - cell:
+          - paragraph
+      - row "PATCH /admin/site/profile(.:format) admin/site/profile#update":
+        - cell
+        - cell "PATCH"
+        - cell "/admin/site/profile(.:format)"
+        - cell "admin/site/profile#update":
+          - paragraph: admin/site/profile#update
+        - cell:
+          - paragraph
+      - row "PUT /admin/site/profile(.:format) admin/site/profile#update":
+        - cell
+        - cell "PUT"
+        - cell "/admin/site/profile(.:format)"
+        - cell "admin/site/profile#update":
+          - paragraph: admin/site/profile#update
+        - cell:
+          - paragraph
+      - row "user_dashboard_path GET /dashboard(.:format) users/dashboard#index":
+        - cell "user_dashboard_path"
+        - cell "GET"
+        - cell "/dashboard(.:format)"
+        - cell "users/dashboard#index":
+          - paragraph: users/dashboard#index
+        - cell:
+          - paragraph
+      - row "users_billing_index_path GET /dashboard/users/billing(.:format) users/billing#index":
+        - cell "users_billing_index_path"
+        - cell "GET"
+        - cell "/dashboard/users/billing(.:format)"
+        - cell "users/billing#index":
+          - paragraph: users/billing#index
+        - cell:
+          - paragraph
+      - row "edit_users_billing_path GET /dashboard/users/billing/:id/edit(.:format) users/billing#edit":
+        - cell "edit_users_billing_path"
+        - cell "GET"
+        - cell "/dashboard/users/billing/:id/edit(.:format)"
+        - cell "users/billing#edit":
+          - paragraph: users/billing#edit
+        - cell:
+          - paragraph
+      - row "users_billing_path GET /dashboard/users/billing/:id(.:format) users/billing#show":
+        - cell "users_billing_path"
+        - cell "GET"
+        - cell "/dashboard/users/billing/:id(.:format)"
+        - cell "users/billing#show":
+          - paragraph: users/billing#show
+        - cell:
+          - paragraph
+      - row "PATCH /dashboard/users/billing/:id(.:format) users/billing#update":
+        - cell
+        - cell "PATCH"
+        - cell "/dashboard/users/billing/:id(.:format)"
+        - cell "users/billing#update":
+          - paragraph: users/billing#update
+        - cell:
+          - paragraph
+      - row "PUT /dashboard/users/billing/:id(.:format) users/billing#update":
+        - cell
+        - cell "PUT"
+        - cell "/dashboard/users/billing/:id(.:format)"
+        - cell "users/billing#update":
+          - paragraph: users/billing#update
+        - cell:
+          - paragraph
+      - row "edit_users_subscription_path GET /dashboard/users/subscription/edit(.:format) users/subscriptions#edit":
+        - cell "edit_users_subscription_path"
+        - cell "GET"
+        - cell "/dashboard/users/subscription/edit(.:format)"
+        - cell "users/subscriptions#edit":
+          - paragraph: users/subscriptions#edit
+        - cell:
+          - paragraph
+      - row "users_subscription_path GET /dashboard/users/subscription(.:format) users/subscriptions#show":
+        - cell "users_subscription_path"
+        - cell "GET"
+        - cell "/dashboard/users/subscription(.:format)"
+        - cell "users/subscriptions#show":
+          - paragraph: users/subscriptions#show
+        - cell:
+          - paragraph
+      - row "PATCH /dashboard/users/subscription(.:format) users/subscriptions#update":
+        - cell
+        - cell "PATCH"
+        - cell "/dashboard/users/subscription(.:format)"
+        - cell "users/subscriptions#update":
+          - paragraph: users/subscriptions#update
+        - cell:
+          - paragraph
+      - row "PUT /dashboard/users/subscription(.:format) users/subscriptions#update":
+        - cell
+        - cell "PUT"
+        - cell "/dashboard/users/subscription(.:format)"
+        - cell "users/subscriptions#update":
+          - paragraph: users/subscriptions#update
+        - cell:
+          - paragraph
+      - row "DELETE /dashboard/users/subscription(.:format) users/subscriptions#destroy":
+        - cell
+        - cell "DELETE"
+        - cell "/dashboard/users/subscription(.:format)"
+        - cell "users/subscriptions#destroy":
+          - paragraph: users/subscriptions#destroy
+        - cell:
+          - paragraph
+      - row "users_plan_migrations_path POST /dashboard/users/plan_migrations(.:format) users/plan_migrations#create":
+        - cell "users_plan_migrations_path"
+        - cell "POST"
+        - cell "/dashboard/users/plan_migrations(.:format)"
+        - cell "users/plan_migrations#create":
+          - paragraph: users/plan_migrations#create
+        - cell:
+          - paragraph
+      - row "new_users_plan_migration_path GET /dashboard/users/plan_migrations/new(.:format) users/plan_migrations#new":
+        - cell "new_users_plan_migration_path"
+        - cell "GET"
+        - cell "/dashboard/users/plan_migrations/new(.:format)"
+        - cell "users/plan_migrations#new":
+          - paragraph: users/plan_migrations#new
+        - cell:
+          - paragraph
+      - row "edit_users_profile_path GET /dashboard/users/profile/:id/edit(.:format) users/profile#edit":
+        - cell "edit_users_profile_path"
+        - cell "GET"
+        - cell "/dashboard/users/profile/:id/edit(.:format)"
+        - cell "users/profile#edit":
+          - paragraph: users/profile#edit
+        - cell:
+          - paragraph
+      - row "users_profile_path GET /dashboard/users/profile/:id(.:format) users/profile#show":
+        - cell "users_profile_path"
+        - cell "GET"
+        - cell "/dashboard/users/profile/:id(.:format)"
+        - cell "users/profile#show":
+          - paragraph: users/profile#show
+        - cell:
+          - paragraph
+      - row "PATCH /dashboard/users/profile/:id(.:format) users/profile#update":
+        - cell
+        - cell "PATCH"
+        - cell "/dashboard/users/profile/:id(.:format)"
+        - cell "users/profile#update":
+          - paragraph: users/profile#update
+        - cell:
+          - paragraph
+      - row "PUT /dashboard/users/profile/:id(.:format) users/profile#update":
+        - cell
+        - cell "PUT"
+        - cell "/dashboard/users/profile/:id(.:format)"
+        - cell "users/profile#update":
+          - paragraph: users/profile#update
+        - cell:
+          - paragraph
+      - row "users_settings_path GET /dashboard/users/settings(.:format) users/settings#show":
+        - cell "users_settings_path"
+        - cell "GET"
+        - cell "/dashboard/users/settings(.:format)"
+        - cell "users/settings#show":
+          - paragraph: users/settings#show
+        - cell:
+          - paragraph
+      - row "PATCH /dashboard/users/settings(.:format) users/settings#update":
+        - cell
+        - cell "PATCH"
+        - cell "/dashboard/users/settings(.:format)"
+        - cell "users/settings#update":
+          - paragraph: users/settings#update
+        - cell:
+          - paragraph
+      - row "PUT /dashboard/users/settings(.:format) users/settings#update":
+        - cell
+        - cell "PUT"
+        - cell "/dashboard/users/settings(.:format)"
+        - cell "users/settings#update":
+          - paragraph: users/settings#update
+        - cell:
+          - paragraph
+      - row "team_root_path GET /teams/:team_slug(.:format) teams/dashboard#index":
+        - cell "team_root_path"
+        - cell "GET"
+        - cell "/teams/:team_slug(.:format)"
+        - cell "teams/dashboard#index":
+          - paragraph: teams/dashboard#index
+        - cell:
+          - paragraph
+      - row "edit_teams_profile_path GET /teams/:team_slug/teams/profile/:id/edit(.:format) teams/profile#edit":
+        - cell "edit_teams_profile_path"
+        - cell "GET"
+        - cell "/teams/:team_slug/teams/profile/:id/edit(.:format)"
+        - cell "teams/profile#edit":
+          - paragraph: teams/profile#edit
+        - cell:
+          - paragraph
+      - row "teams_profile_path GET /teams/:team_slug/teams/profile/:id(.:format) teams/profile#show":
+        - cell "teams_profile_path"
+        - cell "GET"
+        - cell "/teams/:team_slug/teams/profile/:id(.:format)"
+        - cell "teams/profile#show":
+          - paragraph: teams/profile#show
+        - cell:
+          - paragraph
+      - row "PATCH /teams/:team_slug/teams/profile/:id(.:format) teams/profile#update":
+        - cell
+        - cell "PATCH"
+        - cell "/teams/:team_slug/teams/profile/:id(.:format)"
+        - cell "teams/profile#update":
+          - paragraph: teams/profile#update
+        - cell:
+          - paragraph
+      - row "PUT /teams/:team_slug/teams/profile/:id(.:format) teams/profile#update":
+        - cell
+        - cell "PUT"
+        - cell "/teams/:team_slug/teams/profile/:id(.:format)"
+        - cell "teams/profile#update":
+          - paragraph: teams/profile#update
+        - cell:
+          - paragraph
+      - row "teams_features_path GET /teams/:team_slug/teams/features(.:format) teams/features#index":
+        - cell "teams_features_path"
+        - cell "GET"
+        - cell "/teams/:team_slug/teams/features(.:format)"
+        - cell "teams/features#index":
+          - paragraph: teams/features#index
+        - cell:
+          - paragraph
+      - row "POST /teams/:team_slug/teams/features(.:format) teams/features#create":
+        - cell
+        - cell "POST"
+        - cell "/teams/:team_slug/teams/features(.:format)"
+        - cell "teams/features#create":
+          - paragraph: teams/features#create
+        - cell:
+          - paragraph
+      - row "new_teams_feature_path GET /teams/:team_slug/teams/features/new(.:format) teams/features#new":
+        - cell "new_teams_feature_path"
+        - cell "GET"
+        - cell "/teams/:team_slug/teams/features/new(.:format)"
+        - cell "teams/features#new":
+          - paragraph: teams/features#new
+        - cell:
+          - paragraph
+      - row "edit_teams_feature_path GET /teams/:team_slug/teams/features/:id/edit(.:format) teams/features#edit":
+        - cell "edit_teams_feature_path"
+        - cell "GET"
+        - cell "/teams/:team_slug/teams/features/:id/edit(.:format)"
+        - cell "teams/features#edit":
+          - paragraph: teams/features#edit
+        - cell:
+          - paragraph
+      - row "teams_feature_path GET /teams/:team_slug/teams/features/:id(.:format) teams/features#show":
+        - cell "teams_feature_path"
+        - cell "GET"
+        - cell "/teams/:team_slug/teams/features/:id(.:format)"
+        - cell "teams/features#show":
+          - paragraph: teams/features#show
+        - cell:
+          - paragraph
+      - row "PATCH /teams/:team_slug/teams/features/:id(.:format) teams/features#update":
+        - cell
+        - cell "PATCH"
+        - cell "/teams/:team_slug/teams/features/:id(.:format)"
+        - cell "teams/features#update":
+          - paragraph: teams/features#update
+        - cell:
+          - paragraph
+      - row "PUT /teams/:team_slug/teams/features/:id(.:format) teams/features#update":
+        - cell
+        - cell "PUT"
+        - cell "/teams/:team_slug/teams/features/:id(.:format)"
+        - cell "teams/features#update":
+          - paragraph: teams/features#update
+        - cell:
+          - paragraph
+      - row "DELETE /teams/:team_slug/teams/features/:id(.:format) teams/features#destroy":
+        - cell
+        - cell "DELETE"
+        - cell "/teams/:team_slug/teams/features/:id(.:format)"
+        - cell "teams/features#destroy":
+          - paragraph: teams/features#destroy
+        - cell:
+          - paragraph
+      - row "team_admin_root_path GET /teams/:team_slug/admin(.:format) teams/admin/dashboard#index":
+        - cell "team_admin_root_path"
+        - cell "GET"
+        - cell "/teams/:team_slug/admin(.:format)"
+        - cell "teams/admin/dashboard#index":
+          - paragraph: teams/admin/dashboard#index
+        - cell:
+          - paragraph
+      - row "change_role_team_admin_member_path PATCH /teams/:team_slug/admin/members/:id/change_role(.:format) teams/admin/members#change_role":
+        - cell "change_role_team_admin_member_path"
+        - cell "PATCH"
+        - cell "/teams/:team_slug/admin/members/:id/change_role(.:format)"
+        - cell "teams/admin/members#change_role":
+          - paragraph: teams/admin/members#change_role
+        - cell:
+          - paragraph
+      - row "team_admin_member_path DELETE /teams/:team_slug/admin/members/:id(.:format) teams/admin/members#destroy":
+        - cell "team_admin_member_path"
+        - cell "DELETE"
+        - cell "/teams/:team_slug/admin/members/:id(.:format)"
+        - cell "teams/admin/members#destroy":
+          - paragraph: teams/admin/members#destroy
+        - cell:
+          - paragraph
+      - row "team_admin_members_path GET /teams/:team_slug/admin/members(.:format) teams/admin/members#index":
+        - cell "team_admin_members_path"
+        - cell "GET"
+        - cell "/teams/:team_slug/admin/members(.:format)"
+        - cell "teams/admin/members#index":
+          - paragraph: teams/admin/members#index
+        - cell:
+          - paragraph
+      - row "POST /teams/:team_slug/admin/members(.:format) teams/admin/members#create":
+        - cell
+        - cell "POST"
+        - cell "/teams/:team_slug/admin/members(.:format)"
+        - cell "teams/admin/members#create":
+          - paragraph: teams/admin/members#create
+        - cell:
+          - paragraph
+      - row "new_team_admin_member_path GET /teams/:team_slug/admin/members/new(.:format) teams/admin/members#new":
+        - cell "new_team_admin_member_path"
+        - cell "GET"
+        - cell "/teams/:team_slug/admin/members/new(.:format)"
+        - cell "teams/admin/members#new":
+          - paragraph: teams/admin/members#new
+        - cell:
+          - paragraph
+      - row "edit_team_admin_member_path GET /teams/:team_slug/admin/members/:id/edit(.:format) teams/admin/members#edit":
+        - cell "edit_team_admin_member_path"
+        - cell "GET"
+        - cell "/teams/:team_slug/admin/members/:id/edit(.:format)"
+        - cell "teams/admin/members#edit":
+          - paragraph: teams/admin/members#edit
+        - cell:
+          - paragraph
+      - row "GET /teams/:team_slug/admin/members/:id(.:format) teams/admin/members#show":
+        - cell
+        - cell "GET"
+        - cell "/teams/:team_slug/admin/members/:id(.:format)"
+        - cell "teams/admin/members#show":
+          - paragraph: teams/admin/members#show
+        - cell:
+          - paragraph
+      - row "PATCH /teams/:team_slug/admin/members/:id(.:format) teams/admin/members#update":
+        - cell
+        - cell "PATCH"
+        - cell "/teams/:team_slug/admin/members/:id(.:format)"
+        - cell "teams/admin/members#update":
+          - paragraph: teams/admin/members#update
+        - cell:
+          - paragraph
+      - row "PUT /teams/:team_slug/admin/members/:id(.:format) teams/admin/members#update":
+        - cell
+        - cell "PUT"
+        - cell "/teams/:team_slug/admin/members/:id(.:format)"
+        - cell "teams/admin/members#update":
+          - paragraph: teams/admin/members#update
+        - cell:
+          - paragraph
+      - row "DELETE /teams/:team_slug/admin/members/:id(.:format) teams/admin/members#destroy":
+        - cell
+        - cell "DELETE"
+        - cell "/teams/:team_slug/admin/members/:id(.:format)"
+        - cell "teams/admin/members#destroy":
+          - paragraph: teams/admin/members#destroy
+        - cell:
+          - paragraph
+      - row "resend_team_admin_invitation_path POST /teams/:team_slug/admin/invitations/:id/resend(.:format) teams/admin/invitations#resend":
+        - cell "resend_team_admin_invitation_path"
+        - cell "POST"
+        - cell "/teams/:team_slug/admin/invitations/:id/resend(.:format)"
+        - cell "teams/admin/invitations#resend":
+          - paragraph: teams/admin/invitations#resend
+        - cell:
+          - paragraph
+      - row "revoke_team_admin_invitation_path DELETE /teams/:team_slug/admin/invitations/:id/revoke(.:format) teams/admin/invitations#revoke":
+        - cell "revoke_team_admin_invitation_path"
+        - cell "DELETE"
+        - cell "/teams/:team_slug/admin/invitations/:id/revoke(.:format)"
+        - cell "teams/admin/invitations#revoke":
+          - paragraph: teams/admin/invitations#revoke
+        - cell:
+          - paragraph
+      - row "team_admin_invitations_path GET /teams/:team_slug/admin/invitations(.:format) teams/admin/invitations#index":
+        - cell "team_admin_invitations_path"
+        - cell "GET"
+        - cell "/teams/:team_slug/admin/invitations(.:format)"
+        - cell "teams/admin/invitations#index":
+          - paragraph: teams/admin/invitations#index
+        - cell:
+          - paragraph
+      - row "POST /teams/:team_slug/admin/invitations(.:format) teams/admin/invitations#create":
+        - cell
+        - cell "POST"
+        - cell "/teams/:team_slug/admin/invitations(.:format)"
+        - cell "teams/admin/invitations#create":
+          - paragraph: teams/admin/invitations#create
+        - cell:
+          - paragraph
+      - row "new_team_admin_invitation_path GET /teams/:team_slug/admin/invitations/new(.:format) teams/admin/invitations#new":
+        - cell "new_team_admin_invitation_path"
+        - cell "GET"
+        - cell "/teams/:team_slug/admin/invitations/new(.:format)"
+        - cell "teams/admin/invitations#new":
+          - paragraph: teams/admin/invitations#new
+        - cell:
+          - paragraph
+      - row "edit_team_admin_invitation_path GET /teams/:team_slug/admin/invitations/:id/edit(.:format) teams/admin/invitations#edit":
+        - cell "edit_team_admin_invitation_path"
+        - cell "GET"
+        - cell "/teams/:team_slug/admin/invitations/:id/edit(.:format)"
+        - cell "teams/admin/invitations#edit":
+          - paragraph: teams/admin/invitations#edit
+        - cell:
+          - paragraph
+      - row "team_admin_invitation_path GET /teams/:team_slug/admin/invitations/:id(.:format) teams/admin/invitations#show":
+        - cell "team_admin_invitation_path"
+        - cell "GET"
+        - cell "/teams/:team_slug/admin/invitations/:id(.:format)"
+        - cell "teams/admin/invitations#show":
+          - paragraph: teams/admin/invitations#show
+        - cell:
+          - paragraph
+      - row "PATCH /teams/:team_slug/admin/invitations/:id(.:format) teams/admin/invitations#update":
+        - cell
+        - cell "PATCH"
+        - cell "/teams/:team_slug/admin/invitations/:id(.:format)"
+        - cell "teams/admin/invitations#update":
+          - paragraph: teams/admin/invitations#update
+        - cell:
+          - paragraph
+      - row "PUT /teams/:team_slug/admin/invitations/:id(.:format) teams/admin/invitations#update":
+        - cell
+        - cell "PUT"
+        - cell "/teams/:team_slug/admin/invitations/:id(.:format)"
+        - cell "teams/admin/invitations#update":
+          - paragraph: teams/admin/invitations#update
+        - cell:
+          - paragraph
+      - row "DELETE /teams/:team_slug/admin/invitations/:id(.:format) teams/admin/invitations#destroy":
+        - cell
+        - cell "DELETE"
+        - cell "/teams/:team_slug/admin/invitations/:id(.:format)"
+        - cell "teams/admin/invitations#destroy":
+          - paragraph: teams/admin/invitations#destroy
+        - cell:
+          - paragraph
+      - row "team_admin_billing_index_path GET /teams/:team_slug/admin/billing(.:format) teams/admin/billing#index":
+        - cell "team_admin_billing_index_path"
+        - cell "GET"
+        - cell "/teams/:team_slug/admin/billing(.:format)"
+        - cell "teams/admin/billing#index":
+          - paragraph: teams/admin/billing#index
+        - cell:
+          - paragraph
+      - row "team_admin_billing_path GET /teams/:team_slug/admin/billing/:id(.:format) teams/admin/billing#show":
+        - cell "team_admin_billing_path"
+        - cell "GET"
+        - cell "/teams/:team_slug/admin/billing/:id(.:format)"
+        - cell "teams/admin/billing#show":
+          - paragraph: teams/admin/billing#show
+        - cell:
+          - paragraph
+      - row "edit_team_admin_subscription_path GET /teams/:team_slug/admin/subscription/:id/edit(.:format) teams/admin/subscription#edit":
+        - cell "edit_team_admin_subscription_path"
+        - cell "GET"
+        - cell "/teams/:team_slug/admin/subscription/:id/edit(.:format)"
+        - cell "teams/admin/subscription#edit":
+          - paragraph: teams/admin/subscription#edit
+        - cell:
+          - paragraph
+      - row "team_admin_subscription_path GET /teams/:team_slug/admin/subscription/:id(.:format) teams/admin/subscription#show":
+        - cell "team_admin_subscription_path"
+        - cell "GET"
+        - cell "/teams/:team_slug/admin/subscription/:id(.:format)"
+        - cell "teams/admin/subscription#show":
+          - paragraph: teams/admin/subscription#show
+        - cell:
+          - paragraph
+      - row "PATCH /teams/:team_slug/admin/subscription/:id(.:format) teams/admin/subscription#update":
+        - cell
+        - cell "PATCH"
+        - cell "/teams/:team_slug/admin/subscription/:id(.:format)"
+        - cell "teams/admin/subscription#update":
+          - paragraph: teams/admin/subscription#update
+        - cell:
+          - paragraph
+      - row "PUT /teams/:team_slug/admin/subscription/:id(.:format) teams/admin/subscription#update":
+        - cell
+        - cell "PUT"
+        - cell "/teams/:team_slug/admin/subscription/:id(.:format)"
+        - cell "teams/admin/subscription#update":
+          - paragraph: teams/admin/subscription#update
+        - cell:
+          - paragraph
+      - row "DELETE /teams/:team_slug/admin/subscription/:id(.:format) teams/admin/subscription#destroy":
+        - cell
+        - cell "DELETE"
+        - cell "/teams/:team_slug/admin/subscription/:id(.:format)"
+        - cell "teams/admin/subscription#destroy":
+          - paragraph: teams/admin/subscription#destroy
+        - cell:
+          - paragraph
+      - row "team_admin_settings_path GET /teams/:team_slug/admin/settings(.:format) teams/admin/settings#index":
+        - cell "team_admin_settings_path"
+        - cell "GET"
+        - cell "/teams/:team_slug/admin/settings(.:format)"
+        - cell "teams/admin/settings#index":
+          - paragraph: teams/admin/settings#index
+        - cell:
+          - paragraph
+      - row "team_admin_setting_path PATCH /teams/:team_slug/admin/settings/:id(.:format) teams/admin/settings#update":
+        - cell "team_admin_setting_path"
+        - cell "PATCH"
+        - cell "/teams/:team_slug/admin/settings/:id(.:format)"
+        - cell "teams/admin/settings#update":
+          - paragraph: teams/admin/settings#update
+        - cell:
+          - paragraph
+      - row "PUT /teams/:team_slug/admin/settings/:id(.:format) teams/admin/settings#update":
+        - cell
+        - cell "PUT"
+        - cell "/teams/:team_slug/admin/settings/:id(.:format)"
+        - cell "teams/admin/settings#update":
+          - paragraph: teams/admin/settings#update
+        - cell:
+          - paragraph
+      - row "team_admin_analytics_path GET /teams/:team_slug/admin/analytics(.:format) teams/admin/analytics#index":
+        - cell "team_admin_analytics_path"
+        - cell "GET"
+        - cell "/teams/:team_slug/admin/analytics(.:format)"
+        - cell "teams/admin/analytics#index":
+          - paragraph: teams/admin/analytics#index
+        - cell:
+          - paragraph
+      - row "team_admin_notification_categories_path GET /teams/:team_slug/admin/notification_categories(.:format) teams/admin/notification_categories#index":
+        - cell "team_admin_notification_categories_path"
+        - cell "GET"
+        - cell "/teams/:team_slug/admin/notification_categories(.:format)"
+        - cell "teams/admin/notification_categories#index":
+          - paragraph: teams/admin/notification_categories#index
+        - cell:
+          - paragraph
+      - row "POST /teams/:team_slug/admin/notification_categories(.:format) teams/admin/notification_categories#create":
+        - cell
+        - cell "POST"
+        - cell "/teams/:team_slug/admin/notification_categories(.:format)"
+        - cell "teams/admin/notification_categories#create":
+          - paragraph: teams/admin/notification_categories#create
+        - cell:
+          - paragraph
+      - row "new_team_admin_notification_category_path GET /teams/:team_slug/admin/notification_categories/new(.:format) teams/admin/notification_categories#new":
+        - cell "new_team_admin_notification_category_path"
+        - cell "GET"
+        - cell "/teams/:team_slug/admin/notification_categories/new(.:format)"
+        - cell "teams/admin/notification_categories#new":
+          - paragraph: teams/admin/notification_categories#new
+        - cell:
+          - paragraph
+      - row "edit_team_admin_notification_category_path GET /teams/:team_slug/admin/notification_categories/:id/edit(.:format) teams/admin/notification_categories#edit":
+        - cell "edit_team_admin_notification_category_path"
+        - cell "GET"
+        - cell "/teams/:team_slug/admin/notification_categories/:id/edit(.:format)"
+        - cell "teams/admin/notification_categories#edit":
+          - paragraph: teams/admin/notification_categories#edit
+        - cell:
+          - paragraph
+      - row "team_admin_notification_category_path GET /teams/:team_slug/admin/notification_categories/:id(.:format) teams/admin/notification_categories#show":
+        - cell "team_admin_notification_category_path"
+        - cell "GET"
+        - cell "/teams/:team_slug/admin/notification_categories/:id(.:format)"
+        - cell "teams/admin/notification_categories#show":
+          - paragraph: teams/admin/notification_categories#show
+        - cell:
+          - paragraph
+      - row "PATCH /teams/:team_slug/admin/notification_categories/:id(.:format) teams/admin/notification_categories#update":
+        - cell
+        - cell "PATCH"
+        - cell "/teams/:team_slug/admin/notification_categories/:id(.:format)"
+        - cell "teams/admin/notification_categories#update":
+          - paragraph: teams/admin/notification_categories#update
+        - cell:
+          - paragraph
+      - row "PUT /teams/:team_slug/admin/notification_categories/:id(.:format) teams/admin/notification_categories#update":
+        - cell
+        - cell "PUT"
+        - cell "/teams/:team_slug/admin/notification_categories/:id(.:format)"
+        - cell "teams/admin/notification_categories#update":
+          - paragraph: teams/admin/notification_categories#update
+        - cell:
+          - paragraph
+      - row "DELETE /teams/:team_slug/admin/notification_categories/:id(.:format) teams/admin/notification_categories#destroy":
+        - cell
+        - cell "DELETE"
+        - cell "/teams/:team_slug/admin/notification_categories/:id(.:format)"
+        - cell "teams/admin/notification_categories#destroy":
+          - paragraph: teams/admin/notification_categories#destroy
+        - cell:
+          - paragraph
+      - row "approve_team_admin_email_change_request_path PATCH /teams/:team_slug/admin/email_change_requests/:token/approve(.:format) teams/admin/email_change_requests#approve":
+        - cell "approve_team_admin_email_change_request_path"
+        - cell "PATCH"
+        - cell "/teams/:team_slug/admin/email_change_requests/:token/approve(.:format)"
+        - cell "teams/admin/email_change_requests#approve":
+          - paragraph: teams/admin/email_change_requests#approve
+        - cell:
+          - paragraph
+      - row "reject_team_admin_email_change_request_path PATCH /teams/:team_slug/admin/email_change_requests/:token/reject(.:format) teams/admin/email_change_requests#reject":
+        - cell "reject_team_admin_email_change_request_path"
+        - cell "PATCH"
+        - cell "/teams/:team_slug/admin/email_change_requests/:token/reject(.:format)"
+        - cell "teams/admin/email_change_requests#reject":
+          - paragraph: teams/admin/email_change_requests#reject
+        - cell:
+          - paragraph
+      - row "team_admin_email_change_requests_path GET /teams/:team_slug/admin/email_change_requests(.:format) teams/admin/email_change_requests#index":
+        - cell "team_admin_email_change_requests_path"
+        - cell "GET"
+        - cell "/teams/:team_slug/admin/email_change_requests(.:format)"
+        - cell "teams/admin/email_change_requests#index":
+          - paragraph: teams/admin/email_change_requests#index
+        - cell:
+          - paragraph
+      - row "POST /teams/:team_slug/admin/email_change_requests(.:format) teams/admin/email_change_requests#create":
+        - cell
+        - cell "POST"
+        - cell "/teams/:team_slug/admin/email_change_requests(.:format)"
+        - cell "teams/admin/email_change_requests#create":
+          - paragraph: teams/admin/email_change_requests#create
+        - cell:
+          - paragraph
+      - row "new_team_admin_email_change_request_path GET /teams/:team_slug/admin/email_change_requests/new(.:format) teams/admin/email_change_requests#new":
+        - cell "new_team_admin_email_change_request_path"
+        - cell "GET"
+        - cell "/teams/:team_slug/admin/email_change_requests/new(.:format)"
+        - cell "teams/admin/email_change_requests#new":
+          - paragraph: teams/admin/email_change_requests#new
+        - cell:
+          - paragraph
+      - row "team_admin_email_change_request_path GET /teams/:team_slug/admin/email_change_requests/:token(.:format) teams/admin/email_change_requests#show":
+        - cell "team_admin_email_change_request_path"
+        - cell "GET"
+        - cell "/teams/:team_slug/admin/email_change_requests/:token(.:format)"
+        - cell "teams/admin/email_change_requests#show":
+          - paragraph: teams/admin/email_change_requests#show
+        - cell:
+          - paragraph
+      - row "accept_invitation_path PATCH /invitations/:id/accept(.:format) invitations#accept":
+        - cell "accept_invitation_path"
+        - cell "PATCH"
+        - cell "/invitations/:id/accept(.:format)"
+        - cell "invitations#accept":
+          - paragraph: invitations#accept
+        - cell:
+          - paragraph
+      - row "decline_invitation_path PATCH /invitations/:id/decline(.:format) invitations#decline":
+        - cell "decline_invitation_path"
+        - cell "PATCH"
+        - cell "/invitations/:id/decline(.:format)"
+        - cell "invitations#decline":
+          - paragraph: invitations#decline
+        - cell:
+          - paragraph
+      - row "invitation_path GET /invitations/:id(.:format) invitations#show":
+        - cell "invitation_path"
+        - cell "GET"
+        - cell "/invitations/:id(.:format)"
+        - cell "invitations#show":
+          - paragraph: invitations#show
+        - cell:
+          - paragraph
+      - row "enterprise_dashboard_path GET /enterprise/:enterprise_group_slug(.:format) enterprise/dashboard#index":
+        - cell "enterprise_dashboard_path"
+        - cell "GET"
+        - cell "/enterprise/:enterprise_group_slug(.:format)"
+        - cell "enterprise/dashboard#index":
+          - paragraph: enterprise/dashboard#index
+        - cell:
+          - paragraph
+      - row "resend_invitation_member_path POST /enterprise/:enterprise_group_slug/members/:id/resend_invitation(.:format) enterprise/members#resend_invitation":
+        - cell "resend_invitation_member_path"
+        - cell "POST"
+        - cell "/enterprise/:enterprise_group_slug/members/:id/resend_invitation(.:format)"
+        - cell "enterprise/members#resend_invitation":
+          - paragraph: enterprise/members#resend_invitation
+        - cell:
+          - paragraph
+      - row "revoke_invitation_member_path DELETE /enterprise/:enterprise_group_slug/members/:id/revoke_invitation(.:format) enterprise/members#revoke_invitation":
+        - cell "revoke_invitation_member_path"
+        - cell "DELETE"
+        - cell "/enterprise/:enterprise_group_slug/members/:id/revoke_invitation(.:format)"
+        - cell "enterprise/members#revoke_invitation":
+          - paragraph: enterprise/members#revoke_invitation
+        - cell:
+          - paragraph
+      - row "members_path GET /enterprise/:enterprise_group_slug/members(.:format) enterprise/members#index":
+        - cell "members_path"
+        - cell "GET"
+        - cell "/enterprise/:enterprise_group_slug/members(.:format)"
+        - cell "enterprise/members#index":
+          - paragraph: enterprise/members#index
+        - cell:
+          - paragraph
+      - row "POST /enterprise/:enterprise_group_slug/members(.:format) enterprise/members#create":
+        - cell
+        - cell "POST"
+        - cell "/enterprise/:enterprise_group_slug/members(.:format)"
+        - cell "enterprise/members#create":
+          - paragraph: enterprise/members#create
+        - cell:
+          - paragraph
+      - row "new_member_path GET /enterprise/:enterprise_group_slug/members/new(.:format) enterprise/members#new":
+        - cell "new_member_path"
+        - cell "GET"
+        - cell "/enterprise/:enterprise_group_slug/members/new(.:format)"
+        - cell "enterprise/members#new":
+          - paragraph: enterprise/members#new
+        - cell:
+          - paragraph
+      - row "edit_member_path GET /enterprise/:enterprise_group_slug/members/:id/edit(.:format) enterprise/members#edit":
+        - cell "edit_member_path"
+        - cell "GET"
+        - cell "/enterprise/:enterprise_group_slug/members/:id/edit(.:format)"
+        - cell "enterprise/members#edit":
+          - paragraph: enterprise/members#edit
+        - cell:
+          - paragraph
+      - row "member_path GET /enterprise/:enterprise_group_slug/members/:id(.:format) enterprise/members#show":
+        - cell "member_path"
+        - cell "GET"
+        - cell "/enterprise/:enterprise_group_slug/members/:id(.:format)"
+        - cell "enterprise/members#show":
+          - paragraph: enterprise/members#show
+        - cell:
+          - paragraph
+      - row "PATCH /enterprise/:enterprise_group_slug/members/:id(.:format) enterprise/members#update":
+        - cell
+        - cell "PATCH"
+        - cell "/enterprise/:enterprise_group_slug/members/:id(.:format)"
+        - cell "enterprise/members#update":
+          - paragraph: enterprise/members#update
+        - cell:
+          - paragraph
+      - row "PUT /enterprise/:enterprise_group_slug/members/:id(.:format) enterprise/members#update":
+        - cell
+        - cell "PUT"
+        - cell "/enterprise/:enterprise_group_slug/members/:id(.:format)"
+        - cell "enterprise/members#update":
+          - paragraph: enterprise/members#update
+        - cell:
+          - paragraph
+      - row "DELETE /enterprise/:enterprise_group_slug/members/:id(.:format) enterprise/members#destroy":
+        - cell
+        - cell "DELETE"
+        - cell "/enterprise/:enterprise_group_slug/members/:id(.:format)"
+        - cell "enterprise/members#destroy":
+          - paragraph: enterprise/members#destroy
+        - cell:
+          - paragraph
+      - row "edit_profile_path GET /enterprise/:enterprise_group_slug/profile/:id/edit(.:format) enterprise/profile#edit":
+        - cell "edit_profile_path"
+        - cell "GET"
+        - cell "/enterprise/:enterprise_group_slug/profile/:id/edit(.:format)"
+        - cell "enterprise/profile#edit":
+          - paragraph: enterprise/profile#edit
+        - cell:
+          - paragraph
+      - row "profile_path GET /enterprise/:enterprise_group_slug/profile/:id(.:format) enterprise/profile#show":
+        - cell "profile_path"
+        - cell "GET"
+        - cell "/enterprise/:enterprise_group_slug/profile/:id(.:format)"
+        - cell "enterprise/profile#show":
+          - paragraph: enterprise/profile#show
+        - cell:
+          - paragraph
+      - row "PATCH /enterprise/:enterprise_group_slug/profile/:id(.:format) enterprise/profile#update":
+        - cell
+        - cell "PATCH"
+        - cell "/enterprise/:enterprise_group_slug/profile/:id(.:format)"
+        - cell "enterprise/profile#update":
+          - paragraph: enterprise/profile#update
+        - cell:
+          - paragraph
+      - row "PUT /enterprise/:enterprise_group_slug/profile/:id(.:format) enterprise/profile#update":
+        - cell
+        - cell "PUT"
+        - cell "/enterprise/:enterprise_group_slug/profile/:id(.:format)"
+        - cell "enterprise/profile#update":
+          - paragraph: enterprise/profile#update
+        - cell:
+          - paragraph
+      - row "update_payment_method_billing_index_path POST /enterprise/:enterprise_group_slug/billing/update_payment_method(.:format) enterprise/billing#update_payment_method":
+        - cell "update_payment_method_billing_index_path"
+        - cell "POST"
+        - cell "/enterprise/:enterprise_group_slug/billing/update_payment_method(.:format)"
+        - cell "enterprise/billing#update_payment_method":
+          - paragraph: enterprise/billing#update_payment_method
+        - cell:
+          - paragraph
+      - row "cancel_subscription_billing_index_path POST /enterprise/:enterprise_group_slug/billing/cancel_subscription(.:format) enterprise/billing#cancel_subscription":
+        - cell "cancel_subscription_billing_index_path"
+        - cell "POST"
+        - cell "/enterprise/:enterprise_group_slug/billing/cancel_subscription(.:format)"
+        - cell "enterprise/billing#cancel_subscription":
+          - paragraph: enterprise/billing#cancel_subscription
+        - cell:
+          - paragraph
+      - row "billing_index_path GET /enterprise/:enterprise_group_slug/billing(.:format) enterprise/billing#index":
+        - cell "billing_index_path"
+        - cell "GET"
+        - cell "/enterprise/:enterprise_group_slug/billing(.:format)"
+        - cell "enterprise/billing#index":
+          - paragraph: enterprise/billing#index
+        - cell:
+          - paragraph
+      - row "billing_path GET /enterprise/:enterprise_group_slug/billing/:id(.:format) enterprise/billing#show":
+        - cell "billing_path"
+        - cell "GET"
+        - cell "/enterprise/:enterprise_group_slug/billing/:id(.:format)"
+        - cell "enterprise/billing#show":
+          - paragraph: enterprise/billing#show
+        - cell:
+          - paragraph
+      - row "settings_path GET /enterprise/:enterprise_group_slug/settings(.:format) enterprise/settings#show":
+        - cell "settings_path"
+        - cell "GET"
+        - cell "/enterprise/:enterprise_group_slug/settings(.:format)"
+        - cell "enterprise/settings#show":
+          - paragraph: enterprise/settings#show
+        - cell:
+          - paragraph
+      - row "PATCH /enterprise/:enterprise_group_slug/settings(.:format) enterprise/settings#update":
+        - cell
+        - cell "PATCH"
+        - cell "/enterprise/:enterprise_group_slug/settings(.:format)"
+        - cell "enterprise/settings#update":
+          - paragraph: enterprise/settings#update
+        - cell:
+          - paragraph
+      - row "PUT /enterprise/:enterprise_group_slug/settings(.:format) enterprise/settings#update":
+        - cell
+        - cell "PUT"
+        - cell "/enterprise/:enterprise_group_slug/settings(.:format)"
+        - cell "enterprise/settings#update":
+          - paragraph: enterprise/settings#update
+        - cell:
+          - paragraph
+      - row "enterprise_admin_notification_categories_path GET /enterprise/:enterprise_group_slug/admin/notification_categories(.:format) enterprise/admin/notification_categories#index":
+        - cell "enterprise_admin_notification_categories_path"
+        - cell "GET"
+        - cell "/enterprise/:enterprise_group_slug/admin/notification_categories(.:format)"
+        - cell "enterprise/admin/notification_categories#index":
+          - paragraph: enterprise/admin/notification_categories#index
+        - cell:
+          - paragraph
+      - row "POST /enterprise/:enterprise_group_slug/admin/notification_categories(.:format) enterprise/admin/notification_categories#create":
+        - cell
+        - cell "POST"
+        - cell "/enterprise/:enterprise_group_slug/admin/notification_categories(.:format)"
+        - cell "enterprise/admin/notification_categories#create":
+          - paragraph: enterprise/admin/notification_categories#create
+        - cell:
+          - paragraph
+      - row "new_enterprise_admin_notification_category_path GET /enterprise/:enterprise_group_slug/admin/notification_categories/new(.:format) enterprise/admin/notification_categories#new":
+        - cell "new_enterprise_admin_notification_category_path"
+        - cell "GET"
+        - cell "/enterprise/:enterprise_group_slug/admin/notification_categories/new(.:format)"
+        - cell "enterprise/admin/notification_categories#new":
+          - paragraph: enterprise/admin/notification_categories#new
+        - cell:
+          - paragraph
+      - row "edit_enterprise_admin_notification_category_path GET /enterprise/:enterprise_group_slug/admin/notification_categories/:id/edit(.:format) enterprise/admin/notification_categories#edit":
+        - cell "edit_enterprise_admin_notification_category_path"
+        - cell "GET"
+        - cell "/enterprise/:enterprise_group_slug/admin/notification_categories/:id/edit(.:format)"
+        - cell "enterprise/admin/notification_categories#edit":
+          - paragraph: enterprise/admin/notification_categories#edit
+        - cell:
+          - paragraph
+      - row "enterprise_admin_notification_category_path GET /enterprise/:enterprise_group_slug/admin/notification_categories/:id(.:format) enterprise/admin/notification_categories#show":
+        - cell "enterprise_admin_notification_category_path"
+        - cell "GET"
+        - cell "/enterprise/:enterprise_group_slug/admin/notification_categories/:id(.:format)"
+        - cell "enterprise/admin/notification_categories#show":
+          - paragraph: enterprise/admin/notification_categories#show
+        - cell:
+          - paragraph
+      - row "PATCH /enterprise/:enterprise_group_slug/admin/notification_categories/:id(.:format) enterprise/admin/notification_categories#update":
+        - cell
+        - cell "PATCH"
+        - cell "/enterprise/:enterprise_group_slug/admin/notification_categories/:id(.:format)"
+        - cell "enterprise/admin/notification_categories#update":
+          - paragraph: enterprise/admin/notification_categories#update
+        - cell:
+          - paragraph
+      - row "PUT /enterprise/:enterprise_group_slug/admin/notification_categories/:id(.:format) enterprise/admin/notification_categories#update":
+        - cell
+        - cell "PUT"
+        - cell "/enterprise/:enterprise_group_slug/admin/notification_categories/:id(.:format)"
+        - cell "enterprise/admin/notification_categories#update":
+          - paragraph: enterprise/admin/notification_categories#update
+        - cell:
+          - paragraph
+      - row "DELETE /enterprise/:enterprise_group_slug/admin/notification_categories/:id(.:format) enterprise/admin/notification_categories#destroy":
+        - cell
+        - cell "DELETE"
+        - cell "/enterprise/:enterprise_group_slug/admin/notification_categories/:id(.:format)"
+        - cell "enterprise/admin/notification_categories#destroy":
+          - paragraph: enterprise/admin/notification_categories#destroy
+        - cell:
+          - paragraph
+      - row "redirect_after_sign_in_path GET /redirect_after_sign_in(.:format) redirect#after_sign_in":
+        - cell "redirect_after_sign_in_path"
+        - cell "GET"
+        - cell "/redirect_after_sign_in(.:format)"
+        - cell "redirect#after_sign_in":
+          - paragraph: redirect#after_sign_in
+        - cell:
+          - paragraph
+      - row "turbo_recede_historical_location_path GET /recede_historical_location(.:format) turbo/native/navigation#recede":
+        - cell "turbo_recede_historical_location_path"
+        - cell "GET"
+        - cell "/recede_historical_location(.:format)"
+        - cell "turbo/native/navigation#recede":
+          - paragraph: turbo/native/navigation#recede
+        - cell:
+          - paragraph
+      - row "turbo_resume_historical_location_path GET /resume_historical_location(.:format) turbo/native/navigation#resume":
+        - cell "turbo_resume_historical_location_path"
+        - cell "GET"
+        - cell "/resume_historical_location(.:format)"
+        - cell "turbo/native/navigation#resume":
+          - paragraph: turbo/native/navigation#resume
+        - cell:
+          - paragraph
+      - row "turbo_refresh_historical_location_path GET /refresh_historical_location(.:format) turbo/native/navigation#refresh":
+        - cell "turbo_refresh_historical_location_path"
+        - cell "GET"
+        - cell "/refresh_historical_location(.:format)"
+        - cell "turbo/native/navigation#refresh":
+          - paragraph: turbo/native/navigation#refresh
+        - cell:
+          - paragraph
+      - row "rails_postmark_inbound_emails_path POST /rails/action_mailbox/postmark/inbound_emails(.:format) action_mailbox/ingresses/postmark/inbound_emails#create":
+        - cell "rails_postmark_inbound_emails_path"
+        - cell "POST"
+        - cell "/rails/action_mailbox/postmark/inbound_emails(.:format)"
+        - cell "action_mailbox/ingresses/postmark/inbound_emails#create":
+          - paragraph: action_mailbox/ingresses/postmark/inbound_emails#create
+        - cell:
+          - paragraph
+      - row "rails_relay_inbound_emails_path POST /rails/action_mailbox/relay/inbound_emails(.:format) action_mailbox/ingresses/relay/inbound_emails#create":
+        - cell "rails_relay_inbound_emails_path"
+        - cell "POST"
+        - cell "/rails/action_mailbox/relay/inbound_emails(.:format)"
+        - cell "action_mailbox/ingresses/relay/inbound_emails#create":
+          - paragraph: action_mailbox/ingresses/relay/inbound_emails#create
+        - cell:
+          - paragraph
+      - row "rails_sendgrid_inbound_emails_path POST /rails/action_mailbox/sendgrid/inbound_emails(.:format) action_mailbox/ingresses/sendgrid/inbound_emails#create":
+        - cell "rails_sendgrid_inbound_emails_path"
+        - cell "POST"
+        - cell "/rails/action_mailbox/sendgrid/inbound_emails(.:format)"
+        - cell "action_mailbox/ingresses/sendgrid/inbound_emails#create":
+          - paragraph: action_mailbox/ingresses/sendgrid/inbound_emails#create
+        - cell:
+          - paragraph
+      - row "rails_mandrill_inbound_health_check_path GET /rails/action_mailbox/mandrill/inbound_emails(.:format) action_mailbox/ingresses/mandrill/inbound_emails#health_check":
+        - cell "rails_mandrill_inbound_health_check_path"
+        - cell "GET"
+        - cell "/rails/action_mailbox/mandrill/inbound_emails(.:format)"
+        - cell "action_mailbox/ingresses/mandrill/inbound_emails#health_check":
+          - paragraph: action_mailbox/ingresses/mandrill/inbound_emails#health_check
+        - cell:
+          - paragraph
+      - row "rails_mandrill_inbound_emails_path POST /rails/action_mailbox/mandrill/inbound_emails(.:format) action_mailbox/ingresses/mandrill/inbound_emails#create":
+        - cell "rails_mandrill_inbound_emails_path"
+        - cell "POST"
+        - cell "/rails/action_mailbox/mandrill/inbound_emails(.:format)"
+        - cell "action_mailbox/ingresses/mandrill/inbound_emails#create":
+          - paragraph: action_mailbox/ingresses/mandrill/inbound_emails#create
+        - cell:
+          - paragraph
+      - row "rails_mailgun_inbound_emails_path POST /rails/action_mailbox/mailgun/inbound_emails/mime(.:format) action_mailbox/ingresses/mailgun/inbound_emails#create":
+        - cell "rails_mailgun_inbound_emails_path"
+        - cell "POST"
+        - cell "/rails/action_mailbox/mailgun/inbound_emails/mime(.:format)"
+        - cell "action_mailbox/ingresses/mailgun/inbound_emails#create":
+          - paragraph: action_mailbox/ingresses/mailgun/inbound_emails#create
+        - cell:
+          - paragraph
+      - row "rails_conductor_inbound_emails_path GET /rails/conductor/action_mailbox/inbound_emails(.:format) rails/conductor/action_mailbox/inbound_emails#index":
+        - cell "rails_conductor_inbound_emails_path"
+        - cell "GET"
+        - cell "/rails/conductor/action_mailbox/inbound_emails(.:format)"
+        - cell "rails/conductor/action_mailbox/inbound_emails#index":
+          - paragraph: rails/conductor/action_mailbox/inbound_emails#index
+        - cell:
+          - paragraph
+      - row "POST /rails/conductor/action_mailbox/inbound_emails(.:format) rails/conductor/action_mailbox/inbound_emails#create":
+        - cell
+        - cell "POST"
+        - cell "/rails/conductor/action_mailbox/inbound_emails(.:format)"
+        - cell "rails/conductor/action_mailbox/inbound_emails#create":
+          - paragraph: rails/conductor/action_mailbox/inbound_emails#create
+        - cell:
+          - paragraph
+      - row "new_rails_conductor_inbound_email_path GET /rails/conductor/action_mailbox/inbound_emails/new(.:format) rails/conductor/action_mailbox/inbound_emails#new":
+        - cell "new_rails_conductor_inbound_email_path"
+        - cell "GET"
+        - cell "/rails/conductor/action_mailbox/inbound_emails/new(.:format)"
+        - cell "rails/conductor/action_mailbox/inbound_emails#new":
+          - paragraph: rails/conductor/action_mailbox/inbound_emails#new
+        - cell:
+          - paragraph
+      - row "rails_conductor_inbound_email_path GET /rails/conductor/action_mailbox/inbound_emails/:id(.:format) rails/conductor/action_mailbox/inbound_emails#show":
+        - cell "rails_conductor_inbound_email_path"
+        - cell "GET"
+        - cell "/rails/conductor/action_mailbox/inbound_emails/:id(.:format)"
+        - cell "rails/conductor/action_mailbox/inbound_emails#show":
+          - paragraph: rails/conductor/action_mailbox/inbound_emails#show
+        - cell:
+          - paragraph
+      - row "new_rails_conductor_inbound_email_source_path GET /rails/conductor/action_mailbox/inbound_emails/sources/new(.:format) rails/conductor/action_mailbox/inbound_emails/sources#new":
+        - cell "new_rails_conductor_inbound_email_source_path"
+        - cell "GET"
+        - cell "/rails/conductor/action_mailbox/inbound_emails/sources/new(.:format)"
+        - cell "rails/conductor/action_mailbox/inbound_emails/sources#new":
+          - paragraph: rails/conductor/action_mailbox/inbound_emails/sources#new
+        - cell:
+          - paragraph
+      - row "rails_conductor_inbound_email_sources_path POST /rails/conductor/action_mailbox/inbound_emails/sources(.:format) rails/conductor/action_mailbox/inbound_emails/sources#create":
+        - cell "rails_conductor_inbound_email_sources_path"
+        - cell "POST"
+        - cell "/rails/conductor/action_mailbox/inbound_emails/sources(.:format)"
+        - cell "rails/conductor/action_mailbox/inbound_emails/sources#create":
+          - paragraph: rails/conductor/action_mailbox/inbound_emails/sources#create
+        - cell:
+          - paragraph
+      - row "rails_conductor_inbound_email_reroute_path POST /rails/conductor/action_mailbox/:inbound_email_id/reroute(.:format) rails/conductor/action_mailbox/reroutes#create":
+        - cell "rails_conductor_inbound_email_reroute_path"
+        - cell "POST"
+        - cell "/rails/conductor/action_mailbox/:inbound_email_id/reroute(.:format)"
+        - cell "rails/conductor/action_mailbox/reroutes#create":
+          - paragraph: rails/conductor/action_mailbox/reroutes#create
+        - cell:
+          - paragraph
+      - row "rails_conductor_inbound_email_incinerate_path POST /rails/conductor/action_mailbox/:inbound_email_id/incinerate(.:format) rails/conductor/action_mailbox/incinerates#create":
+        - cell "rails_conductor_inbound_email_incinerate_path"
+        - cell "POST"
+        - cell "/rails/conductor/action_mailbox/:inbound_email_id/incinerate(.:format)"
+        - cell "rails/conductor/action_mailbox/incinerates#create":
+          - paragraph: rails/conductor/action_mailbox/incinerates#create
+        - cell:
+          - paragraph
+      - row "rails_service_blob_path GET /rails/active_storage/blobs/redirect/:signed_id/*filename(.:format) active_storage/blobs/redirect#show":
+        - cell "rails_service_blob_path"
+        - cell "GET"
+        - cell "/rails/active_storage/blobs/redirect/:signed_id/*filename(.:format)"
+        - cell "active_storage/blobs/redirect#show":
+          - paragraph: active_storage/blobs/redirect#show
+        - cell:
+          - paragraph
+      - row "rails_service_blob_proxy_path GET /rails/active_storage/blobs/proxy/:signed_id/*filename(.:format) active_storage/blobs/proxy#show":
+        - cell "rails_service_blob_proxy_path"
+        - cell "GET"
+        - cell "/rails/active_storage/blobs/proxy/:signed_id/*filename(.:format)"
+        - cell "active_storage/blobs/proxy#show":
+          - paragraph: active_storage/blobs/proxy#show
+        - cell:
+          - paragraph
+      - row "GET /rails/active_storage/blobs/:signed_id/*filename(.:format) active_storage/blobs/redirect#show":
+        - cell
+        - cell "GET"
+        - cell "/rails/active_storage/blobs/:signed_id/*filename(.:format)"
+        - cell "active_storage/blobs/redirect#show":
+          - paragraph: active_storage/blobs/redirect#show
+        - cell:
+          - paragraph
+      - row "rails_blob_representation_path GET /rails/active_storage/representations/redirect/:signed_blob_id/:variation_key/*filename(.:format) active_storage/representations/redirect#show":
+        - cell "rails_blob_representation_path"
+        - cell "GET"
+        - cell "/rails/active_storage/representations/redirect/:signed_blob_id/:variation_key/*filename(.:format)"
+        - cell "active_storage/representations/redirect#show":
+          - paragraph: active_storage/representations/redirect#show
+        - cell:
+          - paragraph
+      - row "rails_blob_representation_proxy_path GET /rails/active_storage/representations/proxy/:signed_blob_id/:variation_key/*filename(.:format) active_storage/representations/proxy#show":
+        - cell "rails_blob_representation_proxy_path"
+        - cell "GET"
+        - cell "/rails/active_storage/representations/proxy/:signed_blob_id/:variation_key/*filename(.:format)"
+        - cell "active_storage/representations/proxy#show":
+          - paragraph: active_storage/representations/proxy#show
+        - cell:
+          - paragraph
+      - row "GET /rails/active_storage/representations/:signed_blob_id/:variation_key/*filename(.:format) active_storage/representations/redirect#show":
+        - cell
+        - cell "GET"
+        - cell "/rails/active_storage/representations/:signed_blob_id/:variation_key/*filename(.:format)"
+        - cell "active_storage/representations/redirect#show":
+          - paragraph: active_storage/representations/redirect#show
+        - cell:
+          - paragraph
+      - row "rails_disk_service_path GET /rails/active_storage/disk/:encoded_key/*filename(.:format) active_storage/disk#show":
+        - cell "rails_disk_service_path"
+        - cell "GET"
+        - cell "/rails/active_storage/disk/:encoded_key/*filename(.:format)"
+        - cell "active_storage/disk#show":
+          - paragraph: active_storage/disk#show
+        - cell:
+          - paragraph
+      - row "update_rails_disk_service_path PUT /rails/active_storage/disk/:encoded_token(.:format) active_storage/disk#update":
+        - cell "update_rails_disk_service_path"
+        - cell "PUT"
+        - cell "/rails/active_storage/disk/:encoded_token(.:format)"
+        - cell "active_storage/disk#update":
+          - paragraph: active_storage/disk#update
+        - cell:
+          - paragraph
+      - row "rails_direct_uploads_path POST /rails/active_storage/direct_uploads(.:format) active_storage/direct_uploads#create":
+        - cell "rails_direct_uploads_path"
+        - cell "POST"
+        - cell "/rails/active_storage/direct_uploads(.:format)"
+        - cell "active_storage/direct_uploads#create":
+          - paragraph: active_storage/direct_uploads#create
+        - cell:
+          - paragraph
+      - row "pay_path /pay Pay::Engine":
+        - cell "pay_path"
+        - cell
+        - cell "/pay"
+        - cell "Pay::Engine":
+          - paragraph: Pay::Engine
+        - cell:
+          - paragraph
+      - row "Routes for Blazer::Engine":
+        - cell "Routes for Blazer::Engine"
+      - row "run_queries_path POST /queries/run(.:format) blazer/queries#run":
+        - cell "run_queries_path"
+        - cell "POST"
+        - cell "/queries/run(.:format)"
+        - cell "blazer/queries#run":
+          - paragraph: blazer/queries#run
+        - cell:
+          - paragraph
+      - row "cancel_queries_path POST /queries/cancel(.:format) blazer/queries#cancel":
+        - cell "cancel_queries_path"
+        - cell "POST"
+        - cell "/queries/cancel(.:format)"
+        - cell "blazer/queries#cancel":
+          - paragraph: blazer/queries#cancel
+        - cell:
+          - paragraph
+      - row "refresh_query_path POST /queries/:id/refresh(.:format) blazer/queries#refresh":
+        - cell "refresh_query_path"
+        - cell "POST"
+        - cell "/queries/:id/refresh(.:format)"
+        - cell "blazer/queries#refresh":
+          - paragraph: blazer/queries#refresh
+        - cell:
+          - paragraph
+      - row "tables_queries_path GET /queries/tables(.:format) blazer/queries#tables":
+        - cell "tables_queries_path"
+        - cell "GET"
+        - cell "/queries/tables(.:format)"
+        - cell "blazer/queries#tables":
+          - paragraph: blazer/queries#tables
+        - cell:
+          - paragraph
+      - row "schema_queries_path GET /queries/schema(.:format) blazer/queries#schema":
+        - cell "schema_queries_path"
+        - cell "GET"
+        - cell "/queries/schema(.:format)"
+        - cell "blazer/queries#schema":
+          - paragraph: blazer/queries#schema
+        - cell:
+          - paragraph
+      - row "docs_queries_path GET /queries/docs(.:format) blazer/queries#docs":
+        - cell "docs_queries_path"
+        - cell "GET"
+        - cell "/queries/docs(.:format)"
+        - cell "blazer/queries#docs":
+          - paragraph: blazer/queries#docs
+        - cell:
+          - paragraph
+      - row "queries_path GET /queries(.:format) blazer/queries#index":
+        - cell "queries_path"
+        - cell "GET"
+        - cell "/queries(.:format)"
+        - cell "blazer/queries#index":
+          - paragraph: blazer/queries#index
+        - cell:
+          - paragraph
+      - row "POST /queries(.:format) blazer/queries#create":
+        - cell
+        - cell "POST"
+        - cell "/queries(.:format)"
+        - cell "blazer/queries#create":
+          - paragraph: blazer/queries#create
+        - cell:
+          - paragraph
+      - row "new_query_path GET /queries/new(.:format) blazer/queries#new":
+        - cell "new_query_path"
+        - cell "GET"
+        - cell "/queries/new(.:format)"
+        - cell "blazer/queries#new":
+          - paragraph: blazer/queries#new
+        - cell:
+          - paragraph
+      - row "edit_query_path GET /queries/:id/edit(.:format) blazer/queries#edit":
+        - cell "edit_query_path"
+        - cell "GET"
+        - cell "/queries/:id/edit(.:format)"
+        - cell "blazer/queries#edit":
+          - paragraph: blazer/queries#edit
+        - cell:
+          - paragraph
+      - row "query_path GET /queries/:id(.:format) blazer/queries#show":
+        - cell "query_path"
+        - cell "GET"
+        - cell "/queries/:id(.:format)"
+        - cell "blazer/queries#show":
+          - paragraph: blazer/queries#show
+        - cell:
+          - paragraph
+      - row "PATCH /queries/:id(.:format) blazer/queries#update":
+        - cell
+        - cell "PATCH"
+        - cell "/queries/:id(.:format)"
+        - cell "blazer/queries#update":
+          - paragraph: blazer/queries#update
+        - cell:
+          - paragraph
+      - row "PUT /queries/:id(.:format) blazer/queries#update":
+        - cell
+        - cell "PUT"
+        - cell "/queries/:id(.:format)"
+        - cell "blazer/queries#update":
+          - paragraph: blazer/queries#update
+        - cell:
+          - paragraph
+      - row "DELETE /queries/:id(.:format) blazer/queries#destroy":
+        - cell
+        - cell "DELETE"
+        - cell "/queries/:id(.:format)"
+        - cell "blazer/queries#destroy":
+          - paragraph: blazer/queries#destroy
+        - cell:
+          - paragraph
+      - row "run_check_path GET /checks/:id/run(.:format) blazer/checks#run":
+        - cell "run_check_path"
+        - cell "GET"
+        - cell "/checks/:id/run(.:format)"
+        - cell "blazer/checks#run":
+          - paragraph: blazer/checks#run
+        - cell:
+          - paragraph
+      - row "checks_path GET /checks(.:format) blazer/checks#index":
+        - cell "checks_path"
+        - cell "GET"
+        - cell "/checks(.:format)"
+        - cell "blazer/checks#index":
+          - paragraph: blazer/checks#index
+        - cell:
+          - paragraph
+      - row "POST /checks(.:format) blazer/checks#create":
+        - cell
+        - cell "POST"
+        - cell "/checks(.:format)"
+        - cell "blazer/checks#create":
+          - paragraph: blazer/checks#create
+        - cell:
+          - paragraph
+      - row "new_check_path GET /checks/new(.:format) blazer/checks#new":
+        - cell "new_check_path"
+        - cell "GET"
+        - cell "/checks/new(.:format)"
+        - cell "blazer/checks#new":
+          - paragraph: blazer/checks#new
+        - cell:
+          - paragraph
+      - row "edit_check_path GET /checks/:id/edit(.:format) blazer/checks#edit":
+        - cell "edit_check_path"
+        - cell "GET"
+        - cell "/checks/:id/edit(.:format)"
+        - cell "blazer/checks#edit":
+          - paragraph: blazer/checks#edit
+        - cell:
+          - paragraph
+      - row "check_path PATCH /checks/:id(.:format) blazer/checks#update":
+        - cell "check_path"
+        - cell "PATCH"
+        - cell "/checks/:id(.:format)"
+        - cell "blazer/checks#update":
+          - paragraph: blazer/checks#update
+        - cell:
+          - paragraph
+      - row "PUT /checks/:id(.:format) blazer/checks#update":
+        - cell
+        - cell "PUT"
+        - cell "/checks/:id(.:format)"
+        - cell "blazer/checks#update":
+          - paragraph: blazer/checks#update
+        - cell:
+          - paragraph
+      - row "DELETE /checks/:id(.:format) blazer/checks#destroy":
+        - cell
+        - cell "DELETE"
+        - cell "/checks/:id(.:format)"
+        - cell "blazer/checks#destroy":
+          - paragraph: blazer/checks#destroy
+        - cell:
+          - paragraph
+      - row "refresh_dashboard_path POST /dashboards/:id/refresh(.:format) blazer/dashboards#refresh":
+        - cell "refresh_dashboard_path"
+        - cell "POST"
+        - cell "/dashboards/:id/refresh(.:format)"
+        - cell "blazer/dashboards#refresh":
+          - paragraph: blazer/dashboards#refresh
+        - cell:
+          - paragraph
+      - row "dashboards_path POST /dashboards(.:format) blazer/dashboards#create":
+        - cell "dashboards_path"
+        - cell "POST"
+        - cell "/dashboards(.:format)"
+        - cell "blazer/dashboards#create":
+          - paragraph: blazer/dashboards#create
+        - cell:
+          - paragraph
+      - row "new_dashboard_path GET /dashboards/new(.:format) blazer/dashboards#new":
+        - cell "new_dashboard_path"
+        - cell "GET"
+        - cell "/dashboards/new(.:format)"
+        - cell "blazer/dashboards#new":
+          - paragraph: blazer/dashboards#new
+        - cell:
+          - paragraph
+      - row "edit_dashboard_path GET /dashboards/:id/edit(.:format) blazer/dashboards#edit":
+        - cell "edit_dashboard_path"
+        - cell "GET"
+        - cell "/dashboards/:id/edit(.:format)"
+        - cell "blazer/dashboards#edit":
+          - paragraph: blazer/dashboards#edit
+        - cell:
+          - paragraph
+      - row "dashboard_path GET /dashboards/:id(.:format) blazer/dashboards#show":
+        - cell "dashboard_path"
+        - cell "GET"
+        - cell "/dashboards/:id(.:format)"
+        - cell "blazer/dashboards#show":
+          - paragraph: blazer/dashboards#show
+        - cell:
+          - paragraph
+      - row "PATCH /dashboards/:id(.:format) blazer/dashboards#update":
+        - cell
+        - cell "PATCH"
+        - cell "/dashboards/:id(.:format)"
+        - cell "blazer/dashboards#update":
+          - paragraph: blazer/dashboards#update
+        - cell:
+          - paragraph
+      - row "PUT /dashboards/:id(.:format) blazer/dashboards#update":
+        - cell
+        - cell "PUT"
+        - cell "/dashboards/:id(.:format)"
+        - cell "blazer/dashboards#update":
+          - paragraph: blazer/dashboards#update
+        - cell:
+          - paragraph
+      - row "DELETE /dashboards/:id(.:format) blazer/dashboards#destroy":
+        - cell
+        - cell "DELETE"
+        - cell "/dashboards/:id(.:format)"
+        - cell "blazer/dashboards#destroy":
+          - paragraph: blazer/dashboards#destroy
+        - cell:
+          - paragraph
+      - row "root_path GET / blazer/queries#home":
+        - cell "root_path"
+        - cell "GET"
+        - cell /
+        - cell "blazer/queries#home":
+          - paragraph: blazer/queries#home
+        - cell:
+          - paragraph
+      - row "Routes for Pay::Engine":
+        - cell "Routes for Pay::Engine"
+      - row "payment_path GET /payments/:id(.:format) pay/payments#show":
+        - cell "payment_path"
+        - cell "GET"
+        - cell "/payments/:id(.:format)"
+        - cell "pay/payments#show":
+          - paragraph: pay/payments#show
+        - cell:
+          - paragraph
+      - row "webhooks_stripe_path POST /webhooks/stripe(.:format) pay/webhooks/stripe#create":
+        - cell "webhooks_stripe_path"
+        - cell "POST"
+        - cell "/webhooks/stripe(.:format)"
+        - cell "pay/webhooks/stripe#create":
+          - paragraph: pay/webhooks/stripe#create
+        - cell:
+          - paragraph
+  - heading "Request" [level=2]
+  - paragraph: "Parameters:"
+  - text: None
+  - link "Toggle session dump":
+    - /url: "#"
+  - link "Toggle env dump":
+    - /url: "#"
+  - heading "Response" [level=2]
+  - paragraph: "Headers:"
+  - text: None
+```

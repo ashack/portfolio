@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "commonjs",
+    "lib": ["ES2020", "DOM"],
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "moduleResolution": "node",
+    "types": ["@playwright/test", "node"],
+    "baseUrl": ".",
+    "paths": {
+      "@pages/*": ["e2e/pages/*"],
+      "@fixtures/*": ["e2e/fixtures/*"],
+      "@utils/*": ["e2e/utils/*"]
+    }
+  },
+  "include": ["e2e/**/*.ts"],
+  "exclude": ["node_modules"]
+}
