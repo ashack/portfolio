@@ -39,8 +39,15 @@ Rails.application.routes.draw do
 
   devise_for :users, controllers: {
     registrations: "users/registrations",
-    sessions: "users/sessions"
+    sessions: "users/sessions",
+    confirmations: "users/confirmations"
   }
+  
+  # Custom devise routes
+  devise_scope :user do
+    get 'users/registrations/confirmation_sent', to: 'users/registrations#confirmation_sent', as: :confirmation_sent_users_registrations
+    get 'users/confirmations/expired', to: 'users/confirmations#expired', as: :expired_users_confirmations
+  end
 
   # Devise showcase (remove in production)
   get "devise_showcase", to: "devise_showcase#index" if Rails.env.development?
@@ -146,6 +153,18 @@ Rails.application.routes.draw do
       resources :plan_migrations, only: [ :new, :create ]
       resources :profile, only: [ :show, :edit, :update ]
       resource :settings, only: [ :show, :update ]
+      
+      # Email verification routes
+      resource :email_verification, controller: 'email_verification', only: [ :show ] do
+        post :resend
+      end
+      
+      # Onboarding routes
+      resource :onboarding, only: [ :show ], controller: 'onboarding' do
+        get :plan_selection
+        post :update_plan
+        get :complete
+      end
     end
   end
 

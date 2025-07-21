@@ -35,6 +35,13 @@ The Rails SaaS Starter has evolved into a production-ready triple-track system s
 - **Authentication Docs**: Added Rack::Attack details, activity tracking, force logout
 - **Database Design**: Added missing tables (25+ total), 50+ indexes documented
 
+### Onboarding Flow Implementation (January 2025)
+- **User Experience**: Moved plan selection from registration to post-verification onboarding
+- **Database Updates**: Added onboarding tracking fields with proper indexes
+- **Controllers**: Created complete onboarding flow with welcome and plan selection
+- **CSRF Fix**: Resolved authentication issues while maintaining security
+- **Team Integration**: Team creation automated for team plan selection
+
 ### UI/UX Overhaul (January 2025)
 - **Tailwind UI Integration**: Modern light theme sidebar across all layouts
 - **Navigation Simplification**: Reduced redundancy, improved user flow
@@ -64,6 +71,8 @@ The Rails SaaS Starter has evolved into a production-ready triple-track system s
 - Noticed gem integration for notifications
 - Email change request system with approval workflow
 - Comprehensive Rack::Attack configuration
+- Onboarding system with database tracking and concern middleware
+- CSRF protection properly configured for Rails 8.0.2
 
 ## Feature Completion Status
 
@@ -80,6 +89,7 @@ The Rails SaaS Starter has evolved into a production-ready triple-track system s
 - **Notification System**: Noticed gem with email/in-app channels
 - **Email Change Requests**: Secure approval workflow with 30-day expiration
 - **Activity Tracking**: Async background jobs with Redis caching
+- **Onboarding Flow**: Post-email-verification plan selection with progress tracking
 
 ### ✅ Frontend Implementation (100%)
 - **Admin Dashboards**: Super admin and site admin interfaces

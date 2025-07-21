@@ -2,13 +2,15 @@ class Users::RegistrationsController < Devise::RegistrationsController
   skip_before_action :authenticate_user!, only: [ :new, :create ]
   skip_before_action :check_user_status, only: [ :new, :create ]
   skip_before_action :track_user_activity_async, only: [ :new, :create ]
+  
   skip_after_action :verify_authorized
   skip_after_action :verify_policy_scoped
 
   before_action :configure_sign_up_params, only: [ :create ]
   before_action :configure_account_update_params, only: [ :update ]
-  before_action :set_available_plans, only: [ :new, :create ]
   before_action :load_invitation, only: [ :new, :create ]
+  
+  layout "minimal", only: [:new, :create, :confirmation_sent]
 
   # GET /resource/sign_up
   def new
@@ -16,12 +18,6 @@ class Users::RegistrationsController < Devise::RegistrationsController
       # For invited users, we don't need plan selection
       build_resource
       resource.email = @invitation.email
-    else
-      # Check if user selected a plan segment
-      @plan_segment = params[:plan_segment] || session[:plan_segment] || "individual"
-
-      # Store in session for form resubmission
-      session[:plan_segment] = @plan_segment
     end
 
     super
@@ -98,58 +94,31 @@ class Users::RegistrationsController < Devise::RegistrationsController
       end
     else
       # Handle direct user registration
-      @plan_segment = params[:user][:plan_segment] || session[:plan_segment] || "individual"
-
-      # Store team_name separately before filtering params
-      team_name = params[:user][:team_name]
-
-      # Filter out team_name from sign_up_params to avoid UnknownAttributeError
-      filtered_params = sign_up_params.except(:team_name)
-      build_resource(filtered_params)
+      build_resource(sign_up_params)
 
       # Set user type
       resource.user_type = "direct"
       resource.status = "active"
 
-      # Handle plan assignment based on segment
-      if params[:user][:plan_id].present?
-        plan = Plan.find_by(id: params[:user][:plan_id])
-
-        if plan && plan.active? && !plan.contact_sales?
-          resource.plan_id = plan.id
-
-          # If selecting a team plan, validate team name
-          if plan.plan_segment == "team"
-            if team_name.blank?
-              resource.errors.add(:base, "Team name is required when selecting a team plan")
-              set_minimum_password_length
-              set_available_plans
-              render :new, status: :unprocessable_entity and return
-            end
-          end
-        else
-          resource.errors.add(:plan, "must be a valid plan")
-          set_minimum_password_length
-          set_available_plans
-          render :new, status: :unprocessable_entity and return
-        end
-      else
-        # If no plan selected, assign the free individual plan
-        free_plan = Plan.find_by(plan_segment: "individual", amount_cents: 0, active: true)
-        resource.plan_id = free_plan.id if free_plan
-      end
+      # Skip plan assignment for direct users - they'll select during onboarding
+      # Plan selection is now handled in the onboarding flow after email verification
+      resource.plan_id = nil
+      resource.onboarding_completed = false
+      resource.onboarding_step = 'welcome'
 
       resource.save
 
-      # Create team if user selected a team plan
-      if resource.persisted? && resource.plan&.plan_segment == "team"
-        create_team_for_user(resource, team_name)
-      end
+      # Team creation is now handled in onboarding flow after plan selection
 
       yield resource if block_given?
 
       if resource.persisted?
-        if resource.active_for_authentication?
+        # For direct users who haven't confirmed their email, don't sign them in
+        if resource.direct? && !resource.confirmed?
+          set_flash_message! :notice, :signed_up_but_unconfirmed
+          expire_data_after_sign_in!
+          respond_with resource, location: after_inactive_sign_up_path_for(resource)
+        elsif resource.active_for_authentication?
           set_flash_message! :notice, :signed_up
           sign_up(resource_name, resource)
           respond_with resource, location: after_sign_up_path_for(resource)
@@ -161,17 +130,23 @@ class Users::RegistrationsController < Devise::RegistrationsController
       else
         clean_up_passwords resource
         set_minimum_password_length
-        set_available_plans
         respond_with resource
       end
     end
+  end
+
+  # GET /users/registrations/confirmation_sent
+  def confirmation_sent
+    @email = session.delete(:confirmation_sent_email)
+    # If someone tries to access this directly without email, redirect to sign in
+    redirect_to new_user_session_path unless @email
   end
 
   protected
 
   # If you have extra params to permit, append them to the sanitizer.
   def configure_sign_up_params
-    devise_parameter_sanitizer.permit(:sign_up, keys: [ :first_name, :last_name, :plan_id, :team_name ])
+    devise_parameter_sanitizer.permit(:sign_up, keys: [ :first_name, :last_name ])
   end
 
   # If you have extra params to permit, append them to the sanitizer.
@@ -197,7 +172,9 @@ class Users::RegistrationsController < Devise::RegistrationsController
 
   # The path used after sign up for inactive accounts.
   def after_inactive_sign_up_path_for(resource)
-    new_user_session_path
+    # Store the email in session for the confirmation_sent page
+    session[:confirmation_sent_email] = resource.email
+    confirmation_sent_users_registrations_path
   end
 
   private
@@ -215,32 +192,4 @@ class Users::RegistrationsController < Devise::RegistrationsController
     end
   end
 
-  def set_available_plans
-    @plan_segment ||= params[:plan_segment] || session[:plan_segment] || "individual"
-
-    # Show all available plans (both individual and team) for direct registration
-    # Users can choose between individual or team plans
-    @available_plans = Plan.available_for_signup
-                          .order(:plan_segment, :amount_cents)
-  end
-
-  def create_team_for_user(user, team_name)
-    team = Team.create!(
-      name: team_name,
-      admin: user,
-      created_by: user,
-      plan: "starter",
-      status: "active",
-      max_members: user.plan.max_team_members || 5
-    )
-
-    # Update user to reflect team ownership
-    user.update!(
-      team: team,
-      team_role: "admin",
-      owns_team: true
-    )
-  rescue ActiveRecord::RecordInvalid => e
-    Rails.logger.error "Failed to create team for user #{user.id}: #{e.message}"
-  end
 end

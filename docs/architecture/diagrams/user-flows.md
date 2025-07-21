@@ -2,7 +2,7 @@
 
 ## User Registration Flows
 
-### Direct User Registration Flow
+### Direct User Registration Flow (Updated with Onboarding)
 
 ```mermaid
 flowchart TD
@@ -10,40 +10,93 @@ flowchart TD
     Home --> SignUp[Click Sign Up]
     SignUp --> RegForm[Registration Form]
     
-    RegForm --> EnterInfo[Enter Email, Name, Password]
-    EnterInfo --> SelectPlan{Select Plan Type}
+    RegForm --> EnterInfo[Enter Email, Name, Password<br/>No Plan Selection]
+    EnterInfo --> CreateUser[Create Direct User<br/>plan_id: null<br/>onboarding_completed: false]
+    CreateUser --> SendConfirm[Send Confirmation Email]
+    SendConfirm --> ShowMessage[Show Confirmation Message]
     
-    SelectPlan -->|Individual Plan| IndividualFlow[Individual Account Setup]
-    SelectPlan -->|Team Plan| TeamFlow[Team Account Setup]
+    ShowMessage --> UserConfirms[User Confirms Email]
+    UserConfirms --> Login[User Logs In]
+    Login --> CheckOnboarding{Onboarding Complete?}
     
-    IndividualFlow --> CreateUser1[Create Direct User]
-    CreateUser1 --> CreateStripe1[Create Stripe Customer]
-    CreateStripe1 --> SendConfirm1[Send Confirmation Email]
-    SendConfirm1 --> ShowDashboard1[Redirect to Dashboard]
+    CheckOnboarding -->|No| OnboardingFlow[Redirect to Onboarding]
+    CheckOnboarding -->|Yes| Dashboard[Redirect to Dashboard]
     
-    TeamFlow --> ShowTeamName[Show Team Name Field]
-    ShowTeamName --> EnterTeamName[Enter Team Name]
-    EnterTeamName --> CreateUser2[Create Direct User]
-    CreateUser2 --> CreateTeam[Create Team Record]
+    OnboardingFlow --> Welcome[Welcome Screen<br/>'Welcome, [Name]!']
+    Welcome --> PlanSelection[Plan Selection Page]
+    PlanSelection --> SelectPlan{Select Plan Type}
+    
+    SelectPlan -->|Individual Plan| IndividualFlow[Select Individual Plan]
+    SelectPlan -->|Team Plan| TeamFlow[Show Team Name Field]
+    
+    IndividualFlow --> AssignPlan[Assign Plan to User]
+    AssignPlan --> CompleteOnboarding[Mark Onboarding Complete]
+    
+    TeamFlow --> EnterTeamName[Enter Team Name]
+    EnterTeamName --> CreateTeam[Create Team Record]
     CreateTeam --> SetOwnership[Set owns_team = true]
-    SetOwnership --> CreateStripe2[Create Team Stripe Customer]
-    CreateStripe2 --> SendConfirm2[Send Confirmation Email]
-    SendConfirm2 --> ShowTeamDash[Redirect to Team Dashboard]
+    SetOwnership --> AssignTeamPlan[Assign Team Plan]
+    AssignTeamPlan --> CompleteOnboarding
     
-    ShowDashboard1 --> ConfirmEmail1{Email Confirmed?}
-    ShowTeamDash --> ConfirmEmail2{Email Confirmed?}
-    
-    ConfirmEmail1 -->|No| Limited1[Limited Access]
-    ConfirmEmail1 -->|Yes| Full1[Full Access]
-    
-    ConfirmEmail2 -->|No| Limited2[Limited Access]
-    ConfirmEmail2 -->|Yes| Full2[Full Team Access]
+    CompleteOnboarding --> Dashboard
     
     style Start fill:#e8f5e9
-    style Full1 fill:#c8e6c9
-    style Full2 fill:#c8e6c9
-    style Limited1 fill:#ffcdd2
-    style Limited2 fill:#ffcdd2
+    style Dashboard fill:#c8e6c9
+    style OnboardingFlow fill:#fff9c4
+    style Welcome fill:#fff9c4
+    style PlanSelection fill:#fff9c4
+```
+
+### Onboarding Flow Implementation Details
+
+```mermaid
+sequenceDiagram
+    participant User
+    participant Browser
+    participant Rails as Rails App
+    participant DB as Database
+    participant Concern as OnboardingCheck
+    
+    User->>Browser: Complete Email Verification
+    User->>Browser: Navigate to Login
+    Browser->>Rails: POST /users/sign_in<br/>with CSRF Token
+    
+    Rails->>Rails: Verify CSRF Token<br/>(Session-based)
+    Rails->>DB: Authenticate User
+    DB-->>Rails: User Authenticated
+    
+    Rails->>Rails: Check user.direct?
+    Rails->>Rails: Check user.onboarding_completed?
+    Rails->>Rails: Check user.plan_id
+    
+    alt Needs Onboarding
+        Rails-->>Browser: Redirect to /users/onboarding
+        Browser->>Rails: GET /users/onboarding
+        Rails->>Concern: check_onboarding_status
+        Concern-->>Rails: Allow (already in onboarding)
+        Rails-->>Browser: Show Welcome Page
+        
+        User->>Browser: Click "Get Started"
+        Browser->>Rails: GET /users/onboarding/plan_selection
+        Rails-->>Browser: Show Plan Selection
+        
+        User->>Browser: Select Team Plan
+        Browser-->>Browser: Show Team Name Field
+        User->>Browser: Enter Team Name
+        Browser->>Rails: POST /users/onboarding/update_plan
+        
+        Rails->>DB: Create Team
+        Rails->>DB: Set user.owns_team = true
+        Rails->>DB: Set user.onboarding_completed = true
+        Rails->>DB: Set user.onboarding_step = 'completed'
+        
+        Rails-->>Browser: Redirect to Team Dashboard
+    else Already Onboarded
+        Rails-->>Browser: Redirect to Dashboard
+    end
+    
+    Note over Rails: All POST requests verify CSRF tokens
+    Note over Rails: No security bypass implemented
 ```
 
 ### Team Invitation Flow
@@ -135,14 +188,14 @@ flowchart TD
 
 ## Authentication & Authorization Flows
 
-### Login Flow with Security Checks
+### Login Flow with Security Checks (Updated with Onboarding)
 
 ```mermaid
 flowchart TD
     Start([User Login]) --> RateLimit{Rate Limit Check}
     RateLimit -->|Exceeded| RateLimitError[Too Many Attempts<br/>Try Again Later]
     RateLimit -->|OK| EnterCreds[Enter Email/Password]
-    EnterCreds --> Submit[Submit Form]
+    EnterCreds --> Submit[Submit Form<br/>CSRF Token Verified]
     
     Submit --> ValidateEmail{Valid Email?}
     ValidateEmail -->|No| EmailError[Show Email Error]
@@ -170,13 +223,17 @@ flowchart TD
     CheckStatus -->|No| InactiveError[Account Inactive]
     CheckStatus -->|Yes| CheckUserType{User Type?}
     
-    CheckUserType -->|Direct| DirectRoute{Has Team?}
+    CheckUserType -->|Direct| DirectCheck{Onboarding Complete?}
     CheckUserType -->|Invited| TeamRoute[Route to Team Dashboard]
     CheckUserType -->|Enterprise| EntRoute[Route to Enterprise Dashboard<br/>Purple Theme]
+    
+    DirectCheck -->|No & No Plan| OnboardingRoute[Route to Onboarding]
+    DirectCheck -->|Yes| DirectRoute{Has Team?}
     
     DirectRoute -->|Yes & owns_team| TeamDash[Team Dashboard]
     DirectRoute -->|No| UserDash[User Dashboard]
     
+    OnboardingRoute --> OnboardingFlow[Onboarding Welcome]
     TeamRoute --> TrackActivity[Track Activity<br/>Background Job]
     EntRoute --> TrackActivity
     UserDash --> TrackActivity
@@ -186,6 +243,7 @@ flowchart TD
     style UserDash fill:#c8e6c9
     style TeamDash fill:#c8e6c9
     style EntRoute fill:#c8e6c9
+    style OnboardingRoute fill:#fff9c4
     style ShowLocked fill:#ffcdd2
     style InactiveError fill:#ffcdd2
     style GenericError fill:#ffcdd2
@@ -347,7 +405,7 @@ flowchart TD
 
 ## User Journey Maps
 
-### Direct User Journey
+### Direct User Journey (Updated with New Onboarding)
 
 ```mermaid
 journey
@@ -360,23 +418,25 @@ journey
     
     section Registration
       Click Sign Up: 5: User
-      Choose Individual Plan: 4: User
-      Enter Details: 3: User
+      Enter Details: 4: User
       Confirm Email: 2: User
     
     section Onboarding
-      Access Dashboard: 5: User
-      Complete Profile: 4: User
-      Explore Features: 4: User
+      Login First Time: 5: User
+      See Welcome Screen: 5: User
+      Select Plan: 4: User
+      Enter Team Name (if team): 3: User
+      Complete Onboarding: 5: User
     
     section Usage
+      Access Dashboard: 5: User
       Use Core Features: 5: User
       Check Analytics: 4: User
       Manage Billing: 3: User
     
     section Growth
       Upgrade Plan: 4: User
-      Create Team: 5: User
+      Create Another Team: 5: User
       Invite Members: 4: User
 ```
 

@@ -2,6 +2,7 @@ class ApplicationController < ActionController::Base
   include Pundit::Authorization
   include Pagy::Backend
   include ActivityTracking
+  include OnboardingCheck
 
   helper_method :pagy_url_for
 
@@ -35,6 +36,12 @@ class ApplicationController < ActionController::Base
       admin_super_root_path
     elsif current_user.site_admin?
       admin_site_root_path
+    elsif current_user.direct? && !current_user.confirmed?
+      # Direct users who haven't confirmed their email need to verify it first
+      users_email_verification_path
+    elsif current_user.direct? && !current_user.onboarding_completed? && current_user.plan_id.nil?
+      # Direct users without a plan need to complete onboarding
+      users_onboarding_path
     elsif current_user.direct? && current_user.owns_team? && current_user.team
       # Direct users who own a team go to their team dashboard
       team_root_path(team_slug: current_user.team.slug)
@@ -54,22 +61,27 @@ class ApplicationController < ActionController::Base
     # Log CSRF failures for security monitoring
     Rails.logger.warn "[SECURITY] CSRF verification failed for #{request.remote_ip}"
     Rails.logger.warn "[SECURITY] Request: #{request.method} #{request.path}"
-
-    respond_to do |format|
-      format.json do
-        render json: { error: "CSRF token verification failed. Please refresh and try again." },
-               status: :unprocessable_entity
-      end
-      format.turbo_stream do
-        reset_session
-        redirect_to new_user_session_path,
-          alert: "Your session has expired. Please sign in again.",
-          status: :see_other
-      end
-      format.html do
-        reset_session
-        redirect_to new_user_session_path,
-          alert: "Your session has expired. Please sign in again."
+    
+    # For Devise sign-in, we need to handle this more gracefully
+    if request.path == '/users/sign_in' && request.post?
+      super # Use Rails default handling which resets session but continues
+    else
+      respond_to do |format|
+        format.json do
+          render json: { error: "CSRF token verification failed. Please refresh and try again." },
+                 status: :unprocessable_entity
+        end
+        format.turbo_stream do
+          reset_session
+          redirect_to new_user_session_path,
+            alert: "Your session has expired. Please sign in again.",
+            status: :see_other
+        end
+        format.html do
+          reset_session
+          redirect_to new_user_session_path,
+            alert: "Your session has expired. Please sign in again."
+        end
       end
     end
   end
