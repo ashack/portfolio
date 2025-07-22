@@ -36,3 +36,38 @@
   top: var(--announcement-offset, 0px);
   transition: top 0.3s ease-out;
 }
+
+/* Form validation styles */
+.field-error {
+  animation: shake 0.3s;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+
+/* Ensure red border is visible on invalid fields */
+input.border-red-500 {
+  border-color: rgb(239 68 68) !important;
+}
+
+input.border-red-500:focus {
+  border-color: rgb(239 68 68) !important;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1) !important;
+}
+
+/* Password requirements list styling */
+.password-requirements ul {
+  font-size: 0.75rem;
+}
+
+.password-requirements li {
+  transition: all 0.2s ease;
+}
+
+/* Smooth transitions for form elements */
+input:focus {
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}

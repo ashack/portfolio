@@ -1,3 +1,29 @@
+# Super Admin Enterprise Groups Controller
+#
+# PURPOSE:
+# Provides complete CRUD interface for enterprise groups that super admins can create,
+# manage, and oversee. Enterprise groups are invitation-only organizations for large customers.
+#
+# ACCESS RESTRICTIONS:
+# - Super admins have full CRUD capabilities for enterprise groups
+# - Can create enterprise groups and assign admin via invitation
+# - Full access to enterprise group management and member oversight
+# - Uses explicit admin check (allows both super and site admin access)
+#
+# BUSINESS RULES:
+# - Only super admins can CREATE enterprise groups
+# - Enterprise admin assigned via email invitation during creation
+# - Cannot delete enterprise groups with active members
+# - Enterprise groups are separate ecosystem from teams and direct users
+#
+# INTEGRATION WITH TRIPLE-TRACK SYSTEM:
+# - Enterprise groups are third track (separate from direct users and teams)
+# - Members are invitation-only and cannot be other user types
+# - Completely independent billing and management structure
+#
+# AUDIT & ACTIVITY:
+# - Includes ActivityTrackable for admin action logging
+# - All enterprise group actions tracked for security compliance
 class Admin::Super::EnterpriseGroupsController < ApplicationController
   include ActivityTrackable
   include Paginatable
@@ -5,17 +31,60 @@ class Admin::Super::EnterpriseGroupsController < ApplicationController
   before_action :require_admin!
   before_action :set_enterprise_group, only: [ :show, :edit, :update, :destroy ]
 
+  # Display paginated list of all enterprise groups for super admin management
+  #
+  # ENTERPRISE DATA:
+  # - All enterprise groups in the system
+  # - Includes admin and plan information for management context
+  # - Recent groups first for management relevance
+  #
+  # SECURITY:
+  # - Uses Pundit policy_scope for authorization consistency
+  # - Includes associations to prevent N+1 queries
+  #
+  # MANAGEMENT USE CASES:
+  # - Overview of all enterprise customers
+  # - Monitor enterprise group growth and status
+  # - Access individual enterprise group management
   def index
     @enterprise_groups = policy_scope(EnterpriseGroup).includes(:admin, :plan)
                                                       .order(created_at: :desc)
     @pagy, @enterprise_groups = pagy(@enterprise_groups, items: @items_per_page, page: @page)
   end
 
+  # Display detailed enterprise group information with member overview
+  #
+  # ENTERPRISE DETAILS:
+  # - Enterprise group settings and configuration
+  # - Current members and their roles
+  # - Plan and billing status information
+  #
+  # SECURITY:
+  # - Uses Pundit authorization to verify admin access
+  # - Shows sensitive enterprise information to authorized admins
+  #
+  # MANAGEMENT CONTEXT:
+  # - Complete enterprise group overview for administration
+  # - Member management context and invitation status
   def show
     authorize @enterprise_group
     @members = @enterprise_group.users
   end
 
+  # Display new enterprise group creation form
+  #
+  # FORM SETUP:
+  # - New enterprise group instance for form binding
+  # - Available enterprise plans for selection
+  # - Available admins (direct users not owning teams)
+  #
+  # BUSINESS LOGIC:
+  # - Only active enterprise plans shown
+  # - Admin selection limited to eligible direct users
+  # - Enterprise admin assigned via email invitation (not direct assignment)
+  #
+  # AUTHORIZATION:
+  # - Verifies super admin can create enterprise groups
   def new
     @enterprise_group = EnterpriseGroup.new
     authorize @enterprise_group
@@ -23,6 +92,33 @@ class Admin::Super::EnterpriseGroupsController < ApplicationController
     @available_admins = User.direct_users.active.where(owns_team: false)
   end
 
+  # Create enterprise group with admin invitation workflow
+  #
+  # CREATION PROCESS:
+  # 1. Validate admin email is provided and unique
+  # 2. Create enterprise group with super admin as creator
+  # 3. Create invitation for designated admin
+  # 4. Send invitation email to future admin
+  #
+  # VALIDATION RULES:
+  # - Admin email is required for enterprise group creation
+  # - Admin email must not already exist in system (new users only)
+  # - Standard enterprise group validation (name, plan, etc.)
+  #
+  # INVITATION WORKFLOW:
+  # - Creates invitation with "admin" role and "enterprise" type
+  # - Records current super admin as inviter for audit trail
+  # - Sends email invitation (immediate in dev, background in production)
+  #
+  # TRANSACTION SAFETY:
+  # - Uses database transaction to ensure atomicity
+  # - Rolls back if any step fails (group creation or invitation)
+  # - Comprehensive error handling and logging
+  #
+  # BUSINESS RULES:
+  # - Enterprise admins must be invited (not existing users)
+  # - Only super admins can create enterprise groups
+  # - Each enterprise group requires a designated admin
   def create
     @enterprise_group = EnterpriseGroup.new(enterprise_group_params)
     @enterprise_group.created_by = current_user

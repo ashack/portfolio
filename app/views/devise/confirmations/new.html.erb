@@ -33,14 +33,15 @@
             <div class="w-full border-t border-gray-300"></div>
           </div>
           <div class="relative flex justify-center text-sm">
-            <span class="px-2 bg-white text-gray-500">Need help?</span>
+            <span class="px-2 bg-white text-gray-500">Already confirmed?</span>
           </div>
         </div>
 
         <div class="mt-6 text-center">
-          <div class="text-sm">
-            <%= render "devise/shared/links" %>
-          </div>
+          <p class="text-sm">
+            <%= link_to "Sign in to your account", new_session_path(resource_name), 
+                class: "font-medium text-blue-600 hover:text-blue-500" %>
+          </p>
         </div>
       </div>
     </div>

@@ -122,11 +122,16 @@ class User < ApplicationRecord
                        format: { with: /\A[a-zA-Z\s\-'\.]*\z/, message: "can only contain letters, spaces, hyphens, apostrophes, and periods" },
                        allow_blank: true
 
-  # Email validation with custom messages
-  # Enforces uniqueness case-insensitively to prevent duplicate accounts
-  validates :email, presence: { message: "is required" },
-                   uniqueness: { case_sensitive: false, message: "is already taken" },
-                   format: { with: URI::MailTo::EMAIL_REGEXP, message: "must be a valid email address" }
+  # Email validation is handled by Devise's :validatable module
+  # which includes presence, uniqueness, and format validations
+  # This prevents duplicate error messages that would occur if we added our own email validation
+
+  # Terms and Privacy Policy acceptance validation
+  # Required only during user creation (registration)
+  # These checkboxes must be checked during registration to ensure legal compliance
+  # The 'on: :create' ensures existing users aren't affected by this requirement
+  validates :terms_accepted, acceptance: { message: "must be accepted" }, on: :create
+  validates :privacy_accepted, acceptance: { message: "must be accepted" }, on: :create
 
   # CR-A1: Strong password requirements
   # Enforces: 8+ chars, uppercase, lowercase, number, special character
@@ -691,6 +696,37 @@ class User < ApplicationRecord
     unless acceptable_types.include?(avatar.blob.content_type)
       errors.add(:avatar, "must be a JPEG, PNG, GIF, or WebP image")
     end
+  end
+
+  # ========================================================================
+  # DEVISE OVERRIDES FOR SECURITY
+  # ========================================================================
+
+  # Override Devise's method to prevent unconfirmed users from resetting password
+  # This prevents bypassing email verification through password reset
+  #
+  # Security vulnerability fix:
+  # Without this override, users could:
+  # 1. Register without confirming email
+  # 2. Request password reset
+  # 3. Use reset link to bypass email verification
+  #
+  # @param attributes [Hash] Contains email address for password reset
+  # @return [User] User object with errors if unconfirmed
+  def self.send_reset_password_instructions(attributes = {})
+    # Find user by email or initialize with errors
+    recoverable = find_or_initialize_with_errors(reset_password_keys, attributes, :not_found)
+
+    # Security check: Ensure user is confirmed before allowing password reset
+    if recoverable.persisted? && !recoverable.confirmed?
+      # Add custom error message (defined in devise.en.yml)
+      recoverable.errors.add(:email, :not_confirmed)
+      return recoverable
+    end
+
+    # Only send reset instructions if user exists and is confirmed
+    recoverable.send_reset_password_instructions if recoverable.persisted?
+    recoverable
   end
 
   # ========================================================================

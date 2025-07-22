@@ -40,7 +40,8 @@ Rails.application.routes.draw do
   devise_for :users, controllers: {
     registrations: "users/registrations",
     sessions: "users/sessions",
-    confirmations: "users/confirmations"
+    confirmations: "users/confirmations",
+    passwords: "users/passwords"
   }
   
   # Custom devise routes
@@ -68,6 +69,8 @@ Rails.application.routes.draw do
   get "/features", to: "pages#features"
   get "/choose-plan-type", to: "pages#choose_plan_type", as: :choose_plan_type
   get "/contact-sales", to: "pages#contact_sales", as: :contact_sales
+  get "/terms", to: "pages#terms"
+  get "/privacy", to: "pages#privacy"
 
   # Health check
   get "up" => "rails/health#show", as: :rails_health_check

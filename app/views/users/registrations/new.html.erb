@@ -1,16 +1,23 @@
+<%# Registration page for new users %>
+<%# Handles both direct registration and invitation-based registration %>
 <div class="min-h-screen bg-gray-100 flex flex-col justify-center py-6 px-4 sm:px-6">
   <div class="sm:mx-auto sm:w-full sm:max-w-lg">
+    <%# Dynamic heading based on registration type %>
     <h2 class="text-center text-3xl font-extrabold text-gray-900">
       <% if @invitation %>
+        <%# User is registering via team invitation %>
         Complete your registration
       <% else %>
+        <%# Direct user registration %>
         Create your account
       <% end %>
     </h2>
     <p class="mt-2 text-center text-sm text-gray-600">
       <% if @invitation %>
+        <%# Show team info for invited users %>
         You're joining <strong><%= @invitation.team.name %></strong> as a <strong><%= @invitation.role %></strong>
       <% else %>
+        <%# Show sign-in link for direct users %>
         Already Joined?
         <%= link_to "Sign in", new_session_path(resource_name), class: "font-medium text-blue-600 hover:text-blue-500" %>
       <% end %>
@@ -19,14 +26,29 @@
 
   <div class="mt-4 sm:mx-auto sm:w-full sm:max-w-lg">
     <div class="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
-      <%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: { class: "space-y-6" }) do |f| %>
+      <%# Registration form with client-side validation %>
+      <%# Stimulus controller handles real-time validation and form submission %>
+      <%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: { 
+          class: "space-y-6",
+          data: { 
+            controller: "registration-validation",
+            action: "submit->registration-validation#handleSubmit"
+          }
+        }) do |f| %>
+        <%# Display server-side validation errors if any %>
         <%= render "devise/shared/error_messages", resource: resource %>
 
+        <%# Name fields in two-column grid on larger screens %>
         <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+          <%# First name field with validation %>
           <div>
             <%= f.label :first_name, class: "block text-sm font-medium text-gray-700" %>
             <div class="mt-1">
-              <%= f.text_field :first_name, autofocus: true, autocomplete: "given-name",
+              <%= f.text_field :first_name, 
+                  autofocus: true, # Focus on first field
+                  autocomplete: "given-name", # Help browser autofill
+                  required: true, # HTML5 validation
+                  data: { "registration-validation-target": "firstName" }, # Stimulus target
                   class: "appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" %>
             </div>
           </div>
@@ -35,6 +57,8 @@
             <%= f.label :last_name, class: "block text-sm font-medium text-gray-700" %>
             <div class="mt-1">
               <%= f.text_field :last_name, autocomplete: "family-name",
+                  required: true,
+                  data: { "registration-validation-target": "lastName" },
                   class: "appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" %>
             </div>
           </div>
@@ -45,6 +69,8 @@
           <div class="mt-1">
             <%= f.email_field :email, autocomplete: "email",
                 readonly: @invitation.present?,
+                required: true,
+                data: { "registration-validation-target": "email" },
                 class: "appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm #{'bg-gray-100' if @invitation.present?}" %>
           </div>
           <% if @invitation %>
@@ -59,6 +85,8 @@
           <% end %>
           <div class="mt-1">
             <%= f.password_field :password, autocomplete: "new-password",
+                required: true,
+                data: { "registration-validation-target": "password" },
                 class: "appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" %>
           </div>
         </div>
@@ -67,12 +95,48 @@
           <%= f.label :password_confirmation, class: "block text-sm font-medium text-gray-700" %>
           <div class="mt-1">
             <%= f.password_field :password_confirmation, autocomplete: "new-password",
+                required: true,
+                data: { "registration-validation-target": "passwordConfirmation" },
                 class: "appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" %>
           </div>
         </div>
 
+        <%# Legal agreements section - only shown for direct users %>
+        <%# Invited users don't need to accept terms as they're covered by their team's agreement %>
         <% unless @invitation %>
-          <!-- Plan selection has been moved to onboarding flow after email verification -->
+          <div class="border-t border-gray-200 pt-6">
+            <h3 class="text-sm font-medium text-gray-900 mb-3">Legal Agreements</h3>
+            
+            <div class="space-y-4">
+              <div class="flex items-start">
+                <div class="flex items-center h-5">
+                  <%= f.check_box :terms_accepted, 
+                      required: true,
+                      data: { "registration-validation-target": "termsCheckbox" },
+                      class: "h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded" %>
+                </div>
+                <div class="ml-3 text-sm">
+                  <%= f.label :terms_accepted, class: "font-medium text-gray-700" do %>
+                    I agree to the <%= link_to "Terms of Service", terms_path, target: "_blank", class: "text-blue-600 hover:text-blue-500 underline" %>
+                  <% end %>
+                </div>
+              </div>
+
+              <div class="flex items-start">
+                <div class="flex items-center h-5">
+                  <%= f.check_box :privacy_accepted, 
+                      required: true,
+                      data: { "registration-validation-target": "privacyCheckbox" },
+                      class: "h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded" %>
+                </div>
+                <div class="ml-3 text-sm">
+                  <%= f.label :privacy_accepted, class: "font-medium text-gray-700" do %>
+                    I agree to the <%= link_to "Privacy Policy", privacy_path, target: "_blank", class: "text-blue-600 hover:text-blue-500 underline" %>
+                  <% end %>
+                </div>
+              </div>
+            </div>
+          </div>
         <% else %>
           <!-- Show team info for invited users -->
           <div class="border-t border-gray-200 pt-6">
@@ -95,11 +159,15 @@
           <%= hidden_field_tag :invitation_token, @invitation.token %>
         <% end %>
 
+        <%# Submit button - disabled by JS validation if terms not accepted %>
         <div>
-          <%= f.submit "Create Account", class: "w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" %>
+          <%= f.submit "Create Account", 
+              data: { "registration-validation-target": "submitButton" },
+              class: "w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" %>
         </div>
       <% end %>
 
+      <%# Sign in link section - cleaner than devise/shared/links %>
       <div class="mt-6">
         <div class="relative">
           <div class="absolute inset-0 flex items-center">
@@ -112,7 +180,8 @@
 
         <div class="mt-6 text-center">
           <div class="text-sm">
-            <%= render "devise/shared/links" %>
+            <%# Simple sign-in link instead of rendering all devise links %>
+            <%= link_to "Sign in to your account", new_session_path(resource_name), class: "font-medium text-blue-600 hover:text-blue-500" %>
           </div>
         </div>
       </div>

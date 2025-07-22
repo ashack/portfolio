@@ -40,6 +40,9 @@ application.register("pagination", PaginationController)
 import PlanSelectionController from "controllers/plan_selection_controller"
 application.register("plan-selection", PlanSelectionController)
 
+import RegistrationValidationController from "controllers/registration_validation_controller"
+application.register("registration-validation", RegistrationValidationController)
+
 import RightSidebarController from "controllers/right_sidebar_controller"
 application.register("right-sidebar", RightSidebarController)
 

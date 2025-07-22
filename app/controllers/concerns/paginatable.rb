@@ -1,26 +1,86 @@
 # frozen_string_literal: true
 
-# Paginatable concern provides comprehensive pagination functionality to controllers
+# Paginatable Concern
 #
-# Features:
+# OVERVIEW:
+# This concern provides comprehensive pagination functionality to controllers across
+# the triple-track SaaS system. It handles pagination parameters, user preferences,
+# filter preservation, and provides helper methods for consistent pagination
+# behavior throughout the application.
+#
+# PURPOSE:
+# - Standardize pagination across all controllers and user types
+# - Persist user pagination preferences per controller
+# - Preserve filter parameters across page navigation  
+# - Validate pagination parameters for security
+# - Support modern UX with Turbo Frame AJAX pagination
+# - Provide consistent pagination URLs and helpers
+#
+# INTEGRATION WITH TRIPLE-TRACK SYSTEM:
+# This concern works universally across all user contexts:
+# 1. DIRECT USERS: Personal pagination preferences in individual dashboard
+# 2. TEAM MEMBERS: Team-scoped pagination preferences  
+# 3. ENTERPRISE USERS: Enterprise-scoped pagination preferences
+# 4. ADMIN USERS: Admin-specific pagination for user/team management
+#
+# KEY FEATURES:
 # - Automatic pagination parameter handling (page, per_page)
 # - User preference persistence per controller
 # - Filter parameter preservation across page navigation
 # - Validation of allowed per_page values
 # - Turbo Frame support for AJAX pagination
 # - Helper methods for views
+# - URL generation with preserved filters
 #
-# Usage:
-#   class UsersController < ApplicationController
-#     include Paginatable
+# SECURITY CONSIDERATIONS:
+# - Validates per_page values against allowed list
+# - Prevents excessive page sizes that could impact performance
+# - Sanitizes pagination parameters to prevent injection
+# - Preserves only permitted filter parameters
 #
-#     def index
-#       @pagy, @users = pagy(User.all, items: @items_per_page)
-#     end
-#   end
+# PERFORMANCE OPTIMIZATIONS:
+# - Efficient database pagination with Pagy gem
+# - Smart caching of user preferences
+# - Minimal database queries for preference loading
+# - Optimized filter parameter handling
 #
-# View usage:
-#   <%= render 'shared/pagination', pagy: @pagy, turbo_frame: 'users' %>
+# EXTERNAL DEPENDENCIES:
+# - Pagy gem for efficient pagination
+# - UserPreference model for storing user settings
+# - Rails strong parameters for security
+#
+# USAGE EXAMPLES:
+# 1. Basic controller integration:
+#    class UsersController < ApplicationController
+#      include Paginatable
+#
+#      def index
+#        @pagy, @users = pagy(User.all, items: @items_per_page)
+#      end
+#    end
+#
+# 2. With custom filters:
+#    class TeamsController < ApplicationController
+#      include Paginatable
+#
+#      private
+#
+#      def filter_params
+#        params.permit(:search, :status, :created_since).to_h.symbolize_keys
+#      end
+#    end
+#
+# 3. View usage with Turbo Frames:
+#    <%= turbo_frame_tag "users_list" do %>
+#      <!-- user list content -->
+#      <%= render 'shared/pagination', pagy: @pagy, turbo_frame: 'users_list' %>
+#    <% end %>
+#
+# BUSINESS LOGIC:
+# - Each controller can have independent pagination preferences
+# - Pagination state survives across filter changes
+# - User preferences are controller-specific for better UX
+# - Anonymous users get default pagination without persistence
 #
 module Paginatable
   extend ActiveSupport::Concern
