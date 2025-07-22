@@ -339,6 +339,71 @@ The application now supports three distinct user ecosystems:
 - **Performance**: Excellent response times and no N+1 queries
 - **Documentation**: Fully updated and consolidated
 
+## Onboarding Flow Implementation (January 2025)
+
+### Direct User Onboarding Improvements
+- **Problem**: Direct users were forced to select a plan during registration, creating a poor UX
+- **Solution**: Moved plan selection to post-email-verification onboarding flow
+- **Implementation**:
+  - Added onboarding tracking fields to users table (`onboarding_completed`, `onboarding_step`)
+  - Created `Users::OnboardingController` with complete flow management
+  - Implemented welcome screen and plan selection interface
+  - Added `OnboardingCheck` concern to ensure users complete onboarding
+  - Modified registration to skip plan assignment for direct users
+
+### Key Changes
+- **Database Migration**: Added onboarding fields with proper indexes
+- **Controllers**:
+  - `Users::OnboardingController` - Manages welcome, plan selection, and completion
+  - `Users::RegistrationsController` - Removed plan assignment during signup
+  - `ApplicationController` - Added onboarding check middleware
+- **Views**: 
+  - Welcome screen with user greeting
+  - Plan selection with dynamic team name input for team plans
+  - Removed plan selection from registration form
+- **Business Logic**:
+  - Direct users register without plan selection
+  - After email verification, redirected to onboarding
+  - Team plan selection creates team automatically
+  - Onboarding completion tracked in database
+
+### CSRF Protection Fix
+- **Problem**: Login failed with "Your session has expired" due to CSRF token issues
+- **Solution**: Proper CSRF configuration without compromising security
+- **Changes**:
+  - Set `config.clean_up_csrf_token_on_authentication = false` in Devise
+  - Disabled per-form CSRF tokens for session-based tokens
+  - Disabled origin check in development only
+  - Maintained full CSRF protection on all POST requests
+- **Security**: No vulnerabilities introduced, full protection maintained
+- **Documentation**: Created `/tmp/csrf_security_solution.md` with complete details
+
+### Benefits
+- Improved user experience with guided onboarding
+- Flexibility to explore before plan commitment
+- Clean separation of registration and plan selection
+- Secure authentication flow maintained
+- Team creation integrated into onboarding
+
+### Email Verification Enforcement (January 2025)
+- **Problem**: Direct users could potentially access the application without verifying their email
+- **Solution**: Implemented mandatory email verification screen for unconfirmed users
+- **Implementation**:
+  - Created `Users::EmailVerificationController` to handle verification flow
+  - Added email verification view with clear messaging and resend functionality
+  - Updated `ApplicationController` to redirect unconfirmed direct users
+  - Modified `ResendConfirmationService` to allow self-service confirmation resend
+  - Updated `OnboardingCheck` concern to skip checks for unconfirmed users
+- **User Experience**:
+  - Unconfirmed users see dedicated verification screen when signing in
+  - Can easily resend verification email with one click
+  - Clear instructions and helpful tips for finding verification emails
+  - Confirmed users never see this screen (automatic redirect)
+- **Security Benefits**:
+  - Ensures all users have verified email addresses
+  - Prevents spam and fraudulent account creation
+  - Maintains secure communication channel for account updates
+
 ## Conclusion
 
 The transformation to a triple-track system with enterprise support, combined with recent performance optimizations and UI/UX improvements, represents a significant architectural evolution. The implementation maintains backward compatibility while adding powerful new features for large organizations and ensuring the application scales efficiently. The codebase remains clean, well-documented, and ready for future enhancements. Documentation has been fully updated and consolidated as of January 2025.

@@ -32,14 +32,19 @@
             <div class="w-full border-t border-gray-300"></div>
           </div>
           <div class="relative flex justify-center text-sm">
-            <span class="px-2 bg-white text-gray-500">Need help?</span>
+            <span class="px-2 bg-white text-gray-500">Account unlocked?</span>
           </div>
         </div>
 
-        <div class="mt-6 text-center">
-          <div class="text-sm">
-            <%= render "devise/shared/links" %>
-          </div>
+        <div class="mt-6 text-center space-y-2">
+          <p class="text-sm">
+            <%= link_to "Sign in to your account", new_session_path(resource_name), 
+                class: "font-medium text-blue-600 hover:text-blue-500" %>
+          </p>
+          <p class="text-sm text-gray-600">
+            Need help? Contact support at 
+            <a href="mailto:support@example.com" class="text-blue-600 hover:text-blue-500">support@example.com</a>
+          </p>
         </div>
       </div>
     </div>

@@ -1,19 +1,18 @@
 <div class="min-h-screen bg-gray-100 flex flex-col justify-center py-6 px-4 sm:px-6">
   <div class="sm:mx-auto sm:w-full sm:max-w-lg">
     <h2 class="text-center text-3xl font-extrabold text-gray-900">
-      Create your account
+      Create your Account
     </h2>
     <p class="mt-2 text-center text-sm text-gray-600">
-      Or
-      <%= link_to "sign in to existing account", new_session_path(resource_name), class: "font-medium text-blue-600 hover:text-blue-500" %>
+      Already Joined?
+      <%= link_to "Sign in", new_session_path(resource_name), class: "font-medium text-blue-600 hover:text-blue-500" %>
     </p>
   </div>
 
   <div class="mt-4 sm:mx-auto sm:w-full sm:max-w-lg">
     <div class="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
-      <%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: { class: "space-y-6", data: { controller: "plan-selection" } }) do |f| %>
+      <%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: { class: "space-y-6" }) do |f| %>
         <%= render "devise/shared/error_messages", resource: resource %>
-        <%= hidden_field_tag "user[plan_segment]", @plan_segment %>
 
         <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
           <div>
@@ -58,24 +57,6 @@
             <%= f.password_field :password_confirmation, autocomplete: "new-password",
                 class: "appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" %>
           </div>
-        </div>
-
-        <% if @available_plans.present? %>
-          <div class="border-t border-gray-200 pt-6">
-            <%= render 'plan_selection' %>
-          </div>
-        <% end %>
-        
-        <!-- Team Name Field (shown only when team plan is selected) -->
-        <div data-plan-selection-target="teamNameField" class="hidden">
-          <label for="user_team_name" class="block text-sm font-medium text-gray-700">Team Name</label>
-          <div class="mt-1">
-            <input type="text" name="user[team_name]" id="user_team_name" 
-                   data-plan-selection-target="teamNameInput"
-                   class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                   placeholder="Enter your team name">
-          </div>
-          <p class="mt-1 text-sm text-gray-500">This will be your team's name and URL identifier</p>
         </div>
 
         <div>

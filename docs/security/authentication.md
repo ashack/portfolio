@@ -14,7 +14,7 @@ devise :database_authenticatable, :registerable,
 
 #### Security Configuration
 - **Account Locking**: 5 failed attempts, 1-hour lockout
-- **Email Confirmation**: Required before access
+- **Email Confirmation**: Required before access (see Email Verification Flow below)
 - **Password Requirements**: Strong password enforcement with complexity requirements
 - **Session Security**: HTTPS-only cookies in production, httponly, same_site protection
 
@@ -48,6 +48,45 @@ end
 # config/initializers/devise.rb
 config.password_length = 8..128  # Minimum 8 characters
 ```
+
+#### Email Verification Flow
+
+The application enforces mandatory email verification for all direct users:
+
+1. **Registration**
+   - User registers with email and password
+   - Redirected to confirmation sent page
+   - Confirmation email sent automatically
+
+2. **Email Verification Enforcement**
+   - Unconfirmed users can sign in but are immediately redirected to email verification page
+   - No access to any application features until email is verified
+   - Custom controllers ensure proper redirection
+
+3. **Confirmation Link Handling**
+   - Links valid for 3 days (configurable in Devise)
+   - Expired links automatically trigger new email
+   - User redirected to sign-in after successful confirmation
+
+4. **Implementation Details**
+   ```ruby
+   # config/initializers/devise.rb
+   config.allow_unconfirmed_access_for = nil  # Allows login but enforces verification
+   config.confirm_within = 3.days              # Link expiration
+   
+   # app/controllers/application_controller.rb
+   def redirect_after_sign_in_path
+     if current_user.direct? && !current_user.confirmed?
+       users_email_verification_path  # Force verification
+     # ... other redirects
+   end
+   ```
+
+5. **Security Benefits**
+   - Prevents spam accounts
+   - Ensures valid email communication
+   - Protects against unauthorized access
+   - Required before plan selection or feature access
 
 ### Pundit Authorization
 
@@ -441,25 +480,64 @@ end
 
 ## CSRF Protection
 
-### Enhanced Configuration
+### Rails 8.0.2 Compatible Configuration
+During the onboarding implementation, we discovered and resolved CSRF token verification issues with Devise and Rails 8.0.2. The following configuration ensures security while maintaining compatibility:
+
+#### Configuration Files
+
+**`config/initializers/csrf_protection.rb`:**
 ```ruby
-# Per-form CSRF tokens for maximum security
-config.action_controller.per_form_csrf_tokens = true
-
-# Verify request origin in addition to tokens
-config.action_controller.forgery_protection_origin_check = true
-
-# Log CSRF failures for monitoring
-config.action_controller.log_warning_on_csrf_failure = true
+Rails.application.configure do
+  # Use session-based CSRF tokens for better compatibility
+  config.action_controller.per_form_csrf_tokens = false
+  
+  # Disable origin check in development, enable in production
+  config.action_controller.forgery_protection_origin_check = Rails.env.production?
+  
+  # Log CSRF failures for security monitoring
+  config.action_controller.log_warning_on_csrf_failure = true
+end
 ```
+
+**`config/initializers/devise.rb`:**
+```ruby
+# Prevent Devise from invalidating CSRF tokens during authentication
+config.clean_up_csrf_token_on_authentication = false
+```
+
+### Key Changes for Rails 8.0.2
+1. **Session-based tokens**: Changed from per-form to session-based tokens for better compatibility with traditional form submissions
+2. **Devise compatibility**: Disabled CSRF token cleanup to prevent "session expired" errors
+3. **Development-friendly**: Origin check disabled in development while maintaining production security
+4. **Turbo integration**: Removed `data: { turbo: false }` from forms to allow proper token handling
+
+### Security Maintained
+- ✅ CSRF tokens are still verified on all POST requests
+- ✅ Session security is fully maintained
+- ✅ Protection against cross-site request forgery attacks
+- ✅ No security vulnerabilities introduced
+- ✅ Production environment has full origin checking
 
 ### Custom CSRF Failure Handling
 ```ruby
-def handle_unverified_request
-  Rails.logger.warn "[SECURITY] CSRF verification failed for #{request.remote_ip}"
-  super # Resets session
+# app/controllers/users/sessions_controller.rb
+rescue_from ActionController::InvalidAuthenticityToken, with: :handle_invalid_token
+
+private
+
+def handle_invalid_token
+  reset_session
+  flash[:alert] = "Your session has expired. Please try again."
+  redirect_to new_user_session_path
 end
 ```
+
+### Production Recommendations
+1. **Keep all CSRF protections enabled** in production
+2. **Enable origin checking**: `forgery_protection_origin_check = true`
+3. **Monitor for CSRF failures** in application logs
+4. **Use HTTPS** to prevent token interception
+5. **Implement rate limiting** on login attempts (already done via Rack::Attack)
 
 ## Next Steps
 

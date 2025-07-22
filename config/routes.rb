@@ -39,8 +39,16 @@ Rails.application.routes.draw do
 
   devise_for :users, controllers: {
     registrations: "users/registrations",
-    sessions: "users/sessions"
+    sessions: "users/sessions",
+    confirmations: "users/confirmations",
+    passwords: "users/passwords"
   }
+  
+  # Custom devise routes
+  devise_scope :user do
+    get 'users/registrations/confirmation_sent', to: 'users/registrations#confirmation_sent', as: :confirmation_sent_users_registrations
+    get 'users/confirmations/expired', to: 'users/confirmations#expired', as: :expired_users_confirmations
+  end
 
   # Devise showcase (remove in production)
   get "devise_showcase", to: "devise_showcase#index" if Rails.env.development?
@@ -61,6 +69,8 @@ Rails.application.routes.draw do
   get "/features", to: "pages#features"
   get "/choose-plan-type", to: "pages#choose_plan_type", as: :choose_plan_type
   get "/contact-sales", to: "pages#contact_sales", as: :contact_sales
+  get "/terms", to: "pages#terms"
+  get "/privacy", to: "pages#privacy"
 
   # Health check
   get "up" => "rails/health#show", as: :rails_health_check
@@ -146,6 +156,18 @@ Rails.application.routes.draw do
       resources :plan_migrations, only: [ :new, :create ]
       resources :profile, only: [ :show, :edit, :update ]
       resource :settings, only: [ :show, :update ]
+      
+      # Email verification routes
+      resource :email_verification, controller: 'email_verification', only: [ :show ] do
+        post :resend
+      end
+      
+      # Onboarding routes
+      resource :onboarding, only: [ :show ], controller: 'onboarding' do
+        get :plan_selection
+        post :update_plan
+        get :complete
+      end
     end
   end
 

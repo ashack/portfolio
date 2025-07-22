@@ -1,0 +1,71 @@
+<div class="min-h-screen bg-gray-100 flex flex-col justify-center py-6 px-4 sm:px-6">
+  <div class="sm:mx-auto sm:w-full sm:max-w-lg">
+    <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-yellow-100">
+      <%= icon "envelope", class: "h-6 w-6 text-yellow-600" %>
+    </div>
+    <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
+      Check your email
+    </h2>
+    <p class="mt-2 text-center text-sm text-gray-600">
+      We've sent a verification link to
+    </p>
+    <p class="mt-2 text-center text-sm font-medium text-gray-900">
+      <%= current_user.email %>
+    </p>
+  </div>
+
+  <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-lg">
+    <div class="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+      <div class="space-y-6">
+        <!-- Info message -->
+        <div class="rounded-md bg-yellow-50 p-4">
+          <div class="flex">
+            <div class="flex-shrink-0">
+              <%= icon "info", class: "h-5 w-5 text-yellow-400" %>
+            </div>
+            <div class="ml-3">
+              <h3 class="text-sm font-medium text-yellow-800">
+                Almost there!
+              </h3>
+              <div class="mt-2 text-sm text-yellow-700">
+                <p>Click the link in your email to verify your account and continue to your dashboard.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Resend button -->
+        <%= form_with url: resend_users_email_verification_path, method: :post, local: true do |f| %>
+          <%= f.submit "Resend verification email", 
+              class: "w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" %>
+        <% end %>
+
+        <!-- Help text -->
+        <div class="text-sm text-gray-600 text-center">
+          <p>
+            Didn't receive the email? Check your spam folder.
+          </p>
+        </div>
+      </div>
+
+      <div class="mt-6">
+        <div class="relative">
+          <div class="absolute inset-0 flex items-center">
+            <div class="w-full border-t border-gray-300"></div>
+          </div>
+          <div class="relative flex justify-center text-sm">
+            <span class="px-2 bg-white text-gray-500">Need help?</span>
+          </div>
+        </div>
+
+        <div class="mt-6 text-center">
+          <div class="text-sm">
+            <%= link_to "Back to sign in", new_user_session_path, class: "font-medium text-blue-600 hover:text-blue-500" %>
+            <span class="mx-2 text-gray-400">•</span>
+            <%= link_to "Contact support", "#", class: "font-medium text-blue-600 hover:text-blue-500" %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

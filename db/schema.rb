@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_07_10_155428) do
+ActiveRecord::Schema[8.0].define(version: 2025_07_21_135402) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -461,6 +461,10 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_10_155428) do
     t.boolean "two_factor_enabled", default: false
     t.string "two_factor_secret"
     t.json "two_factor_backup_codes"
+    t.boolean "onboarding_completed", default: false, null: false
+    t.string "onboarding_step"
+    t.boolean "terms_accepted", default: false, null: false
+    t.boolean "privacy_accepted", default: false, null: false
     t.index "LOWER(email)", name: "index_users_on_lower_email"
     t.index ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true
     t.index ["email", "status"], name: "index_users_on_email_and_status"
@@ -468,6 +472,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_10_155428) do
     t.index ["enterprise_group_id", "enterprise_group_role"], name: "index_users_on_enterprise_associations"
     t.index ["enterprise_group_id"], name: "index_users_on_enterprise_group_id"
     t.index ["last_activity_at"], name: "index_users_on_last_activity_at"
+    t.index ["onboarding_completed"], name: "index_users_on_onboarding_completed"
     t.index ["plan_id"], name: "index_users_on_plan_id"
     t.index ["profile_visibility"], name: "index_users_on_profile_visibility"
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true

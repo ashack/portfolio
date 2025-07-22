@@ -26,7 +26,9 @@ class Users::ResendConfirmationService
   private
 
   def can_resend_confirmation?
-    @admin_user.super_admin?
+    # Super admins can resend for any user
+    # Users can resend their own confirmation
+    @admin_user.super_admin? || (@admin_user.id == @target_user.id)
   end
 
   def log_resend_confirmation

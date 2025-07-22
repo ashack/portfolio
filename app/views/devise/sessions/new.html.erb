@@ -13,7 +13,37 @@
 
   <div class="mt-4 sm:mx-auto sm:w-full sm:max-w-md">
     <div class="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
-      <%= form_for(resource, as: resource_name, url: session_path(resource_name), html: { class: "space-y-6", data: { turbo: true } }) do |f| %>
+      <% if flash[:alert] %>
+        <div class="mb-4 rounded-md bg-red-50 p-4">
+          <div class="flex">
+            <div class="flex-shrink-0">
+              <%= icon "x-circle", class: "h-5 w-5 text-red-400" %>
+            </div>
+            <div class="ml-3">
+              <h3 class="text-sm font-medium text-red-800">
+                <%= flash[:alert] %>
+              </h3>
+            </div>
+          </div>
+        </div>
+      <% end %>
+
+      <% if flash[:notice] %>
+        <div class="mb-4 rounded-md bg-green-50 p-4">
+          <div class="flex">
+            <div class="flex-shrink-0">
+              <%= icon "check-circle", class: "h-5 w-5 text-green-400" %>
+            </div>
+            <div class="ml-3">
+              <h3 class="text-sm font-medium text-green-800">
+                <%= flash[:notice] %>
+              </h3>
+            </div>
+          </div>
+        </div>
+      <% end %>
+
+      <%= form_for(resource, as: resource_name, url: session_path(resource_name), html: { class: "space-y-6" }) do |f| %>
         <div>
           <%= f.label :email, class: "block text-sm font-medium text-gray-700" %>
           <div class="mt-1">
@@ -60,14 +90,16 @@
             <div class="w-full border-t border-gray-300"></div>
           </div>
           <div class="relative flex justify-center text-sm">
-            <span class="px-2 bg-white text-gray-500">Or continue with</span>
+            <span class="px-2 bg-white text-gray-500">Need help?</span>
           </div>
         </div>
 
         <div class="mt-6 text-center">
-          <div class="text-sm">
-            <%= render "devise/shared/links" %>
-          </div>
+          <p class="text-sm text-gray-600">
+            Don't have an account? 
+            <%= link_to "Sign up", new_registration_path(resource_name), 
+                class: "font-medium text-blue-600 hover:text-blue-500" %>
+          </p>
         </div>
       </div>
     </div>
