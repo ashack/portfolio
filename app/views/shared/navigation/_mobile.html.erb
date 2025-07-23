@@ -1,0 +1,49 @@
+<nav class="space-y-1" aria-label="Mobile navigation">
+  <% navigation_items.each do |item| %>
+    <% if item[:type] == :header %>
+      <div class="px-3 pt-4 pb-2">
+        <h3 class="<%= component.section_header_classes %>">
+          <%= item[:label] %>
+        </h3>
+      </div>
+    <% elsif item[:has_children] %>
+      <div data-controller="disclosure">
+        <button type="button"
+                data-action="click->disclosure#toggle"
+                data-disclosure-target="button"
+                class="<%= component.link_classes(item, 'group flex w-full items-center gap-x-3 rounded-md py-2 px-3 text-base font-medium') %>"
+                aria-expanded="<%= item[:active] ? 'true' : 'false' %>">
+          <%= component.render_icon(item[:icon], css_class: component.icon_classes(item)) %>
+          <%= item[:label] %>
+          <%= icon "phosphor/caret-down", class: "ml-auto h-5 w-5 shrink-0 transition-transform duration-200", data: { disclosure_target: "icon" } %>
+        </button>
+      </div>
+    <% elsif item[:indented] %>
+      <%= link_to item[:path],
+                  class: component.link_classes(item, 'group flex gap-x-3 rounded-md py-2 pl-11 pr-3 text-sm font-medium'),
+                  method: item[:method] || :get,
+                  data: item[:external] ? { turbo: false } : {} do %>
+        <% if item[:icon] %>
+          <%= component.render_icon(item[:icon], css_class: component.icon_classes(item)) %>
+        <% end %>
+        <%= item[:label] %>
+        <%= component.render_badge(item[:badge]) if item[:badge] %>
+        <% if item[:external] %>
+          <%= icon "phosphor/arrow-square-out", class: "ml-auto h-4 w-4" %>
+        <% end %>
+      <% end %>
+    <% else %>
+      <%= link_to item[:path],
+                  class: component.link_classes(item, 'group flex gap-x-3 rounded-md py-2 px-3 text-base font-medium'),
+                  method: item[:method] || :get,
+                  data: item[:external] ? { turbo: false } : {} do %>
+        <%= component.render_icon(item[:icon], css_class: component.icon_classes(item)) %>
+        <%= item[:label] %>
+        <%= component.render_badge(item[:badge]) if item[:badge] %>
+        <% if item[:external] %>
+          <%= icon "phosphor/arrow-square-out", class: "ml-auto h-4 w-4" %>
+        <% end %>
+      <% end %>
+    <% end %>
+  <% end %>
+</nav>

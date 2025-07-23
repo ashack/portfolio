@@ -2,6 +2,7 @@
 # Provides common functionality for authentication, authorization, and security
 # All controllers inherit from this class
 class ApplicationController < ActionController::Base
+  helper NavigationEngine::NavigationHelper
   # Include Pundit for policy-based authorization
   include Pundit::Authorization
   # Include Pagy for efficient pagination

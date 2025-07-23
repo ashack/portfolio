@@ -1,0 +1,50 @@
+<nav class="flex flex-1 flex-col" aria-label="Sidebar">
+  <ul role="list" class="flex flex-1 flex-col gap-y-7">
+    <!-- Main Navigation -->
+    <li>
+      <ul role="list" class="-mx-2 space-y-1">
+        <li>
+          <%= link_to users_dashboard_path, class: "group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 hover:bg-gray-50 hover:text-indigo-600 #{current_page?(users_dashboard_path) ? 'bg-gray-50 text-indigo-600' : 'text-gray-700'}" do %>
+            <%= icon "house", class: "size-6 shrink-0 #{current_page?(users_dashboard_path) ? 'text-indigo-600' : 'text-gray-400 group-hover:text-indigo-600'}" %>
+            Dashboard
+          <% end %>
+        </li>
+        <li>
+          <%= link_to users_analytics_path, class: "group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 hover:bg-gray-50 hover:text-indigo-600 #{current_page?(users_analytics_path) ? 'bg-gray-50 text-indigo-600' : 'text-gray-700'}" do %>
+            <%= icon "chart-line", class: "size-6 shrink-0 #{current_page?(users_analytics_path) ? 'text-indigo-600' : 'text-gray-400 group-hover:text-indigo-600'}" %>
+            Analytics
+          <% end %>
+        </li>
+        <li>
+          <%= link_to users_billing_index_path, class: "group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 hover:bg-gray-50 hover:text-indigo-600 #{current_page?(users_billing_index_path) ? 'bg-gray-50 text-indigo-600' : 'text-gray-700'}" do %>
+            <%= icon "credit-card", class: "size-6 shrink-0 #{current_page?(users_billing_index_path) ? 'text-indigo-600' : 'text-gray-400 group-hover:text-indigo-600'}" %>
+            Subscription
+          <% end %>
+        </li>
+        <li>
+          <%= link_to users_settings_path, class: "group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 hover:bg-gray-50 hover:text-indigo-600 #{current_page?(users_settings_path) ? 'bg-gray-50 text-indigo-600' : 'text-gray-700'}" do %>
+            <%= icon "gear", class: "size-6 shrink-0 #{current_page?(users_settings_path) ? 'text-indigo-600' : 'text-gray-400 group-hover:text-indigo-600'}" %>
+            Settings
+          <% end %>
+        </li>
+      </ul>
+    </li>
+
+    <!-- Teams Section (if user owns teams) -->
+    <% if current_user.owned_teams.any? %>
+      <li>
+        <div class="text-xs font-semibold leading-6 text-gray-400">My Teams</div>
+        <ul role="list" class="-mx-2 mt-2 space-y-1">
+          <% current_user.owned_teams.each do |team| %>
+            <li>
+              <%= link_to team_root_path(team_slug: team.slug), class: "group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 hover:bg-gray-50 hover:text-indigo-600 text-gray-700" do %>
+                <%= icon "users", class: "size-6 shrink-0 text-gray-400 group-hover:text-indigo-600" %>
+                <%= team.name %>
+              <% end %>
+            </li>
+          <% end %>
+        </ul>
+      </li>
+    <% end %>
+  </ul>
+</nav>

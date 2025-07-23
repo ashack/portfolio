@@ -1,0 +1,46 @@
+<% if item[:children] %>
+  <div data-controller="disclosure" class="relative">
+    <button type="button"
+            data-action="click->disclosure#toggle"
+            data-disclosure-target="button"
+            class="<%= component.link_classes(item, 'group flex w-full items-center gap-x-3 rounded-md p-2 text-sm font-semibold leading-6') %>"
+            aria-expanded="<%= item[:active] ? 'true' : 'false' %>">
+      <%= component.render_icon(item[:icon], css_class: component.icon_classes(item)) %>
+      <%= item[:label] %>
+      <%= icon "phosphor/caret-down", class: "ml-auto h-5 w-5 shrink-0 text-gray-400 group-hover:text-white transition-transform duration-200", data: { disclosure_target: "icon" } %>
+    </button>
+    
+    <ul class="<%= item[:active] ? '' : 'hidden' %> mt-1 px-2"
+        data-disclosure-target="content">
+      <% item[:children].each do |child| %>
+        <li>
+          <%= link_to child[:path],
+                      class: component.link_classes(child, 'group flex gap-x-3 rounded-md p-2 pl-9 text-sm leading-6 font-semibold'),
+                      method: child[:method] || :get,
+                      data: child[:external] ? { turbo: false } : {} do %>
+            <% if child[:icon] %>
+              <%= component.render_icon(child[:icon], css_class: component.icon_classes(child)) %>
+            <% end %>
+            <%= child[:label] %>
+            <%= component.render_badge(child[:badge]) if child[:badge] %>
+            <% if child[:external] %>
+              <%= icon "phosphor/arrow-square-out", class: "ml-1 h-4 w-4" %>
+            <% end %>
+          <% end %>
+        </li>
+      <% end %>
+    </ul>
+  </div>
+<% else %>
+  <%= link_to item[:path],
+              class: component.link_classes(item, 'group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold'),
+              method: item[:method] || :get,
+              data: item[:external] ? { turbo: false } : {} do %>
+    <%= component.render_icon(item[:icon], css_class: component.icon_classes(item)) %>
+    <%= item[:label] %>
+    <%= component.render_badge(item[:badge]) if item[:badge] %>
+    <% if item[:external] %>
+      <%= icon "phosphor/arrow-square-out", class: "ml-auto h-4 w-4" %>
+    <% end %>
+  <% end %>
+<% end %>

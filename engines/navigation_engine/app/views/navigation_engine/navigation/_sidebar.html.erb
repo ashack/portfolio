@@ -1,0 +1,22 @@
+<nav class="flex flex-1 flex-col" aria-label="Sidebar">
+  <ul role="list" class="flex flex-1 flex-col gap-y-7">
+    <% navigation_items.each do |item| %>
+      <% if item[:type] == :section %>
+        <li>
+          <div class="<%= component.section_header_classes %>">
+            <%= item[:label] %>
+          </div>
+          <ul role="list" class="-mx-2 mt-2 space-y-1">
+            <% item[:items].each do |nav_item| %>
+              <%= render "navigation_engine/navigation/sidebar_item", item: nav_item, component: component %>
+            <% end %>
+          </ul>
+        </li>
+      <% else %>
+        <li class="-mx-2">
+          <%= render "navigation_engine/navigation/sidebar_item", item: item, component: component %>
+        </li>
+      <% end %>
+    <% end %>
+  </ul>
+</nav>

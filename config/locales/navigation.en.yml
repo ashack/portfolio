@@ -1,0 +1,65 @@
+# Navigation labels for I18n
+en:
+  navigation:
+    # Admin navigation labels
+    admin:
+      overview: "Overview"
+      dashboard: "Dashboard"
+      management: "Management"
+      users: "Users"
+      teams: "Teams"
+      enterprise_groups: "Enterprise Groups"
+      billing_overview: "Billing Overview"
+      plans: "Plans"
+      notifications: "Notifications"
+      notification_categories: "Notification Categories"
+      announcements: "Announcements"
+      support: "Support"
+      support_tickets: "Support Tickets"
+      settings: "Settings"
+    
+    # User navigation labels
+    dashboard: "Dashboard"
+    analytics: "Analytics"
+    subscription: "Subscription"
+    billing: "Billing"
+    settings: "Settings"
+    
+    # Team navigation labels
+    team:
+      dashboard: "Team Dashboard"
+      admin: "Admin"
+      admin_dashboard: "Admin Dashboard"
+      members: "Team Members"
+      invitations: "Invitations"
+      billing: "Billing"
+      settings: "Team Settings"
+      notification_categories: "Notification Categories"
+      
+    teams:
+      my_teams: "My Teams"
+    
+    # Enterprise navigation labels
+    enterprise:
+      dashboard: "Dashboard"
+      administration: "Administration"
+      members: "Members"
+      billing: "Billing"
+      settings: "Settings"
+      notification_categories: "Notification Categories"
+    
+    # Profile navigation labels
+    profile:
+      my_profile: "My Profile"
+    
+    # Support navigation labels
+    support:
+      title: "Support"
+      documentation: "Documentation"
+      help_center: "Help Center"
+    
+    # Help navigation labels
+    help:
+      title: "Help"
+      documentation: "Documentation"
+      support: "Support"

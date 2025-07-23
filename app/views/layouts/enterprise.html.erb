@@ -61,77 +61,7 @@
                 </span>
                 <span class="ml-3 text-lg font-semibold text-gray-900"><%= @enterprise_group.name %></span>
               </div>
-              <nav class="flex flex-1 flex-col">
-                <ul role="list" class="flex flex-1 flex-col gap-y-7">
-                  <li>
-                    <ul role="list" class="-mx-2 space-y-1">
-                      <li>
-                        <%= link_to enterprise_dashboard_path(enterprise_group_slug: @enterprise_group.slug), class: "group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold #{current_page?(enterprise_dashboard_path(enterprise_group_slug: @enterprise_group.slug)) ? 'bg-purple-50 text-purple-600' : 'text-gray-700 hover:text-purple-600 hover:bg-purple-50'}" do %>
-                          <%= icon "house", class: "size-6 shrink-0 #{current_page?(enterprise_dashboard_path(enterprise_group_slug: @enterprise_group.slug)) ? 'text-purple-600' : 'text-gray-400 group-hover:text-purple-600'}" %>
-                          Dashboard
-                        <% end %>
-                      </li>
-                      <li>
-                        <%= link_to profile_path(enterprise_group_slug: @enterprise_group.slug, id: current_user), class: "group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold #{request.path.include?('/profile') ? 'bg-purple-50 text-purple-600' : 'text-gray-700 hover:text-purple-600 hover:bg-purple-50'}" do %>
-                          <%= icon "user", class: "size-6 shrink-0 #{request.path.include?('/profile') ? 'text-purple-600' : 'text-gray-400 group-hover:text-purple-600'}" %>
-                          My Profile
-                        <% end %>
-                      </li>
-                    </ul>
-                  </li>
-                  
-                  <% if current_user.enterprise_group_role == 'admin' %>
-                    <li>
-                      <div class="text-xs/6 font-semibold text-gray-400">Administration</div>
-                      <ul role="list" class="-mx-2 mt-2 space-y-1">
-                        <li>
-                          <%= link_to members_path(enterprise_group_slug: @enterprise_group.slug), class: "group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold #{request.path.include?('/members') ? 'bg-purple-50 text-purple-600' : 'text-gray-700 hover:text-purple-600 hover:bg-purple-50'}" do %>
-                            <%= icon "users", class: "size-6 shrink-0 #{request.path.include?('/members') ? 'text-purple-600' : 'text-gray-400 group-hover:text-purple-600'}" %>
-                            Members
-                          <% end %>
-                        </li>
-                        <li>
-                          <%= link_to billing_index_path(enterprise_group_slug: @enterprise_group.slug), class: "group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold #{request.path.include?('/billing') ? 'bg-purple-50 text-purple-600' : 'text-gray-700 hover:text-purple-600 hover:bg-purple-50'}" do %>
-                            <%= icon "credit-card", class: "size-6 shrink-0 #{request.path.include?('/billing') ? 'text-purple-600' : 'text-gray-400 group-hover:text-purple-600'}" %>
-                            Billing
-                          <% end %>
-                        </li>
-                        <li>
-                          <%= link_to settings_path(enterprise_group_slug: @enterprise_group.slug), class: "group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold #{request.path.include?('/settings') ? 'bg-purple-50 text-purple-600' : 'text-gray-700 hover:text-purple-600 hover:bg-purple-50'}" do %>
-                            <%= icon "gear", class: "size-6 shrink-0 #{request.path.include?('/settings') ? 'text-purple-600' : 'text-gray-400 group-hover:text-purple-600'}" %>
-                            Settings
-                          <% end %>
-                        </li>
-                        <li>
-                          <%= link_to enterprise_admin_notification_categories_path(enterprise_slug: @enterprise_group.slug), class: "group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold #{request.path.include?('/notification_categories') ? 'bg-purple-50 text-purple-600' : 'text-gray-700 hover:text-purple-600 hover:bg-purple-50'}" do %>
-                            <%= icon "list-bullets", class: "size-6 shrink-0 #{request.path.include?('/notification_categories') ? 'text-purple-600' : 'text-gray-400 group-hover:text-purple-600'}" %>
-                            Notification Categories
-                          <% end %>
-                        </li>
-                      </ul>
-                    </li>
-                  <% end %>
-                  
-                  <li>
-                    <div class="text-xs/6 font-semibold text-gray-400">Support</div>
-                    <ul role="list" class="-mx-2 mt-2 space-y-1">
-                      <li>
-                        <a href="#" class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 hover:text-purple-600 hover:bg-purple-50">
-                          <%= icon "book-open", class: "size-6 shrink-0 text-gray-400 group-hover:text-purple-600" %>
-                          Documentation
-                        </a>
-                      </li>
-                      <li>
-                        <a href="#" class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 hover:text-purple-600 hover:bg-purple-50" data-controller="help-widget" data-action="click->help-widget#show">
-                          <%= icon "lifebuoy", class: "size-6 shrink-0 text-gray-400 group-hover:text-purple-600" %>
-                          Help Center
-                        </a>
-                      </li>
-                    </ul>
-                  </li>
-                  
-                </ul>
-              </nav>
+              <%= render 'shared/navigation/enterprise_member' %>
             </div>
           </div>
         </div>
@@ -147,77 +77,7 @@
             </span>
             <span class="ml-3 text-lg font-semibold text-gray-900"><%= @enterprise_group.name %></span>
           </div>
-          <nav class="flex flex-1 flex-col">
-            <ul role="list" class="flex flex-1 flex-col gap-y-7">
-              <li>
-                <ul role="list" class="-mx-2 space-y-1">
-                  <li>
-                    <%= link_to enterprise_root_path(@enterprise_group.slug), class: "group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold #{current_page?(enterprise_root_path(@enterprise_group.slug)) ? 'bg-purple-50 text-purple-600' : 'text-gray-700 hover:text-purple-600 hover:bg-purple-50'}" do %>
-                      <%= icon "house", class: "size-6 shrink-0 #{current_page?(enterprise_root_path(@enterprise_group.slug)) ? 'text-purple-600' : 'text-gray-400 group-hover:text-purple-600'}" %>
-                      Dashboard
-                    <% end %>
-                  </li>
-                  <li>
-                    <%= link_to profile_path(enterprise_group_slug: @enterprise_group.slug, id: current_user), class: "group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold #{request.path.include?('/profile') ? 'bg-purple-50 text-purple-600' : 'text-gray-700 hover:text-purple-600 hover:bg-purple-50'}" do %>
-                      <%= icon "user", class: "size-6 shrink-0 #{request.path.include?('/profile') ? 'text-purple-600' : 'text-gray-400 group-hover:text-purple-600'}" %>
-                      My Profile
-                    <% end %>
-                  </li>
-                </ul>
-              </li>
-              
-              <% if current_user.enterprise_group_role == 'admin' %>
-                <li>
-                  <div class="text-xs/6 font-semibold text-gray-400">Administration</div>
-                  <ul role="list" class="-mx-2 mt-2 space-y-1">
-                    <li>
-                      <%= link_to members_path(enterprise_group_slug: @enterprise_group.slug), class: "group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold #{request.path.include?('/members') ? 'bg-purple-50 text-purple-600' : 'text-gray-700 hover:text-purple-600 hover:bg-purple-50'}" do %>
-                        <%= icon "users", class: "size-6 shrink-0 #{request.path.include?('/members') ? 'text-purple-600' : 'text-gray-400 group-hover:text-purple-600'}" %>
-                        Members
-                      <% end %>
-                    </li>
-                    <li>
-                      <%= link_to billing_index_path(enterprise_group_slug: @enterprise_group.slug), class: "group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold #{request.path.include?('/billing') ? 'bg-purple-50 text-purple-600' : 'text-gray-700 hover:text-purple-600 hover:bg-purple-50'}" do %>
-                        <%= icon "credit-card", class: "size-6 shrink-0 #{request.path.include?('/billing') ? 'text-purple-600' : 'text-gray-400 group-hover:text-purple-600'}" %>
-                        Billing
-                      <% end %>
-                    </li>
-                    <li>
-                      <%= link_to settings_path(enterprise_group_slug: @enterprise_group.slug), class: "group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold #{request.path.include?('/settings') ? 'bg-purple-50 text-purple-600' : 'text-gray-700 hover:text-purple-600 hover:bg-purple-50'}" do %>
-                        <%= icon "gear", class: "size-6 shrink-0 #{request.path.include?('/settings') ? 'text-purple-600' : 'text-gray-400 group-hover:text-purple-600'}" %>
-                        Settings
-                      <% end %>
-                    </li>
-                    <li>
-                      <%= link_to enterprise_admin_notification_categories_path(enterprise_slug: @enterprise_group.slug), class: "group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold #{request.path.include?('/notification_categories') ? 'bg-purple-50 text-purple-600' : 'text-gray-700 hover:text-purple-600 hover:bg-purple-50'}" do %>
-                        <%= icon "list-bullets", class: "size-6 shrink-0 #{request.path.include?('/notification_categories') ? 'text-purple-600' : 'text-gray-400 group-hover:text-purple-600'}" %>
-                        Notification Categories
-                      <% end %>
-                    </li>
-                  </ul>
-                </li>
-              <% end %>
-              
-              <li>
-                <div class="text-xs/6 font-semibold text-gray-400">Support</div>
-                <ul role="list" class="-mx-2 mt-2 space-y-1">
-                  <li>
-                    <a href="#" class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 hover:text-purple-600 hover:bg-purple-50">
-                      <%= icon "book-open", class: "size-6 shrink-0 text-gray-400 group-hover:text-purple-600" %>
-                      Documentation
-                    </a>
-                  </li>
-                  <li>
-                    <a href="#" class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 hover:text-purple-600 hover:bg-purple-50" data-controller="help-widget" data-action="click->help-widget#show">
-                      <%= icon "lifebuoy", class: "size-6 shrink-0 text-gray-400 group-hover:text-purple-600" %>
-                      Help Center
-                    </a>
-                  </li>
-                </ul>
-              </li>
-              
-            </ul>
-          </nav>
+          <%= render 'shared/navigation/enterprise_member' %>
         </div>
       </div>
 

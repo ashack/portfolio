@@ -1,0 +1,48 @@
+<nav class="flex flex-1 flex-col" aria-label="Sidebar">
+  <ul role="list" class="flex flex-1 flex-col gap-y-7">
+    <!-- Overview Section -->
+    <li>
+      <div class="text-xs font-semibold leading-6 text-gray-400">Overview</div>
+      <ul role="list" class="-mx-2 mt-2 space-y-1">
+        <li>
+          <%= link_to admin_site_dashboard_path, class: "group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 hover:bg-gray-50 hover:text-indigo-600 #{current_page?(admin_site_dashboard_path) ? 'bg-gray-50 text-indigo-600' : 'text-gray-700'}" do %>
+            <%= icon "chart-pie-slice", class: "size-6 shrink-0 #{current_page?(admin_site_dashboard_path) ? 'text-indigo-600' : 'text-gray-400 group-hover:text-indigo-600'}" %>
+            Dashboard
+          <% end %>
+        </li>
+      </ul>
+    </li>
+
+    <!-- Management Section -->
+    <li>
+      <div class="text-xs font-semibold leading-6 text-gray-400">Management</div>
+      <ul role="list" class="-mx-2 mt-2 space-y-1">
+        <li>
+          <%= link_to admin_site_users_path, class: "group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 hover:bg-gray-50 hover:text-indigo-600 #{current_page?(admin_site_users_path) ? 'bg-gray-50 text-indigo-600' : 'text-gray-700'}" do %>
+            <%= icon "users", class: "size-6 shrink-0 #{current_page?(admin_site_users_path) ? 'text-indigo-600' : 'text-gray-400 group-hover:text-indigo-600'}" %>
+            Users
+          <% end %>
+        </li>
+        <li>
+          <%= link_to admin_site_teams_path, class: "group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 hover:bg-gray-50 hover:text-indigo-600 #{current_page?(admin_site_teams_path) ? 'bg-gray-50 text-indigo-600' : 'text-gray-700'}" do %>
+            <%= icon "users-three", class: "size-6 shrink-0 #{current_page?(admin_site_teams_path) ? 'text-indigo-600' : 'text-gray-400 group-hover:text-indigo-600'}" %>
+            Teams
+          <% end %>
+        </li>
+      </ul>
+    </li>
+
+    <!-- Support Section -->
+    <li>
+      <div class="text-xs font-semibold leading-6 text-gray-400">Support</div>
+      <ul role="list" class="-mx-2 mt-2 space-y-1">
+        <li>
+          <%= link_to admin_site_support_index_path, class: "group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 hover:bg-gray-50 hover:text-indigo-600 #{current_page?(admin_site_support_index_path) ? 'bg-gray-50 text-indigo-600' : 'text-gray-700'}" do %>
+            <%= icon "headset", class: "size-6 shrink-0 #{current_page?(admin_site_support_index_path) ? 'text-indigo-600' : 'text-gray-400 group-hover:text-indigo-600'}" %>
+            Support Tickets
+          <% end %>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</nav>

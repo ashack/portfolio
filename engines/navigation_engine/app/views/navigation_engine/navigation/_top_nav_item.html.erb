@@ -1,0 +1,54 @@
+<% if item[:children] %>
+  <div class="relative" data-controller="dropdown">
+    <button type="button"
+            data-action="click->dropdown#toggle click@window->dropdown#hide"
+            data-dropdown-target="button"
+            class="<%= component.link_classes(item, 'inline-flex items-center gap-x-1 text-sm font-medium leading-6 border-b-2 px-1 pt-1 pb-2') %>"
+            aria-expanded="false">
+      <% if item[:icon] %>
+        <%= component.render_icon(item[:icon], css_class: "h-4 w-4 mr-1") %>
+      <% end %>
+      <%= item[:label] %>
+      <%= icon "phosphor/caret-down", class: "h-4 w-4" %>
+    </button>
+    
+    <div class="absolute left-0 z-10 mt-3 w-48 origin-top-left rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none hidden"
+         data-dropdown-target="menu"
+         data-transition-enter="transition ease-out duration-100"
+         data-transition-enter-start="transform opacity-0 scale-95"
+         data-transition-enter-end="transform opacity-100 scale-100"
+         data-transition-leave="transition ease-in duration-75"
+         data-transition-leave-start="transform opacity-100 scale-100"
+         data-transition-leave-end="transform opacity-0 scale-95">
+      <% item[:children].each do |child| %>
+        <%= link_to child[:path],
+                    class: "block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100",
+                    method: child[:method] || :get,
+                    data: child[:external] ? { turbo: false } : {} do %>
+          <% if child[:icon] %>
+            <%= component.render_icon(child[:icon], css_class: "inline h-4 w-4 mr-2") %>
+          <% end %>
+          <%= child[:label] %>
+          <%= component.render_badge(child[:badge]) if child[:badge] %>
+          <% if child[:external] %>
+            <%= icon "phosphor/arrow-square-out", class: "inline ml-1 h-3 w-3" %>
+          <% end %>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+<% else %>
+  <%= link_to item[:path],
+              class: component.link_classes(item, 'inline-flex items-center border-b-2 px-1 pt-1 pb-2 text-sm font-medium'),
+              method: item[:method] || :get,
+              data: item[:external] ? { turbo: false } : {} do %>
+    <% if item[:icon] %>
+      <%= component.render_icon(item[:icon], css_class: "h-4 w-4 mr-1.5") %>
+    <% end %>
+    <%= item[:label] %>
+    <%= component.render_badge(item[:badge]) if item[:badge] %>
+    <% if item[:external] %>
+      <%= icon "phosphor/arrow-square-out", class: "ml-1 h-3 w-3" %>
+    <% end %>
+  <% end %>
+<% end %>
