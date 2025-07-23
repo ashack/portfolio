@@ -1,0 +1,281 @@
+# Navigation configuration for NavigationEngine
+# 
+# This file defines navigation structures for different user types in the SaaS application.
+# Supports I18n labels, route helpers, permissions, and dynamic content.
+
+navigation:
+  # Admin navigation (Super Admin and Site Admin)
+  admin:
+    super_admin:
+      - type: section
+        key: overview
+        label: ".admin.overview"
+        items:
+          - key: dashboard
+            label: ".admin.dashboard"
+            path_helper: admin_super_dashboard_path
+            icon: chart-pie-slice
+            
+      - type: section
+        key: management
+        label: ".admin.management"
+        items:
+          - key: users
+            label: ".admin.users"
+            path_helper: admin_super_users_path
+            icon: users
+            
+          - key: teams
+            label: ".admin.teams"
+            path_helper: admin_super_teams_path
+            icon: users-three
+            
+          - key: enterprise_groups
+            label: ".admin.enterprise_groups"
+            path_helper: admin_super_enterprise_groups_path
+            icon: buildings
+            
+      - type: section
+        key: billing
+        label: ".admin.billing"
+        items:
+          - key: billing_overview
+            label: ".admin.billing_overview"
+            path_helper: admin_super_billing_path
+            icon: currency-dollar
+            
+          - key: plans
+            label: ".admin.plans"
+            path_helper: admin_super_plans_path
+            icon: package
+            
+      - type: section
+        key: notifications
+        label: ".admin.notifications"
+        items:
+          - key: notifications
+            label: ".admin.notifications"
+            path_helper: admin_super_notifications_path
+            icon: bell
+            
+          - key: notification_categories
+            label: ".admin.notification_categories"
+            path_helper: admin_super_notification_categories_path
+            icon: tag
+            
+          - key: announcements
+            label: ".admin.announcements"
+            path_helper: admin_super_announcements_path
+            icon: megaphone
+            
+      - type: section
+        key: support
+        label: ".admin.support"
+        items:
+          - key: support_tickets
+            label: ".admin.support_tickets"
+            path_helper: admin_super_support_tickets_path
+            icon: headset
+            
+          - key: settings
+            label: ".admin.settings"
+            path_helper: admin_super_settings_path
+            icon: gear
+            
+    site_admin:
+      - type: section
+        key: overview
+        label: ".admin.overview"
+        items:
+          - key: dashboard
+            label: ".admin.dashboard"
+            path_helper: admin_site_dashboard_path
+            icon: chart-pie-slice
+            
+      - type: section
+        key: management
+        label: ".admin.management"
+        items:
+          - key: users
+            label: ".admin.users"
+            path_helper: admin_site_users_path
+            icon: users
+            
+          - key: teams
+            label: ".admin.teams"
+            path_helper: admin_site_teams_path
+            icon: users-three
+            
+      - type: section
+        key: support
+        label: ".admin.support"
+        items:
+          - key: support_tickets
+            label: ".admin.support_tickets"
+            path_helper: admin_site_support_path
+            icon: headset
+
+  # Direct user navigation
+  direct:
+    - key: dashboard
+      label: ".dashboard"
+      path_helper: users_dashboard_path
+      icon: house
+      
+    - key: analytics
+      label: ".analytics"
+      path_helper: users_analytics_path
+      icon: chart-line
+      
+    - key: subscription
+      label: ".subscription"
+      path_helper: users_billing_index_path
+      icon: credit-card
+      
+    - key: settings
+      label: ".settings"
+      path_helper: users_settings_path
+      icon: gear
+      
+    # Dynamic teams section for direct users who own teams
+    - type: section
+      key: teams
+      label: ".teams.my_teams"
+      permission: "owned_teams.any?"
+      items: '<%= current_user.owned_teams.map { |team| 
+        { 
+          key: "team_#{team.id}", 
+          label: team.name, 
+          path_helper: "team_root_path", 
+          path_args: { team_slug: team.slug },
+          icon: "users"
+        } 
+      } %>'
+
+  # Team member navigation
+  team:
+    member:
+      - key: dashboard
+        label: ".team.dashboard"
+        path_helper: team_root_path
+        path_args:
+          team_slug: "@team.slug"
+        icon: house
+        
+      - key: profile
+        label: ".profile.my_profile"
+        path_helper: teams_profile_path
+        path_args:
+          team_slug: "@team.slug"
+        icon: user
+        
+    admin:
+      - key: dashboard
+        label: ".team.dashboard"
+        path_helper: team_root_path
+        path_args:
+          team_slug: "@team.slug"
+        icon: house
+        
+      - type: section
+        key: admin
+        label: ".team.admin"
+        items:
+          - key: admin_dashboard
+            label: ".team.admin_dashboard"
+            path_helper: team_admin_root_path
+            path_args:
+              team_slug: "@team.slug"
+            icon: shield-check
+            
+          - key: members
+            label: ".team.members"
+            path_helper: teams_admin_members_path
+            path_args:
+              team_slug: "@team.slug"
+            icon: users
+            
+          - key: invitations
+            label: ".team.invitations"
+            path_helper: teams_admin_invitations_path
+            path_args:
+              team_slug: "@team.slug"
+            icon: envelope-simple
+            
+          - key: billing
+            label: ".team.billing"
+            path_helper: teams_admin_billing_index_path
+            path_args:
+              team_slug: "@team.slug"
+            icon: credit-card
+            
+          - key: settings
+            label: ".team.settings"
+            path_helper: teams_admin_settings_path
+            path_args:
+              team_slug: "@team.slug"
+            icon: gear
+            
+          - key: notification_categories
+            label: ".team.notification_categories"
+            path_helper: teams_admin_notification_categories_path
+            path_args:
+              team_slug: "@team.slug"
+            icon: tag
+
+  # Enterprise navigation
+  enterprise:
+    member:
+      - key: dashboard
+        label: ".enterprise.dashboard"
+        path_helper: enterprise_dashboard_path
+        path_args:
+          enterprise_slug: "@enterprise_group.slug"
+        icon: buildings
+        
+    admin:
+      - key: dashboard
+        label: ".enterprise.dashboard"
+        path_helper: enterprise_dashboard_path
+        path_args:
+          enterprise_slug: "@enterprise_group.slug"
+        icon: buildings
+        
+      - type: section
+        key: administration
+        label: ".enterprise.administration"
+        items:
+          - key: members
+            label: ".enterprise.members"
+            path_helper: enterprise_members_path
+            path_args:
+              enterprise_slug: "@enterprise_group.slug"
+            icon: users
+            
+          - key: billing
+            label: ".enterprise.billing"
+            path_helper: enterprise_billing_path
+            path_args:
+              enterprise_slug: "@enterprise_group.slug"
+            icon: credit-card
+            
+          - key: settings
+            label: ".enterprise.settings"
+            path_helper: enterprise_settings_path
+            path_args:
+              enterprise_slug: "@enterprise_group.slug"
+            icon: gear
+            
+          - key: notification_categories
+            label: ".enterprise.notification_categories"
+            path_helper: enterprise_notification_categories_path
+            path_args:
+              enterprise_slug: "@enterprise_group.slug"
+            icon: tag
+
+  # Default navigation (fallback)
+  default:
+    - key: dashboard
+      label: ".dashboard"
+      path_helper: root_path
+      icon: house

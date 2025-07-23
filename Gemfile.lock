@@ -1,3 +1,9 @@
+PATH
+  remote: engines/navigation_engine
+  specs:
+    navigation_engine (0.1.0)
+      rails (>= 7.0)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -486,6 +492,7 @@ DEPENDENCIES
   minitest (~> 5.22)
   minitest-rails (~> 8.0)
   minitest-reporters
+  navigation_engine!
   noticed (~> 2.0)
   pagy (~> 7.0)
   pay (~> 7.0)

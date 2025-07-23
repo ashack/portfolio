@@ -27,6 +27,9 @@ gem "rails_icons", "~> 1.0"
 gem "pagy", "~> 7.0"
 gem "tailwindcss-rails"
 
+# Navigation Engine
+gem "navigation_engine", path: "engines/navigation_engine"
+
 # Payment Processing
 gem "stripe", "~> 12.0"
 gem "pay", "~> 7.0"

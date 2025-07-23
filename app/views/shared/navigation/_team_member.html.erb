@@ -1,0 +1,66 @@
+<nav class="flex flex-1 flex-col" aria-label="Sidebar">
+  <ul role="list" class="flex flex-1 flex-col gap-y-7">
+    <!-- Main Navigation -->
+    <li>
+      <ul role="list" class="-mx-2 space-y-1">
+        <li>
+          <%= link_to team_root_path(team_slug: @team.slug), class: "group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 hover:bg-gray-50 hover:text-indigo-600 #{current_page?(team_root_path(team_slug: @team.slug)) ? 'bg-gray-50 text-indigo-600' : 'text-gray-700'}" do %>
+            <%= icon "house", class: "size-6 shrink-0 #{current_page?(team_root_path(team_slug: @team.slug)) ? 'text-indigo-600' : 'text-gray-400 group-hover:text-indigo-600'}" %>
+            Dashboard
+          <% end %>
+        </li>
+        <li>
+          <%= link_to teams_profile_path(team_slug: @team.slug), class: "group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 hover:bg-gray-50 hover:text-indigo-600 #{current_page?(teams_profile_path(team_slug: @team.slug)) ? 'bg-gray-50 text-indigo-600' : 'text-gray-700'}" do %>
+            <%= icon "user", class: "size-6 shrink-0 #{current_page?(teams_profile_path(team_slug: @team.slug)) ? 'text-indigo-600' : 'text-gray-400 group-hover:text-indigo-600'}" %>
+            My Profile
+          <% end %>
+        </li>
+      </ul>
+    </li>
+
+    <!-- Admin Section (if user is team admin) -->
+    <% if current_user.team_admin?(@team) %>
+      <li>
+        <div class="text-xs font-semibold leading-6 text-gray-400">Admin</div>
+        <ul role="list" class="-mx-2 mt-2 space-y-1">
+          <li>
+            <%= link_to team_admin_root_path(team_slug: @team.slug), class: "group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 hover:bg-gray-50 hover:text-indigo-600 #{current_page?(team_admin_root_path(team_slug: @team.slug)) ? 'bg-gray-50 text-indigo-600' : 'text-gray-700'}" do %>
+              <%= icon "shield-check", class: "size-6 shrink-0 #{current_page?(team_admin_root_path(team_slug: @team.slug)) ? 'text-indigo-600' : 'text-gray-400 group-hover:text-indigo-600'}" %>
+              Admin Dashboard
+            <% end %>
+          </li>
+          <li>
+            <%= link_to teams_admin_members_path(team_slug: @team.slug), class: "group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 hover:bg-gray-50 hover:text-indigo-600 #{current_page?(teams_admin_members_path(team_slug: @team.slug)) ? 'bg-gray-50 text-indigo-600' : 'text-gray-700'}" do %>
+              <%= icon "users", class: "size-6 shrink-0 #{current_page?(teams_admin_members_path(team_slug: @team.slug)) ? 'text-indigo-600' : 'text-gray-400 group-hover:text-indigo-600'}" %>
+              Members
+            <% end %>
+          </li>
+          <li>
+            <%= link_to teams_admin_invitations_path(team_slug: @team.slug), class: "group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 hover:bg-gray-50 hover:text-indigo-600 #{current_page?(teams_admin_invitations_path(team_slug: @team.slug)) ? 'bg-gray-50 text-indigo-600' : 'text-gray-700'}" do %>
+              <%= icon "envelope-simple", class: "size-6 shrink-0 #{current_page?(teams_admin_invitations_path(team_slug: @team.slug)) ? 'text-indigo-600' : 'text-gray-400 group-hover:text-indigo-600'}" %>
+              Invitations
+            <% end %>
+          </li>
+          <li>
+            <%= link_to teams_admin_billing_index_path(team_slug: @team.slug), class: "group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 hover:bg-gray-50 hover:text-indigo-600 #{current_page?(teams_admin_billing_index_path(team_slug: @team.slug)) ? 'bg-gray-50 text-indigo-600' : 'text-gray-700'}" do %>
+              <%= icon "credit-card", class: "size-6 shrink-0 #{current_page?(teams_admin_billing_index_path(team_slug: @team.slug)) ? 'text-indigo-600' : 'text-gray-400 group-hover:text-indigo-600'}" %>
+              Billing
+            <% end %>
+          </li>
+          <li>
+            <%= link_to teams_admin_settings_path(team_slug: @team.slug), class: "group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 hover:bg-gray-50 hover:text-indigo-600 #{current_page?(teams_admin_settings_path(team_slug: @team.slug)) ? 'bg-gray-50 text-indigo-600' : 'text-gray-700'}" do %>
+              <%= icon "gear", class: "size-6 shrink-0 #{current_page?(teams_admin_settings_path(team_slug: @team.slug)) ? 'text-indigo-600' : 'text-gray-400 group-hover:text-indigo-600'}" %>
+              Settings
+            <% end %>
+          </li>
+          <li>
+            <%= link_to teams_admin_notification_categories_path(team_slug: @team.slug), class: "group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 hover:bg-gray-50 hover:text-indigo-600 #{current_page?(teams_admin_notification_categories_path(team_slug: @team.slug)) ? 'bg-gray-50 text-indigo-600' : 'text-gray-700'}" do %>
+              <%= icon "tag", class: "size-6 shrink-0 #{current_page?(teams_admin_notification_categories_path(team_slug: @team.slug)) ? 'text-indigo-600' : 'text-gray-400 group-hover:text-indigo-600'}" %>
+              Notification Categories
+            <% end %>
+          </li>
+        </ul>
+      </li>
+    <% end %>
+  </ul>
+</nav>

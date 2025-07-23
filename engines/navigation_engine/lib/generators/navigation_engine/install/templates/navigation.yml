@@ -1,0 +1,68 @@
+# Navigation configuration for NavigationEngine
+# 
+# This file defines navigation structures for different user types.
+# Customize this file to match your application's navigation needs.
+#
+# Available options for items:
+#   key: Unique identifier for the navigation item
+#   label: Display text (can use I18n with dot notation like ".dashboard")
+#   path: Static path (e.g., "/dashboard")
+#   path_helper: Rails route helper method (e.g., "dashboard_path")
+#   path_args: Arguments for the route helper
+#   icon: Icon name
+#   permission: Permission check (symbol, string, or proc)
+#   condition: Additional visibility condition
+#   badge: Badge to display (symbol for method, proc, or hash)
+#   external: true/false - Opens in new tab
+#   method: HTTP method (get, post, etc.)
+#   items/children: Nested navigation items
+
+navigation:
+  # Example configuration for admin users
+  admin:
+    super_admin:
+      - type: section
+        key: overview
+        label: ".admin.overview"
+        items:
+          - key: dashboard
+            label: ".admin.dashboard"
+            path_helper: admin_dashboard_path
+            icon: dashboard
+
+      - type: section
+        key: management
+        label: ".admin.management"
+        items:
+          - key: users
+            label: ".admin.users"
+            path_helper: admin_users_path
+            icon: users
+            badge: :pending_users_count
+
+  # Example configuration for regular users
+  default:
+    - key: dashboard
+      label: ".dashboard"
+      path_helper: root_path
+      icon: home
+
+    - key: profile
+      label: ".profile"
+      path_helper: profile_path
+      icon: user
+
+    - type: section
+      key: help
+      label: ".help.title"
+      items:
+        - key: documentation
+          label: ".help.documentation"
+          path: "/docs"
+          icon: book
+          external: true
+        
+        - key: support
+          label: ".help.support"
+          path: "/support"
+          icon: help-circle

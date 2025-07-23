@@ -1,0 +1,11 @@
+<nav class="flex space-x-8" aria-label="Top navigation">
+  <% navigation_items.each do |item| %>
+    <% if item[:type] == :section %>
+      <% item[:items].each do |nav_item| %>
+        <%= render "shared/navigation/top_nav_item", item: nav_item, component: component %>
+      <% end %>
+    <% else %>
+      <%= render "shared/navigation/top_nav_item", item: item, component: component %>
+    <% end %>
+  <% end %>
+</nav>

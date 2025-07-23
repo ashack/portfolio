@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  mount NavigationEngine::Engine => "/navigation_engine"
   # Mount Blazer for analytics (admin only)
   authenticate :user, ->(user) { user.admin? } do
     mount Blazer::Engine, at: "blazer"

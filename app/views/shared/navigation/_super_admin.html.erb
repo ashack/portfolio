@@ -1,0 +1,104 @@
+<nav class="flex flex-1 flex-col" aria-label="Sidebar">
+  <ul role="list" class="flex flex-1 flex-col gap-y-7">
+    <!-- Overview Section -->
+    <li>
+      <div class="text-xs font-semibold leading-6 text-gray-400">Overview</div>
+      <ul role="list" class="-mx-2 mt-2 space-y-1">
+        <li>
+          <%= link_to admin_super_dashboard_path, class: "group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 hover:bg-gray-50 hover:text-indigo-600 #{current_page?(admin_super_dashboard_path) ? 'bg-gray-50 text-indigo-600' : 'text-gray-700'}" do %>
+            <%= icon "chart-pie-slice", class: "size-6 shrink-0 #{current_page?(admin_super_dashboard_path) ? 'text-indigo-600' : 'text-gray-400 group-hover:text-indigo-600'}" %>
+            Dashboard
+          <% end %>
+        </li>
+      </ul>
+    </li>
+
+    <!-- Management Section -->
+    <li>
+      <div class="text-xs font-semibold leading-6 text-gray-400">Management</div>
+      <ul role="list" class="-mx-2 mt-2 space-y-1">
+        <li>
+          <%= link_to admin_super_users_path, class: "group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 hover:bg-gray-50 hover:text-indigo-600 #{current_page?(admin_super_users_path) ? 'bg-gray-50 text-indigo-600' : 'text-gray-700'}" do %>
+            <%= icon "users", class: "size-6 shrink-0 #{current_page?(admin_super_users_path) ? 'text-indigo-600' : 'text-gray-400 group-hover:text-indigo-600'}" %>
+            Users
+          <% end %>
+        </li>
+        <li>
+          <%= link_to admin_super_teams_path, class: "group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 hover:bg-gray-50 hover:text-indigo-600 #{current_page?(admin_super_teams_path) ? 'bg-gray-50 text-indigo-600' : 'text-gray-700'}" do %>
+            <%= icon "users-three", class: "size-6 shrink-0 #{current_page?(admin_super_teams_path) ? 'text-indigo-600' : 'text-gray-400 group-hover:text-indigo-600'}" %>
+            Teams
+          <% end %>
+        </li>
+        <li>
+          <%= link_to admin_super_enterprise_groups_path, class: "group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 hover:bg-gray-50 hover:text-indigo-600 #{current_page?(admin_super_enterprise_groups_path) ? 'bg-gray-50 text-indigo-600' : 'text-gray-700'}" do %>
+            <%= icon "buildings", class: "size-6 shrink-0 #{current_page?(admin_super_enterprise_groups_path) ? 'text-indigo-600' : 'text-gray-400 group-hover:text-indigo-600'}" %>
+            Enterprise Groups
+          <% end %>
+        </li>
+      </ul>
+    </li>
+
+    <!-- Billing Section -->
+    <li>
+      <div class="text-xs font-semibold leading-6 text-gray-400">Billing</div>
+      <ul role="list" class="-mx-2 mt-2 space-y-1">
+        <li>
+          <%= link_to admin_super_billing_path, class: "group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 hover:bg-gray-50 hover:text-indigo-600 #{current_page?(admin_super_billing_path) ? 'bg-gray-50 text-indigo-600' : 'text-gray-700'}" do %>
+            <%= icon "currency-dollar", class: "size-6 shrink-0 #{current_page?(admin_super_billing_path) ? 'text-indigo-600' : 'text-gray-400 group-hover:text-indigo-600'}" %>
+            Billing Overview
+          <% end %>
+        </li>
+        <li>
+          <%= link_to admin_super_plans_path, class: "group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 hover:bg-gray-50 hover:text-indigo-600 #{current_page?(admin_super_plans_path) ? 'bg-gray-50 text-indigo-600' : 'text-gray-700'}" do %>
+            <%= icon "package", class: "size-6 shrink-0 #{current_page?(admin_super_plans_path) ? 'text-indigo-600' : 'text-gray-400 group-hover:text-indigo-600'}" %>
+            Plans
+          <% end %>
+        </li>
+      </ul>
+    </li>
+
+    <!-- Notifications Section -->
+    <li>
+      <div class="text-xs font-semibold leading-6 text-gray-400">Notifications</div>
+      <ul role="list" class="-mx-2 mt-2 space-y-1">
+        <li>
+          <%= link_to admin_super_notifications_path, class: "group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 hover:bg-gray-50 hover:text-indigo-600 #{current_page?(admin_super_notifications_path) ? 'bg-gray-50 text-indigo-600' : 'text-gray-700'}" do %>
+            <%= icon "bell", class: "size-6 shrink-0 #{current_page?(admin_super_notifications_path) ? 'text-indigo-600' : 'text-gray-400 group-hover:text-indigo-600'}" %>
+            Notifications
+          <% end %>
+        </li>
+        <li>
+          <%= link_to admin_super_notification_categories_path, class: "group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 hover:bg-gray-50 hover:text-indigo-600 #{current_page?(admin_super_notification_categories_path) ? 'bg-gray-50 text-indigo-600' : 'text-gray-700'}" do %>
+            <%= icon "tag", class: "size-6 shrink-0 #{current_page?(admin_super_notification_categories_path) ? 'text-indigo-600' : 'text-gray-400 group-hover:text-indigo-600'}" %>
+            Notification Categories
+          <% end %>
+        </li>
+        <li>
+          <%= link_to admin_super_announcements_path, class: "group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 hover:bg-gray-50 hover:text-indigo-600 #{current_page?(admin_super_announcements_path) ? 'bg-gray-50 text-indigo-600' : 'text-gray-700'}" do %>
+            <%= icon "megaphone", class: "size-6 shrink-0 #{current_page?(admin_super_announcements_path) ? 'text-indigo-600' : 'text-gray-400 group-hover:text-indigo-600'}" %>
+            Announcements
+          <% end %>
+        </li>
+      </ul>
+    </li>
+
+    <!-- Support Section -->
+    <li>
+      <div class="text-xs font-semibold leading-6 text-gray-400">Support</div>
+      <ul role="list" class="-mx-2 mt-2 space-y-1">
+        <li>
+          <%= link_to admin_super_support_tickets_path, class: "group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 hover:bg-gray-50 hover:text-indigo-600 #{current_page?(admin_super_support_tickets_path) ? 'bg-gray-50 text-indigo-600' : 'text-gray-700'}" do %>
+            <%= icon "headset", class: "size-6 shrink-0 #{current_page?(admin_super_support_tickets_path) ? 'text-indigo-600' : 'text-gray-400 group-hover:text-indigo-600'}" %>
+            Support Tickets
+          <% end %>
+        </li>
+        <li>
+          <%= link_to admin_super_settings_path, class: "group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 hover:bg-gray-50 hover:text-indigo-600 #{current_page?(admin_super_settings_path) ? 'bg-gray-50 text-indigo-600' : 'text-gray-700'}" do %>
+            <%= icon "gear", class: "size-6 shrink-0 #{current_page?(admin_super_settings_path) ? 'text-indigo-600' : 'text-gray-400 group-hover:text-indigo-600'}" %>
+            Settings
+          <% end %>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</nav>

@@ -60,37 +60,7 @@
                   <span class="text-xl font-bold text-gray-900">SaaS App</span>
                 <% end %>
               </div>
-              <nav class="flex flex-1 flex-col">
-                <ul role="list" class="flex flex-1 flex-col gap-y-7">
-                  <li>
-                    <ul role="list" class="-mx-2 space-y-1">
-                      <li>
-                        <%= link_to root_path, class: "group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold #{current_page?(root_path) ? 'bg-gray-50 text-indigo-600' : 'text-gray-700 hover:text-indigo-600 hover:bg-gray-50'}" do %>
-                          <%= icon "house", class: "size-6 shrink-0 #{current_page?(root_path) ? 'text-indigo-600' : 'text-gray-400 group-hover:text-indigo-600'}" %>
-                          Dashboard
-                        <% end %>
-                      </li>
-                    </ul>
-                  </li>
-                  <li>
-                    <div class="text-xs/6 font-semibold text-gray-400">Support</div>
-                    <ul role="list" class="-mx-2 mt-2 space-y-1">
-                      <li>
-                        <a href="#" class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 hover:text-indigo-600 hover:bg-gray-50">
-                          <%= icon "book-open", class: "size-6 shrink-0 text-gray-400 group-hover:text-indigo-600" %>
-                          Documentation
-                        </a>
-                      </li>
-                      <li>
-                        <a href="#" class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 hover:text-indigo-600 hover:bg-gray-50" data-controller="help-widget" data-action="click->help-widget#show">
-                          <%= icon "lifebuoy", class: "size-6 shrink-0 text-gray-400 group-hover:text-indigo-600" %>
-                          Help Center
-                        </a>
-                      </li>
-                    </ul>
-                  </li>
-                </ul>
-              </nav>
+              <%= render 'shared/navigation/direct_user' %>
             </div>
           </div>
         </div>
@@ -105,37 +75,7 @@
               <span class="text-xl font-bold text-gray-900">SaaS App</span>
             <% end %>
           </div>
-          <nav class="flex flex-1 flex-col">
-            <ul role="list" class="flex flex-1 flex-col gap-y-7">
-              <li>
-                <ul role="list" class="-mx-2 space-y-1">
-                  <li>
-                    <%= link_to root_path, class: "group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold #{current_page?(root_path) ? 'bg-gray-50 text-indigo-600' : 'text-gray-700 hover:text-indigo-600 hover:bg-gray-50'}" do %>
-                      <%= icon "house", class: "size-6 shrink-0 #{current_page?(root_path) ? 'text-indigo-600' : 'text-gray-400 group-hover:text-indigo-600'}" %>
-                      Dashboard
-                    <% end %>
-                  </li>
-                </ul>
-              </li>
-              <li>
-                <div class="text-xs/6 font-semibold text-gray-400">Support</div>
-                <ul role="list" class="-mx-2 mt-2 space-y-1">
-                  <li>
-                    <a href="#" class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 hover:text-indigo-600 hover:bg-gray-50">
-                      <%= icon "book-open", class: "size-6 shrink-0 text-gray-400 group-hover:text-indigo-600" %>
-                      Documentation
-                    </a>
-                  </li>
-                  <li>
-                    <a href="#" class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 hover:text-indigo-600 hover:bg-gray-50" data-controller="help-widget" data-action="click->help-widget#show">
-                      <%= icon "lifebuoy", class: "size-6 shrink-0 text-gray-400 group-hover:text-indigo-600" %>
-                      Help Center
-                    </a>
-                  </li>
-                </ul>
-              </li>
-            </ul>
-          </nav>
+          <%= render 'shared/navigation/direct_user' %>
         </div>
       </div>
 
