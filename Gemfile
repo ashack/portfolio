@@ -31,7 +31,7 @@ gem "tailwindcss-rails"
 gem "navigation_engine", path: "engines/navigation_engine"
 
 # Payment Processing
-gem "stripe", "~> 12.0"
+gem "stripe", "~> 15.3"
 gem "pay", "~> 7.0"
 
 # Analytics & Monitoring
