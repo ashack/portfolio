@@ -2,7 +2,7 @@
 
 *Last Updated: July 2025*
 
-This guide walks you through the complete registration and onboarding process for direct users in the SaaS application.
+This guide walks you through the complete registration and onboarding process for direct users in the SaaS application kit.
 
 ## Overview
 
