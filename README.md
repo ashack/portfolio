@@ -1,6 +1,6 @@
-# SaaS Rails Starter
+# Portfolio App
 
-A complete Ruby on Rails 8 SaaS application with triple-track user system supporting individual users, team-based collaboration, and enterprise organizations.
+A complete Ruby on Rails 8 application with triple-track user system supporting individual users, team-based collaboration, and enterprise organizations.
 
 ## Features
 
