@@ -213,6 +213,10 @@ class User < ApplicationRecord
   # Email changes must go through the EmailChangeRequest system
   before_save :prevent_unauthorized_email_change, if: :email_changed?
 
+  # Set terms acceptance timestamps when terms are accepted
+  # Records when users accepted terms and privacy policy for compliance tracking
+  before_save :set_terms_acceptance_timestamps
+
   # Include ValidationHelpers concern for additional validation methods
   include ValidationHelpers
 
@@ -485,6 +489,20 @@ class User < ApplicationRecord
 
     # Throw abort to prevent the save
     throw(:abort)
+  end
+
+  # Set timestamps when terms and privacy policy are accepted
+  # This provides an audit trail for compliance purposes
+  def set_terms_acceptance_timestamps
+    # Set terms_accepted_at if terms_accepted changed from false to true
+    if terms_accepted_changed? && terms_accepted == true
+      self.terms_accepted_at = Time.current
+    end
+
+    # Set privacy_accepted_at if privacy_accepted changed from false to true
+    if privacy_accepted_changed? && privacy_accepted == true
+      self.privacy_accepted_at = Time.current
+    end
   end
 
   # CR-A1: Enforces strong password requirements

@@ -164,7 +164,9 @@ if Rails.env.development?
       user_type: 'direct',
       status: 'active',
       plan: premium_plan,
-      confirmed_at: Time.current
+      confirmed_at: Time.current,
+      terms_accepted: true,
+      privacy_accepted: true
     )
     puts "Created super admin: super@admin.com / Password123! (Premium Plan)"
   end
@@ -181,7 +183,9 @@ if Rails.env.development?
       user_type: 'direct',
       status: 'active',
       plan: pro_plan,
-      confirmed_at: Time.current
+      confirmed_at: Time.current,
+      terms_accepted: true,
+      privacy_accepted: true
     )
     puts "Created site admin: site@admin.com / Password123! (Pro Plan)"
   end
@@ -234,7 +238,9 @@ if Rails.env.development?
         plan: user_attrs[:plan],
         failed_attempts: user_attrs[:failed_attempts] || 0,
         locked_at: user_attrs[:locked_at],
-        confirmed_at: Time.current
+        confirmed_at: Time.current,
+        terms_accepted: true,
+        privacy_accepted: true
       )
       puts "Created direct user: #{user_attrs[:email]} / Password123! (#{user_attrs[:status]}, #{user_attrs[:plan].name})"
     end
@@ -274,7 +280,9 @@ if Rails.env.development?
         user_type: 'direct',
         status: 'active',
         plan: user_attrs[:plan],
-        confirmed_at: Time.current
+        confirmed_at: Time.current,
+        terms_accepted: true,
+        privacy_accepted: true
       )
       puts "Created team admin candidate: #{user_attrs[:email]} / Password123! (#{user_attrs[:plan].name})"
     end
@@ -330,7 +338,9 @@ if Rails.env.development?
         team: team1,
         team_role: 'admin',
         status: 'active',
-        confirmed_at: Time.current
+        confirmed_at: Time.current,
+        terms_accepted: true,
+        privacy_accepted: true
       )
       puts "Created team admin: alice.admin@acmecorp.com / Password123!"
 
@@ -357,7 +367,9 @@ if Rails.env.development?
         team: team1,
         team_role: 'member',
         status: 'active',
-        confirmed_at: Time.current
+        confirmed_at: Time.current,
+        terms_accepted: true,
+        privacy_accepted: true
       )
     end
 
@@ -390,7 +402,9 @@ if Rails.env.development?
         team: team2,
         team_role: 'admin',
         status: 'active',
-        confirmed_at: Time.current
+        confirmed_at: Time.current,
+        terms_accepted: true,
+        privacy_accepted: true
       )
       puts "Created team admin: bob.admin@techsolutions.com / Password123!"
 
@@ -418,7 +432,9 @@ if Rails.env.development?
         team: team2,
         team_role: 'member',
         status: 'active',
-        confirmed_at: Time.current
+        confirmed_at: Time.current,
+        terms_accepted: true,
+        privacy_accepted: true
       )
     end
 
@@ -451,7 +467,9 @@ if Rails.env.development?
         team: team3,
         team_role: 'admin',
         status: 'active',
-        confirmed_at: Time.current
+        confirmed_at: Time.current,
+        terms_accepted: true,
+        privacy_accepted: true
       )
       puts "Created team admin: carol.admin@digitalagency.com / Password123!"
 
@@ -477,7 +495,9 @@ if Rails.env.development?
         team: team3,
         team_role: 'member',
         status: member_attrs[:status] || 'active',
-        confirmed_at: Time.current
+        confirmed_at: Time.current,
+        terms_accepted: true,
+        privacy_accepted: true
       )
     end
 

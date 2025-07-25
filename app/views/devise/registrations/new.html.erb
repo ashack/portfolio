@@ -59,6 +59,30 @@
           </div>
         </div>
 
+        <div class="space-y-4">
+          <div class="flex items-start">
+            <div class="flex items-center h-5">
+              <%= f.check_box :terms_accepted, class: "h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded" %>
+            </div>
+            <div class="ml-3 text-sm">
+              <%= f.label :terms_accepted, class: "font-medium text-gray-700" do %>
+                I accept the <%= link_to "Terms and Conditions", terms_path, target: "_blank", class: "text-blue-600 hover:text-blue-500 underline" %>
+              <% end %>
+            </div>
+          </div>
+
+          <div class="flex items-start">
+            <div class="flex items-center h-5">
+              <%= f.check_box :privacy_accepted, class: "h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded" %>
+            </div>
+            <div class="ml-3 text-sm">
+              <%= f.label :privacy_accepted, class: "font-medium text-gray-700" do %>
+                I accept the <%= link_to "Privacy Policy", privacy_path, target: "_blank", class: "text-blue-600 hover:text-blue-500 underline" %>
+              <% end %>
+            </div>
+          </div>
+        </div>
+
         <div>
           <%= f.submit "Create Account", class: "w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" %>
         </div>
