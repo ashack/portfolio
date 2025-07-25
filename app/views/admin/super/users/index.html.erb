@@ -11,7 +11,7 @@
       </div>
       
       <!-- Search and Filter Form -->
-      <%= form_with(url: admin_super_users_path, method: :get, data: { turbo_frame: "users_table", turbo_action: "advance" }, class: "flex flex-col sm:flex-row gap-4") do |form| %>
+      <%= form_with(url: admin_super_users_path, method: :get, local: false, authenticity_token: false, data: { turbo_frame: "users_table", turbo_action: "advance" }, class: "flex flex-col sm:flex-row gap-4") do |form| %>
         <!-- Search Field -->
         <div class="flex-1 max-w-xs">
           <%= form.text_field :search, 
@@ -97,7 +97,7 @@
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                   <% if user.team %>
-                    <%= link_to user.team.name, admin_super_team_path(user.team), class: "text-indigo-600 hover:text-indigo-900" %>
+                    <%= link_to user.team.name, admin_super_team_path(user.team), class: "text-indigo-600 hover:text-indigo-900", data: { turbo_frame: "_top" } %>
                   <% else %>
                     <span class="text-gray-400">-</span>
                   <% end %>
@@ -128,10 +128,10 @@
                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                   <div class="flex space-x-2">
                     <% if policy(user).show? %>
-                      <%= link_to "View", admin_super_user_path(user), class: "text-indigo-600 hover:text-indigo-900" %>
+                      <%= link_to "View", admin_super_user_path(user), class: "text-indigo-600 hover:text-indigo-900", data: { turbo_frame: "_top" } %>
                     <% end %>
                     <% if policy(user).edit? %>
-                      <%= link_to "Edit", edit_admin_super_user_path(user), class: "text-green-600 hover:text-green-900" %>
+                      <%= link_to "Edit", edit_admin_super_user_path(user), class: "text-green-600 hover:text-green-900", data: { turbo_frame: "_top" } %>
                     <% end %>
                     <% if policy(user).impersonate? && user != current_user %>
                       <%= link_to "Impersonate", impersonate_admin_super_user_path(user), data: { "turbo-method": :post, "turbo-confirm": "Sign in as #{user.email}?" }, class: "text-gray-600 hover:text-gray-900" %>
