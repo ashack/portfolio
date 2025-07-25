@@ -11,12 +11,15 @@ document.addEventListener("turbo:before-fetch-request", (event) => {
   }
 })
 
-// Handle form submissions to ensure CSRF token is included
+// Handle form submissions to ensure CSRF token is included (only for non-GET forms)
 document.addEventListener("turbo:submit-start", (event) => {
   const form = event.target
   const token = document.querySelector('meta[name="csrf-token"]')?.content
   
-  if (token) {
+  // Only add CSRF token to non-GET forms
+  const method = form.method?.toUpperCase() || 'POST'
+  
+  if (token && method !== 'GET') {
     // Check if authenticity_token field exists
     let tokenField = form.querySelector('input[name="authenticity_token"]')
     

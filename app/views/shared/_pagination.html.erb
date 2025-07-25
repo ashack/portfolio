@@ -32,7 +32,7 @@
       <div class="mt-6 flex justify-center">
         <div class="items-per-page flex items-center gap-2">
           <label for="per_page" class="text-sm text-gray-700">Show:</label>
-          <%= form_with url: "", method: :get, data: { 
+          <%= form_with url: "", method: :get, authenticity_token: false, data: { 
                 turbo_frame: turbo_frame,
                 action: "change->pagination#submitForm"
               }, html: { class: "inline-flex" } do |f| %>
