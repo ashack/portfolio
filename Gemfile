@@ -40,7 +40,7 @@ gem "blazer"
 gem "rails_charts"
 
 # Notifications
-gem "noticed", "~> 2.0"
+gem "noticed", "~> 2.8"
 
 # Performance & Storage
 gem "activerecord-session_store"
