@@ -23,7 +23,7 @@ gem "pundit"
 gem "pretender"
 
 # UI Components
-gem "rails_icons", "~> 1.0"
+gem "rails_icons", "~> 1.4"
 gem "pagy", "~> 7.0"
 gem "tailwindcss-rails"
 
